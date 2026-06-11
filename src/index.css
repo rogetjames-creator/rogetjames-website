@@ -1,0 +1,473 @@
+@import "tailwindcss";
+
+/* ── ITC Benguiat Condensed — drop font files into public/fonts/ ── */
+@font-face {
+  font-family: "ITC Benguiat Condensed";
+  src: url("/fonts/ITCBenguiatCondensed-Bold.woff2") format("woff2"),
+       url("/fonts/ITCBenguiatCondensed-Bold.woff")  format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ═══════════════════════════════════════════
+   ROGETjames — Organic Tech Design System
+   Preset A: Clinical Boutique
+   ═══════════════════════════════════════════ */
+
+@theme {
+  /* ── Dark Editorial palette ─────────────── */
+  --color-moss: #5C3D2E;
+  --color-moss-light: #7A5240;
+  --color-moss-dark: #3D2820;
+  --color-clay: #C45018;
+  --color-clay-light: #D86830;
+  --color-clay-dark: #8C3210;
+  --color-cream: #EDE8DF;
+  --color-cream-dark: #DDD7CC;
+  --color-matt-black: #020202;
+  --color-charcoal: #050505;
+  --color-charcoal-light: #0E0E0E;
+  --color-warm-gray: #7A7268;
+  --color-warm-gray-light: #A89E94;
+  /* ── Rich black / matt black section tones ── */
+  --color-ink:      #010101;   /* deepest rich black */
+  --color-onyx:     #040404;   /* rich black         */
+  --color-jet:      #0B0B0B;   /* matt black         */
+  --color-graphite: #111111;   /* matt black         */
+  --color-pewter:   #181818;   /* lighter matt black */
+
+  /* ── Fonts ───────────────────────────────── */
+  --font-heading: "Plus Jakarta Sans", "Outfit", sans-serif;
+  --font-syne: "Syne", sans-serif;
+  --font-drama: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-body: "DM Sans", "Plus Jakarta Sans", sans-serif;
+  --font-benguiat: "ITC Benguiat Condensed", "Plus Jakarta Sans", sans-serif;
+  --font-detail: "Jost", "DM Sans", sans-serif;
+
+  --ease-magnetic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── ITC Benguiat Condensed utility ─────── */
+.font-benguiat {
+  font-family: var(--font-benguiat);
+}
+
+.font-syne {
+  font-family: var(--font-syne);
+}
+
+@keyframes scrollDot {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50%       { transform: translateY(6px); opacity: 1; }
+}
+
+/* ── Base ────────────────────────────────── */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+html.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+html.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+html.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  color: var(--color-cream);
+  background: var(--color-matt-black);
+  overflow-x: hidden;
+  margin: 0;
+}
+
+::selection {
+  background: var(--color-clay);
+  color: var(--color-cream);
+}
+
+/* ── Headings — Cream on dark background ─── */
+
+h1, h2, h3 {
+  color: var(--color-cream) !important;
+}
+
+/* ── Noise Overlay ───────────────────────── */
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+}
+
+
+/* ── Typography Utilities ────────────────── */
+
+.font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.03em;
+}
+
+.font-drama {
+  font-family: var(--font-drama);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.font-detail {
+  font-family: var(--font-detail);
+  font-weight: 300;
+}
+
+/* ── Gallery Filter Buttons ──────────────── */
+
+@property --sweep-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes borderSweep {
+  from { --sweep-angle: 0deg; }
+  to { --sweep-angle: 360deg; }
+}
+
+.filter-btn {
+  transition: background-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.filter-btn-inactive:hover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 2px;
+  background: conic-gradient(from -90deg, #C45018 var(--sweep-angle), transparent var(--sweep-angle));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderSweep 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+.filter-btn-sweeping::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 2px;
+  background: conic-gradient(from -90deg, #C45018 var(--sweep-angle), transparent var(--sweep-angle));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderSweep 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+.filter-btn-inactive {
+  background-color: #1A1A1A;
+  color: var(--color-cream);
+  border: 1px solid rgba(242, 240, 233, 0.15);
+}
+
+.filter-btn-active {
+  background-color: #C45018;
+  color: #1A1A1A;
+}
+
+/* ── Magnetic Button ─────────────────────── */
+
+.btn-magnetic {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-magnetic), box-shadow 0.4s var(--ease-magnetic);
+}
+
+.btn-magnetic:hover {
+  transform: scale(1.03);
+}
+
+.btn-magnetic .btn-bg {
+  position: absolute;
+  inset: 0;
+  transform: translateY(100%);
+  transition: transform 0.45s var(--ease-magnetic);
+}
+
+.btn-magnetic:hover .btn-bg {
+  transform: translateY(0);
+}
+
+.btn-magnetic:active {
+  background-color: #C45018 !important;
+  color: #000000 !important;
+}
+
+.btn-magnetic:active .btn-bg {
+  background-color: #C45018 !important;
+}
+
+.btn-magnetic:active * {
+  color: #000000 !important;
+}
+
+/* ── Interactive Lifts ───────────────────── */
+
+.lift-hover {
+  transition: transform 0.3s var(--ease-magnetic);
+}
+
+.lift-hover:hover {
+  transform: translateY(-2px);
+}
+
+
+/* ── Gallery Image ───────────────────────── */
+
+.gallery-img {
+  transition: transform 0.7s var(--ease-magnetic), filter 0.7s var(--ease-magnetic);
+}
+
+.gallery-card:hover .gallery-img {
+  transform: scale(1.05);
+  filter: brightness(1.08);
+}
+
+/* ── Scrollbar ───────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-charcoal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-clay);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-clay-light);
+}
+
+/* ── Series Row First-Visible Card Overlays ─ */
+
+.row-title-bg {
+  transform: translateY(100%);
+  transition: transform 0.5s ease-out;
+}
+.row-title-text {
+  opacity: 0;
+  transition: opacity 0.3s ease 0.15s;
+}
+.row-name-bg {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.row-name-text {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* First visible card: slide-up title on hover */
+.gallery-card.is-row-first:hover .row-title-bg  { transform: translateY(0); }
+.gallery-card.is-row-first:hover .row-title-text { opacity: 1; }
+
+/* Other cards: show piece name on hover */
+.gallery-card.is-row-other:hover .row-name-bg  { opacity: 1; }
+.gallery-card.is-row-other:hover .row-name-text { opacity: 1; transform: translateY(0); }
+
+/* ── Series Row Scroll (hide scrollbar) ─── */
+
+.series-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.series-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Search Results Row (hairline scrollbar) ─── */
+
+.search-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(242,240,233,0.6) transparent;
+}
+
+.search-scroll::-webkit-scrollbar {
+  height: 2px;
+}
+
+.search-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-scroll::-webkit-scrollbar-thumb {
+  background: rgba(242,240,233,0.6);
+  border-radius: 99px;
+}
+
+.search-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(242,240,233,0.85);
+}
+
+/* ── Lightbox ────────────────────────────── */
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: rgba(26, 26, 26, 0.92);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
+/* ── Image Fade-In on Load ──────────────── */
+
+.img-reveal {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-magnetic);
+}
+
+.img-reveal.is-loaded {
+  opacity: 1;
+}
+
+/* ── Gallery center tile water ripple ────── */
+
+@keyframes water-ripple {
+  0%   { transform: scale(0.05); opacity: 0.55; }
+  20%  { opacity: 0.45; }
+  100% { transform: scale(4.0); opacity: 0; }
+}
+
+.water-ring-1 { animation: water-ripple 2.4s ease-out infinite; }
+.water-ring-2 { animation: water-ripple 2.4s ease-out 0.8s infinite; }
+.water-ring-3 { animation: water-ripple 2.4s ease-out 1.6s infinite; }
+
+/* ── Bespoke Commission center tile: rings emanate outward from logo ── */
+
+@keyframes water-ripple-out {
+  0%   { transform: scale(1); opacity: 0.25; }
+  20%  { opacity: 0.18; }
+  100% { transform: scale(4.5); opacity: 0; }
+}
+
+.bespoke-ring-1 { animation: water-ripple-out 4.2s ease-out infinite; }
+.bespoke-ring-2 { animation: water-ripple-out 4.2s ease-out 1.4s infinite; }
+.bespoke-ring-3 { animation: water-ripple-out 4.2s ease-out 2.8s infinite; }
+
+/* ── Custom Cursor Dot ───────────────────── */
+
+.pulse-dot {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.5); }
+}
+
+/* ── Typewriter Cursor ───────────────────── */
+
+.type-cursor {
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Marquee strip ───────────────────────── */
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes marquee-scroll-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.marquee-track {
+  will-change: transform;
+  animation: marquee-scroll 32s linear infinite;
+}
+
+.marquee-track-right {
+  will-change: transform;
+  animation: marquee-scroll-right 32s linear infinite;
+}
+
+.marquee-track-fast {
+  will-change: transform;
+  animation: marquee-scroll 24s linear infinite;
+}
+
+/* ── Pill border-trace on hover ───────────────────────────────────────── */
+.pill-trace {
+  position: relative;
+  overflow: visible;
+}
+.pill-trace::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  border: 1.5px solid #b85c38;
+  clip-path: inset(0 100% 0 0 round 9999px);
+  transition: clip-path 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.pill-trace:hover::after,
+.pill-trace:active::after,
+.pill-trace.pill-active::after {
+  clip-path: inset(0 0% 0 0 round 9999px);
+}

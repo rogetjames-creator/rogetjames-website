@@ -1,0 +1,14 @@
+{
+  "name": "ROGETjames",
+  "short_name": "ROGETjames",
+  "description": "Original laser-cut wall art, sculpture & architectural features. Crafted in Australia.",
+  "icons": [
+    { "src": "/favicon-32x32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/favicon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#050505",
+  "background_color": "#050505",
+  "display": "browser",
+  "start_url": "/"
+}

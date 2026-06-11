@@ -1,0 +1,9 @@
+Art Elements — Painting popup text (on hold, not yet published)
+
+"Painting is a pursuit i go to when I'm called to do, usually by the force of inspiration. The act of translating what your minds eye sees and the effort to level up ones skill level to meet your own demands and satiate that critical eye, is the game I indulge. Then letting it go and trying to appreciate it for what it is."
+
+— James Roget
+
+Notes:
+- Consider as a popup within the Art Elements portal (Portal 8)
+- Casual, first-person voice — keep as-is when implementing

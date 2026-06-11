@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SEO Guide — ROGETjames</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f7f6f3;
+      color: #1a1a1a;
+      font-size: 14px;
+      line-height: 1.7;
+      padding: 48px 0;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 3px solid #1a1a1a;
+      padding-bottom: 24px;
+      margin-bottom: 40px;
+    }
+    .header .brand {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #1a1a1a;
+    }
+    .header .sub {
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 40px;
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #C45018;
+      margin-bottom: 10px;
+    }
+    .section h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    .section h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 18px 0 6px;
+    }
+    p {
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    /* Callout box */
+    .callout {
+      background: #1a1a1a;
+      color: #f7f6f3;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .callout p { color: #ccc; margin-bottom: 6px; }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout strong { color: #fff; }
+
+    .callout-orange {
+      background: #C45018;
+      color: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 20px 0;
+    }
+    .callout-orange p { color: rgba(255,255,255,0.85); margin-bottom: 6px; }
+    .callout-orange strong { color: #fff; }
+
+    /* List */
+    ul {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+    ul li {
+      color: #444;
+      margin-bottom: 6px;
+    }
+    ul li strong { color: #1a1a1a; }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 13px;
+    }
+    th {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e8e6e2;
+      color: #444;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f0ede8; }
+
+    /* Checklist */
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #e8e6e2;
+      color: #444;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #C45018;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .done .check {
+      background: #C45018;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .done .check::after {
+      content: "✓";
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* Tips grid */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .tip-card {
+      background: #fff;
+      border: 1px solid #e0ddd8;
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .tip-card .num {
+      font-size: 22px;
+      font-weight: 800;
+      color: #C45018;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .tip-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .tip-card p {
+      font-size: 12px;
+      color: #666;
+      margin: 0;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      font-size: 11px;
+      color: #aaa;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Print */
+    @media print {
+      body { background: white; padding: 0; }
+      .page { padding: 20px 40px; }
+      .callout { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .callout-orange { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .tip-card { border: 1px solid #ddd; }
+      .done .check { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="brand">ROGETjames · Studio Document</div>
+    <h1>Google SEO — Strategy & Action Plan</h1>
+    <p class="sub">How to build extraordinary Google reach for rogetjames.com</p>
+  </div>
+
+  <!-- STRAIGHT TRUTH -->
+  <div class="section">
+    <div class="section-label">First</div>
+    <h2>The Honest Reality</h2>
+    <p>No one can guarantee a top Google ranking — anyone who promises that is selling you something. What IS true is that for a niche like laser-cut wall art in Australia, the competition is thin. Doing the right things well and consistently will get you there.</p>
+    <p>Google asks three questions about every website:</p>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="num">01</div>
+        <h4>Is it relevant?</h4>
+        <p>Does the page use the words people actually search for?</p>
+      </div>
+      <div class="tip-card">
+        <div class="num">02</div>
+        <h4>Is it authoritative?</h4>
+        <p>Do other sites link to it and talk about it?</p>
+      </div>
+      <div class="tip-card">
+        <div class="num">03</div>
+        <h4>Is it good?</h4>
+        <p>Do people stay on it or leave immediately?</p>
+      </div>
+      <div class="tip-card">
+        <div class="num">04</div>
+        <h4>Is it fast & accessible?</h4>
+        <p>Does it load quickly and work on phones?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT'S ALREADY DONE -->
+  <div class="section">
+    <div class="section-label">Status</div>
+    <h2>What's Already Done on the Site</h2>
+    <ul class="checklist">
+      <li class="done"><span class="check"></span><span><strong>Meta title & description</strong> — the text Google shows in search results, written and in place</span></li>
+      <li class="done"><span class="check"></span><span><strong>Open Graph tags</strong> — controls how the site looks when shared on social media</span></li>
+      <li class="done"><span class="check"></span><span><strong>Structured data — LocalBusiness</strong> — tells Google you're a real business with locations and contact details</span></li>
+      <li class="done"><span class="check"></span><span><strong>Structured data — VisualArtist</strong> — tells Google James Roget is an artist, helps with image search and knowledge panels</span></li>
+      <li class="done"><span class="check"></span><span><strong>Structured data — WebSite</strong> — basic site identity signal</span></li>
+      <li class="done"><span class="check"></span><span><strong>Canonical URL</strong> — rogetjames.com set as the authoritative address</span></li>
+      <li class="done"><span class="check"></span><span><strong>robots.txt</strong> — tells Google what it can and can't crawl</span></li>
+      <li class="done"><span class="check"></span><span><strong>Sitemap</strong> — map of all pages, submitted so Google knows where to look</span></li>
+      <li class="done"><span class="check"></span><span><strong>Image sitemap</strong> — tells Google about key images and what they show</span></li>
+      <li class="done"><span class="check"></span><span><strong>Gallery alt text</strong> — all gallery card images have meaningful descriptions</span></li>
+      <li class="done"><span class="check"></span><span><strong>Geo tags</strong> — Perth/Australia location signals</span></li>
+      <li class="done"><span class="check"></span><span><strong>Favicon & webmanifest</strong> — professional browser presentation</span></li>
+      <li><span class="check"></span><span><strong>FAQ schema</strong> — not yet done — high value, see below</span></li>
+      <li><span class="check"></span><span><strong>Google Business Profile</strong> — not yet done — single biggest quick win, see below</span></li>
+      <li><span class="check"></span><span><strong>Google Search Console</strong> — not yet done — needs domain live first</span></li>
+    </ul>
+  </div>
+
+  <!-- GOOGLE PICKUPS — TIPS -->
+  <div class="section">
+    <div class="section-label">The Tactics</div>
+    <h2>How to Get Great Google Pickups</h2>
+
+    <h3>🟠 Google Business Profile — Do This First</h3>
+    <p>Free. Takes 20 minutes. This is what puts you on Google Maps and in the panel that appears on the right side of search results when someone searches "ROGETjames" or "laser cut wall art Perth".</p>
+    <div class="callout-orange">
+      <p><strong>Go to:</strong> business.google.com</p>
+      <p>Add your business name, category (Artist / Art Gallery / Metal Fabricator), all three locations, phone, website, hours if applicable, and photos of your work. The more complete the profile, the higher Google ranks it.</p>
+      <p><strong>Add at least 10–15 photos of your work.</strong> Google Business images appear directly in search results.</p>
+    </div>
+
+    <h3>🟠 Get Other Sites to Link to Yours</h3>
+    <p>This is the single biggest ranking factor after content. Each link from another website is effectively a vote of confidence. Quality beats quantity — one link from an architecture firm's website is worth more than 50 directory listings.</p>
+    <ul>
+      <li><strong>Architects & designers you've worked with</strong> — ask them to credit ROGETjames and link to your site on their project pages</li>
+      <li><strong>Hederablu, Entanglements, WG Outdoor Life</strong> — your agents should all have a live link to rogetjames.com</li>
+      <li><strong>Houzz</strong> — free profile, high domain authority, links back to your site. Create a profile at houzz.com.au and upload your best project photos</li>
+      <li><strong>ArchiPro</strong> — Australian architecture & design directory, very relevant audience</li>
+      <li><strong>True Local / Yellow Pages</strong> — free listings, easy backlinks</li>
+      <li><strong>Any past press coverage</strong> — chase any editorial or blog that mentioned your work and ask for a live link if there isn't one already</li>
+    </ul>
+
+    <h3>🟠 Pinterest — Underrated for Art</h3>
+    <p>Pinterest is a visual search engine in its own right. Laser cut and metal art performs extremely well there. Every pin links back to your site, and Google reads Pinterest as a signal of content quality. Create a ROGETjames Pinterest account, pin your best work, and link every pin to rogetjames.com. Takes an hour to set up and keeps working for years.</p>
+
+    <h3>🟠 Instagram Profile Link</h3>
+    <p>Make sure your Instagram bio links to rogetjames.com — not the Netlify preview URL. When the domain is live, update it. Instagram links are "nofollow" but the traffic signal still matters to Google.</p>
+
+    <h3>🟠 Use the Words People Search For</h3>
+    <p>These are the actual search terms people type that you want to show up for:</p>
+    <ul>
+      <li>laser cut wall art australia</li>
+      <li>corten steel wall art perth</li>
+      <li>laser cut screen australia</li>
+      <li>metal wall art australia</li>
+      <li>bespoke laser cut design</li>
+      <li>architectural laser cut features</li>
+      <li>corten steel garden sculpture</li>
+      <li>laser cut garden screen</li>
+      <li>custom laser cut wall art</li>
+      <li>banksia wall art / bambu wall art / gren wall art (your design names)</li>
+    </ul>
+    <p>These terms should appear in your page text, image descriptions, and Google Business Profile — naturally, not stuffed awkwardly.</p>
+
+    <h3>🟠 Google Search Console — After Launch</h3>
+    <p>Free Google tool. Submit your sitemap here the day the domain goes live. Google will crawl your site within days rather than weeks. Also shows you what search terms people are already finding you with — gold for knowing what's working.</p>
+    <div class="callout">
+      <p><strong>Go to:</strong> search.google.com/search-console</p>
+      <p>Add rogetjames.com as a property, verify ownership (Netlify makes this easy — paste a DNS record), then submit: https://rogetjames.com/sitemap.xml</p>
+    </div>
+  </div>
+
+  <!-- WHAT I CAN BUILD -->
+  <div class="section">
+    <div class="section-label">Site Improvements</div>
+    <h2>What Can Be Built Into the Site</h2>
+
+    <h3>FAQ Schema</h3>
+    <p>Google shows FAQ answers as expanded results in search — taking up 3–4× more space on the page than a regular result. I can add an invisible FAQ block to the site targeting questions like:</p>
+    <ul>
+      <li>"How long does laser cut wall art take to deliver?"</li>
+      <li>"Do you deliver laser cut art Australia wide?"</li>
+      <li>"Can I get custom sized laser cut wall art?"</li>
+      <li>"What is Corten steel and how does it weather?"</li>
+      <li>"Do you do bespoke commissions?"</li>
+    </ul>
+
+    <h3>Richer Crawlable Text</h3>
+    <p>Google cannot read images. The site is visually stunning but currently light on text that Google can crawl. Adding short, keyword-rich descriptions to each design series — visible to Google, not cluttering the design — significantly improves relevance signals.</p>
+
+    <h3>Bespoke Commissions Image Alt Text</h3>
+    <p>The Bespoke Commissions section has hundreds of project images that currently have empty alt text. Each one is a missed opportunity to tell Google what's in the image. Adding descriptions like "ZARATHSTRA corten steel gate commission — Cottesloe Hotel Perth" builds relevance over time.</p>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section">
+    <div class="section-label">Expectations</div>
+    <h2>Realistic Timeline</h2>
+    <table>
+      <thead>
+        <tr><th>Timeframe</th><th>What Happens</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Week 1–2</strong></td><td>Google indexes the site after you submit Search Console and the domain goes live</td></tr>
+        <tr><td><strong>Month 1–2</strong></td><td>Start appearing for niche searches — your design names, "ROGETjames", long-tail terms</td></tr>
+        <tr><td><strong>Month 2–3</strong></td><td>Google Business Profile starts showing in local map results for Perth, Gold Coast, Melbourne</td></tr>
+        <tr><td><strong>Month 3–6</strong></td><td>Rankings improve as backlinks accumulate and engagement data builds</td></tr>
+        <tr><td><strong>Month 6–12</strong></td><td>Competitive terms like "laser cut wall art Australia" become reachable</td></tr>
+        <tr><td><strong>12 months+</strong></td><td>Sustained top positions for your key terms as domain authority grows</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRIORITY ORDER -->
+  <div class="section">
+    <div class="section-label">Action Plan</div>
+    <h2>Priority Order — Highest Impact First</h2>
+    <ul class="checklist">
+      <li><span class="check"></span><span><strong>1. Google Business Profile</strong> — Free, 20 mins, immediate local ranking impact. business.google.com</span></li>
+      <li><span class="check"></span><span><strong>2. Google Search Console</strong> — Submit sitemap the day domain goes live. search.google.com/search-console</span></li>
+      <li><span class="check"></span><span><strong>3. Houzz & ArchiPro profiles</strong> — Free listings with backlinks from high-authority design sites</span></li>
+      <li><span class="check"></span><span><strong>4. Ask agents & past collaborators for links</strong> — Email Hederablu, Entanglements, WG Outdoor Life, and any architects/designers you've worked with</span></li>
+      <li><span class="check"></span><span><strong>5. Pinterest account</strong> — Set up, pin your best 20–30 works, link each to rogetjames.com</span></li>
+      <li><span class="check"></span><span><strong>6. FAQ schema on site</strong> — Claude can build this — tell him to do it</span></li>
+      <li><span class="check"></span><span><strong>7. Bespoke Commissions alt text</strong> — Claude can write and add descriptions to all project images</span></li>
+      <li><span class="check"></span><span><strong>8. Update Instagram bio link</strong> — Change to rogetjames.com once domain is live</span></li>
+      <li><span class="check"></span><span><strong>9. Encourage Google reviews</strong> — Ask past clients to leave a Google review on your Business Profile. Star ratings appear in search results.</span></li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <span>ROGETjames · SEO Strategy Document</span>
+    <span>Prepared by Claude · rogetjames.com</span>
+  </div>
+
+</div>
+</body>
+</html>
