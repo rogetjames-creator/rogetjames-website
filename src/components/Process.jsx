@@ -152,7 +152,7 @@ export default function Process() {
             return (
               <div
                 key={step.num}
-                className="process-card w-full bg-white/5 rounded-[2rem] border border-white/10 px-7 py-6 md:px-10 md:py-7 flex flex-col md:flex-row md:items-center gap-5 md:gap-8 hover:border-white/25 transition-colors duration-700"
+                className="process-card w-full bg-white/5 rounded-[2rem] border border-white/10 px-7 py-4 md:px-10 md:py-5 flex flex-col md:flex-row md:items-center gap-4 md:gap-8 hover:border-white/25 transition-colors duration-700"
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
               >
                 {/* Icon + number */}
