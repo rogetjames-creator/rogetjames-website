@@ -12,3 +12,18 @@
   from = "/api/chat"
   to = "/.netlify/functions/chat"
   status = 200
+
+[[redirects]]
+  from = "/api/vault-verify"
+  to = "/.netlify/functions/vault-verify"
+  status = 200
+
+[[redirects]]
+  from = "/api/vault-invite"
+  to = "/.netlify/functions/vault-invite"
+  status = 200
+
+[[redirects]]
+  from = "/vault"
+  to = "/vault.html"
+  status = 200
