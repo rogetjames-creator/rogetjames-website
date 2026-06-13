@@ -4,6 +4,69 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ReactLenis, useLenis } from "lenis/react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
+function Reveal({ children, label }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    gsap.set(wrapRef.current, { height: 0, overflow: "hidden" });
+  }, []);
+
+  const toggle = useCallback(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    if (!open) {
+      gsap.fromTo(el,
+        { height: 0, overflow: "hidden" },
+        {
+          height: "auto",
+          duration: 1.6,
+          ease: "power3.inOut",
+          clearProps: "overflow",
+          onComplete: () => ScrollTrigger.refresh(),
+        }
+      );
+    } else {
+      gsap.set(el, { overflow: "hidden" });
+      gsap.to(el, {
+        height: 0,
+        duration: 1.1,
+        ease: "power3.inOut",
+        onComplete: () => ScrollTrigger.refresh(),
+      });
+    }
+    setOpen(o => !o);
+  }, [open]);
+
+  return (
+    <div>
+      <div className="flex justify-center py-12 border-t border-cream/[0.06]">
+        <button
+          onClick={toggle}
+          className="flex items-center gap-3 font-detail text-xs text-cream/50 uppercase tracking-[0.2em] border border-cream/12 hover:border-clay/50 hover:text-cream rounded-full px-7 py-3 transition-all duration-300"
+        >
+          {label}
+          <ChevronDown
+            size={11}
+            style={{ transition: "transform 0.5s ease", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          />
+        </button>
+      </div>
+      <div ref={wrapRef}>
+        {children}
+        <div className="flex justify-center py-8 border-b border-cream/[0.06]">
+          <button
+            onClick={toggle}
+            className="flex items-center gap-2 font-detail text-[10px] text-cream/30 uppercase tracking-[0.2em] hover:text-cream/60 transition-colors duration-200"
+          >
+            <ChevronUp size={10} /> Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Gallery from "./components/Gallery";
@@ -191,7 +254,9 @@ export default function App() {
         {/* <About /> */}
         {/* <BespokeCommissions /> */}
         <StudioBio />
-        <CommissionsSection />
+        <Reveal label="Bespoke">
+          <CommissionsSection />
+        </Reveal>
         <Process />
         <Services />
         <Contact
@@ -200,7 +265,9 @@ export default function App() {
           onQuoteSubmitted={clearQuoteItems}
         />
       </main>
-      <DiscoverPortals />
+      <Reveal label="Discover Portals">
+        <DiscoverPortals />
+      </Reveal>
       <Footer />
       <ScrollArrows />
       <ChatWidget />
