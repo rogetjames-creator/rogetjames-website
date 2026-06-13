@@ -15,6 +15,11 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 - Responses are short and direct. One sentence where one sentence is enough.
 - This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational.
 
+**Autonomy — mandatory:**
+- James is not a developer. His role is aesthetic direction, not technical operation.
+- Never ask James to open dashboards, check settings, run commands, copy values, or perform any technical step.
+- If something can be done via code, API, or CLI — do it. If it genuinely cannot be done without credentials or access that don't exist in this environment, state that fact in one sentence and move on. Do not turn it into a task for James.
+
 ## Project
 
 Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames-new.netlify.app/ (preview — will become rogetjames.com on launch). Deployed automatically to Netlify on every push to `main`.
