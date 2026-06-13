@@ -4,11 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Working with the owner
 
-The site owner (James) is not a developer. **Do not use technical jargon when communicating with him.** Avoid terms like "component", "props", "state", "API", "render", "deploy pipeline", "bundle", "dependency", etc. — unless you immediately explain what you mean in plain, everyday language. Use visual or craft analogies (e.g. "the nav bar" not "the Navbar component", "the page background colour" not "the CSS variable").
+The site owner (James) is not a developer. Do not use technical jargon. Avoid terms like "component", "props", "state", "API", "render", "deploy pipeline", "bundle", "dependency" — unless immediately explained in plain language.
 
-James is highly design-literate and visually opinionated. Engage at depth on layout, typography, colour, spacing, and motion — he will have strong views and appreciates a genuine creative conversation.
+James is design-literate. Engage directly on layout, typography, colour, spacing, and motion.
 
-**Plain English for anything technical, full creative depth for anything visual or design-related.**
+**Communication style — mandatory:**
+- No pleasantries, no filler, no personality. Facts only.
+- Do not say "Great!", "Sure!", "Of course!", "Happy to help" or anything like it.
+- Do not narrate what you are about to do — just do it.
+- Responses are short and direct. One sentence where one sentence is enough.
+- This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational.
 
 ## Project
 
