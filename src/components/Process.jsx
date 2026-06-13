@@ -152,51 +152,45 @@ export default function Process() {
             return (
               <div
                 key={step.num}
-                className="process-card w-full bg-white/5 rounded-[2rem] border border-white/10 px-7 py-3 md:px-10 md:py-3 flex flex-col md:flex-row md:items-center gap-4 md:gap-8 hover:border-white/25 transition-colors duration-700"
+                className="process-card w-full bg-white/5 rounded-[2rem] border border-white/10 px-8 py-8 flex flex-col items-center text-center gap-3 hover:border-white/25 transition-colors duration-700"
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
               >
-                {/* Icon + number */}
-                <div className="flex md:flex-col items-center gap-3 md:gap-2 flex-none md:w-12">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-none"
-                    style={{ background: "rgba(196,80,24,0.12)", boxShadow: "0 0 14px rgba(196,80,24,0.35), inset 0 0 8px rgba(196,80,24,0.08)" }}
-                  >
-                    <Icon size={17} className="text-clay" style={{ filter: "drop-shadow(0 0 4px rgba(196,80,24,0.7))" }} />
-                  </div>
-                  <span className="font-detail text-xs text-warm-gray/60 tracking-widest">{step.num}</span>
+                {/* Number */}
+                <span className="font-detail text-xs text-warm-gray/50 tracking-widest">{step.num}</span>
+
+                {/* Icon */}
+                <div className="w-10 h-10 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center">
+                  <Icon size={17} className="text-cream/60" />
                 </div>
 
-                {/* Divider — desktop only */}
-                <div className="hidden md:block w-px self-stretch bg-white/10 flex-none" />
+                {/* Title */}
+                <h3 className="font-heading font-bold text-lg text-cream/80 mt-1">
+                  <span className="relative inline-block">
+                    {step.title}
+                    <span
+                      className="process-underline"
+                      style={{
+                        position: "absolute", bottom: "-2px", left: 0, right: 0,
+                        height: "1px", background: "rgba(242,240,233,0.35)",
+                        display: "block", transformOrigin: "left center", transform: "scaleX(0)",
+                      }}
+                    />
+                  </span>
+                </h3>
 
-                {/* Title + description */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-heading font-bold text-lg text-cream/80 mb-2">
-                    <span className="relative inline-block">
-                      {step.title}
-                      <span
-                        className="process-underline"
-                        style={{
-                          position: "absolute", bottom: "-2px", left: 0, right: 0,
-                          height: "1px", background: "rgba(242,240,233,0.35)",
-                          display: "block", transformOrigin: "left center", transform: "scaleX(0)",
-                        }}
-                      />
-                    </span>
-                  </h3>
-                  <ul className="space-y-1 mt-0.5">
-                    {step.description.map((line, i) => (
-                      <li key={i} className="flex items-start gap-2 text-warm-gray text-sm leading-relaxed">
-                        <span className="w-1 h-1 rounded-full bg-clay mt-2 flex-shrink-0" />
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Description */}
+                <ul className="space-y-1.5 mt-0.5">
+                  {step.description.map((line, i) => (
+                    <li key={i} className="flex items-start justify-center gap-2 text-warm-gray text-sm leading-relaxed">
+                      <span className="w-1 h-1 rounded-full bg-clay mt-2 flex-shrink-0" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
 
-                {/* Detail — right column */}
+                {/* Detail */}
                 {(step.detail || step.detailLink) && (
-                  <div className="md:w-48 flex-none md:border-l md:border-white/10 md:pl-8">
+                  <div className="mt-2">
                     {step.detail && (
                       <p className="font-detail text-xs text-clay leading-relaxed whitespace-pre-line">{step.detail}</p>
                     )}
