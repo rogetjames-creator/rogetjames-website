@@ -70,6 +70,8 @@ Local dev via Netlify CLI runs on port 8888 and proxies the Vite dev server on 5
 - `window.__galleryModalBody` is a ref attached by Gallery's lightbox so `ScrollArrows` in `App.jsx` can redirect scroll into the modal instead of the page.
 - Gate animation pattern (Gallery + BespokeCommissions strips): two black `position:absolute` panels at `z-20` slide apart on `start:"top bottom"` over 8s linear; the portal sits at `z-30 relative` above them.
 - `NoiseOverlay` is a fixed SVG grain texture at `z-index: 9999` — never put UI above it without a higher z-index.
+- The `CommissionsSection` is referred to as **the Bespoke section**. It is hidden by default behind a `Reveal` button labelled "Bespoke".
+- `DiscoverPortals` is hidden by default behind a `Reveal` button labelled "Discover Portals". Both use GSAP height animation (blind-reveal) in `App.jsx`.
 
 ## Client Vault System (built on branch `claude/remote-status-check-re48a5`)
 

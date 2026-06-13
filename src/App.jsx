@@ -254,7 +254,7 @@ export default function App() {
         {/* <About /> */}
         {/* <BespokeCommissions /> */}
         <StudioBio />
-        <Reveal label="Bespoke Commissions">
+        <Reveal label="Bespoke">
           <CommissionsSection />
         </Reveal>
         <Process />
