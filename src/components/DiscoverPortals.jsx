@@ -1,7 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-
-// ── Set to true to show Coming Soon, false to show portals ───────────────────
-const COMING_SOON = false;
 import { X, ChevronLeft, ChevronRight, Play, Pause, ExternalLink, Phone, Mail, Instagram } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -659,65 +656,6 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
-function ComingSoonText() {
-  const textRef = useRef(null);
-  const lightRef = useRef(null);
-
-  useEffect(() => {
-    const text = textRef.current;
-    const light = lightRef.current;
-    if (!text || !light) return;
-
-    let alive = true;
-
-    gsap.fromTo(text, { opacity: 0 }, { opacity: 0.7, duration: 2.2, ease: "sine.inOut" });
-    gsap.to(text, { opacity: 0.28, scale: 1.022, duration: 4.2, yoyo: true, repeat: -1, ease: "sine.inOut", delay: 2.2 });
-
-    gsap.set(light, { xPercent: -50, yPercent: -50, left: "50%", top: "50%" });
-
-    const moveLight = () => {
-      if (!alive) return;
-      const x = 15 + Math.random() * 70;
-      const y = 10 + Math.random() * 80;
-      gsap.to(light, { left: `${x}%`, top: `${y}%`, duration: 2.8 + Math.random() * 3.5, ease: "sine.inOut", onComplete: moveLight });
-    };
-    moveLight();
-
-    return () => {
-      alive = false;
-      gsap.killTweensOf(text);
-      gsap.killTweensOf(light);
-    };
-  }, []);
-
-  return (
-    <div className="relative flex items-center justify-center w-full" style={{ height: "185px", overflow: "hidden" }}>
-      {/* roaming light */}
-      <div
-        ref={lightRef}
-        className="absolute pointer-events-none"
-        style={{
-          width: "320px", height: "320px",
-          transform: "translate(-50%, -50%)",
-          background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(242,240,233,0.13) 0%, transparent 70%)",
-          borderRadius: "50%",
-        }}
-      />
-      <div ref={textRef} className="relative z-10 text-center select-none" style={{ transformOrigin: "center center" }}>
-        <span
-          className="font-drama text-cream"
-          style={{ fontSize: "clamp(2.8rem, 6vw, 5.5rem)", letterSpacing: "0.12em", lineHeight: 1 }}
-        >
-          Coming Soon
-        </span>
-        <p className="font-detail text-cream/35 uppercase tracking-[0.3em] text-[10px] mt-3">
-          More portals launching shortly
-        </p>
-      </div>
-    </div>
-  );
-}
-
 export function CommissionsSection() {
   const sectionRef = useRef(null);
   const leftRef = useRef(null);
@@ -726,9 +664,6 @@ export function CommissionsSection() {
   const rightOuterRef = useRef(null);
   const practiceLineRef = useRef(null);
   const practiceLineRightRef = useRef(null);
-  const headerRef = useRef(null);
-  const practiceRef = useRef(null);
-  const [bespokeOpen, setBespokeOpen] = useState(false);
   const [sculptureOpen, setSculptureOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
@@ -740,64 +675,26 @@ export function CommissionsSection() {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 
-  // On mount: collapse header and practice sections — only the portal band shows
   useEffect(() => {
-    if (headerRef.current)   gsap.set(headerRef.current,   { height: 0, overflow: "hidden", opacity: 0 });
-    if (practiceRef.current) gsap.set(practiceRef.current, { height: 0, overflow: "hidden", opacity: 0 });
-    if (leftRef.current)     gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0 });
+    gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0 });
+
+    const ctx = gsap.context(() => {
+      const mob = window.innerWidth < 768;
+      const st = { trigger: sectionRef.current, start: "top 75%", end: "bottom 20%", toggleActions: "play reverse play reverse" };
+      if (!mob) {
+        gsap.fromTo(leftRef.current,      { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out", scrollTrigger: st });
+        gsap.fromTo(rightRef.current,     { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out", scrollTrigger: st });
+        gsap.fromTo(leftOuterRef.current, { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out", scrollTrigger: st });
+        gsap.fromTo(rightOuterRef.current,{ x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out", scrollTrigger: st });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
-  // Click the center portal to open the full section
-  const handleBespokeOpen = useCallback(() => {
-    if (bespokeOpen) return;
-    setBespokeOpen(true);
-
-    // Header slides in above
-    gsap.to(headerRef.current, {
-      height: "auto", opacity: 1, duration: 1.0, ease: "power2.out",
-    });
-
-    // Side portals fan out from center
-    if (window.innerWidth >= 768) {
-      gsap.to(leftRef.current,       { x: -300, opacity: 1, duration: 2.2, ease: "power2.out", delay: 0.15 });
-      gsap.to(rightRef.current,      { x:  300, opacity: 1, duration: 2.2, ease: "power2.out", delay: 0.15 });
-      gsap.to(leftOuterRef.current,  { x: -580, opacity: 1, duration: 2.6, ease: "power2.out", delay: 0.15 });
-      gsap.to(rightOuterRef.current, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out", delay: 0.15 });
-    }
-
-    // Practice section reveals below
-    gsap.to(practiceRef.current, {
-      height: "auto", opacity: 1, duration: 1.1, ease: "power2.out", delay: 0.5,
-      onComplete: () => ScrollTrigger.refresh(),
-    });
-  }, [bespokeOpen]);
-
-  const handleBespokeClose = useCallback(() => {
-    setBespokeOpen(false);
-
-    // Collapse header
-    gsap.set(headerRef.current, { overflow: "hidden" });
-    gsap.to(headerRef.current, { height: 0, opacity: 0, duration: 0.8, ease: "power2.inOut" });
-
-    // Portals retract to center
-    if (window.innerWidth >= 768) {
-      gsap.to([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], {
-        x: 0, opacity: 0, duration: 1.0, ease: "power2.inOut",
-      });
-    }
-
-    // Collapse practice
-    gsap.set(practiceRef.current, { overflow: "hidden" });
-    gsap.to(practiceRef.current, {
-      height: 0, opacity: 0, duration: 0.8, ease: "power2.inOut",
-      onComplete: () => ScrollTrigger.refresh(),
-    });
-  }, []);
-
-  // Nav dropdown — open specific portal on event (also opens the section)
+  // Nav dropdown — open specific portal on event
   useEffect(() => {
     const handler = (e) => {
-      if (!bespokeOpen) handleBespokeOpen();
       const cat = e.detail;
       if (cat === "screens")   setScreensOpen(true);
       if (cat === "sculpture") setSculptureOpen(true);
@@ -806,21 +703,17 @@ export function CommissionsSection() {
     };
     window.addEventListener("open-bespoke-category", handler);
     return () => window.removeEventListener("open-bespoke-category", handler);
-  }, [bespokeOpen, handleBespokeOpen]);
+  }, []);
 
-  // Practice text animations — scroll-triggered, fires once section is open
+  // Practice text — split bright/dim animations
   useEffect(() => {
-    if (!bespokeOpen) return;
-
     const ctx = gsap.context(() => {
+      // Set all text invisible to start
       gsap.set(".about-practice-label", { y: -10, opacity: 0 });
       gsap.set(".para1-bright", { x: 28, opacity: 0 });
-      gsap.set(".para1-dim-word", { opacity: 0 });
+      gsap.set(".para1-dim",    { x: -28, opacity: 0 });
       gsap.set(".para2-bright", { x: 28, opacity: 0 });
       gsap.set(".para2-dim",    { opacity: 0 });
-
-      gsap.set(practiceLineRef.current, { scaleX: 0 });
-      gsap.set(practiceLineRightRef.current, { scaleX: 0 });
 
       const resetAll = () => {
         gsap.killTweensOf(".about-practice-label, .para1-bright, .para1-dim-word, .para2-bright, .para2-dim");
@@ -830,14 +723,22 @@ export function CommissionsSection() {
         gsap.set(".para2-bright",   { x: 28, opacity: 0 });
         gsap.set(".para2-dim",      { opacity: 0 });
       };
+
       const playAll = () => {
         gsap.to(".about-practice-label", { y: 0, opacity: 1, duration: 1.8, ease: "power1.out" });
+        // Para 1 bright phrases drift in from the side
         gsap.to(".para1-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 0.4 });
+        // Para 1 grey words fade in word by word after bright settled
         gsap.to(".para1-dim-word", { opacity: 1, duration: 1.6, stagger: 0.28, ease: "power1.out", delay: 3.2 });
+        // Para 2 bright phrases — same behaviour as para 1
         gsap.to(".para2-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 9.0 });
+        // Para 2 grey text fades in after bright settled
         gsap.to(".para2-dim",      { opacity: 1, duration: 4.2, stagger: 0.65, ease: "power1.out", delay: 12.5 });
       };
 
+      // Logo lines — open outward left and right
+      gsap.set(practiceLineRef.current, { scaleX: 0 });
+      gsap.set(practiceLineRightRef.current, { scaleX: 0 });
       ScrollTrigger.create({
         trigger: ".about-practice-label",
         start: "top 82%",
@@ -855,84 +756,62 @@ export function CommissionsSection() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [bespokeOpen]);
+  }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite overflow-x-hidden border-t border-cream/[0.06]">
-      {/* Header — hidden until portal is clicked */}
-      <div ref={headerRef}>
-        <div className="px-8 pt-12 pb-24 text-center">
-          <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
-          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3"><span className="text-cream/60">Bespoke</span></h2>
-        </div>
-        <div className="w-full h-px bg-white/10" />
+    <section id="bespoke" ref={sectionRef} className="bg-graphite overflow-x-hidden">
+      <div className="px-8 pt-12 pb-24 text-center">
+        <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
+        <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3"><span className="text-cream/60">Bespoke</span></h2>
       </div>
+      <div className="w-full h-px bg-white/10" />
 
       {/* Mobile vertical layout — hidden on md+ */}
-      <div className="bg-matt-black md:hidden w-full">
-        {COMING_SOON ? (
-          <ComingSoonText />
-        ) : (
-          <div className="py-14 flex flex-col items-center gap-10">
-            <div className="flex flex-col items-center gap-2">
-              <MiniPortal portal={SIDE_PORTAL_RIGHT} size={160} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
-              <span className="font-heading font-bold text-xs text-cream/70">Sculpture</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <MiniPortal portal={SIDE_PORTAL_LEFT} size={200} hideLabel hoverLabel="Screens" onOpen={() => setScreensOpen(true)} />
-              <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel onOpen={() => setReelsOpen(true)} />
-              <span className="font-heading font-bold text-xs text-cream/70">Commissions</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
-              <span className="font-heading font-bold text-xs text-cream/70">Projects</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
-              <span className="font-heading font-bold text-xs text-cream/70">Concepts</span>
-            </div>
-          </div>
-        )}
+      <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={160} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Sculpture</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_LEFT} size={200} hideLabel hoverLabel="Screens" onOpen={() => setScreensOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel onOpen={() => setReelsOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Commissions</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Projects</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Concepts</span>
+        </div>
       </div>
 
       {/* Desktop horizontal fan — hidden below md */}
-      <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={COMING_SOON ? {} : { height: "185px" }}>
-        {COMING_SOON ? (
-          <ComingSoonText />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center overflow-visible">
-            <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-              <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={110} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
-            </div>
-            <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
-              <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
-            </div>
-            <div className="relative z-10">
-              <MiniPortal
-                portal={SIDE_PORTAL_LEFT}
-                size={248}
-                hideLabel
-                hoverLabel={bespokeOpen ? "Screens" : "View Bespoke"}
-                hoverLabelSize="16px"
-                onOpen={bespokeOpen ? () => setScreensOpen(true) : handleBespokeOpen}
-              />
-            </div>
-            <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
-              <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
-            </div>
-            <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-              <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
-            </div>
+      <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
+        <div className="absolute inset-0 flex items-center justify-center overflow-visible">
+          <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={110} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
           </div>
-        )}
+          <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
+          </div>
+          <div className="relative z-10">
+            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" onOpen={() => setScreensOpen(true)} />
+          </div>
+          <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
+          </div>
+          <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+          </div>
+        </div>
       </div>
 
-      {/* The Practice + close — wrapped, hidden until open */}
-      <div ref={practiceRef}>
-        <div className="w-full h-px bg-white/10" />
+      <div className="w-full h-px bg-white/10" />
 
       {/* The Practice */}
       <div className="pt-32 pb-0 flex flex-col items-center">
@@ -983,19 +862,7 @@ export function CommissionsSection() {
       </div>
 
 
-      <div style={{ height: "120px" }} />
-
-        {/* Close button */}
-        <div className="flex justify-center pb-16 border-b border-cream/[0.06]">
-          <button
-            onClick={handleBespokeClose}
-            className="flex items-center gap-2 font-detail text-[10px] text-cream/30 uppercase tracking-[0.2em] hover:text-cream/60 transition-colors duration-200"
-          >
-            <X size={10} /> Close
-          </button>
-        </div>
-      </div>{/* end practiceRef wrapper */}
-
+      <div style={{ height: "220px" }} />
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
       {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
