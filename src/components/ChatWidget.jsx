@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Loader } from "lucide-react";
 
-const GREETING = "I'm Q & Ai. Ask me about designs, materials, process or commissions.";
+const GREETING = "I'm Jai. Ask me about designs, materials, process or commissions.";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -83,7 +83,7 @@ export default function ChatWidget() {
               <span className="w-2 h-2 rounded-full bg-clay block" />
             </div>
             <div>
-              <p className="font-heading font-semibold text-cream/80 text-sm leading-none">Q & Ai</p>
+              <p className="font-heading font-semibold text-cream/80 text-sm leading-none">Jai</p>
               <p className="font-detail text-[10px] text-warm-gray/60 uppercase tracking-wider mt-0.5">ROGETjames</p>
             </div>
           </div>
