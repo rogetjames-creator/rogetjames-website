@@ -20,6 +20,10 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 - Never ask James to open dashboards, check settings, run commands, copy values, or perform any technical step.
 - If something can be done via code, API, or CLI — do it. If it genuinely cannot be done without credentials or access that don't exist in this environment, state that fact in one sentence and move on. Do not turn it into a task for James.
 
+**Session startup — mandatory:**
+- At the start of every session, search `~/.claude/projects/` for the rogetjames-website project folder and scan recent `.jsonl` session files for any design decisions, instructions, or changes James described that may not be reflected in the current code.
+- Never make design changes without first checking if James previously gave instructions on that element. If prior instructions exist, follow them exactly — do not invent alternatives.
+
 ## Project
 
 Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames-new.netlify.app/ (preview — will become rogetjames.com on launch). Deployed automatically to Netlify on every push to `main`.
