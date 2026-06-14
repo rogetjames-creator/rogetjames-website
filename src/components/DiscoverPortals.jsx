@@ -708,96 +708,98 @@ export function CommissionsSection() {
 
   // UPDATING — two-word layered animation
   useEffect(() => {
-    const bigSweep  = document.querySelector(".updtg-sweep-big");
-    const bigText   = document.querySelector(".updtg-big");
-    const smSweep   = document.querySelector(".updtg-sweep-small");
-    const smText    = document.querySelector(".updtg-small");
-    const ticker    = document.querySelector(".updtg-ticker");
-    const light     = document.querySelector(".coming-soon-light");
-    if (!bigSweep || !smSweep || !light) return;
+    const words = [1,2,3,4,5,6,7,8].map(n => document.querySelector(`.updtg-w${n}`));
+    const light = document.querySelector(".coming-soon-light");
+    if (!words[0] || !light) return;
 
-    // ── Ticker — scrolls left to right continuously ───────────────
-    if (ticker) {
-      const w = ticker.offsetWidth || 900;
-      const vw = window.innerWidth;
-      gsap.fromTo(ticker,
-        { x: -(vw / 2 + w / 2) },
-        { x: vw / 2 + w / 2, duration: 20, ease: "none", repeat: -1 }
-      );
-    }
+    const EASES = ["power2.out", "power1.out", "sine.out", "power1.inOut"];
 
-    // ── Seamless GSAP path motion — overlapping tweens eliminate velocity=0 pause ─
-    // Uses power2.out so motion only decelerates at arrival, not stutters at departure.
-    // Each call queues the NEXT tween ~80% through current, creating continuous flow.
-    const drift = (el, axis, minRange, maxRange, minDur, maxDur) => {
-      const EASES = ["power2.out", "power1.out", "sine.out", "power2.inOut"];
+    // Overlapping drift — queues next move at 70% through current so there is no pause
+    const drift = (el, axis, min, max, minDur, maxDur) => {
       const go = () => {
-        const target = minRange + Math.random() * (maxRange - minRange);
+        const target = min + Math.random() * (max - min);
         const dur = minDur + Math.random() * (maxDur - minDur);
-        const ease = EASES[Math.floor(Math.random() * EASES.length)];
-        const tween = gsap.to(el, { [axis]: target, duration: dur, ease, overwrite: "auto" });
-        // Queue next move 75% through so transitions are seamless
-        const delay = dur * 0.75;
-        setTimeout(go, delay * 1000);
-        return tween;
+        gsap.to(el, { [axis]: target, duration: dur, ease: EASES[Math.floor(Math.random() * EASES.length)], overwrite: "auto" });
+        setTimeout(go, dur * 0.70 * 1000);
       };
-      go();
+      // Stagger initial start so words don't all move in sync
+      setTimeout(go, Math.random() * 4000);
     };
 
-    // Big — sweeps boldly off-edge on X, pronounced Y drift
-    drift(bigSweep, "x", -680, 680, 28, 50);
-    drift(bigSweep, "y", -42,   42, 18, 34);
+    // Each word: independent X range (some sweep off-screen), independent Y, independent breathe
+    // w1 — huge 260px, sweeps left
+    drift(words[0], "x", -500, 300, 30, 55);
+    drift(words[0], "y", -40,   50, 20, 38);
+    gsap.to(words[0], { scaleY: 1.5, duration: 16, ease: "sine.inOut", yoyo: true, repeat: -1 });
 
-    // Small — wider range, independent rhythm
-    drift(smSweep,  "x", -200, 200, 18, 32);
-    drift(smSweep,  "y",  -30,  30, 14, 26);
+    // w2 — 200px, sweeps right
+    drift(words[1], "x", -300, 500, 28, 50);
+    drift(words[1], "y", -35,   45, 17, 32);
+    gsap.to(words[1], { scaleY: 1.45, duration: 13, ease: "sine.inOut", yoyo: true, repeat: -1 });
 
-    // ── Breathe on big — bigger expansion, slower ─────────────────
-    gsap.to(bigText, { scaleY: 1.65, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "center center" });
+    // w3 — 140px, mid sweep
+    drift(words[2], "x", -350, 350, 22, 40);
+    drift(words[2], "y", -30,   30, 14, 28);
+    gsap.to(words[2], { scaleY: 1.55, duration: 11, ease: "sine.inOut", yoyo: true, repeat: -1 });
 
-    // ── Forward / fade crossover — dramatic opacity swings ────────
-    const crossover = () => {
-      const dur = 22 + Math.random() * 14;
-      gsap.to(bigText,  { opacity: 0.14, scaleX: 1.12, duration: dur * 0.4, ease: "power1.inOut",
-        onComplete: () => gsap.to(bigText,  { opacity: 0.04, scaleX: 1,    duration: dur * 0.6, ease: "power2.inOut" }) });
-      gsap.to(smText,   { opacity: 0.005,              duration: dur * 0.4, ease: "power1.inOut",
-        onComplete: () => gsap.to(smText,   { opacity: 0.06,               duration: dur * 0.6, ease: "power2.inOut",
-          onComplete: crossover }) });
-    };
-    setTimeout(crossover, 8000);
+    // w4 — 170px ticker, full left-to-right continuous
+    const vw = window.innerWidth;
+    const tw = (words[3] && words[3].offsetWidth) || 900;
+    gsap.fromTo(words[3], { x: -(vw / 2 + tw / 2) }, { x: vw / 2 + tw / 2, duration: 38, ease: "none", repeat: -1 });
 
-    // ── 3 curious lights on the small word ───────────────────────
+    // w5 — 100px, drifts slower
+    drift(words[4], "x", -250, 250, 25, 45);
+    drift(words[4], "y", -25,   25, 18, 34);
+    gsap.to(words[4], { scaleY: 1.6, duration: 18, ease: "sine.inOut", yoyo: true, repeat: -1 });
+
+    // w6 — 115px with lights, medium drift
+    drift(words[5], "x", -200, 200, 20, 38);
+    drift(words[5], "y", -28,   28, 15, 30);
+
+    // w7 — 310px massive, very slow
+    drift(words[6], "x", -600, 400, 40, 65);
+    drift(words[6], "y", -50,   50, 25, 45);
+    gsap.to(words[6], { scaleY: 1.4, duration: 22, ease: "sine.inOut", yoyo: true, repeat: -1 });
+
+    // w8 — 155px, bottom layer
+    drift(words[7], "x", -200, 500, 26, 48);
+    drift(words[7], "y", -20,   20, 16, 30);
+    gsap.to(words[7], { scaleY: 1.5, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1 });
+
+    // ── 3 roaming lights on w6 ────────────────────────────────────
     light.style.webkitBackgroundClip = "text";
     light.style.backgroundClip = "text";
     light.style.color = "transparent";
     light.style.webkitTextFillColor = "transparent";
-
     const lts = [
-      { x: 18, y: 35, size: 120, op: 0.17 },
-      { x: 72, y: 60, size: 95,  op: 0.13 },
-      { x: 44, y: 18, size: 80,  op: 0.11 },
+      { x: 18, y: 80, size: 130, op: 0.18 },
+      { x: 70, y: 15, size: 100, op: 0.14 },
+      { x: 45, y: 55, size: 85,  op: 0.12 },
     ];
-    const EASES = ["power1.inOut", "power2.inOut", "sine.inOut", "power1.out", "sine.out"];
     const updateLights = () => {
       light.style.backgroundImage = lts.map(l =>
-        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.65)}px at ${l.x}% ${l.y}%, rgba(242,232,210,${l.op}) 0%, transparent 72%)`
+        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.6)}px at ${l.x}% ${l.y}%, rgba(242,232,210,${l.op}) 0%, transparent 70%)`
       ).join(", ");
     };
     updateLights();
+    const LEASES = ["power1.inOut", "sine.inOut", "power2.inOut", "power1.out"];
     const roam = (l, ax) => {
-      const linger = Math.random() < 0.3;
-      const target = linger ? l[ax] + (Math.random() - 0.5) * 14 : (ax === "x" ? 8 + Math.random() * 84 : 10 + Math.random() * 80);
-      gsap.to(l, { [ax]: target, duration: linger ? 1 + Math.random() * 3 : 5 + Math.random() * 15,
-        ease: EASES[Math.floor(Math.random() * EASES.length)], onUpdate: updateLights, onComplete: () => roam(l, ax) });
+      const linger = Math.random() < 0.28;
+      const target = linger
+        ? l[ax] + (Math.random() - 0.5) * 18
+        : (ax === "x" ? 5 + Math.random() * 90 : 5 + Math.random() * 90);
+      gsap.to(l, {
+        [ax]: target,
+        duration: linger ? 1.5 + Math.random() * 4 : 6 + Math.random() * 18,
+        ease: LEASES[Math.floor(Math.random() * LEASES.length)],
+        onUpdate: updateLights,
+        onComplete: () => roam(l, ax),
+      });
     };
-    lts.forEach((l, i) => setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 350));
+    lts.forEach((l, i) => setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 500));
 
     return () => {
-      gsap.killTweensOf(ticker);
-      gsap.killTweensOf(bigSweep);
-      gsap.killTweensOf(smSweep);
-      gsap.killTweensOf(bigText);
-      gsap.killTweensOf(smText);
+      words.forEach(w => w && gsap.killTweensOf(w));
       lts.forEach(l => gsap.killTweensOf(l));
     };
   }, []);
@@ -891,59 +893,29 @@ export function CommissionsSection() {
 
       {/* Desktop horizontal fan — hidden below md */}
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
-        {/* UPDATING — two layered words, independent motion */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {/* BIG — sweeps off-edge, clips at walls */}
-          <span className="updtg-sweep-big" style={{ position: "absolute", display: "inline-block" }}>
-            <span className="updtg-big" style={{
-              fontFamily: "Impact, 'Arial Narrow', sans-serif",
-              fontSize: "230px",
-              lineHeight: 1,
-              letterSpacing: "0.14em",
-              color: "rgba(242,240,233,0.04)",
-              display: "inline-block",
-              position: "relative",
-            }}>UPDATING</span>
-          </span>
-          {/* TICKER — scrolls left to right continuously, in front */}
-          <span className="updtg-ticker" style={{
-            position: "absolute",
-            display: "inline-block",
-            whiteSpace: "nowrap",
-            fontFamily: "Impact, 'Arial Narrow', sans-serif",
-            fontSize: "145px",
-            lineHeight: 1,
-            letterSpacing: "0.13em",
-            color: "rgba(242,240,233,0.055)",
-            zIndex: 2,
-          }}>UPDATING</span>
-
-          {/* SMALL — fully visible, carries the roaming lights */}
-          <span className="updtg-sweep-small" style={{ position: "absolute", display: "inline-block" }}>
-            <span className="updtg-small" style={{
-              fontFamily: "Impact, 'Arial Narrow', sans-serif",
-              fontSize: "110px",
-              lineHeight: 1,
-              letterSpacing: "0.10em",
-              color: "rgba(242,240,233,0.06)",
-              display: "inline-block",
-              position: "relative",
-            }}>
+        {/* UPDATING — crowd of intersecting drifting words */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+          {/* Word 1 — huge, anchored left, sweeps wide */}
+          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "-30px", left: "-60px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "260px", lineHeight: 1, letterSpacing: "0.12em", color: "rgba(242,240,233,0.035)", whiteSpace: "nowrap" }}>UPDATING</span>
+          {/* Word 2 — large, starts right */}
+          <span className="updtg-w2" style={{ position: "absolute", display: "inline-block", top: "10px", right: "-80px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "200px", lineHeight: 1, letterSpacing: "0.15em", color: "rgba(242,240,233,0.04)", whiteSpace: "nowrap" }}>UPDATING</span>
+          {/* Word 3 — medium, center-ish */}
+          <span className="updtg-w3" style={{ position: "absolute", display: "inline-block", top: "55px", left: "10%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "140px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(242,240,233,0.05)", whiteSpace: "nowrap" }}>UPDATING</span>
+          {/* Word 4 — ticker, travels full width */}
+          <span className="updtg-w4" style={{ position: "absolute", display: "inline-block", top: "20px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "170px", lineHeight: 1, letterSpacing: "0.13em", color: "rgba(242,240,233,0.045)", whiteSpace: "nowrap" }}>UPDATING</span>
+          {/* Word 5 — smaller, lower */}
+          <span className="updtg-w5" style={{ position: "absolute", display: "inline-block", bottom: "-10px", left: "30%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "100px", lineHeight: 1, letterSpacing: "0.08em", color: "rgba(242,240,233,0.06)", whiteSpace: "nowrap" }}>UPDATING</span>
+          {/* Word 6 — small, upper right, carries the roaming lights */}
+          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "30px", right: "15%" }}>
+            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "115px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(242,240,233,0.055)", whiteSpace: "nowrap" }}>
               UPDATING
-              <span aria-hidden="true" className="coming-soon-light" style={{
-                position: "absolute",
-                inset: 0,
-                fontFamily: "Impact, 'Arial Narrow', sans-serif",
-                fontSize: "110px",
-                lineHeight: 1,
-                letterSpacing: "0.10em",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-                WebkitTextFillColor: "transparent",
-              }}>UPDATING</span>
+              <span aria-hidden="true" className="coming-soon-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "115px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
             </span>
           </span>
+          {/* Word 7 — huge, vertical overlap, far left */}
+          <span className="updtg-w7" style={{ position: "absolute", display: "inline-block", top: "-60px", left: "20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "310px", lineHeight: 1, letterSpacing: "0.09em", color: "rgba(242,240,233,0.025)", whiteSpace: "nowrap" }}>UPDATING</span>
+          {/* Word 8 — medium, bottom left, drifts slowly right */}
+          <span className="updtg-w8" style={{ position: "absolute", display: "inline-block", bottom: "-20px", left: "-20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "155px", lineHeight: 1, letterSpacing: "0.11em", color: "rgba(242,240,233,0.04)", whiteSpace: "nowrap" }}>UPDATING</span>
         </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
