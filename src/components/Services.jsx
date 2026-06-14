@@ -163,7 +163,7 @@ export default function Services() {
             return (
               <div
                 key={service.title}
-                className="service-card group bg-white/5 border border-white/10 hover:border-white/25 hover:bg-black rounded-[2rem] p-5 md:p-8 lg:p-10 flex flex-col transition-all duration-500"
+                className="service-card group bg-black border border-white/10 hover:border-white/20 hover:bg-white/5 rounded-[2rem] p-5 md:p-8 lg:p-10 flex flex-col transition-all duration-500"
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
               >
                 <div className="flex flex-col flex-1">
