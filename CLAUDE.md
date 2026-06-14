@@ -22,8 +22,14 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 - If something can be done via code, API, or CLI — do it. If it genuinely cannot be done without credentials or access that don't exist in this environment, state that fact in one sentence and move on. Do not turn it into a task for James.
 
 **Session startup — mandatory:**
-- At the start of every session, search `~/.claude/projects/` for the rogetjames-website project folder and scan recent `.jsonl` session files for any design decisions, instructions, or changes James described that may not be reflected in the current code.
+- At the start of every session, run `git pull origin main` before touching any file. Local and remote must be in sync before any work begins.
+- Search `~/.claude/projects/` for the rogetjames-website project folder and scan recent `.jsonl` session files for any design decisions, instructions, or changes James described that may not be reflected in the current code.
 - Never make design changes without first checking if James previously gave instructions on that element. If prior instructions exist, follow them exactly — do not invent alternatives.
+
+**Git sync — mandatory:**
+- After every meaningful change — commit and push immediately. Never batch changes to end of session.
+- One feature or fix = one commit + one push. Do not accumulate.
+- This is non-negotiable. Lost work from uncommitted sessions cannot be recovered.
 
 ## Project
 
