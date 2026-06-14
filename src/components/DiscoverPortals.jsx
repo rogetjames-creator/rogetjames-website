@@ -706,95 +706,86 @@ export function CommissionsSection() {
   }, []);
 
 
-  // Coming Soon breathe + random light animation
+  // UPDATING — two-word layered animation
   useEffect(() => {
-    const text = document.querySelector(".coming-soon-text");
-    const light = document.querySelector(".coming-soon-light");
-    if (!text || !light) return;
+    const bigSweep  = document.querySelector(".updtg-sweep-big");
+    const bigText   = document.querySelector(".updtg-big");
+    const smSweep   = document.querySelector(".updtg-sweep-small");
+    const smText    = document.querySelector(".updtg-small");
+    const light     = document.querySelector(".coming-soon-light");
+    if (!bigSweep || !smSweep || !light) return;
 
-    // Set horizontal stretch via GSAP so all transforms are managed together
-    gsap.set(text, { scaleX: 1 });
-
-    // Scale breathe — Y axis only so horizontal stretch stays intact
-    gsap.to(text, {
-      scaleY: 1.55,
-      duration: 8,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-      transformOrigin: "center center",
-    });
-
-    // Randomly cycle 3 motion patterns — no predictable repeat
-    const sweep = document.querySelector(".coming-soon-sweep");
-    if (sweep) {
-      const ROAMS = [
-        { name: "updating-roam-a", duration: "19s", ease: "ease-in-out" },
-        { name: "updating-roam-b", duration: "24s", ease: "ease-in-out" },
-        { name: "updating-roam-c", duration: "16s", ease: "ease-in-out" },
-      ];
-      let lastIdx = -1;
-      const nextRoam = () => {
-        let idx;
-        do { idx = Math.floor(Math.random() * ROAMS.length); } while (idx === lastIdx && ROAMS.length > 1);
-        lastIdx = idx;
-        const r = ROAMS[idx];
-        sweep.style.animation = "none";
-        requestAnimationFrame(() => {
-          sweep.style.animation = `${r.name} ${r.duration} ${r.ease} forwards`;
-        });
+    // ── Pattern cycling ──────────────────────────────────────────
+    const cycle = (el, patterns) => {
+      let last = -1;
+      const next = () => {
+        let i;
+        do { i = Math.floor(Math.random() * patterns.length); } while (i === last && patterns.length > 1);
+        last = i;
+        const p = patterns[i];
+        el.style.animation = "none";
+        requestAnimationFrame(() => { el.style.animation = `${p.name} ${p.dur} ease-in-out forwards`; });
       };
-      sweep.addEventListener("animationend", nextRoam);
-      nextRoam();
-    }
+      el.addEventListener("animationend", next);
+      next();
+    };
 
-    // 3 independent curious lights — each roams freely in 2D at its own rhythm
+    cycle(bigSweep, [
+      { name: "updtg-big-a", dur: "22s" },
+      { name: "updtg-big-b", dur: "28s" },
+      { name: "updtg-big-c", dur: "18s" },
+    ]);
+    cycle(smSweep, [
+      { name: "updtg-sm-a", dur: "17s" },
+      { name: "updtg-sm-b", dur: "21s" },
+      { name: "updtg-sm-c", dur: "14s" },
+    ]);
+
+    // ── Breathe on big ────────────────────────────────────────────
+    gsap.to(bigText, { scaleY: 1.4, duration: 9, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "center center" });
+
+    // ── Forward / fade crossover — slow alternating pulse ─────────
+    // Big comes forward (scale + opacity up) while small fades, then reverses
+    const crossover = () => {
+      const dur = 18 + Math.random() * 12;
+      gsap.to(bigText,  { opacity: 0.10, scaleX: 1.08, duration: dur * 0.4, ease: "power1.inOut",
+        onComplete: () => gsap.to(bigText,  { opacity: 0.04, scaleX: 1,    duration: dur * 0.6, ease: "power2.inOut" }) });
+      gsap.to(smText,   { opacity: 0.01,               duration: dur * 0.4, ease: "power1.inOut",
+        onComplete: () => gsap.to(smText,   { opacity: 0.06,               duration: dur * 0.6, ease: "power2.inOut",
+          onComplete: crossover }) });
+    };
+    setTimeout(crossover, 6000);
+
+    // ── 3 curious lights on the small word ───────────────────────
     light.style.webkitBackgroundClip = "text";
     light.style.backgroundClip = "text";
     light.style.color = "transparent";
     light.style.webkitTextFillColor = "transparent";
 
-    const lights = [
-      { x: 20, y: 30, size: 160, opacity: 0.18 },
-      { x: 70, y: 65, size: 130, opacity: 0.14 },
-      { x: 45, y: 20, size: 110, opacity: 0.12 },
+    const lts = [
+      { x: 18, y: 35, size: 120, op: 0.17 },
+      { x: 72, y: 60, size: 95,  op: 0.13 },
+      { x: 44, y: 18, size: 80,  op: 0.11 },
     ];
-
     const EASES = ["power1.inOut", "power2.inOut", "sine.inOut", "power1.out", "sine.out"];
-
-    const update = () => {
-      light.style.backgroundImage = lights.map(l =>
-        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.7)}px at ${l.x}% ${l.y}%, rgba(242,232,210,${l.opacity}) 0%, transparent 72%)`
+    const updateLights = () => {
+      light.style.backgroundImage = lts.map(l =>
+        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.65)}px at ${l.x}% ${l.y}%, rgba(242,232,210,${l.op}) 0%, transparent 72%)`
       ).join(", ");
     };
-
-    update();
-
-    const roam = (l, axis) => {
-      const isLingering = Math.random() < 0.3;
-      const target = axis === "x"
-        ? 8 + Math.random() * 84
-        : 10 + Math.random() * 80;
-      const dur = isLingering
-        ? 1 + Math.random() * 3   // short dart or pause near current spot
-        : 6 + Math.random() * 16; // slow curious drift
-      const ease = EASES[Math.floor(Math.random() * EASES.length)];
-      gsap.to(l, {
-        [axis]: isLingering ? l[axis] + (Math.random() - 0.5) * 15 : target,
-        duration: dur,
-        ease,
-        onUpdate: update,
-        onComplete: () => roam(l, axis),
-      });
+    updateLights();
+    const roam = (l, ax) => {
+      const linger = Math.random() < 0.3;
+      const target = linger ? l[ax] + (Math.random() - 0.5) * 14 : (ax === "x" ? 8 + Math.random() * 84 : 10 + Math.random() * 80);
+      gsap.to(l, { [ax]: target, duration: linger ? 1 + Math.random() * 3 : 5 + Math.random() * 15,
+        ease: EASES[Math.floor(Math.random() * EASES.length)], onUpdate: updateLights, onComplete: () => roam(l, ax) });
     };
-
-    lights.forEach((l, i) => {
-      setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 400);
-    });
+    lts.forEach((l, i) => setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 350));
 
     return () => {
-      gsap.killTweensOf(text);
-      lights.forEach(l => gsap.killTweensOf(l));
+      gsap.killTweensOf(bigText);
+      gsap.killTweensOf(smText);
+      lts.forEach(l => gsap.killTweensOf(l));
     };
   }, []);
 
@@ -887,37 +878,45 @@ export function CommissionsSection() {
 
       {/* Desktop horizontal fan — hidden below md */}
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
-        {/* Coming Soon background text */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
-          <span className="coming-soon-sweep" style={{ display: "inline-block" }}>
-          <span className="coming-soon-text" style={{
-            fontFamily: "Impact, 'Arial Narrow', sans-serif",
-            fontSize: "160px",
-            lineHeight: 1,
-            color: "rgba(242,240,233,0.05)",
-            letterSpacing: "0.12em",
-            userSelect: "none",
-            position: "relative",
-            display: "inline-block",
-          }}>
-            UPDATING
-            <span aria-hidden="true" className="coming-soon-light" style={{
-              position: "absolute",
-              inset: 0,
+        {/* UPDATING — two layered words, independent motion */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {/* BIG — sweeps off-edge, clips at walls */}
+          <span className="updtg-sweep-big" style={{ position: "absolute", display: "inline-block" }}>
+            <span className="updtg-big" style={{
               fontFamily: "Impact, 'Arial Narrow', sans-serif",
-              fontSize: "160px",
+              fontSize: "230px",
               lineHeight: 1,
-              letterSpacing: "0.12em",
-              background: "radial-gradient(ellipse 120px 100% at 50% 50%, rgba(242,240,233,0.7) 0%, transparent 68%)",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              letterSpacing: "0.14em",
+              color: "rgba(242,240,233,0.04)",
+              display: "inline-block",
+              position: "relative",
             }}>UPDATING</span>
           </span>
+          {/* SMALL — fully visible, carries the roaming lights */}
+          <span className="updtg-sweep-small" style={{ position: "absolute", display: "inline-block" }}>
+            <span className="updtg-small" style={{
+              fontFamily: "Impact, 'Arial Narrow', sans-serif",
+              fontSize: "110px",
+              lineHeight: 1,
+              letterSpacing: "0.10em",
+              color: "rgba(242,240,233,0.06)",
+              display: "inline-block",
+              position: "relative",
+            }}>
+              UPDATING
+              <span aria-hidden="true" className="coming-soon-light" style={{
+                position: "absolute",
+                inset: 0,
+                fontFamily: "Impact, 'Arial Narrow', sans-serif",
+                fontSize: "110px",
+                lineHeight: 1,
+                letterSpacing: "0.10em",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+              }}>UPDATING</span>
+            </span>
           </span>
         </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
