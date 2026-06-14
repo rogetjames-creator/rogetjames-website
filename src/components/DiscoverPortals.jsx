@@ -974,7 +974,7 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
           <div className="relative z-10">
-            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" onOpen={() => setScreensOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" noGlow onOpen={() => setScreensOpen(true)} />
           </div>
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
