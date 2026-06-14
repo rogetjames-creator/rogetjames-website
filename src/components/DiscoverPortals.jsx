@@ -452,10 +452,13 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
           {/* Radiating lines — shown on hover for noGlow portals */}
           {noGlow && (() => {
             const total = 24;
-            const cx = size / 2 + 9;
-            const cy = size / 2 + 9;
-            const r1 = size / 2 + 9 + 4;   // starts just outside the frame ring
-            const r2 = r1 + 22;             // line length
+            // button is (size+18) x (size+18); image circle sits inside 9px padding
+            const bw = size + 18;
+            const bh = size + 18;
+            const cx = bw / 2;
+            const cy = bh / 2;
+            const r1 = size / 2 + 14;  // just outside the outer ring
+            const r2 = r1 + 26;
             const lines = Array.from({ length: total }, (_, i) => {
               const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
               return {
@@ -465,13 +468,12 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
                 y2: cy + Math.sin(angle) * r2,
               };
             });
-            const svgSize = (size + 18) * 2;
             return (
               <svg
-                style={{ position: "absolute", top: -(svgSize / 2 - (size / 2 + 9)), left: -(svgSize / 2 - (size / 2 + 9)), width: svgSize, height: svgSize, pointerEvents: "none", zIndex: 40, opacity: glowing ? 1 : 0, transition: "opacity 0.5s ease", overflow: "visible" }}
+                style={{ position: "absolute", top: 0, left: 0, width: bw, height: bh, pointerEvents: "none", zIndex: 40, opacity: glowing ? 1 : 0, transition: "opacity 0.5s ease", overflow: "visible" }}
               >
                 {lines.map((l, i) => (
-                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="rgba(242,240,233,0.35)" strokeWidth="0.75" />
+                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="rgba(242,240,233,0.45)" strokeWidth="0.8" />
                 ))}
               </svg>
             );
