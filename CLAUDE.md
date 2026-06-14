@@ -71,6 +71,12 @@ Local dev via Netlify CLI runs on port 8888 and proxies the Vite dev server on 5
 
 **Prerender** — `scripts/prerender.mjs` spins up a static server on 4173, launches headless Chromium, waits 2s for animations, then overwrites `dist/index.html`. Gives crawlers real content without SSR.
 
+## Pre-launch checklist
+
+- `DEBUG_LABELS = true` in `BespokeCommissions.jsx` line 313 — **set to `false` before going live**
+- Postcode system needs review before launch — verify WA vs interstate pricing logic is correct and all state mappings are accurate (`Gallery.jsx` lines 12–16, postcode functions)
+- Netlify Coming Soon / auto-publishing lock — must be turned off in Netlify dashboard before launch
+
 ## Key conventions
 
 - **Hero slideshow images** — always `object-contain` on ALL screen sizes. Never change to `object-cover`. James wants the full image visible with letterboxing, not cropped to fill the screen.
