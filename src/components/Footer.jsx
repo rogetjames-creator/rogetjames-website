@@ -120,7 +120,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="relative border-t border-cream/5 pt-8 flex items-center justify-between">
+        <div className="border-t border-cream/5 pt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
           <div className="flex items-center gap-3">
             <span className="relative flex h-2 w-2">
               <span className="pulse-dot absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
@@ -130,10 +130,10 @@ export default function Footer() {
               STUDIO OPERATIONAL
             </span>
           </div>
-          <p className="absolute left-1/2 -translate-x-1/2 text-cream/40 text-xs font-detail whitespace-nowrap">
+          <p className="text-cream/40 text-xs font-detail">
             All images are the designs and works of ROGETjames.
           </p>
-          <p className="text-cream/40 text-xs font-detail whitespace-nowrap">
+          <p className="text-cream/40 text-xs font-detail">
             &copy; {new Date().getFullYear()} ROGETjames. All rights reserved.
           </p>
         </div>
