@@ -50,6 +50,7 @@ const STEPS = [
       "Installation available in WA via Hederablu commercial fitouts.",
     ],
     detail: null,
+    detail: "Nationally and internationally.",
     color: "bg-moss-dark",
   },
 ];
