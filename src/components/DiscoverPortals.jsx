@@ -412,53 +412,18 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
   return (
     <>
       <div className="flex flex-col items-center gap-3">
-        <button
-          onClick={() => onOpen ? onOpen() : canOpen && setPopOpen(true)}
-          onMouseEnter={() => setGlowing(true)}
-          onMouseLeave={() => setGlowing(false)}
-          className="group relative cursor-pointer"
-          style={{
-            borderRadius: "50%",
-            padding: "9px",
-            background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
-            boxShadow: (glowing && !noGlow)
-              ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
-              : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
-            transition: "box-shadow 0.6s ease",
-          }}
-          aria-label={portal.label}
-        >
-          <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
-            {videos ? videos.map((v, i) => (
-              <video key={v.src} src={v.src} autoPlay muted loop playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
-            )) : portal.slides.map((slide, i) => {
-              const src = typeof slide === "string" ? slide : slide.src;
-              const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
-              const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
-              return (
-                <img key={i} src={src} alt="" className="absolute inset-0 w-full h-full object-cover"
-                  style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} loading="lazy" />
-              );
-            })}
-            <div className="absolute inset-0 pointer-events-none z-10"
-              style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
-            <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
-              style={alwaysLabel ? { opacity: 1 } : {}}>
-              <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>{hoverLabel}</span>
-            </div>
-          </div>
-          {/* Radiating lines — shown on hover for noGlow portals */}
+        {/* Wrapper gives us a clean relative context outside the button's border-radius clipping */}
+        <div style={{ position: "relative", display: "inline-block" }}>
+          {/* Radiating lines — outside the button so border-radius can't clip them */}
           {noGlow && (() => {
             const total = 24;
-            // button is (size+18) x (size+18); image circle sits inside 9px padding
             const bw = size + 18;
-            const bh = size + 18;
-            const cx = bw / 2;
-            const cy = bh / 2;
-            const r1 = size / 2 + 14;  // just outside the outer ring
-            const r2 = r1 + 26;
+            const pad = 60; // extra space for lines to extend into
+            const svgW = bw + pad * 2;
+            const cx = svgW / 2;
+            const cy = svgW / 2;
+            const r1 = size / 2 + 16;
+            const r2 = r1 + 28;
             const lines = Array.from({ length: total }, (_, i) => {
               const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
               return {
@@ -470,14 +435,51 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
             });
             return (
               <svg
-                style={{ position: "absolute", top: 0, left: 0, width: bw, height: bh, pointerEvents: "none", zIndex: 40, opacity: glowing ? 1 : 0, transition: "opacity 0.5s ease", overflow: "visible" }}
+                style={{ position: "absolute", top: -pad, left: -pad, width: svgW, height: svgW, pointerEvents: "none", zIndex: 50, opacity: glowing ? 1 : 0, transition: "opacity 0.4s ease" }}
               >
                 {lines.map((l, i) => (
-                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="rgba(242,240,233,0.45)" strokeWidth="0.8" />
+                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="rgba(242,240,233,0.5)" strokeWidth="0.9" />
                 ))}
               </svg>
             );
           })()}
+          <button
+            onClick={() => onOpen ? onOpen() : canOpen && setPopOpen(true)}
+            onMouseEnter={() => setGlowing(true)}
+            onMouseLeave={() => setGlowing(false)}
+            className="group relative cursor-pointer"
+            style={{
+              borderRadius: "50%",
+              padding: "9px",
+              background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
+              boxShadow: (glowing && !noGlow)
+                ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
+                : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
+              transition: "box-shadow 0.6s ease",
+            }}
+            aria-label={portal.label}
+          >
+            <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
+              {videos ? videos.map((v, i) => (
+                <video key={v.src} src={v.src} autoPlay muted loop playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
+              )) : portal.slides.map((slide, i) => {
+                const src = typeof slide === "string" ? slide : slide.src;
+                const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
+                const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
+                return (
+                  <img key={i} src={src} alt="" className="absolute inset-0 w-full h-full object-cover"
+                    style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} loading="lazy" />
+                );
+              })}
+              <div className="absolute inset-0 pointer-events-none z-10"
+                style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
+              <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
+                style={alwaysLabel ? { opacity: 1 } : {}}>
+                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>{hoverLabel}</span>
+              </div>
+            </div>
           {arcLabel && (() => {
             const fr = 9; // frame padding px
             // SVG covers the image circle only (inside the frame padding)
@@ -502,7 +504,8 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
               </svg>
             );
           })()}
-        </button>
+          </button>
+        </div>{/* end wrapper */}
         {!hideLabel && (
           <div className="text-center">
             <p className="font-detail text-[9px] text-warm-gray uppercase tracking-[0.22em]">{portal.sublabel}</p>
