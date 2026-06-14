@@ -20,11 +20,8 @@
 
 ## NEEDS JAMES — before going live
 
-### 1. ANTHROPIC_API_KEY (chat widget)
-The AI chat widget on the site will return errors in production without this.
-- Log in to Netlify dashboard → Site → Environment variables
-- Add: ANTHROPIC_API_KEY = [your Anthropic API key]
-- Redeploy after adding
+### ~~1. ANTHROPIC_API_KEY (chat widget)~~ ✅ DONE
+Chat widget is live and working.
 
 ### 2. Browser test
 Walk through the full site before approving:
