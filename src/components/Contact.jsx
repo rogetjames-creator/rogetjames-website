@@ -193,7 +193,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                       placeholder="Your name"
                     />
                   </div>
@@ -204,7 +204,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     <input
                       type="email"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -217,7 +217,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                   <input
                     type="text"
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                     placeholder="1234"
                   />
                 </div>
@@ -319,7 +319,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                         type="text"
                         required={uploadedFiles.length > 0}
                         name="address"
-                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                         placeholder="Street, suburb, state, postcode"
                       />
                     </div>
@@ -331,7 +331,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                         type="tel"
                         required={uploadedFiles.length > 0}
                         name="phone"
-                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                         placeholder="+61 400 000 000"
                       />
                     </div>
