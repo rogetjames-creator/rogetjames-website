@@ -713,7 +713,7 @@ export function CommissionsSection() {
     if (!text || !light) return;
 
     // Set horizontal stretch via GSAP so all transforms are managed together
-    gsap.set(text, { scaleX: 1.22 });
+    gsap.set(text, { scaleX: 1 });
 
     // Scale breathe — Y axis only so horizontal stretch stays intact
     gsap.to(text, {
@@ -864,10 +864,10 @@ export function CommissionsSection() {
           <span className="coming-soon-sweep" style={{ display: "inline-block" }}>
           <span className="coming-soon-text" style={{
             fontFamily: "Impact, 'Arial Narrow', sans-serif",
-            fontSize: "280px",
+            fontSize: "160px",
             lineHeight: 1,
             color: "rgba(242,240,233,0.05)",
-            letterSpacing: "0.18em",
+            letterSpacing: "0.12em",
             userSelect: "none",
             position: "relative",
             display: "inline-block",
@@ -877,9 +877,9 @@ export function CommissionsSection() {
               position: "absolute",
               inset: 0,
               fontFamily: "Impact, 'Arial Narrow', sans-serif",
-              fontSize: "280px",
+              fontSize: "160px",
               lineHeight: 1,
-              letterSpacing: "0.18em",
+              letterSpacing: "0.12em",
               background: "radial-gradient(ellipse 120px 100% at 50% 50%, rgba(242,240,233,0.7) 0%, transparent 68%)",
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
