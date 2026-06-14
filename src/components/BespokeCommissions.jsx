@@ -3331,17 +3331,6 @@ export default function BespokeCommissions() {
         {/* ── Mobile: stacked strips + portal ──────────────────── */}
         <div className="md:hidden flex flex-col">
 
-          {/* Top strip */}
-          <div className="h-28 overflow-hidden">
-            <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
-              {[...STRIP_IMAGES, ...STRIP_IMAGES].map((src, i) => (
-                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden">
-                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Portals */}
           <div className="flex justify-center gap-8 py-8">
             <ScreensPortal />
