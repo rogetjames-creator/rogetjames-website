@@ -715,31 +715,22 @@ export function CommissionsSection() {
     const light     = document.querySelector(".coming-soon-light");
     if (!bigSweep || !smSweep || !light) return;
 
-    // ── Pattern cycling ──────────────────────────────────────────
-    const cycle = (el, patterns) => {
-      let last = -1;
-      const next = () => {
-        let i;
-        do { i = Math.floor(Math.random() * patterns.length); } while (i === last && patterns.length > 1);
-        last = i;
-        const p = patterns[i];
-        el.style.animation = "none";
-        requestAnimationFrame(() => { el.style.animation = `${p.name} ${p.dur} ease-in-out forwards`; });
-      };
-      el.addEventListener("animationend", next);
-      next();
+    // ── Seamless GSAP path motion — no CSS keyframe resets ───────
+    const EASES_PATH = ["power1.inOut", "power2.inOut", "sine.inOut", "power1.out"];
+    const drift = (el, axis, minRange, maxRange, minDur, maxDur) => {
+      const target = minRange + Math.random() * (maxRange - minRange);
+      const dur = minDur + Math.random() * (maxDur - minDur);
+      const ease = EASES_PATH[Math.floor(Math.random() * EASES_PATH.length)];
+      gsap.to(el, { [axis]: target, duration: dur, ease, onComplete: () => drift(el, axis, minRange, maxRange, minDur, maxDur) });
     };
 
-    cycle(bigSweep, [
-      { name: "updtg-big-a", dur: "22s" },
-      { name: "updtg-big-b", dur: "28s" },
-      { name: "updtg-big-c", dur: "18s" },
-    ]);
-    cycle(smSweep, [
-      { name: "updtg-sm-a", dur: "17s" },
-      { name: "updtg-sm-b", dur: "21s" },
-      { name: "updtg-sm-c", dur: "14s" },
-    ]);
+    // Big — sweeps far off-edge on X, gentle Y
+    drift(bigSweep, "x", -420, 420, 16, 30);
+    drift(bigSweep, "y", -22,   22, 11, 22);
+
+    // Small — stays within band on X, gentle Y
+    drift(smSweep,  "x", -100, 100, 12, 22);
+    drift(smSweep,  "y",  -18,  18,  9, 18);
 
     // ── Breathe on big ────────────────────────────────────────────
     gsap.to(bigText, { scaleY: 1.4, duration: 9, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "center center" });
@@ -783,6 +774,8 @@ export function CommissionsSection() {
     lts.forEach((l, i) => setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 350));
 
     return () => {
+      gsap.killTweensOf(bigSweep);
+      gsap.killTweensOf(smSweep);
       gsap.killTweensOf(bigText);
       gsap.killTweensOf(smText);
       lts.forEach(l => gsap.killTweensOf(l));
