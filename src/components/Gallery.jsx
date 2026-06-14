@@ -1039,7 +1039,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
             <div className="flex gap-2">
               {availableMats.map(mat => (
                 <button key={mat.id} onClick={() => setSelectedMaterial(mat.id)}
-                  className={`flex-1 py-2.5 px-3 rounded-xl border text-center transition-all duration-150 ${selectedMaterial === mat.id ? "border-clay bg-clay/15 text-cream" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
+                  className={`flex-1 py-2.5 px-3 rounded-xl border text-center transition-all duration-150 ${selectedMaterial === mat.id ? "border-clay text-clay" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
                   <p className="font-detail text-[11px] leading-snug">{mat.label}</p>
                 </button>
               ))}
@@ -1051,7 +1051,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
             <div className="flex gap-2 flex-wrap">
               {sizeTiers.map(t => (
                 <button key={t.id} onClick={() => setSelectedSize(t.id)}
-                  className={`flex-1 min-w-[4rem] py-2.5 rounded-xl border text-center transition-all duration-150 ${selectedSize === t.id ? "border-clay bg-clay/15 text-cream" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
+                  className={`flex-1 min-w-[4rem] py-2.5 rounded-xl border text-center transition-all duration-150 ${selectedSize === t.id ? "border-clay text-clay" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
                   {t.label !== "Standard" && <p className={`font-detail text-[9px] uppercase tracking-wider mb-0.5 ${selectedSize === t.id ? "text-clay/90" : "text-cream/70"}`}>{t.label}</p>}
                   <p className="font-detail text-[11px] font-medium leading-tight">{t.dims}</p>
                   {t.fixings != null && t.fixings !== 0 && <p className={`font-detail text-[9px] mt-0.5 ${selectedSize === t.id ? "text-clay/70" : "text-cream/60"}`}>{t.fixings} fixings</p>}
