@@ -211,19 +211,20 @@ export default function Services() {
                       <span className="btn-bg rounded-full bg-black/30" />
                       <span className="relative z-10">{service.cta}</span>
                     </button>
-                    {catPopover && (
-                      <div className="absolute bottom-full mb-2 left-0 right-0 rounded-2xl bg-charcoal/95 border border-white/10 overflow-hidden backdrop-blur-sm shadow-xl z-20">
-                        {CATALOGUES.map((cat) => (
-                          <button
-                            key={cat}
-                            onClick={() => { openCatalogue(cat); setCatPopover(false); }}
-                            className="w-full text-left px-5 py-3 text-sm font-detail text-cream/80 hover:text-cream hover:bg-white/5 transition-colors"
-                          >
-                            {cat}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    <div
+                      className="absolute bottom-full mb-2 left-0 right-0 rounded-2xl bg-charcoal/95 border border-white/10 overflow-hidden backdrop-blur-sm shadow-xl z-20"
+                      style={{ opacity: catPopover ? 1 : 0, pointerEvents: catPopover ? "auto" : "none", transition: "opacity 0.35s ease" }}
+                    >
+                      {CATALOGUES.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => { openCatalogue(cat); setCatPopover(false); }}
+                          className="w-full text-left px-5 py-4 text-sm font-detail text-cream/80 hover:text-cream hover:bg-white/5 transition-colors"
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <a
