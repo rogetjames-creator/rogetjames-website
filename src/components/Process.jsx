@@ -15,8 +15,8 @@ const STEPS = [
       "Fill in your design preferences, dimensions, material choice and postcode.",
       "We'll respond within 48 hours.",
     ],
-    detail: "Corten Steel — rust finish",
-    detailLink: "Aluminium Powdercoated",
+    detail: null,
+    detailLink: null,
     color: "bg-moss",
   },
   {
