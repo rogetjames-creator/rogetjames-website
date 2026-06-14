@@ -748,44 +748,53 @@ export function CommissionsSection() {
       nextRoam();
     }
 
-    // Subtle roaming spotlight — drifts slowly across letters, illuminating as it passes
-    const proxy = { x: 50, y: 50 };
+    // 3 independent curious lights — each roams freely in 2D at its own rhythm
     light.style.webkitBackgroundClip = "text";
     light.style.backgroundClip = "text";
     light.style.color = "transparent";
     light.style.webkitTextFillColor = "transparent";
 
-    // Two lights — one from above, one from below — each roaming horizontally
-    const top = { x: 30 };
-    const bot = { x: 70 };
+    const lights = [
+      { x: 20, y: 30, size: 160, opacity: 0.18 },
+      { x: 70, y: 65, size: 130, opacity: 0.14 },
+      { x: 45, y: 20, size: 110, opacity: 0.12 },
+    ];
+
+    const EASES = ["power1.inOut", "power2.inOut", "sine.inOut", "power1.out", "sine.out"];
 
     const update = () => {
-      light.style.backgroundImage = [
-        `radial-gradient(ellipse 180px 160px at ${top.x}% 0%, rgba(255,220,150,0.22) 0%, transparent 75%)`,
-        `radial-gradient(ellipse 160px 140px at ${bot.x}% 100%, rgba(255,210,130,0.18) 0%, transparent 70%)`,
-      ].join(", ");
+      light.style.backgroundImage = lights.map(l =>
+        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.7)}px at ${l.x}% ${l.y}%, rgba(242,232,210,${l.opacity}) 0%, transparent 72%)`
+      ).join(", ");
     };
 
     update();
 
-    const roamX = (proxy, speed) => {
-      const target = 5 + Math.random() * 90;
-      const dur = speed + Math.random() * speed;
-      gsap.to(proxy, {
-        x: target,
+    const roam = (l, axis) => {
+      const isLingering = Math.random() < 0.3;
+      const target = axis === "x"
+        ? 8 + Math.random() * 84
+        : 10 + Math.random() * 80;
+      const dur = isLingering
+        ? 1 + Math.random() * 3   // short dart or pause near current spot
+        : 6 + Math.random() * 16; // slow curious drift
+      const ease = EASES[Math.floor(Math.random() * EASES.length)];
+      gsap.to(l, {
+        [axis]: isLingering ? l[axis] + (Math.random() - 0.5) * 15 : target,
         duration: dur,
-        ease: "none",
+        ease,
         onUpdate: update,
-        onComplete: () => roamX(proxy, speed),
+        onComplete: () => roam(l, axis),
       });
     };
 
-    roamX(top, 10);
-    roamX(bot, 13);
+    lights.forEach((l, i) => {
+      setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 400);
+    });
 
     return () => {
       gsap.killTweensOf(text);
-      gsap.killTweensOf(proxy);
+      lights.forEach(l => gsap.killTweensOf(l));
     };
   }, []);
 
