@@ -161,7 +161,7 @@ export default function Process() {
 
                 {/* Icon */}
                 <div className="w-10 h-10 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center transition-colors duration-500 group-hover:bg-clay/10 group-hover:border-clay/30">
-                  <Icon size={17} className="text-cream/60 transition-colors duration-500 group-hover:text-clay" />
+                  <Icon size={17} className="text-clay transition-colors duration-500 group-hover:text-cream" />
                 </div>
 
                 {/* Title */}

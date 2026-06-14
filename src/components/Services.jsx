@@ -169,7 +169,7 @@ export default function Services() {
                 <div className="flex flex-col flex-1">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 transition-colors duration-500 group-hover:bg-clay/10 group-hover:border group-hover:border-clay/30">
-                    <Icon size={18} className="text-clay transition-colors duration-500 group-hover:text-clay-light" />
+                    <Icon size={18} className="text-clay transition-colors duration-500 group-hover:text-cream" />
                   </div>
                   <span className="font-detail text-xs uppercase tracking-wider text-cream/50 transition-colors duration-500 group-hover:text-cream/80">
                     {service.subtitle}
