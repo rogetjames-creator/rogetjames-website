@@ -712,8 +712,19 @@ export function CommissionsSection() {
     const bigText   = document.querySelector(".updtg-big");
     const smSweep   = document.querySelector(".updtg-sweep-small");
     const smText    = document.querySelector(".updtg-small");
+    const ticker    = document.querySelector(".updtg-ticker");
     const light     = document.querySelector(".coming-soon-light");
     if (!bigSweep || !smSweep || !light) return;
+
+    // ── Ticker — scrolls left to right continuously ───────────────
+    if (ticker) {
+      const w = ticker.offsetWidth || 900;
+      const vw = window.innerWidth;
+      gsap.fromTo(ticker,
+        { x: -(vw / 2 + w / 2) },
+        { x: vw / 2 + w / 2, duration: 20, ease: "none", repeat: -1 }
+      );
+    }
 
     // ── Seamless GSAP path motion — no CSS keyframe resets ───────
     const EASES_PATH = ["power1.inOut", "power2.inOut", "sine.inOut", "power1.out"];
@@ -774,6 +785,7 @@ export function CommissionsSection() {
     lts.forEach((l, i) => setTimeout(() => { roam(l, "x"); roam(l, "y"); }, i * 350));
 
     return () => {
+      gsap.killTweensOf(ticker);
       gsap.killTweensOf(bigSweep);
       gsap.killTweensOf(smSweep);
       gsap.killTweensOf(bigText);
@@ -885,6 +897,19 @@ export function CommissionsSection() {
               position: "relative",
             }}>UPDATING</span>
           </span>
+          {/* TICKER — scrolls left to right continuously, in front */}
+          <span className="updtg-ticker" style={{
+            position: "absolute",
+            display: "inline-block",
+            whiteSpace: "nowrap",
+            fontFamily: "Impact, 'Arial Narrow', sans-serif",
+            fontSize: "145px",
+            lineHeight: 1,
+            letterSpacing: "0.13em",
+            color: "rgba(242,240,233,0.055)",
+            zIndex: 2,
+          }}>UPDATING</span>
+
           {/* SMALL — fully visible, carries the roaming lights */}
           <span className="updtg-sweep-small" style={{ position: "absolute", display: "inline-block" }}>
             <span className="updtg-small" style={{
