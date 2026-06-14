@@ -725,9 +725,28 @@ export function CommissionsSection() {
       transformOrigin: "center center",
     });
 
-    // Sweep + vertical drift on wrapper — separate from GSAP-managed text element
+    // Randomly cycle 3 motion patterns — no predictable repeat
     const sweep = document.querySelector(".coming-soon-sweep");
-    if (sweep) sweep.style.animation = "updating-roam 24s ease-in-out infinite alternate";
+    if (sweep) {
+      const ROAMS = [
+        { name: "updating-roam-a", duration: "19s", ease: "ease-in-out" },
+        { name: "updating-roam-b", duration: "24s", ease: "ease-in-out" },
+        { name: "updating-roam-c", duration: "16s", ease: "ease-in-out" },
+      ];
+      let lastIdx = -1;
+      const nextRoam = () => {
+        let idx;
+        do { idx = Math.floor(Math.random() * ROAMS.length); } while (idx === lastIdx && ROAMS.length > 1);
+        lastIdx = idx;
+        const r = ROAMS[idx];
+        sweep.style.animation = "none";
+        requestAnimationFrame(() => {
+          sweep.style.animation = `${r.name} ${r.duration} ${r.ease} forwards`;
+        });
+      };
+      sweep.addEventListener("animationend", nextRoam);
+      nextRoam();
+    }
 
     // Subtle roaming spotlight — drifts slowly across letters, illuminating as it passes
     const proxy = { x: 50, y: 50 };

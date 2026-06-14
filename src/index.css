@@ -472,10 +472,24 @@ h1, h2, h3 {
   clip-path: inset(0 0% 0 0 round 9999px);
 }
 
-@keyframes updating-roam {
-  0%   { transform: translate(-120px, -18px); }
-  30%  { transform: translate(  40px,  22px); }
-  60%  { transform: translate( 100px, -15px); }
-  80%  { transform: translate( -60px,  18px); }
-  100% { transform: translate( 120px, -10px); }
+@keyframes updating-roam-a {
+  0%   { transform: translate( -90px, -16px); }
+  28%  { transform: translate(  55px,  22px); }
+  58%  { transform: translate( 110px,  -8px); }
+  82%  { transform: translate( -30px,  14px); }
+  100% { transform: translate( -90px, -16px); }
+}
+@keyframes updating-roam-b {
+  0%   { transform: translate(  40px,  18px); }
+  32%  { transform: translate(-105px,  -6px); }
+  55%  { transform: translate(  70px,  20px); }
+  78%  { transform: translate(  20px, -20px); }
+  100% { transform: translate(  40px,  18px); }
+}
+@keyframes updating-roam-c {
+  0%   { transform: translate( -50px,  12px); }
+  22%  { transform: translate( 100px, -20px); }
+  50%  { transform: translate(  10px,  24px); }
+  75%  { transform: translate( -80px,  -4px); }
+  100% { transform: translate( -50px,  12px); }
 }
