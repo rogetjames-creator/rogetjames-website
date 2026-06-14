@@ -726,37 +726,45 @@ export function CommissionsSection() {
       );
     }
 
-    // ── Seamless GSAP path motion — no CSS keyframe resets ───────
-    const EASES_PATH = ["power1.inOut", "power2.inOut", "sine.inOut", "power1.out"];
+    // ── Seamless GSAP path motion — overlapping tweens eliminate velocity=0 pause ─
+    // Uses power2.out so motion only decelerates at arrival, not stutters at departure.
+    // Each call queues the NEXT tween ~80% through current, creating continuous flow.
     const drift = (el, axis, minRange, maxRange, minDur, maxDur) => {
-      const target = minRange + Math.random() * (maxRange - minRange);
-      const dur = minDur + Math.random() * (maxDur - minDur);
-      const ease = EASES_PATH[Math.floor(Math.random() * EASES_PATH.length)];
-      gsap.to(el, { [axis]: target, duration: dur, ease, onComplete: () => drift(el, axis, minRange, maxRange, minDur, maxDur) });
+      const EASES = ["power2.out", "power1.out", "sine.out", "power2.inOut"];
+      const go = () => {
+        const target = minRange + Math.random() * (maxRange - minRange);
+        const dur = minDur + Math.random() * (maxDur - minDur);
+        const ease = EASES[Math.floor(Math.random() * EASES.length)];
+        const tween = gsap.to(el, { [axis]: target, duration: dur, ease, overwrite: "auto" });
+        // Queue next move 75% through so transitions are seamless
+        const delay = dur * 0.75;
+        setTimeout(go, delay * 1000);
+        return tween;
+      };
+      go();
     };
 
-    // Big — sweeps far off-edge on X, gentle Y
-    drift(bigSweep, "x", -420, 420, 16, 30);
-    drift(bigSweep, "y", -22,   22, 11, 22);
+    // Big — sweeps boldly off-edge on X, pronounced Y drift
+    drift(bigSweep, "x", -680, 680, 28, 50);
+    drift(bigSweep, "y", -42,   42, 18, 34);
 
-    // Small — stays within band on X, gentle Y
-    drift(smSweep,  "x", -100, 100, 12, 22);
-    drift(smSweep,  "y",  -18,  18,  9, 18);
+    // Small — wider range, independent rhythm
+    drift(smSweep,  "x", -200, 200, 18, 32);
+    drift(smSweep,  "y",  -30,  30, 14, 26);
 
-    // ── Breathe on big ────────────────────────────────────────────
-    gsap.to(bigText, { scaleY: 1.4, duration: 9, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "center center" });
+    // ── Breathe on big — bigger expansion, slower ─────────────────
+    gsap.to(bigText, { scaleY: 1.65, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "center center" });
 
-    // ── Forward / fade crossover — slow alternating pulse ─────────
-    // Big comes forward (scale + opacity up) while small fades, then reverses
+    // ── Forward / fade crossover — dramatic opacity swings ────────
     const crossover = () => {
-      const dur = 18 + Math.random() * 12;
-      gsap.to(bigText,  { opacity: 0.10, scaleX: 1.08, duration: dur * 0.4, ease: "power1.inOut",
+      const dur = 22 + Math.random() * 14;
+      gsap.to(bigText,  { opacity: 0.14, scaleX: 1.12, duration: dur * 0.4, ease: "power1.inOut",
         onComplete: () => gsap.to(bigText,  { opacity: 0.04, scaleX: 1,    duration: dur * 0.6, ease: "power2.inOut" }) });
-      gsap.to(smText,   { opacity: 0.01,               duration: dur * 0.4, ease: "power1.inOut",
+      gsap.to(smText,   { opacity: 0.005,              duration: dur * 0.4, ease: "power1.inOut",
         onComplete: () => gsap.to(smText,   { opacity: 0.06,               duration: dur * 0.6, ease: "power2.inOut",
           onComplete: crossover }) });
     };
-    setTimeout(crossover, 6000);
+    setTimeout(crossover, 8000);
 
     // ── 3 curious lights on the small word ───────────────────────
     light.style.webkitBackgroundClip = "text";
