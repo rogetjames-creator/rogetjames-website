@@ -2493,9 +2493,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                   </button>
                 )}
                 <button onClick={() => { setSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50); }}
-                  className="group flex items-center gap-2 text-cream/70 hover:text-cream transition-colors ml-8" aria-label="Search">
+                  className="group flex items-center gap-2 text-cream/70 hover:text-cream transition-colors md:ml-8" aria-label="Search">
                   <svg width="20" height="20" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="6" cy="6" r="4"/><line x1="9.5" y1="9.5" x2="13" y2="13"/></svg>
-                  <span className="font-detail text-[9px] uppercase tracking-[0.2em]">Refine Search</span>
+                  <span className="hidden md:inline font-detail text-[9px] uppercase tracking-[0.2em]">Refine Search</span>
                 </button>
               </>
           }
@@ -2507,7 +2507,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
           )}
           <button onClick={onClose}
             className="flex items-center justify-center rounded-full transition-colors"
-            style={{ width: isMobile ? 36 : 24, height: isMobile ? 36 : 24, background: isMobile ? "rgba(242,240,233,0.1)" : "transparent", color: isMobile ? "rgba(242,240,233,0.8)" : "rgba(242,240,233,0.4)" }}
+            style={{ width: isMobile ? 38 : 24, height: isMobile ? 38 : 24, background: isMobile ? "rgba(242,240,233,0.12)" : "transparent", border: isMobile ? "1.5px solid rgba(242,240,233,0.25)" : "none", color: isMobile ? "rgba(242,240,233,0.9)" : "rgba(242,240,233,0.4)" }}
             aria-label="Close">
             <X size={isMobile ? 18 : 15} />
           </button>
