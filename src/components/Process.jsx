@@ -152,15 +152,15 @@ export default function Process() {
             return (
               <div
                 key={step.num}
-                className="process-card w-full bg-white/5 rounded-[2rem] border border-white/10 px-8 py-8 flex flex-col items-center text-center gap-3 hover:border-white/25 transition-colors duration-700"
+                className="process-card group w-full bg-white/5 rounded-[2rem] border border-white/10 px-8 py-4 flex flex-col items-center text-center gap-2 hover:border-white/25 hover:bg-black transition-all duration-500"
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
               >
                 {/* Number */}
                 <span className="font-detail text-xs text-warm-gray/50 tracking-widest">{step.num}</span>
 
                 {/* Icon */}
-                <div className="w-10 h-10 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center">
-                  <Icon size={17} className="text-cream/60" />
+                <div className="w-10 h-10 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center transition-colors duration-500 group-hover:bg-clay/10 group-hover:border-clay/30">
+                  <Icon size={17} className="text-cream/60 transition-colors duration-500 group-hover:text-clay" />
                 </div>
 
                 {/* Title */}

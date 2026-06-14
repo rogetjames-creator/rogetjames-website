@@ -157,19 +157,19 @@ export default function Services() {
         </div>
 
         {/* Cards */}
-        <div ref={cardsRef} className="grid md:grid-cols-3 gap-4 md:gap-6">
+        <div ref={cardsRef} className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
           {SERVICES.map((service) => {
             const Icon = service.icon;
             return (
               <div
                 key={service.title}
-                className="service-card bg-white/5 border border-white/10 hover:border-white/40 rounded-[2rem] p-5 md:p-8 lg:p-10 flex flex-col transition-all duration-500"
+                className="service-card group bg-white/5 border border-white/10 hover:border-white/25 hover:bg-black rounded-[2rem] p-5 md:p-8 lg:p-10 flex flex-col transition-all duration-500"
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
               >
                 <div className="flex flex-col flex-1">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10">
-                    <Icon size={18} className="text-clay" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 transition-colors duration-500 group-hover:bg-clay/10 group-hover:border group-hover:border-clay/30">
+                    <Icon size={18} className="text-clay transition-colors duration-500 group-hover:text-clay-light" />
                   </div>
                   <span className="font-detail text-xs uppercase tracking-wider text-cream/50">
                     {service.subtitle}
