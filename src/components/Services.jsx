@@ -171,24 +171,24 @@ export default function Services() {
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10 transition-colors duration-500 group-hover:bg-clay/10 group-hover:border group-hover:border-clay/30">
                     <Icon size={18} className="text-clay transition-colors duration-500 group-hover:text-clay-light" />
                   </div>
-                  <span className="font-detail text-xs uppercase tracking-wider text-cream/50">
+                  <span className="font-detail text-xs uppercase tracking-wider text-cream/50 transition-colors duration-500 group-hover:text-cream/80">
                     {service.subtitle}
                   </span>
                 </div>
 
-                <h3 className="font-heading font-bold text-xl md:text-2xl mb-3 text-cream/75">
+                <h3 className="font-heading font-bold text-xl md:text-2xl mb-3 text-cream/75 transition-colors duration-500 group-hover:text-cream">
                   <span className="relative inline-block">
                     {service.title}
                     <span className="service-underline" style={{ position: "absolute", bottom: "-2px", left: 0, right: 0, height: "1px", background: "rgba(242,240,233,0.35)", display: "block", transformOrigin: "left center", transform: "scaleX(0)" }} />
                   </span>
                 </h3>
-                <p className="text-sm leading-relaxed mb-6 text-cream/70">
+                <p className="text-sm leading-relaxed mb-6 text-cream/70 transition-colors duration-500 group-hover:text-cream/90">
                   {service.description}
                 </p>
 
                 <ul className="flex-1 space-y-2 mb-8">
                   {service.features.map((f, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-cream/60">
+                    <li key={idx} className="flex items-start gap-2 text-sm text-cream/60 transition-colors duration-500 group-hover:text-cream/80">
                       <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 bg-clay" />
                       {typeof f === "string" ? f : (
                         <>

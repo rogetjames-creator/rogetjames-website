@@ -157,7 +157,7 @@ export default function Process() {
                 style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
               >
                 {/* Number */}
-                <span className="font-detail text-xs text-warm-gray/50 tracking-widest">{step.num}</span>
+                <span className="font-detail text-xs text-warm-gray/50 tracking-widest transition-colors duration-500 group-hover:text-warm-gray/80">{step.num}</span>
 
                 {/* Icon */}
                 <div className="w-10 h-10 rounded-xl bg-white/8 border border-white/10 flex items-center justify-center transition-colors duration-500 group-hover:bg-clay/10 group-hover:border-clay/30">
@@ -165,7 +165,7 @@ export default function Process() {
                 </div>
 
                 {/* Title */}
-                <h3 className="font-heading font-bold text-lg text-cream/80 mt-1">
+                <h3 className="font-heading font-bold text-lg text-cream/80 mt-1 transition-colors duration-500 group-hover:text-cream">
                   <span className="relative inline-block">
                     {step.title}
                     <span
@@ -182,7 +182,7 @@ export default function Process() {
                 {/* Description */}
                 <ul className="space-y-1.5 mt-0.5">
                   {step.description.map((line, i) => (
-                    <li key={i} className="flex items-start justify-center gap-2 text-warm-gray text-sm leading-relaxed">
+                    <li key={i} className="flex items-start justify-center gap-2 text-warm-gray text-sm leading-relaxed transition-colors duration-500 group-hover:text-cream/70">
                       <span className="w-1 h-1 rounded-full bg-clay mt-2 flex-shrink-0" />
                       {line}
                     </li>
