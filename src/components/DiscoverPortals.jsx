@@ -388,7 +388,7 @@ function LinksPopup({ onClose }) {
   );
 }
 
-function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null }) {
+function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false }) {
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
@@ -421,7 +421,7 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
             borderRadius: "50%",
             padding: "9px",
             background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
-            boxShadow: glowing
+            boxShadow: (glowing && !noGlow)
               ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
               : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
             transition: "box-shadow 0.6s ease",
@@ -449,6 +449,33 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
               <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>{hoverLabel}</span>
             </div>
           </div>
+          {/* Radiating lines — shown on hover for noGlow portals */}
+          {noGlow && (() => {
+            const total = 24;
+            const cx = size / 2 + 9;
+            const cy = size / 2 + 9;
+            const r1 = size / 2 + 9 + 4;   // starts just outside the frame ring
+            const r2 = r1 + 22;             // line length
+            const lines = Array.from({ length: total }, (_, i) => {
+              const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
+              return {
+                x1: cx + Math.cos(angle) * r1,
+                y1: cy + Math.sin(angle) * r1,
+                x2: cx + Math.cos(angle) * r2,
+                y2: cy + Math.sin(angle) * r2,
+              };
+            });
+            const svgSize = (size + 18) * 2;
+            return (
+              <svg
+                style={{ position: "absolute", top: -(svgSize / 2 - (size / 2 + 9)), left: -(svgSize / 2 - (size / 2 + 9)), width: svgSize, height: svgSize, pointerEvents: "none", zIndex: 40, opacity: glowing ? 1 : 0, transition: "opacity 0.5s ease", overflow: "visible" }}
+              >
+                {lines.map((l, i) => (
+                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="rgba(242,240,233,0.35)" strokeWidth="0.75" />
+                ))}
+              </svg>
+            );
+          })()}
           {arcLabel && (() => {
             const fr = 9; // frame padding px
             // SVG covers the image circle only (inside the frame padding)
@@ -901,7 +928,7 @@ export function CommissionsSection() {
           <span className="font-heading font-bold text-xs text-cream/70">Sculpture</span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_LEFT} size={200} hideLabel hoverLabel="Screens" onOpen={() => setScreensOpen(true)} />
+          <MiniPortal portal={SIDE_PORTAL_LEFT} size={200} hideLabel hoverLabel="Screens" noGlow onOpen={() => setScreensOpen(true)} />
           <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
         </div>
         <div className="flex flex-col items-center gap-2">
