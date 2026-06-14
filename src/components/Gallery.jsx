@@ -2087,7 +2087,10 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
                 onClick={() => setCatOpen(v => !v)}
                 className="w-full flex items-center gap-3 py-3 border-b border-white/10 group"
               >
-                <span className="flex-none w-3 h-3 rounded-full border border-clay group-hover:bg-clay transition-all duration-200" />
+                <span className="relative flex-none w-3 h-3">
+                  <span className="absolute inset-0 rounded-full border border-clay animate-ping opacity-50" />
+                  <span className="relative w-3 h-3 rounded-full border border-clay group-hover:bg-clay transition-all duration-200 block" />
+                </span>
                 <span className="font-heading font-bold text-base tracking-wide flex-1 text-left flex flex-col gap-0.5">
                   <span>
                     <span className="text-cream/60 group-hover:text-clay transition-colors duration-200 mr-1.5">WALL ART</span><span className="text-cream">CATALOGUE</span>
@@ -2117,7 +2120,10 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
                   onClick={() => setCatOpen(v => !v)}
                   className="w-full flex items-center gap-3 py-3 border-b border-white/10 group"
                 >
-                  <span className="flex-none w-3 h-3 rounded-full border border-clay group-hover:bg-clay transition-all duration-200" />
+                  <span className="relative flex-none w-3 h-3">
+                  <span className="absolute inset-0 rounded-full border border-clay animate-ping opacity-50" />
+                  <span className="relative w-3 h-3 rounded-full border border-clay group-hover:bg-clay transition-all duration-200 block" />
+                </span>
                   <span className="font-heading font-bold text-base tracking-wide flex-1 text-left flex flex-col gap-0.5">
                     <span>
                       <span className="text-cream/60 group-hover:text-clay transition-colors duration-200">SCULPTURE</span>
