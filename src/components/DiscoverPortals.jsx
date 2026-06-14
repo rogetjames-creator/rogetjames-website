@@ -705,6 +705,71 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
+
+  // Coming Soon breathe + random light animation
+  useEffect(() => {
+    const text = document.querySelector(".coming-soon-text");
+    const light = document.querySelector(".coming-soon-light");
+    if (!text || !light) return;
+
+    // Set horizontal stretch via GSAP so all transforms are managed together
+    gsap.set(text, { scaleX: 1.22 });
+
+    // Scale breathe — Y axis only so horizontal stretch stays intact
+    gsap.to(text, {
+      scaleY: 1.55,
+      duration: 8,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+      transformOrigin: "center center",
+    });
+
+    // Sweep + vertical drift on wrapper — separate from GSAP-managed text element
+    const sweep = document.querySelector(".coming-soon-sweep");
+    if (sweep) sweep.style.animation = "updating-roam 24s ease-in-out infinite alternate";
+
+    // Subtle roaming spotlight — drifts slowly across letters, illuminating as it passes
+    const proxy = { x: 50, y: 50 };
+    light.style.webkitBackgroundClip = "text";
+    light.style.backgroundClip = "text";
+    light.style.color = "transparent";
+    light.style.webkitTextFillColor = "transparent";
+
+    // Two lights — one from above, one from below — each roaming horizontally
+    const top = { x: 30 };
+    const bot = { x: 70 };
+
+    const update = () => {
+      light.style.backgroundImage = [
+        `radial-gradient(ellipse 180px 160px at ${top.x}% 0%, rgba(255,220,150,0.22) 0%, transparent 75%)`,
+        `radial-gradient(ellipse 160px 140px at ${bot.x}% 100%, rgba(255,210,130,0.18) 0%, transparent 70%)`,
+      ].join(", ");
+    };
+
+    update();
+
+    const roamX = (proxy, speed) => {
+      const target = 5 + Math.random() * 90;
+      const dur = speed + Math.random() * speed;
+      gsap.to(proxy, {
+        x: target,
+        duration: dur,
+        ease: "none",
+        onUpdate: update,
+        onComplete: () => roamX(proxy, speed),
+      });
+    };
+
+    roamX(top, 10);
+    roamX(bot, 13);
+
+    return () => {
+      gsap.killTweensOf(text);
+      gsap.killTweensOf(proxy);
+    };
+  }, []);
+
   // Practice text — split bright/dim animations
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -762,7 +827,9 @@ export function CommissionsSection() {
     <section id="bespoke" ref={sectionRef} className="bg-graphite overflow-x-hidden">
       <div className="px-8 pt-12 pb-24 text-center">
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
-        <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3"><span className="text-cream/60">Bespoke</span></h2>
+        <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
+          <span className="bespoke-heading inline-block text-cream/60">Bespoke</span>
+        </h2>
       </div>
       <div className="w-full h-px bg-white/10" />
 
@@ -792,6 +859,39 @@ export function CommissionsSection() {
 
       {/* Desktop horizontal fan — hidden below md */}
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
+        {/* Coming Soon background text */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
+          <span className="coming-soon-sweep" style={{ display: "inline-block" }}>
+          <span className="coming-soon-text" style={{
+            fontFamily: "Impact, 'Arial Narrow', sans-serif",
+            fontSize: "280px",
+            lineHeight: 1,
+            color: "rgba(242,240,233,0.05)",
+            letterSpacing: "0.18em",
+            userSelect: "none",
+            position: "relative",
+            display: "inline-block",
+          }}>
+            UPDATING
+            <span aria-hidden="true" className="coming-soon-light" style={{
+              position: "absolute",
+              inset: 0,
+              fontFamily: "Impact, 'Arial Narrow', sans-serif",
+              fontSize: "280px",
+              lineHeight: 1,
+              letterSpacing: "0.18em",
+              background: "radial-gradient(ellipse 120px 100% at 50% 50%, rgba(242,240,233,0.7) 0%, transparent 68%)",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+              WebkitTextFillColor: "transparent",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>UPDATING</span>
+          </span>
+          </span>
+        </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={110} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />

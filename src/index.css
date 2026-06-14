@@ -471,3 +471,11 @@ h1, h2, h3 {
 .pill-trace.pill-active::after {
   clip-path: inset(0 0% 0 0 round 9999px);
 }
+
+@keyframes updating-roam {
+  0%   { transform: translate(-800px, -35px); }
+  30%  { transform: translate(-150px,  40px); }
+  60%  { transform: translate( 400px, -30px); }
+  80%  { transform: translate( 650px,  30px); }
+  100% { transform: translate( 800px, -20px); }
+}

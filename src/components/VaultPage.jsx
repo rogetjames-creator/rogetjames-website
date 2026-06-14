@@ -673,7 +673,7 @@ function VerifyStep({ token, onVerified }) {
     <div className="min-h-screen bg-jet flex items-center justify-center px-6">
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 55%, rgba(196,80,24,0.05) 0%, transparent 65%)" }} />
       <div ref={formRef} className="relative w-full max-w-sm opacity-0">
-        <div className="bg-charcoal/80 border border-cream/10 rounded-[2rem] p-8 backdrop-blur-sm">
+        <div className="bg-white/8 border border-white/18 rounded-[2rem] p-8 backdrop-blur-sm">
           <div className="text-center mb-8">
             <a href="/" className="inline-block font-heading font-bold text-cream text-xl tracking-tight hover:text-cream/75 transition-colors">
               ROGET<span className="font-normal italic font-drama">james</span>
@@ -761,13 +761,13 @@ function AdminPanel() {
     return (
       <div className="min-h-screen bg-jet flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
-          <div className="bg-charcoal/80 border border-cream/10 rounded-[2rem] p-8">
+          <div className="bg-white/8 border border-white/18 rounded-[2rem] p-8 backdrop-blur-sm">
             <div className="text-center mb-8">
               <a href="/" className="inline-block font-heading font-bold text-cream text-xl tracking-tight">
                 ROGET<span className="font-normal italic font-drama">james</span>
               </a>
-              <div className="w-8 h-px bg-clay/50 mx-auto mt-3 mb-4" />
-              <p className="font-detail text-[10px] text-cream/65 uppercase tracking-[0.25em]">Vault Admin</p>
+              <div className="w-8 h-px bg-clay/60 mx-auto mt-3 mb-4" />
+              <p className="font-detail text-[10px] text-cream/85 uppercase tracking-[0.25em]">Vault Admin</p>
             </div>
             <form onSubmit={e => { e.preventDefault(); if (secret.trim()) setAuthed(true); }} className="space-y-4">
               <input
@@ -800,10 +800,10 @@ function AdminPanel() {
             ROGET<span className="font-normal italic font-drama">james</span>
           </a>
           <div className="w-8 h-px bg-clay/50 mt-3 mb-5" />
-          <p className="font-detail text-[10px] text-clay uppercase tracking-[0.25em]">Vault Admin · Send Invite</p>
+          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.25em]">Vault Admin · Send Invite</p>
         </div>
-        <div className="bg-charcoal/60 border border-cream/10 rounded-2xl p-8">
-          <p className="font-detail text-sm text-cream/55 leading-relaxed mb-6">
+        <div className="bg-white/8 border border-white/18 rounded-2xl p-8">
+          <p className="font-detail text-sm text-cream/80 leading-relaxed mb-6">
             Enter a client's email to send their exclusive vault invite. They must already have a row in Airtable with this email address.
           </p>
           <form onSubmit={handleSend} className="space-y-4">
