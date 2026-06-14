@@ -227,6 +227,18 @@ h1, h2, h3 {
   color: #000000 !important;
 }
 
+/* Service CTA pills — orange stroke only on active, no solid fill */
+.btn-service-cta:active,
+.btn-service-cta:active .btn-bg {
+  background-color: transparent !important;
+}
+.btn-service-cta:active * {
+  color: var(--color-cream) !important;
+}
+.btn-service-cta:active {
+  box-shadow: 0 0 0 1.5px #C45018 !important;
+}
+
 /* ── Interactive Lifts ───────────────────── */
 
 .lift-hover {
