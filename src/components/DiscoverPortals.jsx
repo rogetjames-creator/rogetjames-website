@@ -922,27 +922,20 @@ export function CommissionsSection() {
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
         {/* UPDATING — crowd of intersecting drifting words */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          {/* Word 1 — huge, anchored left, sweeps wide */}
-          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "-30px", left: "-60px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "260px", lineHeight: 1, letterSpacing: "0.12em", color: "rgba(242,240,233,0.018)", whiteSpace: "nowrap" }}>UPDATING</span>
-          {/* Word 2 — large, starts right */}
-          <span className="updtg-w2" style={{ position: "absolute", display: "inline-block", top: "10px", right: "-80px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "200px", lineHeight: 1, letterSpacing: "0.15em", color: "rgba(242,240,233,0.020)", whiteSpace: "nowrap" }}>UPDATING</span>
-          {/* Word 3 — medium, center-ish */}
-          <span className="updtg-w3" style={{ position: "absolute", display: "inline-block", top: "55px", left: "10%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "140px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(242,240,233,0.022)", whiteSpace: "nowrap" }}>UPDATING</span>
-          {/* Word 4 — ticker, travels full width */}
-          <span className="updtg-w4" style={{ position: "absolute", display: "inline-block", top: "20px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "170px", lineHeight: 1, letterSpacing: "0.13em", color: "rgba(242,240,233,0.020)", whiteSpace: "nowrap" }}>UPDATING</span>
-          {/* Word 5 — smaller, lower */}
-          <span className="updtg-w5" style={{ position: "absolute", display: "inline-block", bottom: "-10px", left: "30%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "100px", lineHeight: 1, letterSpacing: "0.08em", color: "rgba(242,240,233,0.025)", whiteSpace: "nowrap" }}>UPDATING</span>
-          {/* Word 6 — small, upper right, carries the roaming lights */}
-          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "30px", right: "15%" }}>
-            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "115px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(242,240,233,0.022)", whiteSpace: "nowrap" }}>
+          {/* Words use full color — opacity controlled entirely by GSAP via element opacity */}
+          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "-30px", left: "-60px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "260px", lineHeight: 1, letterSpacing: "0.12em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.018 }}>UPDATING</span>
+          <span className="updtg-w2" style={{ position: "absolute", display: "inline-block", top: "10px", right: "-80px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "200px", lineHeight: 1, letterSpacing: "0.15em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.020 }}>UPDATING</span>
+          <span className="updtg-w3" style={{ position: "absolute", display: "inline-block", top: "55px", left: "10%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "140px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.022 }}>UPDATING</span>
+          <span className="updtg-w4" style={{ position: "absolute", display: "inline-block", top: "20px", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "170px", lineHeight: 1, letterSpacing: "0.13em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.020 }}>UPDATING</span>
+          <span className="updtg-w5" style={{ position: "absolute", display: "inline-block", bottom: "-10px", left: "30%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "100px", lineHeight: 1, letterSpacing: "0.08em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.025 }}>UPDATING</span>
+          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "30px", right: "15%", opacity: 0.022 }}>
+            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "115px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap" }}>
               UPDATING
               <span aria-hidden="true" className="coming-soon-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "115px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
             </span>
           </span>
-          {/* Word 7 — huge, vertical overlap, far left */}
-          <span className="updtg-w7" style={{ position: "absolute", display: "inline-block", top: "-60px", left: "20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "310px", lineHeight: 1, letterSpacing: "0.09em", color: "rgba(242,240,233,0.012)", whiteSpace: "nowrap" }}>UPDATING</span>
-          {/* Word 8 — medium, bottom left, drifts slowly right */}
-          <span className="updtg-w8" style={{ position: "absolute", display: "inline-block", bottom: "-20px", left: "-20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "155px", lineHeight: 1, letterSpacing: "0.11em", color: "rgba(242,240,233,0.018)", whiteSpace: "nowrap" }}>UPDATING</span>
+          <span className="updtg-w7" style={{ position: "absolute", display: "inline-block", top: "-60px", left: "20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "310px", lineHeight: 1, letterSpacing: "0.09em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.012 }}>UPDATING</span>
+          <span className="updtg-w8" style={{ position: "absolute", display: "inline-block", bottom: "-20px", left: "-20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "155px", lineHeight: 1, letterSpacing: "0.11em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.018 }}>UPDATING</span>
         </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
