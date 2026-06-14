@@ -2249,7 +2249,7 @@ function GalleryModal({ onClose, initialTab }) {
                           key={term}
                           onMouseDown={e => e.preventDefault()}
                           onClick={() => { setQuery(term); searchRef.current?.focus(); }}
-                          className="px-3 py-1 rounded-full text-xs font-detail bg-white/5 border border-white/10 text-cream/60 hover:border-clay/60 hover:text-cream hover:bg-white/8 transition-all duration-200 capitalize"
+                          className="px-3 py-1 rounded-full text-xs font-detail bg-white/5 border border-white/10 text-cream/60 hover:border-clay/60 hover:text-cream hover:bg-white/8 transition-all duration-200 capitalize whitespace-nowrap"
                         >
                           {term}
                         </button>
