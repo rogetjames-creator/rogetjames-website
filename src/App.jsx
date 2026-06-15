@@ -246,9 +246,7 @@ export default function App() {
           onQuoteSubmitted={clearQuoteItems}
         />
       </main>
-      <Reveal label="Discover Portals">
-        <DiscoverPortals />
-      </Reveal>
+      <DiscoverPortals />
       <Footer />
       <ScrollArrows />
       <ChatWidget />
