@@ -133,10 +133,10 @@ export default function Navbar({ quoteCount = 0 }) {
         ref={navRef}
         className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-1 px-2 py-2 transition-all duration-500 ${
           scrolled
-            ? "backdrop-blur-xl border border-white/10 shadow-lg rounded-[2rem]"
-            : "bg-transparent rounded-[2rem]"
+            ? "backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl"
+            : "bg-transparent rounded-2xl"
         }`}
-        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "linear-gradient(to bottom, #1e1a14, #36301f)" : "transparent" }}
+        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "#3d3a24" : "transparent" }}
       >
         <a
           href="#"
