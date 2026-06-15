@@ -122,6 +122,7 @@ export function CommissionsSection() {
   const practiceLineRightRef = useRef(null);
   const practiceRevealRef = useRef(null);
   const playPracticeRef = useRef(null);
+  const practiceTriggerRef = useRef(null);
   const stripRef = useRef(null);
   const [fanOpen, setFanOpen] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -171,7 +172,7 @@ export function CommissionsSection() {
           ScrollTrigger.refresh();
           setTimeout(() => {
             ScrollTrigger.refresh();
-            const el = practiceLineRef.current;
+            const el = practiceTriggerRef.current;
             if (!el) return;
             const rect = el.getBoundingClientRect();
             if (rect.top < window.innerHeight) {
@@ -380,7 +381,7 @@ export function CommissionsSection() {
 
         {/* UPDATING text — always in the strip */}
         {!fanOpen && (
-          <div className="absolute inset-0 pointer-events-none select-none overflow-visible">
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", userSelect: "none", overflow: "visible", zIndex: 2 }}>
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
               <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
                 UPDATING
@@ -483,7 +484,9 @@ export function CommissionsSection() {
             </p>
           </div>
         </div>
-        <div style={{ height: "320px" }} />
+        {/* Scroll trigger sentinel — animation fires when this point enters view */}
+        <div ref={practiceTriggerRef} style={{ height: "1px", marginTop: "60px" }} />
+        <div style={{ height: "260px" }} />
 
         <div style={{ height: "64px" }} />
       </div>
