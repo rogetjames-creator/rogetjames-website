@@ -748,20 +748,22 @@ export function CommissionsSection() {
     const BASE = [0.055, 0.042, 0.060, 0.038, 0.050, 0.045];
     words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i], scale: 0.5, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" }));
 
-    // Depth — pure fromTo yoyo, no proxy, perfectly smooth. Each word staggered in phase.
-    // [minScale, maxScale, halfCycleDuration, phaseDelay]
+    // Depth — each word placed at a random point in its cycle immediately, no delays
     const DEPTH = [
-      [0.18, 2.8, 42, 0],
-      [0.18, 2.1, 34, 8],
-      [0.18, 2.5, 29, 15],
-      [0.18, 1.8, 25, 22],
-      [0.18, 2.3, 38, 5],
-      [0.18, 1.6, 21, 18],
+      [0.18, 2.8, 42],
+      [0.18, 2.1, 34],
+      [0.18, 2.5, 29],
+      [0.18, 1.8, 25],
+      [0.18, 2.3, 38],
+      [0.18, 1.6, 21],
     ];
     words.forEach((w, i) => {
       if (!w) return;
-      const [min, max, dur, delay] = DEPTH[i];
-      gsap.fromTo(w, { scale: min }, { scale: max, duration: dur, ease: "sine.inOut", yoyo: true, repeat: -1, delay });
+      const [min, max, dur] = DEPTH[i];
+      const startScale = min + Math.random() * (max - min);
+      gsap.set(w, { scale: startScale });
+      const goToMax = startScale < (min + max) / 2;
+      gsap.to(w, { scale: goToMax ? max : min, duration: dur * (goToMax ? (max - startScale) / (max - min) : (startScale - min) / (max - min)), ease: "sine.inOut", yoyo: true, repeat: -1 });
     });
 
     // Drift — continuous overlapping moves so there is never a stop
@@ -776,11 +778,11 @@ export function CommissionsSection() {
       setTimeout(go, initDelay);
     };
     drift(words[0], 900, 45, 70, 0);
-    drift(words[1], 700, 36, 56, 2000);
-    drift(words[2], 600, 30, 48, 800);
-    drift(words[3], 500, 26, 42, 3500);
-    drift(words[4], 750, 40, 62, 1400);
-    drift(words[5], 580, 28, 44, 4800);
+    drift(words[1], 700, 36, 56, 0);
+    drift(words[2], 600, 30, 48, 0);
+    drift(words[3], 500, 26, 42, 0);
+    drift(words[4], 750, 40, 62, 0);
+    drift(words[5], 580, 28, 44, 0);
 
     // Random illumination — warm amber glow rises and fades on a random word
     const illuminate = () => {
