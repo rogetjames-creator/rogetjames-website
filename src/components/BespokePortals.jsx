@@ -373,7 +373,65 @@ export function CommissionsSection() {
       </div>
 
       {/* Desktop horizontal fan — starts half-height, expands on click */}
-      <div ref={stripRef} className="bg-matt-black px-8 relative hidden md:block" style={{ height: "140px", overflow: "hidden" }}>
+      <div
+        ref={stripRef}
+        className="bg-matt-black relative hidden md:block"
+        style={{ height: "140px", overflow: "hidden", cursor: fanOpen ? "default" : "pointer" }}
+        onClick={!fanOpen ? () => setFanOpen(true) : undefined}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+      >
+        {/* Hover warm edge — bottom border glow when collapsed */}
+        {!fanOpen && (
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: "1px",
+            background: hovering ? "rgba(196,80,24,0.45)" : "rgba(242,240,233,0.08)",
+            transition: "background 0.5s ease",
+            pointerEvents: "none", zIndex: 5,
+          }} />
+        )}
+
+        {/* Collapsed state — left portal labels */}
+        {!fanOpen && (
+          <div style={{
+            position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%)",
+            display: "flex", flexDirection: "column", gap: "5px",
+            opacity: hovering ? 0.7 : 0.28, transition: "opacity 0.5s ease",
+            pointerEvents: "none", zIndex: 5,
+          }}>
+            {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
+              <span key={name} style={{
+                fontFamily: "var(--font-detail)", fontSize: "9px", color: "var(--color-cream)",
+                letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1,
+              }}>{name}</span>
+            ))}
+          </div>
+        )}
+
+        {/* Collapsed state — right explore indicator */}
+        {!fanOpen && (
+          <div style={{
+            position: "absolute", right: "48px", top: "50%", transform: "translateY(-50%)",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
+            opacity: hovering ? 0.8 : 0.30, transition: "opacity 0.5s ease",
+            pointerEvents: "none", zIndex: 5,
+          }}>
+            <span style={{
+              fontFamily: "var(--font-detail)", fontSize: "8px", color: hovering ? "var(--color-clay)" : "var(--color-cream)",
+              letterSpacing: "0.28em", textTransform: "uppercase", transition: "color 0.4s ease",
+            }}>Explore</span>
+            {/* Animated dots — vertical pulse column */}
+            {[0, 1, 2].map((i) => (
+              <span key={i} style={{
+                display: "block", width: "3px", height: "3px", borderRadius: "50%",
+                background: hovering ? "var(--color-clay)" : "var(--color-cream)",
+                opacity: hovering ? 1 : 0.5,
+                animation: `scrollDot 1.4s ease-in-out ${i * 0.22}s infinite`,
+                transition: "background 0.4s ease",
+              }} />
+            ))}
+          </div>
+        )}
 
         {/* UPDATING text — only rendered once fan is open */}
         {fanOpen && (
@@ -402,11 +460,8 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal — tight pulse rings on hover, opens fan on first click */}
-          <div className="relative z-10"
-            onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => setHovering(false)}
-          >
+          {/* Center portal */}
+          <div className="relative z-10" onClick={e => fanOpen && e.stopPropagation()}>
             <PulseRings active={hovering && !fanOpen} size={248} />
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
@@ -426,19 +481,6 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
           </div>
         </div>
-
-        {/* Close button — appears when fan is open */}
-        {fanOpen && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
-            <button
-              onClick={closeSection}
-              className="group w-8 h-8 rounded-full border border-cream/20 flex items-center justify-center transition-all duration-300 hover:border-clay hover:bg-clay/10"
-              aria-label="Close section"
-            >
-              <X size={13} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="w-full h-px bg-white/10" />
@@ -491,7 +533,21 @@ export function CommissionsSection() {
             </p>
           </div>
         </div>
-        <div style={{ height: "220px" }} />
+        <div style={{ height: "120px" }} />
+
+        {/* Close section — centred at base of Practice */}
+        <div className="flex flex-col items-center gap-3 pb-16">
+          <button
+            onClick={closeSection}
+            className="group flex items-center gap-3 font-detail text-[10px] text-cream/35 uppercase tracking-[0.25em] hover:text-clay transition-colors duration-400"
+            aria-label="Close section"
+          >
+            <span>Close</span>
+            <span className="w-6 h-6 rounded-full border border-cream/20 flex items-center justify-center group-hover:border-clay group-hover:bg-clay/10 transition-all duration-300">
+              <X size={10} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
+            </span>
+          </button>
+        </div>
       </div>
 
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
