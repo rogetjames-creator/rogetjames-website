@@ -154,10 +154,10 @@ export function CommissionsSection() {
         if (stripRef.current) stripRef.current.style.overflow = "visible";
         // 2. Fan portals after strip is open
         if (window.innerWidth >= 768) {
-          gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 3.2, ease: "expo.out" });
-          gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 3.2, ease: "expo.out" });
-          gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 3.8, ease: "expo.out", delay: 0.15 });
-          gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 3.8, ease: "expo.out", delay: 0.15 });
+          gsap.fromTo(leftRef.current,       { x: 0, opacity: 0, scale: 0.25 }, { x: -300, opacity: 1, scale: 1, duration: 3.2, ease: "expo.out" });
+          gsap.fromTo(rightRef.current,      { x: 0, opacity: 0, scale: 0.25 }, { x:  300, opacity: 1, scale: 1, duration: 3.2, ease: "expo.out" });
+          gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0, scale: 0.15 }, { x: -580, opacity: 1, scale: 1, duration: 3.8, ease: "expo.out", delay: 0.2 });
+          gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0, scale: 0.15 }, { x:  580, opacity: 1, scale: 1, duration: 3.8, ease: "expo.out", delay: 0.2 });
         }
       },
     });
