@@ -131,6 +131,7 @@ export function CommissionsSection() {
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
 
+  const floatingLabelRefs = useRef([]);
   const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
@@ -191,6 +192,44 @@ export function CommissionsSection() {
     });
     setFanOpen(false);
   };
+
+  // Floating portal name labels — random drift when collapsed
+  useEffect(() => {
+    if (fanOpen) return;
+    const els = floatingLabelRefs.current.filter(Boolean);
+    if (!els.length || !stripRef.current) return;
+
+    let alive = true;
+
+    const randPos = () => {
+      const w = stripRef.current?.offsetWidth || 1200;
+      const h = 140;
+      return {
+        x: 60 + Math.random() * (w - 160),
+        y: 16 + Math.random() * (h - 40),
+      };
+    };
+
+    els.forEach(el => {
+      const { x, y } = randPos();
+      gsap.set(el, { x, y });
+    });
+
+    const cycle = () => {
+      if (!alive) return;
+      els.forEach(el => {
+        const { x, y } = randPos();
+        gsap.to(el, { x, y, duration: 9 + Math.random() * 7, ease: "sine.inOut" });
+      });
+      setTimeout(cycle, 7000 + Math.random() * 5000);
+    };
+    cycle();
+
+    return () => {
+      alive = false;
+      els.forEach(el => gsap.killTweensOf(el));
+    };
+  }, [fanOpen]);
 
   // Nav dropdown
   useEffect(() => {
@@ -391,47 +430,20 @@ export function CommissionsSection() {
           }} />
         )}
 
-        {/* Collapsed state — left portal labels */}
-        {!fanOpen && (
-          <div style={{
-            position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%)",
-            display: "flex", flexDirection: "column", gap: "5px",
-            opacity: hovering ? 0.7 : 0.28, transition: "opacity 0.5s ease",
-            pointerEvents: "none", zIndex: 5,
-          }}>
-            {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
-              <span key={name} style={{
-                fontFamily: "var(--font-detail)", fontSize: "9px", color: "var(--color-cream)",
-                letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1,
-              }}>{name}</span>
-            ))}
-          </div>
-        )}
-
-        {/* Collapsed state — right explore indicator */}
-        {!fanOpen && (
-          <div style={{
-            position: "absolute", right: "48px", top: "50%", transform: "translateY(-50%)",
-            display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
-            opacity: hovering ? 0.8 : 0.30, transition: "opacity 0.5s ease",
-            pointerEvents: "none", zIndex: 5,
-          }}>
-            <span style={{
-              fontFamily: "var(--font-detail)", fontSize: "8px", color: hovering ? "var(--color-clay)" : "var(--color-cream)",
-              letterSpacing: "0.28em", textTransform: "uppercase", transition: "color 0.4s ease",
-            }}>Explore</span>
-            {/* Animated dots — vertical pulse column */}
-            {[0, 1, 2].map((i) => (
-              <span key={i} style={{
-                display: "block", width: "3px", height: "3px", borderRadius: "50%",
-                background: hovering ? "var(--color-clay)" : "var(--color-cream)",
-                opacity: hovering ? 1 : 0.5,
-                animation: `scrollDot 1.4s ease-in-out ${i * 0.22}s infinite`,
-                transition: "background 0.4s ease",
-              }} />
-            ))}
-          </div>
-        )}
+        {/* Collapsed state — floating portal labels */}
+        {!fanOpen && ["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name, i) => (
+          <span
+            key={name}
+            ref={el => floatingLabelRefs.current[i] = el}
+            style={{
+              position: "absolute", top: 0, left: 0,
+              fontFamily: "var(--font-detail)", fontSize: "9px", color: "var(--color-cream)",
+              letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1,
+              opacity: hovering ? 0.65 : 0.25, transition: "opacity 0.5s ease",
+              pointerEvents: "none", zIndex: 5, whiteSpace: "nowrap",
+            }}
+          >{name}</span>
+        ))}
 
         {/* UPDATING text — only rendered once fan is open */}
         {fanOpen && (
