@@ -149,15 +149,15 @@ export function CommissionsSection() {
     if (!fanOpen) return;
     // 1. Expand strip from 140px to 280px, then open overflow so fan can spill
     gsap.to(stripRef.current, {
-      height: 160, duration: 0.9, ease: "power3.inOut",
+      height: 178, duration: 1.2, ease: "sine.inOut",
       onComplete: () => {
         if (stripRef.current) stripRef.current.style.overflow = "visible";
         // 2. Fan portals after strip is open
         if (window.innerWidth >= 768) {
-          gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out" });
-          gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out" });
-          gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out" });
-          gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out" });
+          gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 3.2, ease: "expo.out" });
+          gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 3.2, ease: "expo.out" });
+          gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 3.8, ease: "expo.out", delay: 0.15 });
+          gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 3.8, ease: "expo.out", delay: 0.15 });
         }
       },
     });
