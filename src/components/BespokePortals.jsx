@@ -378,7 +378,7 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite overflow-x-hidden">
+    <section id="bespoke" ref={sectionRef} className="bg-graphite">
       <div className="px-8 pt-12 pb-24 text-center">
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
@@ -415,7 +415,7 @@ export function CommissionsSection() {
       <div
         ref={stripRef}
         className="bg-matt-black relative hidden md:block"
-        style={{ height: "140px", overflow: "hidden", cursor: fanOpen ? "default" : "pointer" }}
+        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer" }}
         onClick={!fanOpen ? () => setFanOpen(true) : undefined}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
@@ -473,7 +473,7 @@ export function CommissionsSection() {
           </div>
 
           {/* Center portal */}
-          <div className="relative z-10" onClick={e => fanOpen && e.stopPropagation()}>
+          <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
             <PulseRings active={hovering && !fanOpen} size={248} />
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
