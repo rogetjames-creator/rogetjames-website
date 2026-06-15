@@ -481,6 +481,17 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
           </div>
         </div>
+
+        {/* Close button — in the strip, top-right, only when open */}
+        {fanOpen && (
+          <button
+            onClick={closeSection}
+            className="group absolute top-4 right-6 z-30 w-8 h-8 rounded-full border border-cream/20 flex items-center justify-center transition-all duration-300 hover:border-clay hover:bg-clay/10"
+            aria-label="Close section"
+          >
+            <X size={13} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
+          </button>
+        )}
       </div>
 
       <div className="w-full h-px bg-white/10" />
