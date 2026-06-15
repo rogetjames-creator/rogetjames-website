@@ -738,105 +738,106 @@ export function CommissionsSection() {
   }, []);
 
 
-  // UPDATING — 6 words, fluid depth drift, warm roaming light
+  // UPDATING — 6 words surging in/out of depth, warm roaming light
   useEffect(() => {
     const words = [1,2,3,4,5,6].map(n => document.querySelector(`.updtg-w${n}`));
     const light = document.querySelector(".coming-soon-light");
     if (!words[0] || !light) return;
 
-    // Continuous fluid drift — next move queues at 65% through current, no pause ever
+    // Center all words — GSAP owns the transform, so use xPercent/yPercent
+    words.forEach(w => w && gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" }));
+
+    // Each word surges between a far state (small, dim) and a near state (large, brighter)
+    // scale 0.15 = tiny speck far away, scale 2.8 = fills the strip
+    const depthCycle = (el, nearScale, nearOp, farOp, dur, startDelay) => {
+      const proxy = { t: 0 }; // 0 = far, 1 = near
+      const startT = Math.random(); // random phase so words aren't in sync
+      gsap.set(proxy, { t: startT });
+      const apply = () => {
+        const t = proxy.t;
+        gsap.set(el, { scale: 0.12 + t * nearScale, opacity: farOp + t * (nearOp - farOp) });
+      };
+      apply();
+      const animate = (toT) => {
+        gsap.to(proxy, {
+          t: toT,
+          duration: dur + Math.random() * dur * 0.6,
+          ease: "sine.inOut",
+          onUpdate: apply,
+          onComplete: () => animate(toT === 0 ? 1 : 0),
+        });
+      };
+      setTimeout(() => animate(startT > 0.5 ? 0 : 1), startDelay);
+    };
+
+    // Fluid X/Y drift — queues next at 65% through so motion never pauses
     const drift = (el, axis, min, max, minDur, maxDur) => {
-      const EASES = ["sine.inOut", "power1.inOut", "power2.inOut"];
       const go = () => {
         const target = min + Math.random() * (max - min);
         const dur = minDur + Math.random() * (maxDur - minDur);
-        gsap.to(el, { [axis]: target, duration: dur, ease: EASES[Math.floor(Math.random() * EASES.length)], overwrite: "auto" });
+        gsap.to(el, { [axis]: target, duration: dur, ease: "sine.inOut", overwrite: "auto" });
         setTimeout(go, dur * 0.65 * 1000);
       };
-      setTimeout(go, Math.random() * 5000);
+      setTimeout(go, Math.random() * 6000);
     };
 
-    // w1 — 320px, deepest/furthest, very slow wide sweeps
-    drift(words[0], "x", -400, 400, 45, 70);
-    drift(words[0], "y", -30,   30, 30, 50);
-    gsap.to(words[0], { scaleY: 1.3, duration: 28, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    // w1 — surges deep in and out, slow, drifts far left/right
+    depthCycle(words[0], 2.6, 0.055, 0.005, 38, 0);
+    drift(words[0], "x", -500, 500, 40, 65);
+    drift(words[0], "y", -20,   20, 30, 50);
 
-    // w2 — 200px, mid-far, drifts broadly
-    drift(words[1], "x", -300, 350, 35, 55);
-    drift(words[1], "y", -40,   40, 25, 42);
-    gsap.to(words[1], { scaleY: 1.4, duration: 20, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    // w2 — medium surge, drifts broadly
+    depthCycle(words[1], 1.9, 0.045, 0.006, 30, 1200);
+    drift(words[1], "x", -380, 420, 32, 52);
+    drift(words[1], "y", -25,   25, 24, 40);
 
-    // w3 — 140px, middle depth
-    drift(words[2], "x", -280, 280, 28, 48);
-    drift(words[2], "y", -35,   35, 20, 36);
-    gsap.to(words[2], { scaleY: 1.45, duration: 17, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    // w3 — quicker surge, stays more central
+    depthCycle(words[2], 2.2, 0.050, 0.005, 26, 3500);
+    drift(words[2], "x", -300, 300, 28, 46);
+    drift(words[2], "y", -18,   18, 20, 36);
 
-    // w4 — 90px, closer, moves more decisively
-    drift(words[3], "x", -220, 250, 22, 38);
-    drift(words[3], "y", -30,   30, 16, 28);
-    gsap.to(words[3], { scaleY: 1.5, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    // w4 — mostly illuminates, gentle surge, drifts slowly
+    depthCycle(words[3], 1.4, 0.070, 0.008, 22, 5000);
+    drift(words[3], "x", -250, 250, 35, 55);
+    drift(words[3], "y", -15,   15, 28, 44);
 
-    // w5 — 70px, closest/smallest, quickest
-    drift(words[4], "x", -180, 200, 18, 32);
-    drift(words[4], "y", -25,   25, 14, 24);
-    gsap.to(words[4], { scaleY: 1.55, duration: 11, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    // w5 — stationary-ish, just breathes light in and out
+    depthCycle(words[4], 1.1, 0.090, 0.010, 18, 2000);
+    drift(words[4], "x", -120, 120, 40, 60);
+    drift(words[4], "y", -10,   10, 32, 50);
 
-    // w6 — 120px, carries the warm roaming light
-    drift(words[5], "x", -240, 240, 25, 44);
-    drift(words[5], "y", -32,   32, 18, 32);
-    gsap.to(words[5], { scaleY: 1.42, duration: 16, ease: "sine.inOut", yoyo: true, repeat: -1 });
+    // w6 — carries warm light, medium surge
+    depthCycle(words[5], 2.0, 0.048, 0.006, 32, 4200);
+    drift(words[5], "x", -350, 350, 30, 50);
+    drift(words[5], "y", -22,   22, 22, 38);
 
-    // ── Two warm roaming lights — subtle, lighting the letters from within ──
+    // ── Two warm roaming lights lighting the letters from within ──
     light.style.webkitBackgroundClip = "text";
     light.style.backgroundClip = "text";
     light.style.color = "transparent";
     light.style.webkitTextFillColor = "transparent";
     const lts = [
-      { x: 20, y: 100, size: 160, op: 0.13 },
-      { x: 75, y: 0,   size: 120, op: 0.10 },
+      { x: 22, y: 80, size: 200, op: 0.28 },
+      { x: 72, y: 20, size: 160, op: 0.22 },
     ];
     const updateLights = () => {
       light.style.backgroundImage = lts.map(l =>
-        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.55)}px at ${l.x}% ${l.y}%, rgba(242,228,200,${l.op}) 0%, transparent 72%)`
+        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.5)}px at ${l.x}% ${l.y}%, rgba(238,218,180,${l.op}) 0%, transparent 68%)`
       ).join(", ");
     };
     updateLights();
     const roamLight = (l, ax) => {
-      const linger = Math.random() < 0.3;
-      const target = linger
-        ? l[ax] + (Math.random() - 0.5) * 12
-        : (ax === "x" ? 5 + Math.random() * 90 : 0 + Math.random() * 100);
+      const linger = Math.random() < 0.25;
+      const target = linger ? l[ax] + (Math.random() - 0.5) * 10 : 8 + Math.random() * 84;
       gsap.to(l, {
         [ax]: target,
-        duration: linger ? 2 + Math.random() * 5 : 8 + Math.random() * 22,
+        duration: linger ? 3 + Math.random() * 6 : 10 + Math.random() * 25,
         ease: "sine.inOut",
         onUpdate: updateLights,
         onComplete: () => roamLight(l, ax),
       });
     };
-    lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 800));
-
-    // ── Gentle spotlight — one word breathes up, then recedes quietly ──
-    const BASE_OP = [0.010, 0.016, 0.020, 0.026, 0.032, 0.020];
-    let spotActive = -1;
-    const spotlight = () => {
-      let pick = spotActive;
-      while (pick === spotActive) pick = Math.floor(Math.random() * 6);
-      if (spotActive >= 0 && words[spotActive]) {
-        gsap.to(words[spotActive], { opacity: BASE_OP[spotActive], duration: 3.5, ease: "power2.inOut", overwrite: "auto" });
-      }
-      spotActive = pick;
-      const el = words[pick];
-      if (!el) { setTimeout(spotlight, 5000 + Math.random() * 8000); return; }
-      gsap.to(el, { opacity: 0.18 + Math.random() * 0.12, duration: 2.5 + Math.random() * 1.5, ease: "power2.out", overwrite: "auto",
-        onComplete: () => {
-          gsap.to(el, { opacity: BASE_OP[pick], duration: 4 + Math.random() * 4, ease: "power2.inOut", delay: 1 + Math.random() * 2,
-            onComplete: () => setTimeout(spotlight, 4000 + Math.random() * 9000)
-          });
-        }
-      });
-    };
-    setTimeout(spotlight, 3000);
+    lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 1000));
 
     return () => {
       words.forEach(w => w && gsap.killTweensOf(w));
@@ -933,25 +934,21 @@ export function CommissionsSection() {
 
       {/* Desktop horizontal fan — hidden below md */}
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
-        {/* UPDATING — 6 words, fluid depth drift */}
+        {/* UPDATING — 6 words surging in/out of depth */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          {/* w1 — huge background, very dim, slow */}
-          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transform: "translate(-50%,-50%)", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "320px", lineHeight: 1, letterSpacing: "0.08em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.010 }}>UPDATING</span>
-          {/* w2 — large, slightly brighter, mid drift */}
-          <span className="updtg-w2" style={{ position: "absolute", display: "inline-block", top: "40%", left: "20%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "200px", lineHeight: 1, letterSpacing: "0.12em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.016 }}>UPDATING</span>
-          {/* w3 — mid size, different Y zone */}
-          <span className="updtg-w3" style={{ position: "absolute", display: "inline-block", top: "60%", left: "55%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "140px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.020 }}>UPDATING</span>
-          {/* w4 — smaller, feels closer, drifts faster */}
-          <span className="updtg-w4" style={{ position: "absolute", display: "inline-block", top: "30%", left: "60%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "90px", lineHeight: 1, letterSpacing: "0.14em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.026 }}>UPDATING</span>
-          {/* w5 — smallest, brightest — feels nearest */}
-          <span className="updtg-w5" style={{ position: "absolute", display: "inline-block", top: "55%", left: "10%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "70px", lineHeight: 1, letterSpacing: "0.16em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0.032 }}>UPDATING</span>
-          {/* w6 — mid size with roaming light overlay */}
-          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "35%", left: "35%", opacity: 0.020 }}>
-            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "120px", lineHeight: 1, letterSpacing: "0.11em", color: "rgb(242,240,233)", whiteSpace: "nowrap" }}>
+          {/* All words centered; GSAP controls scale/opacity/x/y from mount */}
+          {["updtg-w1","updtg-w2","updtg-w3","updtg-w4","updtg-w5"].map(cls => (
+            <span key={cls} className={cls} style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0, transformOrigin: "center center" }}>UPDATING</span>
+          ))}
+          {/* w6 carries the warm light overlay */}
+          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
+            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap" }}>
               UPDATING
-              <span aria-hidden="true" className="coming-soon-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "120px", lineHeight: 1, letterSpacing: "0.11em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
+              <span aria-hidden="true" className="coming-soon-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
             </span>
           </span>
+          {/* Ambient warm wash over the whole strip */}
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
         </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
