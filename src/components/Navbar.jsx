@@ -245,8 +245,8 @@ export default function Navbar({ quoteCount = 0 }) {
               className="px-5 py-2 rounded-full text-cream/80 text-sm font-semibold whitespace-nowrap select-none"
               style={{ background: "#373020", borderRadius: "0.6rem", boxShadow: "inset 0 -1.5px 0 rgba(255,255,255,0.18), inset 0 1.5px 0 rgba(0,0,0,0.45), inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.35)", transition: "box-shadow 0.1s ease, transform 0.1s ease" }}
               onMouseDown={e => { e.currentTarget.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.5), inset 0 -0.5px 0 rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(0.97)"; }}
-              onMouseUp={e => { e.currentTarget.style.boxShadow = "inset 0 1.5px 0 rgba(255,255,255,0.18), inset 0 -1.5px 0 rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "inset 0 1.5px 0 rgba(255,255,255,0.18), inset 0 -1.5px 0 rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
+              onMouseUp={e => { e.currentTarget.style.boxShadow = "inset 0 -1.5px 0 rgba(255,255,255,0.18), inset 0 1.5px 0 rgba(0,0,0,0.45), inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "inset 0 -1.5px 0 rgba(255,255,255,0.18), inset 0 1.5px 0 rgba(0,0,0,0.45), inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
             >
               Request a Quote
             </a>
@@ -343,8 +343,8 @@ export default function Navbar({ quoteCount = 0 }) {
             className="px-8 py-3 rounded-full text-cream/80 font-semibold whitespace-nowrap select-none"
               style={{ background: "#373020", borderRadius: "0.6rem", boxShadow: "inset 0 -1.5px 0 rgba(255,255,255,0.18), inset 0 1.5px 0 rgba(0,0,0,0.45), inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.35)", transition: "box-shadow 0.1s ease, transform 0.1s ease" }}
               onMouseDown={e => { e.currentTarget.style.boxShadow = "inset 0 2px 4px rgba(0,0,0,0.5), inset 0 -0.5px 0 rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "scale(0.97)"; }}
-              onMouseUp={e => { e.currentTarget.style.boxShadow = "inset 0 1.5px 0 rgba(255,255,255,0.18), inset 0 -1.5px 0 rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "inset 0 1.5px 0 rgba(255,255,255,0.18), inset 0 -1.5px 0 rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
+              onMouseUp={e => { e.currentTarget.style.boxShadow = "inset 0 -1.5px 0 rgba(255,255,255,0.18), inset 0 1.5px 0 rgba(0,0,0,0.45), inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "inset 0 -1.5px 0 rgba(255,255,255,0.18), inset 0 1.5px 0 rgba(0,0,0,0.45), inset 0 3px 8px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.35)"; e.currentTarget.style.transform = "scale(1)"; }}
           >
             Request a Quote
           </a>
