@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { X } from "lucide-react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 
@@ -98,6 +99,19 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
+// Tight pulse rings for the standalone center portal
+function PulseRings({ active, size }) {
+  if (!active) return null;
+  const inset = -(size * 0.04);
+  return (
+    <>
+      <span style={{ position: "absolute", inset, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.35)", animation: "portal-pulse-tight 2.2s ease-out infinite", pointerEvents: "none", zIndex: 50 }} />
+      <span style={{ position: "absolute", inset, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.22)", animation: "portal-pulse-tight 2.2s ease-out 0.75s infinite", pointerEvents: "none", zIndex: 50 }} />
+      <span style={{ position: "absolute", inset, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.12)", animation: "portal-pulse-tight 2.2s ease-out 1.5s infinite", pointerEvents: "none", zIndex: 50 }} />
+    </>
+  );
+}
+
 export function CommissionsSection() {
   const sectionRef = useRef(null);
   const leftRef = useRef(null);
@@ -109,6 +123,7 @@ export function CommissionsSection() {
   const practiceRevealRef = useRef(null);
   const playPracticeRef = useRef(null);
   const [fanOpen, setFanOpen] = useState(false);
+  const [hovering, setHovering] = useState(false);
   const [sculptureOpen, setSculptureOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
@@ -120,7 +135,7 @@ export function CommissionsSection() {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 
-  // Init: side portals hidden at center, Practice section collapsed
+  // Init: side portals hidden, Practice collapsed
   useEffect(() => {
     gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0 });
     if (practiceRevealRef.current) {
@@ -128,7 +143,7 @@ export function CommissionsSection() {
     }
   }, []);
 
-  // Fan open — triggered by clicking the center portal
+  // Fan open
   useEffect(() => {
     if (!fanOpen) return;
     if (window.innerWidth >= 768) {
@@ -150,7 +165,19 @@ export function CommissionsSection() {
     }
   }, [fanOpen]);
 
-  // Nav dropdown — open specific portal on event
+  // Close — collapse fan + Practice
+  const closeSection = () => {
+    gsap.to([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current],
+      { x: 0, opacity: 0, duration: 1.4, ease: "power2.in" });
+    const el = practiceRevealRef.current;
+    if (el) {
+      gsap.set(el, { overflow: "hidden" });
+      gsap.to(el, { height: 0, duration: 1.2, ease: "power3.inOut", onComplete: () => ScrollTrigger.refresh() });
+    }
+    setFanOpen(false);
+  };
+
+  // Nav dropdown
   useEffect(() => {
     const handler = (e) => {
       const cat = e.detail;
@@ -163,8 +190,9 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
-  // UPDATING — single word with depth breathe, drift, and light-from-below
+  // UPDATING — only runs once fan is open (elements exist in DOM)
   useEffect(() => {
+    if (!fanOpen) return;
     const w = document.querySelector(".updtg-w1");
     if (!w) return;
 
@@ -226,10 +254,11 @@ export function CommissionsSection() {
       gsap.killTweensOf(wash);
       lts.forEach(l => gsap.killTweensOf(l));
     };
-  }, []);
+  }, [fanOpen]);
 
-  // Running word — letters rain to base, word drifts full width, letters peel up, loops
+  // Running word — only starts when fan opens
   useEffect(() => {
+    if (!fanOpen) return;
     const letters = [...document.querySelectorAll(".updtg-run-l")];
     const container = document.querySelector(".updtg-run");
     if (!letters.length || !container) return;
@@ -249,7 +278,6 @@ export function CommissionsSection() {
       });
 
       const allIn = letters.length * 1.2 + 5.0;
-
       gsap.to(container, { x: stripWidth, duration: 45, ease: "none", delay: allIn });
 
       const shuffled = [...letters].sort(() => Math.random() - 0.5);
@@ -272,7 +300,7 @@ export function CommissionsSection() {
       if (timer) timer.kill();
       gsap.killTweensOf([container, ...letters]);
     };
-  }, []);
+  }, [fanOpen]);
 
   // Practice text — fired when fan opens
   useEffect(() => {
@@ -329,22 +357,28 @@ export function CommissionsSection() {
         </div>
       </div>
 
-      {/* Desktop horizontal fan */}
-      <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
-        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
-            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
-              UPDATING
-              <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
+      {/* Desktop horizontal fan — strip tall enough to show full portal */}
+      <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "280px" }}>
+
+        {/* UPDATING text — only rendered once fan is open */}
+        {fanOpen && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+            <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
+              <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
+                UPDATING
+                <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
+              </span>
             </span>
-          </span>
-          <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, height: "185px", display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
-            {"UPDATING".split("").map((ch, i) => (
-              <span key={i} className="updtg-run-l" style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.08)", opacity: 0 }}>{ch}</span>
-            ))}
+            <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, height: "280px", display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
+              {"UPDATING".split("").map((ch, i) => (
+                <span key={i} className="updtg-run-l" style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.08)", opacity: 0 }}>{ch}</span>
+              ))}
+            </div>
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
           </div>
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
-        </div>
+        )}
+
+        {/* Portal fan */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={110} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
@@ -352,9 +386,24 @@ export function CommissionsSection() {
           <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
-          <div className="relative z-10">
-            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" noGlow onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }} />
+
+          {/* Center portal — tight pulse rings on hover, opens fan on first click */}
+          <div className="relative z-10"
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+          >
+            <PulseRings active={hovering && !fanOpen} size={248} />
+            <MiniPortal
+              portal={SIDE_PORTAL_LEFT}
+              size={248}
+              hideLabel
+              hoverLabel={fanOpen ? "Screens" : "View"}
+              hoverLabelSize="16px"
+              noGlow
+              onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
+            />
           </div>
+
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
           </div>
@@ -362,11 +411,24 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
           </div>
         </div>
+
+        {/* Close button — appears when fan is open */}
+        {fanOpen && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+            <button
+              onClick={closeSection}
+              className="group w-8 h-8 rounded-full border border-cream/20 flex items-center justify-center transition-all duration-300 hover:border-clay hover:bg-clay/10"
+              aria-label="Close section"
+            >
+              <X size={13} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="w-full h-px bg-white/10" />
 
-      {/* The Practice — revealed when center portal is clicked */}
+      {/* The Practice — revealed when fan opens */}
       <div ref={practiceRevealRef}>
         <div className="pt-32 pb-0 flex flex-col items-center">
           <div className="relative flex items-center justify-center overflow-visible" style={{ width: "80px", height: "80px" }}>
