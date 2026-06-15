@@ -365,7 +365,7 @@ export function CommissionsSection() {
 
         {/* UPDATING text — always in the strip */}
         {!fanOpen && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+          <div className="absolute inset-0 pointer-events-none select-none overflow-visible">
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
               <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
                 UPDATING
