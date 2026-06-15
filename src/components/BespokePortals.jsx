@@ -481,19 +481,7 @@ export function CommissionsSection() {
         </div>
         <div style={{ height: "120px" }} />
 
-        {/* Close section — centred at base of Practice */}
-        <div className="flex flex-col items-center gap-3 pb-16">
-          <button
-            onClick={closeSection}
-            className="group flex items-center gap-3 font-detail text-[10px] text-cream/35 uppercase tracking-[0.25em] hover:text-clay transition-colors duration-400"
-            aria-label="Close section"
-          >
-            <span>Close</span>
-            <span className="w-6 h-6 rounded-full border border-cream/20 flex items-center justify-center group-hover:border-clay group-hover:bg-clay/10 transition-all duration-300">
-              <X size={10} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
-            </span>
-          </button>
-        </div>
+        <div style={{ height: "64px" }} />
       </div>
 
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
