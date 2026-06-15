@@ -433,7 +433,7 @@ export function CommissionsSection() {
 
       {/* The Practice — revealed when fan opens */}
       <div ref={practiceRevealRef}>
-        <div className="pt-64 pb-0 flex flex-col items-center">
+        <div style={{ paddingTop: "480px" }} className="pb-0 flex flex-col items-center">
           <div className="relative flex items-center justify-center overflow-visible" style={{ width: "80px", height: "80px" }}>
             <span ref={practiceLineRef} style={{
               position: "absolute", right: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
