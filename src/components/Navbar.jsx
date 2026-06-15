@@ -133,16 +133,16 @@ export default function Navbar({ quoteCount = 0 }) {
         ref={navRef}
         className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-1 px-2 py-2 transition-all duration-500 ${
           scrolled
-            ? "bg-cream/70 backdrop-blur-xl border border-warm-gray-light/30 shadow-lg rounded-[2rem]"
+            ? "backdrop-blur-xl border border-white/10 shadow-lg rounded-[2rem]"
             : "bg-transparent rounded-[2rem]"
         }`}
-        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)" }}
+        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "#36301f" : "transparent" }}
       >
         <a
           href="#"
           onClick={scrollTo("#")}
           className={`font-heading font-bold text-lg tracking-tight px-4 py-1 transition-colors duration-500 whitespace-nowrap ${
-            scrolled ? "text-moss" : "text-cream"
+            scrolled ? "text-cream" : "text-cream"
           }`}
         >
           ROGET<span className="font-normal italic font-drama">james</span>
@@ -151,7 +151,7 @@ export default function Navbar({ quoteCount = 0 }) {
         <div className="hidden md:flex items-center gap-1">
           {/* Collection dropdown */}
           <div className="relative" onMouseEnter={() => setCollectionOpen(true)} onMouseLeave={() => setCollectionOpen(false)}>
-            <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream"}`}>
+            <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>
               Collection
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${collectionOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -159,7 +159,7 @@ export default function Navbar({ quoteCount = 0 }) {
               <div className={`absolute top-full left-0 mt-1 rounded-2xl overflow-hidden shadow-xl border py-1 min-w-[160px] ${scrolled ? "bg-cream border-charcoal/10" : "bg-charcoal/95 border-white/10 backdrop-blur-xl"}`}>
                 {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }].map(({ label, tab }) => (
                   <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors duration-200 ${scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream hover:bg-white/5"}`}>
+                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors duration-200 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream hover:bg-white/5"}`}>
                     {label}
                   </button>
                 ))}
@@ -169,7 +169,7 @@ export default function Navbar({ quoteCount = 0 }) {
 
           {/* Bespoke dropdown */}
           <div className="relative" onMouseEnter={() => setBespokeOpen(true)} onMouseLeave={() => setBespokeOpen(false)}>
-            <button onClick={scrollTo("#bespoke")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream"}`}>
+            <button onClick={scrollTo("#bespoke")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>
               Bespoke
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${bespokeOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -177,7 +177,7 @@ export default function Navbar({ quoteCount = 0 }) {
               <div className={`absolute top-full left-0 mt-1 rounded-2xl overflow-hidden shadow-xl border py-1 min-w-[160px] ${scrolled ? "bg-cream border-charcoal/10" : "bg-charcoal/95 border-white/10 backdrop-blur-xl"}`}>
                 {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => (
                   <button key={cat} onClick={() => { setBespokeOpen(false); window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors duration-200 ${scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream hover:bg-white/5"}`}>
+                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors duration-200 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream hover:bg-white/5"}`}>
                     {label}
                   </button>
                 ))}
@@ -186,13 +186,13 @@ export default function Navbar({ quoteCount = 0 }) {
           </div>
 
           {/* Process */}
-          <a href="#process" onClick={scrollTo("#process")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 ${scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream"}`}>Process</a>
+          <a href="#process" onClick={scrollTo("#process")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>Process</a>
 
           {/* Catalogues dropdown */}
           <div className="relative" onMouseEnter={() => setCatOpen(true)} onMouseLeave={() => setCatOpen(false)}>
             <button
               className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${
-                scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream"
+                scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"
               }`}
             >
               Catalogues
@@ -212,7 +212,7 @@ export default function Navbar({ quoteCount = 0 }) {
                       setCatOpen(false);
                     }}
                     className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors duration-200 ${
-                      scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream hover:bg-white/5"
+                      scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream hover:bg-white/5"
                     }`}
                   >
                     {cat.label}
@@ -222,18 +222,18 @@ export default function Navbar({ quoteCount = 0 }) {
             )}
           </div>
           {/* Contact */}
-          <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 ${scrolled ? "text-charcoal/70 hover:text-charcoal hover:bg-charcoal/5" : "text-cream/70 hover:text-cream"}`}>Contact</a>
+          <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>Contact</a>
 
           <button
             onClick={() => setSearchOpen(true)}
-            className={`lift-hover p-2 rounded-full transition-colors duration-500 ${scrolled ? "text-charcoal/70 hover:text-charcoal" : "text-cream/70 hover:text-cream"}`}
+            className={`lift-hover p-2 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream" : "text-cream/70 hover:text-cream"}`}
             aria-label="Search"
           >
             <Search size={17} />
           </button>
           <button
             onClick={() => setClientPreviewOpen(true)}
-            className={`lift-hover p-2 rounded-full transition-colors duration-500 ${scrolled ? "text-charcoal/70 hover:text-charcoal" : "text-cream/70 hover:text-cream"}`}
+            className={`lift-hover p-2 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream" : "text-cream/70 hover:text-cream"}`}
             aria-label="Client Preview"
             title="Client Preview"
           >
@@ -257,7 +257,7 @@ export default function Navbar({ quoteCount = 0 }) {
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className={`md:hidden p-2 rounded-full transition-colors duration-500 ${
-            scrolled ? "text-charcoal" : "text-cream"
+            scrolled ? "text-cream" : "text-cream"
           }`}
           aria-label="Toggle menu"
         >
