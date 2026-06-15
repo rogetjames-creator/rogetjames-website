@@ -675,6 +675,9 @@ export function CommissionsSection() {
   const rightOuterRef = useRef(null);
   const practiceLineRef = useRef(null);
   const practiceLineRightRef = useRef(null);
+  const practiceRevealRef = useRef(null);
+  const playPracticeRef = useRef(null);
+  const [fanOpen, setFanOpen] = useState(false);
   const [sculptureOpen, setSculptureOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
@@ -686,22 +689,35 @@ export function CommissionsSection() {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 
+  // Init: side portals hidden at center, Practice section collapsed
   useEffect(() => {
     gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0 });
-
-    const ctx = gsap.context(() => {
-      const mob = window.innerWidth < 768;
-      const st = { trigger: sectionRef.current, start: "top 75%", end: "bottom 20%", toggleActions: "play reverse play reverse" };
-      if (!mob) {
-        gsap.fromTo(leftRef.current,      { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out", scrollTrigger: st });
-        gsap.fromTo(rightRef.current,     { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out", scrollTrigger: st });
-        gsap.fromTo(leftOuterRef.current, { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out", scrollTrigger: st });
-        gsap.fromTo(rightOuterRef.current,{ x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out", scrollTrigger: st });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
+    if (practiceRevealRef.current) {
+      gsap.set(practiceRevealRef.current, { height: 0, overflow: "hidden" });
+    }
   }, []);
+
+  // Fan open — triggered by clicking the center portal
+  useEffect(() => {
+    if (!fanOpen) return;
+    if (window.innerWidth >= 768) {
+      gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out" });
+      gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out" });
+      gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out" });
+      gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out" });
+    }
+    const el = practiceRevealRef.current;
+    if (el) {
+      gsap.to(el, {
+        height: "auto", duration: 1.6, ease: "power3.inOut", delay: 0.6,
+        clearProps: "overflow",
+        onComplete: () => {
+          ScrollTrigger.refresh();
+          playPracticeRef.current?.();
+        },
+      });
+    }
+  }, [fanOpen]);
 
   // Nav dropdown — open specific portal on event
   useEffect(() => {
@@ -856,57 +872,25 @@ export function CommissionsSection() {
     };
   }, []);
 
-  // Practice text — split bright/dim animations
+  // Practice text — fired when fan opens (not scroll-triggered)
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Set all text invisible to start
-      gsap.set(".about-practice-label", { y: -10, opacity: 0 });
-      gsap.set(".para1-bright", { x: 28, opacity: 0 });
-      gsap.set(".para1-dim",    { x: -28, opacity: 0 });
-      gsap.set(".para2-bright", { x: 28, opacity: 0 });
-      gsap.set(".para2-dim",    { opacity: 0 });
+    gsap.set(".about-practice-label", { y: -10, opacity: 0 });
+    gsap.set(".para1-bright",   { x: 28, opacity: 0 });
+    gsap.set(".para1-dim-word", { opacity: 0 });
+    gsap.set(".para2-bright",   { x: 28, opacity: 0 });
+    gsap.set(".para2-dim",      { opacity: 0 });
+    gsap.set(practiceLineRef.current,      { scaleX: 0 });
+    gsap.set(practiceLineRightRef.current, { scaleX: 0 });
 
-      const resetAll = () => {
-        gsap.killTweensOf(".about-practice-label, .para1-bright, .para1-dim-word, .para2-bright, .para2-dim");
-        gsap.set(".about-practice-label", { y: -10, opacity: 0 });
-        gsap.set(".para1-bright",   { x: 28, opacity: 0 });
-        gsap.set(".para1-dim-word", { opacity: 0 });
-        gsap.set(".para2-bright",   { x: 28, opacity: 0 });
-        gsap.set(".para2-dim",      { opacity: 0 });
-      };
-
-      const playAll = () => {
-        gsap.to(".about-practice-label", { y: 0, opacity: 1, duration: 1.8, ease: "power1.out" });
-        // Para 1 bright phrases drift in from the side
-        gsap.to(".para1-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 0.4 });
-        // Para 1 grey words fade in word by word after bright settled
-        gsap.to(".para1-dim-word", { opacity: 1, duration: 1.6, stagger: 0.28, ease: "power1.out", delay: 3.2 });
-        // Para 2 bright phrases — same behaviour as para 1
-        gsap.to(".para2-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 9.0 });
-        // Para 2 grey text fades in after bright settled
-        gsap.to(".para2-dim",      { opacity: 1, duration: 4.2, stagger: 0.65, ease: "power1.out", delay: 12.5 });
-      };
-
-      // Logo lines — open outward left and right
-      gsap.set(practiceLineRef.current, { scaleX: 0 });
-      gsap.set(practiceLineRightRef.current, { scaleX: 0 });
-      ScrollTrigger.create({
-        trigger: ".about-practice-label",
-        start: "top 82%",
-        onEnter: () => {
-          gsap.to(practiceLineRef.current,      { scaleX: 1, duration: 1.1, ease: "power3.out" });
-          gsap.to(practiceLineRightRef.current, { scaleX: 1, duration: 1.1, ease: "power3.out" });
-          resetAll(); playAll();
-        },
-        onLeaveBack: () => {
-          gsap.set(practiceLineRef.current,      { scaleX: 0 });
-          gsap.set(practiceLineRightRef.current, { scaleX: 0 });
-          resetAll();
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
+    playPracticeRef.current = () => {
+      gsap.to(practiceLineRef.current,      { scaleX: 1, duration: 1.1, ease: "power3.out" });
+      gsap.to(practiceLineRightRef.current, { scaleX: 1, duration: 1.1, ease: "power3.out" });
+      gsap.to(".about-practice-label", { y: 0, opacity: 1, duration: 1.8, ease: "power1.out" });
+      gsap.to(".para1-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 0.4 });
+      gsap.to(".para1-dim-word", { opacity: 1, duration: 1.6, stagger: 0.28, ease: "power1.out", delay: 3.2 });
+      gsap.to(".para2-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 9.0 });
+      gsap.to(".para2-dim",      { opacity: 1, duration: 4.2, stagger: 0.65, ease: "power1.out", delay: 12.5 });
+    };
   }, []);
 
   return (
@@ -970,7 +954,7 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
           <div className="relative z-10">
-            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" noGlow onOpen={() => setScreensOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" noGlow onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }} />
           </div>
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
@@ -983,7 +967,8 @@ export function CommissionsSection() {
 
       <div className="w-full h-px bg-white/10" />
 
-      {/* The Practice */}
+      {/* The Practice — revealed when center portal is clicked */}
+      <div ref={practiceRevealRef}>
       <div className="pt-32 pb-0 flex flex-col items-center">
         <div className="relative flex items-center justify-center overflow-visible" style={{ width: "80px", height: "80px" }}>
           <span ref={practiceLineRef} style={{
@@ -1033,6 +1018,7 @@ export function CommissionsSection() {
 
 
       <div style={{ height: "220px" }} />
+      </div>{/* end practiceRevealRef */}
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
       {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
