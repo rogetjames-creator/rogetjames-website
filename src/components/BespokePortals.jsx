@@ -122,6 +122,7 @@ export function CommissionsSection() {
   const practiceLineRightRef = useRef(null);
   const practiceRevealRef = useRef(null);
   const playPracticeRef = useRef(null);
+  const stripRef = useRef(null);
   const [fanOpen, setFanOpen] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [sculptureOpen, setSculptureOpen] = useState(false);
@@ -143,19 +144,28 @@ export function CommissionsSection() {
     }
   }, []);
 
-  // Fan open
+  // Fan open — strip expands first, then portals fan out
   useEffect(() => {
     if (!fanOpen) return;
-    if (window.innerWidth >= 768) {
-      gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out" });
-      gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out" });
-      gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out" });
-      gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out" });
-    }
+    // 1. Expand strip from 140px to 280px, then open overflow so fan can spill
+    gsap.to(stripRef.current, {
+      height: 280, duration: 0.9, ease: "power3.inOut",
+      onComplete: () => {
+        if (stripRef.current) stripRef.current.style.overflow = "visible";
+        // 2. Fan portals after strip is open
+        if (window.innerWidth >= 768) {
+          gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out" });
+          gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out" });
+          gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out" });
+          gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out" });
+        }
+      },
+    });
+    // 3. Reveal Practice after strip + fan settle
     const el = practiceRevealRef.current;
     if (el) {
       gsap.to(el, {
-        height: "auto", duration: 1.6, ease: "power3.inOut", delay: 0.6,
+        height: "auto", duration: 1.6, ease: "power3.inOut", delay: 1.4,
         clearProps: "overflow",
         onComplete: () => {
           ScrollTrigger.refresh();
@@ -165,15 +175,20 @@ export function CommissionsSection() {
     }
   }, [fanOpen]);
 
-  // Close — collapse fan + Practice
+  // Close — collapse fan + Practice + shrink strip
   const closeSection = () => {
     gsap.to([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current],
-      { x: 0, opacity: 0, duration: 1.4, ease: "power2.in" });
+      { x: 0, opacity: 0, duration: 1.0, ease: "power2.in" });
     const el = practiceRevealRef.current;
     if (el) {
       gsap.set(el, { overflow: "hidden" });
-      gsap.to(el, { height: 0, duration: 1.2, ease: "power3.inOut", onComplete: () => ScrollTrigger.refresh() });
+      gsap.to(el, { height: 0, duration: 1.0, ease: "power3.inOut" });
     }
+    if (stripRef.current) stripRef.current.style.overflow = "hidden";
+    gsap.to(stripRef.current, {
+      height: 140, duration: 0.9, ease: "power3.inOut", delay: 0.6,
+      onComplete: () => ScrollTrigger.refresh(),
+    });
     setFanOpen(false);
   };
 
@@ -357,8 +372,8 @@ export function CommissionsSection() {
         </div>
       </div>
 
-      {/* Desktop horizontal fan — strip tall enough to show full portal */}
-      <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "280px" }}>
+      {/* Desktop horizontal fan — starts half-height, expands on click */}
+      <div ref={stripRef} className="bg-matt-black px-8 relative hidden md:block" style={{ height: "140px", overflow: "hidden" }}>
 
         {/* UPDATING text — only rendered once fan is open */}
         {fanOpen && (
