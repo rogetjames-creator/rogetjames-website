@@ -242,7 +242,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="relative ml-1">
             <a
               href="#contact"
-              className="px-5 py-2 rounded-full bg-clay text-cream text-sm font-semibold whitespace-nowrap"
+              className="px-5 py-2 rounded-full text-cream text-sm font-semibold whitespace-nowrap" style={{ background: "#36301f" }}
             >
               Request a Quote
             </a>
@@ -336,7 +336,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <a
             href="#contact"
             onClick={scrollTo("#contact", true)}
-            className="px-8 py-3 rounded-full bg-clay text-cream font-semibold whitespace-nowrap"
+            className="px-8 py-3 rounded-full text-cream font-semibold whitespace-nowrap" style={{ background: "#36301f" }}
           >
             Request a Quote
           </a>
