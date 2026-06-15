@@ -745,18 +745,18 @@ export function CommissionsSection() {
 
     words.forEach(w => w && gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" }));
 
-    const BASE = [0.011, 0.009, 0.012, 0.009, 0.011, 0.010];
-    words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i], scale: 0.1, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" }));
+    const BASE = [0.055, 0.042, 0.060, 0.038, 0.050, 0.045];
+    words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i], scale: 0.5, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" }));
 
     // Depth — pure fromTo yoyo, no proxy, perfectly smooth. Each word staggered in phase.
     // [minScale, maxScale, halfCycleDuration, phaseDelay]
     const DEPTH = [
-      [0.08, 2.8, 42, 0],
-      [0.08, 2.1, 34, 8],
-      [0.08, 2.5, 29, 15],
-      [0.08, 1.8, 25, 22],
-      [0.08, 2.3, 38, 5],
-      [0.08, 1.6, 21, 18],
+      [0.18, 2.8, 42, 0],
+      [0.18, 2.1, 34, 8],
+      [0.18, 2.5, 29, 15],
+      [0.18, 1.8, 25, 22],
+      [0.18, 2.3, 38, 5],
+      [0.18, 1.6, 21, 18],
     ];
     words.forEach((w, i) => {
       if (!w) return;
@@ -788,8 +788,8 @@ export function CommissionsSection() {
       const el = words[pick];
       if (!el) { setTimeout(illuminate, 3000 + Math.random() * 5000); return; }
       gsap.to(el, {
-        opacity: 0.13 + Math.random() * 0.09,
-        filter: `drop-shadow(0 0 ${14 + Math.random() * 10}px rgba(210,165,70,0.45))`,
+        opacity: 0.28 + Math.random() * 0.14,
+        filter: `drop-shadow(0 0 ${18 + Math.random() * 14}px rgba(210,165,70,0.60))`,
         duration: 3.5 + Math.random() * 3.5,
         ease: "sine.inOut",
         overwrite: false,
@@ -805,6 +805,37 @@ export function CommissionsSection() {
       });
     };
     setTimeout(illuminate, 1500);
+
+    // Warm light sweeping over the letters of w6
+    const light = document.querySelector(".coming-soon-light");
+    if (light) {
+      light.style.webkitBackgroundClip = "text";
+      light.style.backgroundClip = "text";
+      light.style.color = "transparent";
+      light.style.webkitTextFillColor = "transparent";
+      const lts = [
+        { x: 15, y: 50, size: 220, op: 0.55 },
+        { x: 70, y: 50, size: 170, op: 0.42 },
+      ];
+      const updateLights = () => {
+        light.style.backgroundImage = lts.map(l =>
+          `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.5)}px at ${l.x}% ${l.y}%, rgba(235,200,130,${l.op}) 0%, transparent 65%)`
+        ).join(", ");
+      };
+      updateLights();
+      const roamLight = (l, ax) => {
+        const linger = Math.random() < 0.25;
+        const target = linger ? l[ax] + (Math.random() - 0.5) * 10 : 5 + Math.random() * 90;
+        gsap.to(l, {
+          [ax]: target,
+          duration: linger ? 3 + Math.random() * 5 : 9 + Math.random() * 20,
+          ease: "sine.inOut",
+          onUpdate: updateLights,
+          onComplete: () => roamLight(l, ax),
+        });
+      };
+      lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 900));
+    }
 
     return () => words.forEach(w => w && gsap.killTweensOf(w));
   }, []);
@@ -900,9 +931,16 @@ export function CommissionsSection() {
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
         {/* UPDATING — 6 words surging in/out of depth, some illuminate randomly */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          {["updtg-w1","updtg-w2","updtg-w3","updtg-w4","updtg-w5","updtg-w6"].map(cls => (
+          {["updtg-w1","updtg-w2","updtg-w3","updtg-w4","updtg-w5"].map(cls => (
             <span key={cls} className={cls} style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0, transformOrigin: "center center" }}>UPDATING</span>
           ))}
+          {/* w6 — warm light sweeps through the letters */}
+          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
+            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap" }}>
+              UPDATING
+              <span aria-hidden="true" className="coming-soon-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
+            </span>
+          </span>
           {/* Ambient warm wash */}
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
         </div>
