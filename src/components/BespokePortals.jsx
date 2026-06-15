@@ -169,7 +169,13 @@ export function CommissionsSection() {
         clearProps: "overflow",
         onComplete: () => {
           ScrollTrigger.refresh();
-          playPracticeRef.current?.();
+          // Practice text fires on scroll into view
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 75%",
+            once: true,
+            onEnter: () => playPracticeRef.current?.(),
+          });
         },
       });
     }
@@ -391,6 +397,7 @@ export function CommissionsSection() {
               portal={SIDE_PORTAL_LEFT}
               size={248}
               hideLabel
+              noGlow
               hoverLabel={fanOpen ? "Screens" : "View"}
               hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
