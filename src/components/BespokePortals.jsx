@@ -149,7 +149,7 @@ export function CommissionsSection() {
     if (!fanOpen) return;
     // 1. Expand strip from 140px to 280px, then open overflow so fan can spill
     gsap.to(stripRef.current, {
-      height: 280, duration: 0.9, ease: "power3.inOut",
+      height: 160, duration: 0.9, ease: "power3.inOut",
       onComplete: () => {
         if (stripRef.current) stripRef.current.style.overflow = "visible";
         // 2. Fan portals after strip is open
