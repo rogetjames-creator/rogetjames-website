@@ -169,12 +169,22 @@ export function CommissionsSection() {
         clearProps: "overflow",
         onComplete: () => {
           ScrollTrigger.refresh();
-          ScrollTrigger.create({
-            trigger: practiceLineRef.current,
-            start: "top 80%",
-            once: true,
-            onEnter: () => playPracticeRef.current?.(),
-          });
+          setTimeout(() => {
+            ScrollTrigger.refresh();
+            const el = practiceLineRef.current;
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight) {
+              playPracticeRef.current?.();
+            } else {
+              ScrollTrigger.create({
+                trigger: el,
+                start: "top bottom",
+                once: true,
+                onEnter: () => playPracticeRef.current?.(),
+              });
+            }
+          }, 200);
         },
       });
     }
