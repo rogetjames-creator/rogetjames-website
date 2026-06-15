@@ -794,31 +794,36 @@ export function CommissionsSection() {
 
   }, []);
 
-  // Running word — letters fall in, whole word runs full width of strip, letters fly up, loop
+  // Running word — letters rain from top to base of strip, word drifts full width, letters peel up, loop
   useEffect(() => {
     const letters = [...document.querySelectorAll(".updtg-run-l")];
     const container = document.querySelector(".updtg-run");
     if (!letters.length || !container) return;
 
     const stripWidth = container.parentElement?.offsetWidth || 1200;
+    let alive = true;
+    let timer = null;
 
     const runCycle = () => {
+      if (!alive) return;
+      gsap.killTweensOf([container, ...letters]);
       gsap.set(container, { x: 0 });
-      gsap.set(letters, { y: -200, opacity: 0 });
+      // Start letters above the strip, land at y:0 (base)
+      gsap.set(letters, { y: -300, opacity: 0 });
 
-      // Letters rain down one by one, left to right — slow and heavy
+      // Rain down one by one — slow, heavy
       letters.forEach((el, i) => {
         gsap.to(el, {
           y: 0, opacity: 1.0,
           duration: 4.0 + Math.random() * 2.0,
-          ease: "power1.out",
+          ease: "power2.out",
           delay: i * 1.2,
         });
       });
 
-      const allIn = letters.length * 1.2 + 4.0;
+      const allIn = letters.length * 1.2 + 5.0;
 
-      // Whole word drifts slowly across the full strip
+      // Full-strip slow drift
       gsap.to(container, {
         x: stripWidth,
         duration: 45,
@@ -826,23 +831,29 @@ export function CommissionsSection() {
         delay: allIn,
       });
 
-      // While moving — random letters drift upward one at a time, slow
+      // Letters peel up individually while drifting
       const shuffled = [...letters].sort(() => Math.random() - 0.5);
       shuffled.forEach((el, i) => {
         gsap.to(el, {
-          y: -(80 + Math.random() * 80),
+          y: -(100 + Math.random() * 80),
           opacity: 0,
-          duration: 3.5 + Math.random() * 2.0,
+          duration: 4.0 + Math.random() * 2.0,
           ease: "power1.inOut",
-          delay: allIn + 4 + i * (4.0 + Math.random() * 2.5),
+          delay: allIn + 5 + i * (4.5 + Math.random() * 2.5),
         });
       });
 
-      const totalTime = allIn + 4 + shuffled.length * 6.5 + 4;
-      gsap.delayedCall(totalTime, () => runCycle());
+      const totalTime = allIn + 5 + shuffled.length * 7.0 + 5;
+      timer = gsap.delayedCall(totalTime, () => { if (alive) runCycle(); });
     };
 
     runCycle();
+
+    return () => {
+      alive = false;
+      if (timer) timer.kill();
+      gsap.killTweensOf([container, ...letters]);
+    };
   }, []);
 
   // Practice text — split bright/dim animations
@@ -943,9 +954,9 @@ export function CommissionsSection() {
             </span>
           </span>
           {/* Running word — letters fall in, word runs full width, letters fly up */}
-          <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
+          <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, height: "185px", display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
             {"UPDATING".split("").map((ch, i) => (
-              <span key={i} className={`updtg-run-l`} style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.05)", opacity: 0 }}>{ch}</span>
+              <span key={i} className={`updtg-run-l`} style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.08)", opacity: 0 }}>{ch}</span>
             ))}
           </div>
           {/* Ambient warm wash */}
