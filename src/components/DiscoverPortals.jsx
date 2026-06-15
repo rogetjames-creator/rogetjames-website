@@ -738,39 +738,36 @@ export function CommissionsSection() {
   }, []);
 
 
-  // UPDATING — 6 words surging in/out of depth, warm roaming light
+  // UPDATING — 6 words, depth surge + independent random illumination
   useEffect(() => {
     const words = [1,2,3,4,5,6].map(n => document.querySelector(`.updtg-w${n}`));
-    const light = document.querySelector(".coming-soon-light");
-    if (!words[0] || !light) return;
+    if (!words[0]) return;
 
-    // Center all words — GSAP owns the transform, so use xPercent/yPercent
+    // Center all words — GSAP owns transform
     words.forEach(w => w && gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" }));
 
-    // Each word surges between a far state (small, dim) and a near state (large, brighter)
-    // scale 0.15 = tiny speck far away, scale 2.8 = fills the strip
-    const depthCycle = (el, nearScale, nearOp, farOp, dur, startDelay) => {
-      const proxy = { t: 0 }; // 0 = far, 1 = near
-      const startT = Math.random(); // random phase so words aren't in sync
-      gsap.set(proxy, { t: startT });
-      const apply = () => {
-        const t = proxy.t;
-        gsap.set(el, { scale: 0.12 + t * nearScale, opacity: farOp + t * (nearOp - farOp) });
-      };
+    // Base opacity per word — very dim resting state
+    const BASE = [0.012, 0.010, 0.013, 0.011, 0.012, 0.010];
+    words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i] }));
+
+    // Depth cycle — scale only, no opacity (opacity managed separately)
+    const depthCycle = (el, minScale, maxScale, dur, startDelay) => {
+      const proxy = { t: Math.random() };
+      const apply = () => gsap.set(el, { scale: minScale + proxy.t * (maxScale - minScale) });
       apply();
-      const animate = (toT) => {
+      const go = (toT) => {
         gsap.to(proxy, {
           t: toT,
-          duration: dur + Math.random() * dur * 0.6,
+          duration: dur + Math.random() * dur * 0.5,
           ease: "sine.inOut",
           onUpdate: apply,
-          onComplete: () => animate(toT === 0 ? 1 : 0),
+          onComplete: () => go(toT === 0 ? 1 : 0),
         });
       };
-      setTimeout(() => animate(startT > 0.5 ? 0 : 1), startDelay);
+      setTimeout(() => go(proxy.t > 0.5 ? 0 : 1), startDelay);
     };
 
-    // Fluid X/Y drift — queues next at 65% through so motion never pauses
+    // Fluid X/Y drift — next move queues at 65% so motion never pauses
     const drift = (el, axis, min, max, minDur, maxDur) => {
       const go = () => {
         const target = min + Math.random() * (max - min);
@@ -781,68 +778,54 @@ export function CommissionsSection() {
       setTimeout(go, Math.random() * 6000);
     };
 
-    // w1 — surges deep in and out, slow, drifts far left/right
-    depthCycle(words[0], 2.6, 0.055, 0.005, 38, 0);
+    depthCycle(words[0], 0.12, 2.6, 38, 0);
     drift(words[0], "x", -500, 500, 40, 65);
-    drift(words[0], "y", -20,   20, 30, 50);
+    drift(words[0], "y", -20, 20, 30, 50);
 
-    // w2 — medium surge, drifts broadly
-    depthCycle(words[1], 1.9, 0.045, 0.006, 30, 1200);
+    depthCycle(words[1], 0.12, 1.9, 30, 1200);
     drift(words[1], "x", -380, 420, 32, 52);
-    drift(words[1], "y", -25,   25, 24, 40);
+    drift(words[1], "y", -25, 25, 24, 40);
 
-    // w3 — quicker surge, stays more central
-    depthCycle(words[2], 2.2, 0.050, 0.005, 26, 3500);
+    depthCycle(words[2], 0.12, 2.2, 26, 3500);
     drift(words[2], "x", -300, 300, 28, 46);
-    drift(words[2], "y", -18,   18, 20, 36);
+    drift(words[2], "y", -18, 18, 20, 36);
 
-    // w4 — mostly illuminates, gentle surge, drifts slowly
-    depthCycle(words[3], 1.4, 0.070, 0.008, 22, 5000);
-    drift(words[3], "x", -250, 250, 35, 55);
-    drift(words[3], "y", -15,   15, 28, 44);
+    depthCycle(words[3], 0.12, 1.6, 22, 5000);
+    drift(words[3], "x", -260, 260, 35, 55);
+    drift(words[3], "y", -15, 15, 28, 44);
 
-    // w5 — stationary-ish, just breathes light in and out
-    depthCycle(words[4], 1.1, 0.090, 0.010, 18, 2000);
-    drift(words[4], "x", -120, 120, 40, 60);
-    drift(words[4], "y", -10,   10, 32, 50);
+    depthCycle(words[4], 0.12, 2.0, 34, 2000);
+    drift(words[4], "x", -420, 380, 38, 58);
+    drift(words[4], "y", -20, 20, 30, 48);
 
-    // w6 — carries warm light, medium surge
-    depthCycle(words[5], 2.0, 0.048, 0.006, 32, 4200);
+    depthCycle(words[5], 0.12, 1.7, 28, 4200);
     drift(words[5], "x", -350, 350, 30, 50);
-    drift(words[5], "y", -22,   22, 22, 38);
+    drift(words[5], "y", -22, 22, 22, 38);
 
-    // ── Two warm roaming lights lighting the letters from within ──
-    light.style.webkitBackgroundClip = "text";
-    light.style.backgroundClip = "text";
-    light.style.color = "transparent";
-    light.style.webkitTextFillColor = "transparent";
-    const lts = [
-      { x: 22, y: 80, size: 200, op: 0.28 },
-      { x: 72, y: 20, size: 160, op: 0.22 },
-    ];
-    const updateLights = () => {
-      light.style.backgroundImage = lts.map(l =>
-        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.5)}px at ${l.x}% ${l.y}%, rgba(238,218,180,${l.op}) 0%, transparent 68%)`
-      ).join(", ");
-    };
-    updateLights();
-    const roamLight = (l, ax) => {
-      const linger = Math.random() < 0.25;
-      const target = linger ? l[ax] + (Math.random() - 0.5) * 10 : 8 + Math.random() * 84;
-      gsap.to(l, {
-        [ax]: target,
-        duration: linger ? 3 + Math.random() * 6 : 10 + Math.random() * 25,
+    // Random illumination — one word gently brightens on its own, then fades back
+    // Completely independent from depth/scale
+    const illuminate = () => {
+      const pick = Math.floor(Math.random() * 6);
+      const el = words[pick];
+      if (!el) { setTimeout(illuminate, 3000 + Math.random() * 5000); return; }
+      gsap.to(el, {
+        opacity: 0.10 + Math.random() * 0.08,
+        duration: 3 + Math.random() * 4,
         ease: "sine.inOut",
-        onUpdate: updateLights,
-        onComplete: () => roamLight(l, ax),
+        overwrite: false,
+        onComplete: () => {
+          gsap.to(el, {
+            opacity: BASE[pick],
+            duration: 5 + Math.random() * 6,
+            ease: "sine.inOut",
+            onComplete: () => setTimeout(illuminate, 2000 + Math.random() * 7000),
+          });
+        },
       });
     };
-    lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 1000));
+    setTimeout(illuminate, 1500);
 
-    return () => {
-      words.forEach(w => w && gsap.killTweensOf(w));
-      lts.forEach(l => gsap.killTweensOf(l));
-    };
+    return () => words.forEach(w => w && gsap.killTweensOf(w));
   }, []);
 
   // Practice text — split bright/dim animations
@@ -934,20 +917,12 @@ export function CommissionsSection() {
 
       {/* Desktop horizontal fan — hidden below md */}
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
-        {/* UPDATING — 6 words surging in/out of depth */}
+        {/* UPDATING — 6 words surging in/out of depth, some illuminate randomly */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          {/* All words centered; GSAP controls scale/opacity/x/y from mount */}
-          {["updtg-w1","updtg-w2","updtg-w3","updtg-w4","updtg-w5"].map(cls => (
+          {["updtg-w1","updtg-w2","updtg-w3","updtg-w4","updtg-w5","updtg-w6"].map(cls => (
             <span key={cls} className={cls} style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap", opacity: 0, transformOrigin: "center center" }}>UPDATING</span>
           ))}
-          {/* w6 carries the warm light overlay */}
-          <span className="updtg-w6" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
-            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap" }}>
-              UPDATING
-              <span aria-hidden="true" className="coming-soon-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
-            </span>
-          </span>
-          {/* Ambient warm wash over the whole strip */}
+          {/* Ambient warm wash */}
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
         </div>
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
