@@ -170,13 +170,13 @@ export function CommissionsSection() {
         onComplete: () => {
           ScrollTrigger.refresh();
           const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight * 0.65) {
+          if (rect.top < window.innerHeight * 0.92) {
             // Already well into view — play immediately
             playPracticeRef.current?.();
           } else {
             ScrollTrigger.create({
               trigger: el,
-              start: "top 65%",
+              start: "top 92%",
               once: true,
               onEnter: () => playPracticeRef.current?.(),
             });
