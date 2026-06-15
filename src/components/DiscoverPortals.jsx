@@ -415,34 +415,13 @@ function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hove
         {/* Wrapper gives us a clean relative context outside the button's border-radius clipping */}
         <div style={{ position: "relative", display: "inline-block" }}>
           {/* Radiating lines — outside the button so border-radius can't clip them */}
-          {noGlow && (() => {
-            const total = 24;
-            const bw = size + 18;
-            const pad = 60; // extra space for lines to extend into
-            const svgW = bw + pad * 2;
-            const cx = svgW / 2;
-            const cy = svgW / 2;
-            const r1 = size / 2 + 16;
-            const r2 = r1 + 28;
-            const lines = Array.from({ length: total }, (_, i) => {
-              const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
-              return {
-                x1: cx + Math.cos(angle) * r1,
-                y1: cy + Math.sin(angle) * r1,
-                x2: cx + Math.cos(angle) * r2,
-                y2: cy + Math.sin(angle) * r2,
-              };
-            });
-            return (
-              <svg
-                style={{ position: "absolute", top: -pad, left: -pad, width: svgW, height: svgW, pointerEvents: "none", zIndex: 50, opacity: glowing ? 1 : 0, transition: "opacity 0.4s ease" }}
-              >
-                {lines.map((l, i) => (
-                  <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="rgba(242,240,233,0.5)" strokeWidth="0.9" />
-                ))}
-              </svg>
-            );
-          })()}
+          {noGlow && glowing && (
+            <>
+              <span style={{ position: "absolute", inset: -6, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.30)", animation: "water-ripple-out 3s ease-out infinite", pointerEvents: "none", zIndex: 50 }} />
+              <span style={{ position: "absolute", inset: -6, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.22)", animation: "water-ripple-out 3s ease-out 1s infinite", pointerEvents: "none", zIndex: 50 }} />
+              <span style={{ position: "absolute", inset: -6, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.15)", animation: "water-ripple-out 3s ease-out 2s infinite", pointerEvents: "none", zIndex: 50 }} />
+            </>
+          )}
           <button
             onClick={() => onOpen ? onOpen() : canOpen && setPopOpen(true)}
             onMouseEnter={() => setGlowing(true)}
@@ -738,115 +717,132 @@ export function CommissionsSection() {
   }, []);
 
 
-  // UPDATING — depth surge, smooth drift, warm glow on illumination
+  // UPDATING — single word, getting actions right before adding more
   useEffect(() => {
-    const words = [1,2,3,4,5,6].map(n => document.querySelector(`.updtg-w${n}`));
-    if (!words[0]) return;
+    const w = document.querySelector(".updtg-w1");
+    if (!w) return;
 
-    words.forEach(w => w && gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" }));
+    gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" });
 
-    // Depth: scale AND opacity together via a proxy so far=dim, near=bright
-    // [minScale, maxScale, dimOp, brightOp, halfCycleSecs]
-    const DEPTH = [
-      [0.15, 2.8, 0.04, 0.22, 42],
-      [0.15, 2.1, 0.04, 0.18, 34],
-      [0.15, 2.5, 0.04, 0.20, 29],
-      [0.15, 1.8, 0.04, 0.16, 25],
-      [0.15, 2.3, 0.04, 0.19, 38],
-      [0.15, 1.6, 0.04, 0.15, 21],
-    ];
-    words.forEach((w, i) => {
-      if (!w) return;
-      const [minS, maxS, dimOp, brightOp, dur] = DEPTH[i];
-      const proxy = { t: Math.random() };
-      const apply = () => {
-        const t = proxy.t;
-        gsap.set(w, { scale: minS + t * (maxS - minS), opacity: dimOp + t * (brightOp - dimOp) });
-      };
-      apply();
-      gsap.set(w, { filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" });
-      const go = (toT) => {
-        gsap.to(proxy, { t: toT, duration: dur, ease: "sine.inOut", onUpdate: apply, onComplete: () => go(toT === 0 ? 1 : 0) });
-      };
-      go(proxy.t > 0.5 ? 0 : 1);
-    });
-    const BASE = DEPTH.map(d => d[2]); // dimOp per word for illuminate reset
+    // Depth — scale breathes very slowly, stays ghostly at all times
+    const tl = gsap.fromTo(w,
+      { scale: 0.6, opacity: 0.03 },
+      { scale: 2.0, opacity: 0.08, duration: 38, ease: "sine.inOut", yoyo: true, repeat: -1 }
+    );
+    tl.seek(19);
 
-    // Drift — continuous overlapping moves so there is never a stop
-    const drift = (el, range, minDur, maxDur, initDelay) => {
-      const go = () => {
-        const x = (Math.random() - 0.5) * range;
-        const y = (Math.random() - 0.5) * 40;
-        const dur = minDur + Math.random() * (maxDur - minDur);
-        gsap.to(el, { x, y, duration: dur, ease: "sine.inOut" });
-        setTimeout(go, dur * 680);
-      };
-      setTimeout(go, initDelay);
+    // Drift — slow continuous wander
+    const drift = () => {
+      const x = (Math.random() - 0.5) * 900;
+      const y = (Math.random() - 0.5) * 40;
+      const dur = 45 + Math.random() * 25;
+      gsap.to(w, { x, y, duration: dur, ease: "sine.inOut" });
+      setTimeout(drift, dur * 680);
     };
-    drift(words[0], 900, 45, 70, 0);
-    drift(words[1], 700, 36, 56, 0);
-    drift(words[2], 600, 30, 48, 0);
-    drift(words[3], 500, 26, 42, 0);
-    drift(words[4], 750, 40, 62, 0);
-    drift(words[5], 580, 28, 44, 0);
+    drift();
 
-    // Random illumination — warm amber glow rises and fades on a random word
-    const illuminate = () => {
-      const pick = Math.floor(Math.random() * 6);
-      const el = words[pick];
-      if (!el) { setTimeout(illuminate, 3000 + Math.random() * 5000); return; }
-      gsap.to(el, {
-        opacity: 0.28 + Math.random() * 0.14,
-        filter: `drop-shadow(0 0 ${18 + Math.random() * 14}px rgba(210,165,70,0.60))`,
-        duration: 3.5 + Math.random() * 3.5,
-        ease: "sine.inOut",
-        overwrite: false,
-        onComplete: () => {
-          gsap.to(el, {
-            opacity: BASE[pick],
-            filter: "drop-shadow(0 0 0px rgba(210,165,70,0))",
-            duration: 5 + Math.random() * 6,
-            ease: "sine.inOut",
-            onComplete: () => setTimeout(illuminate, 2500 + Math.random() * 7000),
-          });
-        },
-      });
-    };
-    setTimeout(illuminate, 1500);
+    // Light from below — two sources pinned under the strip, roaming left/right only
+    // They cast upward through the letters; when a beam passes under a stroke it catches the base
+    const light = document.querySelector(".letter-light");
+    // Vertical wash — warm bright at base, grey-dark at top, band moves up and down
+    const wash = { rise: 25 };
+    const lts = [{ x: 15 }, { x: 60 }, { x: 40 }]; // three beams at different speeds
 
-    // Warm light roams over letters on ALL words simultaneously
-    const lights = [...document.querySelectorAll(".letter-light")];
-    lights.forEach(l => {
-      l.style.webkitBackgroundClip = "text";
-      l.style.backgroundClip = "text";
-      l.style.color = "transparent";
-      l.style.webkitTextFillColor = "transparent";
-    });
-    const lts = [
-      { x: 15, y: 50, size: 240, op: 0.60 },
-      { x: 72, y: 50, size: 180, op: 0.48 },
-    ];
     const updateLights = () => {
-      const img = lts.map(l =>
-        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.5)}px at ${l.x}% ${l.y}%, rgba(235,200,130,${l.op}) 0%, transparent 65%)`
-      ).join(", ");
-      lights.forEach(l => { l.style.backgroundImage = img; });
+      if (!light) return;
+      const r = wash.rise;
+      const vertical = `linear-gradient(to top,
+        rgba(128,114,103,1.0) 0%,
+        rgba(108,97,88,0.80) ${r * 0.35}%,
+        rgba(30,28,26,0.40) ${r}%,
+        rgba(0,0,0,1.0) ${r + 10}%,
+        rgba(0,0,0,1.0) 100%
+      )`;
+      const beams = lts.map(l =>
+        `radial-gradient(ellipse 80px 150px at ${l.x}% 115%, rgba(170,152,135,1.0) 0%, rgba(140,126,114,0.70) 30%, transparent 62%)`
+      );
+      // Re-apply clip every frame — some browsers drop it on backgroundImage change
+      light.style.webkitBackgroundClip = "text";
+      light.style.backgroundClip = "text";
+      light.style.webkitTextFillColor = "transparent";
+      light.style.color = "transparent";
+      light.style.backgroundImage = [vertical, ...beams].join(", ");
     };
+
     updateLights();
-    const roamLight = (l, ax) => {
-      const linger = Math.random() < 0.25;
-      const target = linger ? l[ax] + (Math.random() - 0.5) * 10 : 5 + Math.random() * 90;
-      gsap.to(l, {
-        [ax]: target,
-        duration: linger ? 3 + Math.random() * 5 : 9 + Math.random() * 20,
-        ease: "sine.inOut",
+    gsap.to(wash, { rise: 60, duration: 16, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: updateLights });
+
+    // Random scanning — each beam jumps to a new random x, immediately, forever
+    const scanBeam = (lt, minDur, maxDur) => {
+      const target = 5 + Math.random() * 90;
+      const dur = minDur + Math.random() * (maxDur - minDur);
+      gsap.to(lt, {
+        x: target, duration: dur, ease: "sine.inOut",
         onUpdate: updateLights,
-        onComplete: () => roamLight(l, ax),
+        onComplete: () => scanBeam(lt, minDur, maxDur),
       });
     };
-    lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 900));
+    scanBeam(lts[0], 3, 7);
+    scanBeam(lts[1], 4, 9);
+    scanBeam(lts[2], 2, 5);
 
-    return () => words.forEach(w => w && gsap.killTweensOf(w));
+    return () => {
+      gsap.killTweensOf(w);
+      gsap.killTweensOf(wash);
+      lts.forEach(l => gsap.killTweensOf(l));
+    };
+
+  }, []);
+
+  // Running word — letters fall in, whole word runs full width of strip, letters fly up, loop
+  useEffect(() => {
+    const letters = [...document.querySelectorAll(".updtg-run-l")];
+    const container = document.querySelector(".updtg-run");
+    if (!letters.length || !container) return;
+
+    const stripWidth = container.parentElement?.offsetWidth || 1200;
+
+    const runCycle = () => {
+      gsap.set(container, { x: 0 });
+      gsap.set(letters, { y: -200, opacity: 0 });
+
+      // Letters rain down one by one, left to right — slow and heavy
+      letters.forEach((el, i) => {
+        gsap.to(el, {
+          y: 0, opacity: 1.0,
+          duration: 4.0 + Math.random() * 2.0,
+          ease: "power1.out",
+          delay: i * 1.2,
+        });
+      });
+
+      const allIn = letters.length * 1.2 + 4.0;
+
+      // Whole word drifts slowly across the full strip
+      gsap.to(container, {
+        x: stripWidth,
+        duration: 45,
+        ease: "none",
+        delay: allIn,
+      });
+
+      // While moving — random letters drift upward one at a time, slow
+      const shuffled = [...letters].sort(() => Math.random() - 0.5);
+      shuffled.forEach((el, i) => {
+        gsap.to(el, {
+          y: -(80 + Math.random() * 80),
+          opacity: 0,
+          duration: 3.5 + Math.random() * 2.0,
+          ease: "power1.inOut",
+          delay: allIn + 4 + i * (4.0 + Math.random() * 2.5),
+        });
+      });
+
+      const totalTime = allIn + 4 + shuffled.length * 6.5 + 4;
+      gsap.delayedCall(totalTime, () => runCycle());
+    };
+
+    runCycle();
   }, []);
 
   // Practice text — split bright/dim animations
@@ -938,16 +934,20 @@ export function CommissionsSection() {
 
       {/* Desktop horizontal fan — hidden below md */}
       <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
-        {/* UPDATING — 6 words surging in/out of depth, some illuminate randomly */}
+        {/* UPDATING — single word */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          {[1,2,3,4,5,6].map(n => (
-            <span key={n} className={`updtg-w${n}`} style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
-              <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgb(242,240,233)", whiteSpace: "nowrap" }}>
-                UPDATING
-                <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
-              </span>
+          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
+            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
+              UPDATING
+              <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
             </span>
-          ))}
+          </span>
+          {/* Running word — letters fall in, word runs full width, letters fly up */}
+          <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
+            {"UPDATING".split("").map((ch, i) => (
+              <span key={i} className={`updtg-run-l`} style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.05)", opacity: 0 }}>{ch}</span>
+            ))}
+          </div>
           {/* Ambient warm wash */}
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
         </div>
