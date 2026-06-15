@@ -131,7 +131,6 @@ export function CommissionsSection() {
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
 
-  const floatingLabelRefs = useRef([]);
   const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
@@ -192,43 +191,6 @@ export function CommissionsSection() {
     setFanOpen(false);
   };
 
-  // Floating portal name labels — random drift when collapsed
-  useEffect(() => {
-    if (fanOpen) return;
-    const els = floatingLabelRefs.current.filter(Boolean);
-    if (!els.length || !stripRef.current) return;
-
-    let alive = true;
-
-    const randPos = () => {
-      const w = stripRef.current?.offsetWidth || 1200;
-      const h = 140;
-      return {
-        x: 60 + Math.random() * (w - 160),
-        y: 16 + Math.random() * (h - 40),
-      };
-    };
-
-    els.forEach(el => {
-      const { x, y } = randPos();
-      gsap.set(el, { x, y });
-    });
-
-    const cycle = () => {
-      if (!alive) return;
-      els.forEach(el => {
-        const { x, y } = randPos();
-        gsap.to(el, { x, y, duration: 9 + Math.random() * 7, ease: "sine.inOut" });
-      });
-      setTimeout(cycle, 7000 + Math.random() * 5000);
-    };
-    cycle();
-
-    return () => {
-      alive = false;
-      els.forEach(el => gsap.killTweensOf(el));
-    };
-  }, [fanOpen]);
 
   // Nav dropdown
   useEffect(() => {
@@ -243,9 +205,9 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
-  // UPDATING — only runs once fan is open (elements exist in DOM)
+  // UPDATING — runs in the collapsed strip
   useEffect(() => {
-    if (!fanOpen) return;
+    if (fanOpen) return;
     const w = document.querySelector(".updtg-w1");
     if (!w) return;
 
@@ -309,51 +271,6 @@ export function CommissionsSection() {
     };
   }, [fanOpen]);
 
-  // Running word — only starts when fan opens
-  useEffect(() => {
-    if (!fanOpen) return;
-    const letters = [...document.querySelectorAll(".updtg-run-l")];
-    const container = document.querySelector(".updtg-run");
-    if (!letters.length || !container) return;
-
-    const stripWidth = container.parentElement?.offsetWidth || 1200;
-    let alive = true;
-    let timer = null;
-
-    const runCycle = () => {
-      if (!alive) return;
-      gsap.killTweensOf([container, ...letters]);
-      gsap.set(container, { x: 0 });
-      gsap.set(letters, { y: -300, opacity: 0 });
-
-      letters.forEach((el, i) => {
-        gsap.to(el, { y: 0, opacity: 1.0, duration: 4.0 + Math.random() * 2.0, ease: "power2.out", delay: i * 1.2 });
-      });
-
-      const allIn = letters.length * 1.2 + 5.0;
-      gsap.to(container, { x: stripWidth, duration: 45, ease: "none", delay: allIn });
-
-      const shuffled = [...letters].sort(() => Math.random() - 0.5);
-      shuffled.forEach((el, i) => {
-        gsap.to(el, {
-          y: -(100 + Math.random() * 80), opacity: 0,
-          duration: 4.0 + Math.random() * 2.0, ease: "power1.inOut",
-          delay: allIn + 5 + i * (4.5 + Math.random() * 2.5),
-        });
-      });
-
-      const totalTime = allIn + 5 + shuffled.length * 7.0 + 5;
-      timer = gsap.delayedCall(totalTime, () => { if (alive) runCycle(); });
-    };
-
-    runCycle();
-
-    return () => {
-      alive = false;
-      if (timer) timer.kill();
-      gsap.killTweensOf([container, ...letters]);
-    };
-  }, [fanOpen]);
 
   // Practice text — fired when fan opens
   useEffect(() => {
@@ -429,23 +346,25 @@ export function CommissionsSection() {
           }} />
         )}
 
-        {/* Collapsed state — floating portal labels */}
-        {!fanOpen && ["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name, i) => (
-          <span
-            key={name}
-            ref={el => floatingLabelRefs.current[i] = el}
-            style={{
-              position: "absolute", top: 0, left: 0,
-              fontFamily: "var(--font-detail)", fontSize: "9px", color: "var(--color-cream)",
-              letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1,
-              opacity: hovering ? 0.65 : 0.25, transition: "opacity 0.5s ease",
-              pointerEvents: "none", zIndex: 5, whiteSpace: "nowrap",
-            }}
-          >{name}</span>
-        ))}
+        {/* Portal names — static left side */}
+        {!fanOpen && (
+          <div style={{
+            position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%)",
+            display: "flex", flexDirection: "column", gap: "5px",
+            opacity: hovering ? 0.7 : 0.28, transition: "opacity 0.5s ease",
+            pointerEvents: "none", zIndex: 5,
+          }}>
+            {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
+              <span key={name} style={{
+                fontFamily: "var(--font-detail)", fontSize: "9px", color: "var(--color-cream)",
+                letterSpacing: "0.22em", textTransform: "uppercase", lineHeight: 1,
+              }}>{name}</span>
+            ))}
+          </div>
+        )}
 
-        {/* UPDATING text — only rendered once fan is open */}
-        {fanOpen && (
+        {/* UPDATING text — always in the strip */}
+        {!fanOpen && (
           <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
               <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
@@ -453,11 +372,6 @@ export function CommissionsSection() {
                 <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
               </span>
             </span>
-            <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, height: "280px", display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
-              {"UPDATING".split("").map((ch, i) => (
-                <span key={i} className="updtg-run-l" style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.08)", opacity: 0 }}>{ch}</span>
-              ))}
-            </div>
             <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
           </div>
         )}
