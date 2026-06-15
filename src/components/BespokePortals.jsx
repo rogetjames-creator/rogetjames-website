@@ -397,6 +397,7 @@ export function CommissionsSection() {
               portal={SIDE_PORTAL_LEFT}
               size={248}
               hideLabel
+              ringOnly
               hoverLabel={fanOpen ? "Screens" : "View"}
               hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}

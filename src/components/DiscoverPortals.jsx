@@ -388,7 +388,7 @@ function LinksPopup({ onClose }) {
   );
 }
 
-export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false }) {
+export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false }) {
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
@@ -432,7 +432,9 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               padding: "9px",
               background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
               boxShadow: (glowing && !noGlow)
-                ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
+                ? ringOnly
+                  ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.55)"
+                  : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
                 : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
               transition: "box-shadow 0.6s ease",
             }}
