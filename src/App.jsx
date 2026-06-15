@@ -59,7 +59,8 @@ import About from "./components/About";
 import Process from "./components/Process";
 import Services from "./components/Services";
 import Contact from "./components/Contact";
-import DiscoverPortals, { CommissionsSection } from "./components/DiscoverPortals";
+import DiscoverPortals from "./components/DiscoverPortals";
+import { CommissionsSection } from "./components/BespokePortals";
 import Footer from "./components/Footer";
 import ChatWidget from "./components/ChatWidget";
 

@@ -1,0 +1,427 @@
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
+import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const CDN_SC = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+
+const COMMISSIONS_GALLERY = [
+  { src: "/images/villa-leaf/villa-leaf-trio-pool.jpg" },
+  { src: "/images/hero/hero-cottesloe-patio.jpg" },
+  { src: "/images/marakesh/marakesh-cassie.jpg" },
+  { src: "/images/hex/lalarook-2.jpg" },
+  { src: "/images/hero/hero-homebase-dusk.jpg" },
+  { src: "/images/hero/hero-cottesloe-gate.jpg" },
+];
+
+const COMMISSIONS_PORTAL = {
+  id: "commissions",
+  label: "Commissions",
+  sublabel: "Bespoke & Commercial",
+  slides: [],
+  videos: [
+    { src: "/videos/natives-collage-2.mp4", title: "CUSTOM Natives — Collage", detail: "A commission in our native botanicals series — hand-composed and laser cut to order.", poster: "/images/concept-4-natives.jpg" },
+    { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "", poster: "/images/reels/waroona-thumb.jpg" },
+  ],
+  commissionImages: COMMISSIONS_GALLERY,
+  popupType: "commissions-gallery",
+};
+
+const SIDE_PORTAL_LEFT = {
+  id: "side-left",
+  label: "Screens",
+  sublabel: "",
+  slides: [
+    { src: `/images/screens/orian-wall-decor.jpg`, pos: "5% 5%", scale: 1.5 },
+    `/images/screens/strip/ferlie-close.jpg`,
+    `/images/screens/strip/grail-close.jpg`,
+    `/images/screens/wattle-close-tdl.jpg`,
+    `/images/screens/viasi-close-up.jpg`,
+    `/images/screens/elle-corten.jpg`,
+    { src: `/images/bloom/bloom-closeup.jpg`, pos: "center top" },
+  ],
+};
+
+const SIDE_PORTAL_RIGHT = {
+  id: "side-right",
+  label: "",
+  sublabel: "",
+  slides: [
+    `${CDN_SC}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg?h=b0a0ebd2ca83e06d7b56e5fbee049be2`,
+    `${CDN_SC}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg?h=52cf56ba89edab095b94d025686dd55a`,
+    `${CDN_SC}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg?h=1fcf914a6813bdea5a959d6dc3a50086`,
+    `${CDN_SC}/7975db43-6e77-4a2d-8b33-6cdf7218ad48_rw_1920.jpg?h=263a833c03a447a8a37804176866e779`,
+    "/images/hero/hero-marakesh-tall.jpg",
+    `/images/homebase/homebase-motif-closeup.jpg`,
+  ],
+};
+
+const SIDE_PORTAL_PROJECTS = {
+  id: "side-projects",
+  label: "Projects",
+  sublabel: "",
+  slides: [
+    `/images/hero/hero-homebase-entrance.jpg`,
+    `/images/hero/hero-homebase-dusk.jpg`,
+    `${CDN_SC}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg?h=96bf8823ab48bc3e90055aef0b93ea1f`,
+    `${CDN_SC}/ff393903-5912-40da-9b37-aca22ef599b4_rw_1920.jpg?h=1ef862e9145edcf101d46bcd4a02fb15`,
+    `${CDN_SC}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg?h=bfcf87b6d12a3c5a71b0094e8fba92cd`,
+  ],
+};
+
+const SIDE_PORTAL_CONCEPTS = {
+  id: "side-concepts",
+  label: "Concepts",
+  sublabel: "",
+  slides: [
+    `${CDN_SC}/a017e095-21a4-41a4-bdd7-630bb270b4f3_rw_1200.jpg?h=b4276b4f7952052c0cdbc1db1526c232`,
+    `${CDN_SC}/713bf242-7075-4082-90cd-c885aa129107_rw_1920.jpg?h=a51d01c9d949978e58515742c345cd34`,
+    `${CDN_SC}/882272cb-30b0-4cef-8f0e-dee3241578e3_rw_1920.jpg?h=accf777e0802c55ffa064f37bb13befe`,
+    `${CDN_SC}/8157a7f2-763b-469d-bca4-dee47707d7da_rw_1920.jpg?h=8c83e1b4dca7446ea02465c6438a82e9`,
+    `${CDN_SC}/39f2b9a7-cf77-4a54-a88e-a92948a82ebe_rw_1920.jpg?h=9e5d420ad71060f91b222a0d11ac0a67`,
+    "/images/homebase-concept-final.jpg",
+    "/images/concepts-homebase-exterior.jpg",
+    `${CDN_SC}/ba29da64-778e-4e6c-a942-02acff420a19_rw_1200.jpg?h=c81199c62bdc877ac5244d0b3b22f17f`,
+    `${CDN_SC}/8aabcc1e-b8c3-45e3-aa3d-c56d5911ea03_rw_1920.jpg?h=142926ed21c731745b66587a99e4c8e0`,
+    `${CDN_SC}/4fe97b52-7eca-4995-a9b0-e9caa6d72967_rw_1920.jpg?h=e8870627f871e657b986a401d62100fe`,
+    `${CDN_SC}/3ef7ea8e-eec1-4856-b37a-f2d23978aca3_rw_1920.jpg?h=6ec1f7e1ff1f709ad73ac4e78cf30736`,
+    `${CDN_SC}/66a80833-aa96-4e7a-a62e-6ce882831573_rw_1200.jpg?h=b3a5cf5b979eb22dc56bd82cc14f5946`,
+    `${CDN_SC}/9422ac0b-5ce1-4cca-83fc-660e854c3bb0_rw_1200.jpg?h=3b92abcf4f65601c8e5cd9872c6e3121`,
+    `${CDN_SC}/04ac8236-413f-4590-a522-dfca01a94fe8_rw_1200.jpg?h=37ffcbb1ecba586da34b3acca113e525`,
+    `${CDN_SC}/8b43f372-e1ca-4882-b630-bc0d985db4a7_rw_1200.jpg?h=c300bdda09947b73eb5e16f3aa004970`,
+    `${CDN_SC}/437cf607-c821-4331-8874-d47ecda32ca3_rw_1920.jpg?h=c750d85f1ffad919b8eeefcb3ecfb597`,
+    `${CDN_SC}/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg?h=610337b8800e7a8f32bcb1e992b7da2e`,
+    `${CDN_SC}/d8d96ede-c60e-4b48-991b-b80f157db3a5_rw_1920.jpg?h=3958d3517925745ac20a9c1ce75ff1c0`,
+  ],
+};
+
+export function CommissionsSection() {
+  const sectionRef = useRef(null);
+  const leftRef = useRef(null);
+  const rightRef = useRef(null);
+  const leftOuterRef = useRef(null);
+  const rightOuterRef = useRef(null);
+  const practiceLineRef = useRef(null);
+  const practiceLineRightRef = useRef(null);
+  const practiceRevealRef = useRef(null);
+  const playPracticeRef = useRef(null);
+  const [fanOpen, setFanOpen] = useState(false);
+  const [sculptureOpen, setSculptureOpen] = useState(false);
+  const [screensOpen, setScreensOpen] = useState(false);
+  const [projectsOpen, setProjectsOpen] = useState(false);
+  const [conceptsOpen, setConceptsOpen] = useState(false);
+  const [reelsOpen, setReelsOpen] = useState(false);
+
+  const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
+  }, [anyOpen]);
+
+  // Init: side portals hidden at center, Practice section collapsed
+  useEffect(() => {
+    gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0 });
+    if (practiceRevealRef.current) {
+      gsap.set(practiceRevealRef.current, { height: 0, overflow: "hidden" });
+    }
+  }, []);
+
+  // Fan open — triggered by clicking the center portal
+  useEffect(() => {
+    if (!fanOpen) return;
+    if (window.innerWidth >= 768) {
+      gsap.fromTo(leftRef.current,       { x: 0, opacity: 0 }, { x: -300, opacity: 1, duration: 2.2, ease: "power2.out" });
+      gsap.fromTo(rightRef.current,      { x: 0, opacity: 0 }, { x:  300, opacity: 1, duration: 2.2, ease: "power2.out" });
+      gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0 }, { x: -580, opacity: 1, duration: 2.6, ease: "power2.out" });
+      gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0 }, { x:  580, opacity: 1, duration: 2.6, ease: "power2.out" });
+    }
+    const el = practiceRevealRef.current;
+    if (el) {
+      gsap.to(el, {
+        height: "auto", duration: 1.6, ease: "power3.inOut", delay: 0.6,
+        clearProps: "overflow",
+        onComplete: () => {
+          ScrollTrigger.refresh();
+          playPracticeRef.current?.();
+        },
+      });
+    }
+  }, [fanOpen]);
+
+  // Nav dropdown — open specific portal on event
+  useEffect(() => {
+    const handler = (e) => {
+      const cat = e.detail;
+      if (cat === "screens")   setScreensOpen(true);
+      if (cat === "sculpture") setSculptureOpen(true);
+      if (cat === "projects")  setProjectsOpen(true);
+      if (cat === "concepts")  setConceptsOpen(true);
+    };
+    window.addEventListener("open-bespoke-category", handler);
+    return () => window.removeEventListener("open-bespoke-category", handler);
+  }, []);
+
+  // UPDATING — single word with depth breathe, drift, and light-from-below
+  useEffect(() => {
+    const w = document.querySelector(".updtg-w1");
+    if (!w) return;
+
+    gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" });
+
+    const tl = gsap.fromTo(w,
+      { scale: 0.6, opacity: 0.03 },
+      { scale: 2.0, opacity: 0.08, duration: 38, ease: "sine.inOut", yoyo: true, repeat: -1 }
+    );
+    tl.seek(19);
+
+    const drift = () => {
+      const x = (Math.random() - 0.5) * 900;
+      const y = (Math.random() - 0.5) * 40;
+      const dur = 45 + Math.random() * 25;
+      gsap.to(w, { x, y, duration: dur, ease: "sine.inOut" });
+      setTimeout(drift, dur * 680);
+    };
+    drift();
+
+    const light = document.querySelector(".letter-light");
+    const wash = { rise: 25 };
+    const lts = [{ x: 15 }, { x: 60 }, { x: 40 }];
+
+    const updateLights = () => {
+      if (!light) return;
+      const r = wash.rise;
+      const vertical = `linear-gradient(to top,
+        rgba(128,114,103,1.0) 0%,
+        rgba(108,97,88,0.80) ${r * 0.35}%,
+        rgba(30,28,26,0.40) ${r}%,
+        rgba(0,0,0,1.0) ${r + 10}%,
+        rgba(0,0,0,1.0) 100%
+      )`;
+      const beams = lts.map(l =>
+        `radial-gradient(ellipse 80px 150px at ${l.x}% 115%, rgba(170,152,135,1.0) 0%, rgba(140,126,114,0.70) 30%, transparent 62%)`
+      );
+      light.style.webkitBackgroundClip = "text";
+      light.style.backgroundClip = "text";
+      light.style.webkitTextFillColor = "transparent";
+      light.style.color = "transparent";
+      light.style.backgroundImage = [vertical, ...beams].join(", ");
+    };
+
+    updateLights();
+    gsap.to(wash, { rise: 60, duration: 16, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: updateLights });
+
+    const scanBeam = (lt, minDur, maxDur) => {
+      const target = 5 + Math.random() * 90;
+      const dur = minDur + Math.random() * (maxDur - minDur);
+      gsap.to(lt, { x: target, duration: dur, ease: "sine.inOut", onUpdate: updateLights, onComplete: () => scanBeam(lt, minDur, maxDur) });
+    };
+    scanBeam(lts[0], 3, 7);
+    scanBeam(lts[1], 4, 9);
+    scanBeam(lts[2], 2, 5);
+
+    return () => {
+      gsap.killTweensOf(w);
+      gsap.killTweensOf(wash);
+      lts.forEach(l => gsap.killTweensOf(l));
+    };
+  }, []);
+
+  // Running word — letters rain to base, word drifts full width, letters peel up, loops
+  useEffect(() => {
+    const letters = [...document.querySelectorAll(".updtg-run-l")];
+    const container = document.querySelector(".updtg-run");
+    if (!letters.length || !container) return;
+
+    const stripWidth = container.parentElement?.offsetWidth || 1200;
+    let alive = true;
+    let timer = null;
+
+    const runCycle = () => {
+      if (!alive) return;
+      gsap.killTweensOf([container, ...letters]);
+      gsap.set(container, { x: 0 });
+      gsap.set(letters, { y: -300, opacity: 0 });
+
+      letters.forEach((el, i) => {
+        gsap.to(el, { y: 0, opacity: 1.0, duration: 4.0 + Math.random() * 2.0, ease: "power2.out", delay: i * 1.2 });
+      });
+
+      const allIn = letters.length * 1.2 + 5.0;
+
+      gsap.to(container, { x: stripWidth, duration: 45, ease: "none", delay: allIn });
+
+      const shuffled = [...letters].sort(() => Math.random() - 0.5);
+      shuffled.forEach((el, i) => {
+        gsap.to(el, {
+          y: -(100 + Math.random() * 80), opacity: 0,
+          duration: 4.0 + Math.random() * 2.0, ease: "power1.inOut",
+          delay: allIn + 5 + i * (4.5 + Math.random() * 2.5),
+        });
+      });
+
+      const totalTime = allIn + 5 + shuffled.length * 7.0 + 5;
+      timer = gsap.delayedCall(totalTime, () => { if (alive) runCycle(); });
+    };
+
+    runCycle();
+
+    return () => {
+      alive = false;
+      if (timer) timer.kill();
+      gsap.killTweensOf([container, ...letters]);
+    };
+  }, []);
+
+  // Practice text — fired when fan opens
+  useEffect(() => {
+    gsap.set(".about-practice-label", { y: -10, opacity: 0 });
+    gsap.set(".para1-bright",   { x: 28, opacity: 0 });
+    gsap.set(".para1-dim-word", { opacity: 0 });
+    gsap.set(".para2-bright",   { x: 28, opacity: 0 });
+    gsap.set(".para2-dim",      { opacity: 0 });
+    gsap.set(practiceLineRef.current,      { scaleX: 0 });
+    gsap.set(practiceLineRightRef.current, { scaleX: 0 });
+
+    playPracticeRef.current = () => {
+      gsap.to(practiceLineRef.current,      { scaleX: 1, duration: 1.1, ease: "power3.out" });
+      gsap.to(practiceLineRightRef.current, { scaleX: 1, duration: 1.1, ease: "power3.out" });
+      gsap.to(".about-practice-label", { y: 0, opacity: 1, duration: 1.8, ease: "power1.out" });
+      gsap.to(".para1-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 0.4 });
+      gsap.to(".para1-dim-word", { opacity: 1, duration: 1.6, stagger: 0.28, ease: "power1.out", delay: 3.2 });
+      gsap.to(".para2-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 9.0 });
+      gsap.to(".para2-dim",      { opacity: 1, duration: 4.2, stagger: 0.65, ease: "power1.out", delay: 12.5 });
+    };
+  }, []);
+
+  return (
+    <section id="bespoke" ref={sectionRef} className="bg-graphite overflow-x-hidden">
+      <div className="px-8 pt-12 pb-24 text-center">
+        <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
+        <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
+          <span className="bespoke-heading inline-block text-cream/60">Bespoke</span>
+        </h2>
+      </div>
+      <div className="w-full h-px bg-white/10" />
+
+      {/* Mobile vertical layout */}
+      <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={160} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Sculpture</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_LEFT} size={200} hideLabel hoverLabel="Screens" noGlow onOpen={() => setScreensOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel onOpen={() => setReelsOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Commissions</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Projects</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+          <span className="font-heading font-bold text-xs text-cream/70">Concepts</span>
+        </div>
+      </div>
+
+      {/* Desktop horizontal fan */}
+      <div className="bg-matt-black px-8 relative overflow-visible hidden md:block" style={{ height: "185px" }}>
+        <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+          <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
+            <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
+              UPDATING
+              <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
+            </span>
+          </span>
+          <div className="updtg-run" style={{ position: "absolute", left: 0, bottom: 0, height: "185px", display: "flex", gap: "0.04em", alignItems: "flex-end" }}>
+            {"UPDATING".split("").map((ch, i) => (
+              <span key={i} className="updtg-run-l" style={{ display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "160px", lineHeight: 1, letterSpacing: 0, color: "rgba(242,240,233,0.08)", opacity: 0 }}>{ch}</span>
+            ))}
+          </div>
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(210,175,120,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center overflow-visible">
+          <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={110} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
+          </div>
+          <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
+          </div>
+          <div className="relative z-10">
+            <MiniPortal portal={SIDE_PORTAL_LEFT} size={248} hideLabel hoverLabel="Screens" hoverLabelSize="16px" noGlow onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }} />
+          </div>
+          <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
+          </div>
+          <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full h-px bg-white/10" />
+
+      {/* The Practice — revealed when center portal is clicked */}
+      <div ref={practiceRevealRef}>
+        <div className="pt-32 pb-0 flex flex-col items-center">
+          <div className="relative flex items-center justify-center overflow-visible" style={{ width: "80px", height: "80px" }}>
+            <span ref={practiceLineRef} style={{
+              position: "absolute", right: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
+              width: "90px", height: "1.5px",
+              background: "rgba(242,240,233,0.35)",
+              transformOrigin: "right center",
+              transform: "scaleX(0)",
+            }} />
+            <span ref={practiceLineRightRef} style={{
+              position: "absolute", left: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
+              width: "90px", height: "1.5px",
+              background: "rgba(242,240,233,0.35)",
+              transformOrigin: "left center",
+              transform: "scaleX(0)",
+            }} />
+            <img src="/images/roj-logo.png" alt="ROGETjames" className="relative z-10 w-full h-auto"
+              style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
+          </div>
+        </div>
+        <div className="about-practice-label px-8 pt-4 pb-0 text-center">
+          <span className="font-detail text-xs text-cream/90 uppercase tracking-[0.2em]">The Practice</span>
+        </div>
+        <div className="max-w-2xl mx-auto px-8 pt-8 pb-0 text-center">
+          <p className="about-practice-para1 text-lg md:text-2xl font-heading font-bold leading-tight" style={{ wordSpacing: "0.22em" }}>
+            {"Our work lives in two worlds — an evolving catalogue of".split(" ").map((word, i) => (
+              <span key={`a${i}`} className="para1-dim-word inline-block text-cream/40">{word}&thinsp;</span>
+            ))}
+            {" "}<span className="para1-bright inline-block text-cream/90">signature designs</span>{" "}
+            {"and fully bespoke commissions crafted".split(" ").map((word, i) => (
+              <span key={`b${i}`} className="para1-dim-word inline-block text-cream/40">{word}&thinsp;</span>
+            ))}
+            {" "}<span className="para1-bright inline-block text-cream/90">for the spaces they will define.</span>
+          </p>
+          <div className="about-practice-para2 mt-8">
+            <p className="text-cream/65 text-base leading-relaxed">
+              <span className="para2-bright inline-block text-cream">Drawing from</span>
+              <span className="para2-dim inline">{" "}</span>
+              <span className="para2-bright inline-block text-cream">nature</span>
+              <span className="para2-dim inline">{", "}the study and appreciation of{" "}</span>
+              <span className="para2-bright inline-block text-cream">cultural forms and patterns</span>
+              <span className="para2-dim inline">{", "}sculptural inspirations{" "}</span>
+              <span className="para2-bright inline-block text-cream">and an active imagination.</span>
+            </p>
+          </div>
+        </div>
+        <div style={{ height: "220px" }} />
+      </div>
+
+      {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
+      {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
+      {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
+      {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
+      {reelsOpen     && <CommissionsGalleryPopup videos={COMMISSIONS_PORTAL.videos} onClose={() => setReelsOpen(false)} />}
+    </section>
+  );
+}
