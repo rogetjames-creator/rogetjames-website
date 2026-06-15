@@ -169,18 +169,12 @@ export function CommissionsSection() {
         clearProps: "overflow",
         onComplete: () => {
           ScrollTrigger.refresh();
-          const rect = el.getBoundingClientRect();
-          if (rect.top < window.innerHeight * 0.92) {
-            // Already well into view — play immediately
-            playPracticeRef.current?.();
-          } else {
-            ScrollTrigger.create({
-              trigger: el,
-              start: "top 92%",
-              once: true,
-              onEnter: () => playPracticeRef.current?.(),
-            });
-          }
+          ScrollTrigger.create({
+            trigger: practiceLineRef.current,
+            start: "top 80%",
+            once: true,
+            onEnter: () => playPracticeRef.current?.(),
+          });
         },
       });
     }
@@ -433,7 +427,7 @@ export function CommissionsSection() {
 
       {/* The Practice — revealed when fan opens */}
       <div ref={practiceRevealRef}>
-        <div style={{ paddingTop: "480px" }} className="pb-0 flex flex-col items-center">
+        <div style={{ paddingTop: "220px" }} className="pb-0 flex flex-col items-center">
           <div className="relative flex items-center justify-center overflow-visible" style={{ width: "80px", height: "80px" }}>
             <span ref={practiceLineRef} style={{
               position: "absolute", right: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
