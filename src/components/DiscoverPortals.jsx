@@ -745,26 +745,32 @@ export function CommissionsSection() {
 
     words.forEach(w => w && gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" }));
 
-    const BASE = [0.055, 0.042, 0.060, 0.038, 0.050, 0.045];
-    words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i], scale: 0.5, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" }));
-
-    // Depth — each word placed at a random point in its cycle immediately, no delays
+    // Depth: scale AND opacity together via a proxy so far=dim, near=bright
+    // [minScale, maxScale, dimOp, brightOp, halfCycleSecs]
     const DEPTH = [
-      [0.18, 2.8, 42],
-      [0.18, 2.1, 34],
-      [0.18, 2.5, 29],
-      [0.18, 1.8, 25],
-      [0.18, 2.3, 38],
-      [0.18, 1.6, 21],
+      [0.15, 2.8, 0.04, 0.22, 42],
+      [0.15, 2.1, 0.04, 0.18, 34],
+      [0.15, 2.5, 0.04, 0.20, 29],
+      [0.15, 1.8, 0.04, 0.16, 25],
+      [0.15, 2.3, 0.04, 0.19, 38],
+      [0.15, 1.6, 0.04, 0.15, 21],
     ];
     words.forEach((w, i) => {
       if (!w) return;
-      const [min, max, dur] = DEPTH[i];
-      const startScale = min + Math.random() * (max - min);
-      gsap.set(w, { scale: startScale });
-      const goToMax = startScale < (min + max) / 2;
-      gsap.to(w, { scale: goToMax ? max : min, duration: dur * (goToMax ? (max - startScale) / (max - min) : (startScale - min) / (max - min)), ease: "sine.inOut", yoyo: true, repeat: -1 });
+      const [minS, maxS, dimOp, brightOp, dur] = DEPTH[i];
+      const proxy = { t: Math.random() };
+      const apply = () => {
+        const t = proxy.t;
+        gsap.set(w, { scale: minS + t * (maxS - minS), opacity: dimOp + t * (brightOp - dimOp) });
+      };
+      apply();
+      gsap.set(w, { filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" });
+      const go = (toT) => {
+        gsap.to(proxy, { t: toT, duration: dur, ease: "sine.inOut", onUpdate: apply, onComplete: () => go(toT === 0 ? 1 : 0) });
+      };
+      go(proxy.t > 0.5 ? 0 : 1);
     });
+    const BASE = DEPTH.map(d => d[2]); // dimOp per word for illuminate reset
 
     // Drift — continuous overlapping moves so there is never a stop
     const drift = (el, range, minDur, maxDur, initDelay) => {
