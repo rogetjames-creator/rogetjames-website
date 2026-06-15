@@ -479,7 +479,7 @@ export function CommissionsSection() {
             </p>
           </div>
         </div>
-        <div style={{ height: "120px" }} />
+        <div style={{ height: "320px" }} />
 
         <div style={{ height: "64px" }} />
       </div>
