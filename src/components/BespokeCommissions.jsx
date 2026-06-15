@@ -3064,45 +3064,13 @@ function BespokePortal() {
 }
 
 const TITLE_STRIP_WORDS = [
-  // Design names — small
-  { text: "ASLYIAM",            size: 11 },
-  { text: "ERGO",               size: 11 },
-  { text: "FERLIE",             size: 11 },
-  { text: "GRAIL",              size: 11 },
-  { text: "HOMEBASE",           size: 11 },
-  { text: "MARAKESH",           size: 11 },
-  { text: "ZARATHSTRA",         size: 11 },
-  { text: "LUMIER",             size: 11 },
-  { text: "WATTLE",             size: 11 },
-  { text: "COTTESLOE",          size: 11 },
-  { text: "BANKSIA",            size: 11 },
-  { text: "UNITY IN DIVERSITY", size: 11 },
-  { text: "CREEPING FIG",       size: 11 },
-  { text: "ORIAN",              size: 11 },
-  { text: "CHIOLA",             size: 11 },
-  { text: "DANDELIONS",         size: 11 },
-  { text: "XAVIER",             size: 11 },
-  { text: "CENTENNIAL PARK",    size: 11 },
-  { text: "VUELTA",             size: 11 },
-  { text: "EQUISETTI",          size: 11 },
-  { text: "WANDOO",             size: 11 },
-  { text: "HUE",                size: 11 },
-  { text: "REEDS OF UNGARO",    size: 11 },
-  { text: "FIONA STANLEY",      size: 11 },
-  { text: "VIASI",              size: 11 },
-  { text: "LUCARIO",            size: 11 },
-  { text: "VAYA",               size: 11 },
-  { text: "AUDA",               size: 11 },
-  { text: "ROANDER",            size: 11 },
-  // Category / tab labels — larger
-  { text: "COMMERCIAL",         size: 22 },
-  { text: "PUBLIC",             size: 22 },
-  { text: "RESIDENTIAL",        size: 22 },
-  { text: "SCREENS",            size: 22 },
-  { text: "SCULPTURE",          size: 22 },
-  { text: "LIGHT FEATURES",     size: 22 },
-  { text: "CONCEPTS",           size: 22 },
-  { text: "PROJECTS",           size: 22 },
+  "ASLYIAM", "ERGO", "FERLIE", "GRAIL", "HOMEBASE", "MARAKESH",
+  "ZARATHSTRA", "LUMIER", "WATTLE", "COTTESLOE", "BANKSIA",
+  "UNITY IN DIVERSITY", "CREEPING FIG", "ORIAN", "CHIOLA",
+  "DANDELIONS", "XAVIER", "CENTENNIAL PARK", "VUELTA", "EQUISETTI",
+  "WANDOO", "HUE", "REEDS OF UNGARO", "FIONA STANLEY", "VIASI",
+  "LUCARIO", "VAYA", "AUDA", "ROANDER", "COMMERCIAL", "PUBLIC",
+  "RESIDENTIAL", "SCREENS", "SCULPTURE", "LIGHT FEATURES", "CONCEPTS",
 ];
 
 function TitleDrift() {
@@ -3112,118 +3080,138 @@ function TitleDrift() {
     const container = containerRef.current;
     if (!container) return;
 
-    const words = [...TITLE_STRIP_WORDS];
-    const SLOT_COUNT = 10;
-    const tweens = [];
-    const wordEls = [];
-
-    // Measure container once
-    const W = container.offsetWidth || 800;
-    const _H = container.offsetHeight || 112;
-
-    // Spread SLOT_COUNT positions evenly across the width, centred
-    // Slots go from ~10% to ~90% of container width
-    function slotX(slotIndex) {
-      return (W * 0.08) + (slotIndex / (SLOT_COUNT - 1)) * (W * 0.84);
-    }
+    const W = container.offsetWidth || 1200;
+    const H = container.offsetHeight || 112;
+    const SLOTS = 6;
+    const els = [];
+    const lightEls = [];
 
     // Shuffle helper
-    function shuffle(arr) {
+    const shuffle = arr => {
       const a = [...arr];
       for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
       }
       return a;
+    };
+    let queue = shuffle(TITLE_STRIP_WORDS);
+    let qi = 0;
+    const nextWord = () => {
+      if (qi >= queue.length) { queue = shuffle(TITLE_STRIP_WORDS); qi = 0; }
+      return queue[qi++];
+    };
+
+    // Create 6 word elements — each with a warm light overlay span
+    for (let i = 0; i < SLOTS; i++) {
+      const wrap = document.createElement("span");
+      wrap.style.cssText = "position:absolute;top:50%;left:50%;white-space:nowrap;transform-origin:center center;pointer-events:none;user-select:none;will-change:transform,opacity;opacity:0;";
+
+      const text = document.createElement("span");
+      text.style.cssText = "position:relative;display:inline-block;font-family:Impact,'Arial Narrow',sans-serif;font-size:110px;line-height:1;letter-spacing:0.10em;color:rgb(242,240,233);white-space:nowrap;";
+      text.className = "uppercase";
+      text.textContent = nextWord();
+
+      const light = document.createElement("span");
+      light.style.cssText = "position:absolute;inset:0;font-family:Impact,'Arial Narrow',sans-serif;font-size:110px;line-height:1;letter-spacing:0.10em;white-space:nowrap;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;";
+      light.textContent = text.textContent;
+
+      text.appendChild(light);
+      wrap.appendChild(text);
+      container.appendChild(wrap);
+      els.push(wrap);
+      lightEls.push(light);
     }
 
-    // Build a shuffled word queue that cycles indefinitely
-    let queue = shuffle(words);
-    let queueIdx = 0;
-    function nextWord() {
-      if (queueIdx >= queue.length) {
-        queue = shuffle(words);
-        queueIdx = 0;
-      }
-      return queue[queueIdx++]; // returns { text, size }
-    }
+    // Depth: scale + opacity yoyo seeked to random phase — all words visible immediately
+    // far = tiny + dim, near = large + bright
+    const DEPTH = [
+      [0.12, 2.6, 0.03, 0.20, 42],
+      [0.12, 2.0, 0.03, 0.17, 34],
+      [0.12, 2.4, 0.03, 0.19, 29],
+      [0.12, 1.7, 0.03, 0.15, 25],
+      [0.12, 2.2, 0.03, 0.18, 38],
+      [0.12, 1.5, 0.03, 0.14, 21],
+    ];
+    els.forEach((w, i) => {
+      const [minS, maxS, dimOp, brightOp, dur] = DEPTH[i];
+      gsap.set(w, { xPercent: -50, yPercent: -50, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" });
+      const tl = gsap.fromTo(w,
+        { scale: minS, opacity: dimOp },
+        { scale: maxS, opacity: brightOp, duration: dur, ease: "sine.inOut", yoyo: true, repeat: -1 }
+      );
+      tl.seek(Math.random() * dur * 2);
+    });
 
-    // Create DOM elements for each slot
-    for (let i = 0; i < SLOT_COUNT; i++) {
-      const el = document.createElement("span");
-      el.style.cssText = [
-        "position:absolute",
-        "top:50%",
-        "left:0",
-        "white-space:nowrap",
-        "font-size:11px",
-        "letter-spacing:0.22em",
-        "opacity:0",
-        "pointer-events:none",
-        "user-select:none",
-        "will-change:transform,opacity",
-      ].join(";");
-      el.className = "font-syne font-bold text-cream uppercase";
-      container.appendChild(el);
-      wordEls.push(el);
-    }
+    // Drift — continuous overlapping moves, never stops
+    const drift = (el, range, minDur, maxDur) => {
+      const go = () => {
+        const x = (Math.random() - 0.5) * range;
+        const y = (Math.random() - 0.5) * H * 0.6;
+        const dur = minDur + Math.random() * (maxDur - minDur);
+        gsap.to(el, { x, y, duration: dur, ease: "sine.inOut" });
+        setTimeout(go, dur * 680);
+      };
+      setTimeout(go, Math.random() * 4000);
+    };
+    drift(els[0], W * 0.8, 40, 65);
+    drift(els[1], W * 0.65, 32, 52);
+    drift(els[2], W * 0.55, 28, 46);
+    drift(els[3], W * 0.45, 24, 40);
+    drift(els[4], W * 0.70, 36, 58);
+    drift(els[5], W * 0.50, 26, 44);
 
-    // Centre of container
-    const cx = W / 2;
+    // Warm roaming light over ALL word letters simultaneously
+    const lts = [
+      { x: 15, y: 50, size: 240, op: 0.55 },
+      { x: 72, y: 50, size: 180, op: 0.44 },
+    ];
+    const updateLights = () => {
+      const img = lts.map(l =>
+        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.5)}px at ${l.x}% ${l.y}%, rgba(235,200,130,${l.op}) 0%, transparent 65%)`
+      ).join(", ");
+      lightEls.forEach(l => { l.style.backgroundImage = img; });
+    };
+    updateLights();
+    const roamLight = (l, ax) => {
+      const linger = Math.random() < 0.25;
+      const target = linger ? l[ax] + (Math.random() - 0.5) * 10 : 5 + Math.random() * 90;
+      gsap.to(l, {
+        [ax]: target,
+        duration: linger ? 3 + Math.random() * 5 : 9 + Math.random() * 20,
+        ease: "sine.inOut",
+        onUpdate: updateLights,
+        onComplete: () => roamLight(l, ax),
+      });
+    };
+    lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 900));
 
-    // For each slot: animate it in, drift it, recycle when off-screen
-    function animateSlot(el, slotIndex, initialDelay) {
-      const x = slotX(slotIndex);
-      // Direction from centre: left slots drift left, right slots drift right
-      const isLeft = x < cx;
-      // Drift speed: outer slots move faster than inner slots
-      const distFromCentre = Math.abs(x - cx);
-      const normalised = distFromCentre / (W * 0.42); // 0..1
-      const driftDuration = 8 + (1 - normalised) * 6; // 8s (outer) – 14s (inner)
-      const driftPx = isLeft ? -(W * 0.55) : (W * 0.55);
-
-      // Fly-in from above or below (alternates by slot parity)
-      const fromY = slotIndex % 2 === 0 ? -(60 + Math.random() * 20) : (60 + Math.random() * 20);
-
-      const word = nextWord();
-      el.textContent = word.text;
-      el.style.fontSize = word.size + "px";
-
-      gsap.set(el, { x, y: fromY, yPercent: -50, opacity: 0 });
-
-      // Land on the line
-      const landTween = gsap.to(el, {
-        y: 0,
-        opacity: 0.07,
-        duration: 0.7 + Math.random() * 0.4,
-        ease: "power3.out",
-        delay: initialDelay,
-        onComplete() {
-          // After landing, start the slow outward drift
-          const driftTween = gsap.to(el, {
-            x: x + driftPx,
-            duration: driftDuration,
-            ease: "none",
-            onComplete() {
-              // Word has drifted off-screen — recycle it
-              animateSlot(el, slotIndex, 0);
-            },
+    // Random illuminate — one word gently brightens with warm glow, then fades
+    const BASE_DIM = DEPTH.map(d => d[2]);
+    const illuminate = () => {
+      const pick = Math.floor(Math.random() * SLOTS);
+      const el = els[pick];
+      gsap.to(el, {
+        opacity: 0.28 + Math.random() * 0.12,
+        filter: `drop-shadow(0 0 ${16 + Math.random() * 12}px rgba(210,165,70,0.55))`,
+        duration: 3 + Math.random() * 3,
+        ease: "sine.inOut",
+        overwrite: false,
+        onComplete: () => {
+          gsap.to(el, {
+            opacity: BASE_DIM[pick],
+            filter: "drop-shadow(0 0 0px rgba(210,165,70,0))",
+            duration: 4 + Math.random() * 5,
+            ease: "sine.inOut",
+            onComplete: () => setTimeout(illuminate, 2000 + Math.random() * 6000),
           });
-          tweens.push(driftTween);
         },
       });
-      tweens.push(landTween);
-    }
-
-    // Stagger the initial landings so they don't all arrive at once
-    for (let i = 0; i < SLOT_COUNT; i++) {
-      const stagger = i * 0.35 + Math.random() * 0.3;
-      animateSlot(wordEls[i], i, stagger);
-    }
+    };
+    setTimeout(illuminate, 1500);
 
     return () => {
-      tweens.forEach((t) => t.kill());
-      wordEls.forEach((el) => el.remove());
+      els.forEach(w => { gsap.killTweensOf(w); w.remove(); });
     };
   }, []);
 
