@@ -738,87 +738,68 @@ export function CommissionsSection() {
   }, []);
 
 
-  // UPDATING — 6 words, depth surge + independent random illumination
+  // UPDATING — depth surge, smooth drift, warm glow on illumination
   useEffect(() => {
     const words = [1,2,3,4,5,6].map(n => document.querySelector(`.updtg-w${n}`));
     if (!words[0]) return;
 
-    // Center all words — GSAP owns transform
     words.forEach(w => w && gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" }));
 
-    // Base opacity per word — very dim resting state
-    const BASE = [0.012, 0.010, 0.013, 0.011, 0.012, 0.010];
-    words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i] }));
+    const BASE = [0.011, 0.009, 0.012, 0.009, 0.011, 0.010];
+    words.forEach((w, i) => w && gsap.set(w, { opacity: BASE[i], scale: 0.1, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" }));
 
-    // Depth cycle — scale only, no opacity (opacity managed separately)
-    const depthCycle = (el, minScale, maxScale, dur, startDelay) => {
-      const proxy = { t: Math.random() };
-      const apply = () => gsap.set(el, { scale: minScale + proxy.t * (maxScale - minScale) });
-      apply();
-      const go = (toT) => {
-        gsap.to(proxy, {
-          t: toT,
-          duration: dur + Math.random() * dur * 0.5,
-          ease: "sine.inOut",
-          onUpdate: apply,
-          onComplete: () => go(toT === 0 ? 1 : 0),
-        });
-      };
-      setTimeout(() => go(proxy.t > 0.5 ? 0 : 1), startDelay);
-    };
+    // Depth — pure fromTo yoyo, no proxy, perfectly smooth. Each word staggered in phase.
+    // [minScale, maxScale, halfCycleDuration, phaseDelay]
+    const DEPTH = [
+      [0.08, 2.8, 42, 0],
+      [0.08, 2.1, 34, 8],
+      [0.08, 2.5, 29, 15],
+      [0.08, 1.8, 25, 22],
+      [0.08, 2.3, 38, 5],
+      [0.08, 1.6, 21, 18],
+    ];
+    words.forEach((w, i) => {
+      if (!w) return;
+      const [min, max, dur, delay] = DEPTH[i];
+      gsap.fromTo(w, { scale: min }, { scale: max, duration: dur, ease: "sine.inOut", yoyo: true, repeat: -1, delay });
+    });
 
-    // Fluid X/Y drift — next move queues at 65% so motion never pauses
-    const drift = (el, axis, min, max, minDur, maxDur) => {
+    // Drift — continuous overlapping moves so there is never a stop
+    const drift = (el, range, minDur, maxDur, initDelay) => {
       const go = () => {
-        const target = min + Math.random() * (max - min);
+        const x = (Math.random() - 0.5) * range;
+        const y = (Math.random() - 0.5) * 40;
         const dur = minDur + Math.random() * (maxDur - minDur);
-        gsap.to(el, { [axis]: target, duration: dur, ease: "sine.inOut", overwrite: "auto" });
-        setTimeout(go, dur * 0.65 * 1000);
+        gsap.to(el, { x, y, duration: dur, ease: "sine.inOut" });
+        setTimeout(go, dur * 680);
       };
-      setTimeout(go, Math.random() * 6000);
+      setTimeout(go, initDelay);
     };
+    drift(words[0], 900, 45, 70, 0);
+    drift(words[1], 700, 36, 56, 2000);
+    drift(words[2], 600, 30, 48, 800);
+    drift(words[3], 500, 26, 42, 3500);
+    drift(words[4], 750, 40, 62, 1400);
+    drift(words[5], 580, 28, 44, 4800);
 
-    depthCycle(words[0], 0.12, 2.6, 38, 0);
-    drift(words[0], "x", -500, 500, 40, 65);
-    drift(words[0], "y", -20, 20, 30, 50);
-
-    depthCycle(words[1], 0.12, 1.9, 30, 1200);
-    drift(words[1], "x", -380, 420, 32, 52);
-    drift(words[1], "y", -25, 25, 24, 40);
-
-    depthCycle(words[2], 0.12, 2.2, 26, 3500);
-    drift(words[2], "x", -300, 300, 28, 46);
-    drift(words[2], "y", -18, 18, 20, 36);
-
-    depthCycle(words[3], 0.12, 1.6, 22, 5000);
-    drift(words[3], "x", -260, 260, 35, 55);
-    drift(words[3], "y", -15, 15, 28, 44);
-
-    depthCycle(words[4], 0.12, 2.0, 34, 2000);
-    drift(words[4], "x", -420, 380, 38, 58);
-    drift(words[4], "y", -20, 20, 30, 48);
-
-    depthCycle(words[5], 0.12, 1.7, 28, 4200);
-    drift(words[5], "x", -350, 350, 30, 50);
-    drift(words[5], "y", -22, 22, 22, 38);
-
-    // Random illumination — one word gently brightens on its own, then fades back
-    // Completely independent from depth/scale
+    // Random illumination — warm amber glow rises and fades on a random word
     const illuminate = () => {
       const pick = Math.floor(Math.random() * 6);
       const el = words[pick];
       if (!el) { setTimeout(illuminate, 3000 + Math.random() * 5000); return; }
       gsap.to(el, {
-        opacity: 0.10 + Math.random() * 0.08,
-        duration: 3 + Math.random() * 4,
+        opacity: 0.13 + Math.random() * 0.09,
+        filter: `drop-shadow(0 0 ${14 + Math.random() * 10}px rgba(210,165,70,0.45))`,
+        duration: 3.5 + Math.random() * 3.5,
         ease: "sine.inOut",
         overwrite: false,
         onComplete: () => {
           gsap.to(el, {
             opacity: BASE[pick],
+            filter: "drop-shadow(0 0 0px rgba(210,165,70,0))",
             duration: 5 + Math.random() * 6,
             ease: "sine.inOut",
-            onComplete: () => setTimeout(illuminate, 2000 + Math.random() * 7000),
+            onComplete: () => setTimeout(illuminate, 2500 + Math.random() * 7000),
           });
         },
       });
