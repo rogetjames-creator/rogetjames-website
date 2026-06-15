@@ -185,7 +185,6 @@ export function CommissionsSection() {
       gsap.set(el, { overflow: "hidden" });
       gsap.to(el, { height: 0, duration: 1.0, ease: "power3.inOut" });
     }
-    if (stripRef.current) stripRef.current.style.overflow = "hidden";
     gsap.to(stripRef.current, {
       height: 140, duration: 0.9, ease: "power3.inOut", delay: 0.6,
       onComplete: () => ScrollTrigger.refresh(),
