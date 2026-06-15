@@ -169,13 +169,18 @@ export function CommissionsSection() {
         clearProps: "overflow",
         onComplete: () => {
           ScrollTrigger.refresh();
-          // Practice text fires on scroll into view
-          ScrollTrigger.create({
-            trigger: el,
-            start: "top 75%",
-            once: true,
-            onEnter: () => playPracticeRef.current?.(),
-          });
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.85) {
+            // Already in view — play immediately
+            playPracticeRef.current?.();
+          } else {
+            ScrollTrigger.create({
+              trigger: el,
+              start: "top 85%",
+              once: true,
+              onEnter: () => playPracticeRef.current?.(),
+            });
+          }
         },
       });
     }
