@@ -136,7 +136,7 @@ export default function Navbar({ quoteCount = 0 }) {
             ? "backdrop-blur-xl border border-white/10 shadow-lg rounded-[2rem]"
             : "bg-transparent rounded-[2rem]"
         }`}
-        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "#36301f" : "transparent" }}
+        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "linear-gradient(to bottom, #453a2e, #2a2218)" : "transparent" }}
       >
         <a
           href="#"
@@ -242,7 +242,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="relative ml-1">
             <a
               href="#contact"
-              className="px-5 py-2 rounded-full bg-clay text-cream text-sm font-semibold whitespace-nowrap"
+              className="px-5 py-2 rounded-full text-charcoal text-sm font-semibold whitespace-nowrap" style={{ background: "transparent", border: "1px solid rgba(180,180,180,0.5)" }}
             >
               Request a Quote
             </a>
@@ -336,7 +336,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <a
             href="#contact"
             onClick={scrollTo("#contact", true)}
-            className="px-8 py-3 rounded-full bg-clay text-cream font-semibold whitespace-nowrap"
+            className="px-8 py-3 rounded-full text-charcoal font-semibold whitespace-nowrap" style={{ background: "transparent", border: "1px solid rgba(180,180,180,0.5)" }}
           >
             Request a Quote
           </a>
