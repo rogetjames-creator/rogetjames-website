@@ -473,14 +473,12 @@ export function CommissionsSection() {
 
           {/* Center portal */}
           <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
-            <PulseRings active={hovering && !fanOpen} size={248} />
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
               size={248}
               hideLabel
               hoverLabel={fanOpen ? "Screens" : "View"}
               hoverLabelSize="16px"
-              noGlow
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
           </div>
