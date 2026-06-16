@@ -136,7 +136,7 @@ export default function Navbar({ quoteCount = 0 }) {
             ? "backdrop-blur-xl border border-white/25 shadow-lg rounded-2xl"
             : "bg-transparent rounded-2xl"
         }`}
-        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "rgba(158, 113, 52, 0.55)" : "transparent" }}
+        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "rgba(158, 113, 52, 0.45)" : "transparent" }}
       >
         <a
           href="#"
