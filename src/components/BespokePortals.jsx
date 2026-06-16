@@ -335,7 +335,7 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
+    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative", paddingBottom: "160px" }}>
 
       {/* Frosted glass pill — desktop only, sits behind heading + portal */}
       <div aria-hidden="true" className="hidden md:block" style={{
