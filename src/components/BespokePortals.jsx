@@ -352,9 +352,9 @@ export function CommissionsSection() {
                   <path
                     fillRule="evenodd"
                     fill="#F2F0E9"
-                    fillOpacity="0.08"
+                    fillOpacity="0.18"
                     stroke="#F2F0E9"
-                    strokeOpacity="0.30"
+                    strokeOpacity="0.45"
                     strokeWidth="1.5"
                     d={`M0,0 H${outer} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`}
                   />
