@@ -2278,7 +2278,7 @@ function GalleryModal({ onClose, initialTab }) {
         <div onClick={() => setCollectionInfoOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 10500, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: "#1A1A1A", border: "1px solid rgba(242,240,233,0.08)", borderRadius: 16, maxWidth: 640, width: "100%", maxHeight: "85vh", overflowY: "auto", scrollbarWidth: "none", padding: "48px 52px", position: "relative" }}>
             <button onClick={() => setCollectionInfoOpen(false)} style={{ position: "absolute", top: 18, right: 20, background: "none", border: "none", color: "rgba(242,240,233,0.4)", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>✕</button>
-            <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "#CC5833", margin: "0 0 12px" }}>Wall Art</p>
+            <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "#9E7134", margin: "0 0 12px" }}>Wall Art</p>
             <p style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "clamp(20px,3vw,30px)", color: "#F2F0E9", margin: "0 0 36px", letterSpacing: "0.06em", textTransform: "uppercase", lineHeight: 1.15 }}>The Collection</p>
             <p style={{ fontFamily: "var(--font-detail)", fontSize: 15, color: "rgba(242,240,233,0.7)", lineHeight: 1.85, margin: 0 }}>
               Your text here — write about the wall art range, the designs, materials, what makes them distinct.
@@ -2995,7 +2995,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
         <div onClick={() => setCollectionInfoOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 10005, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: "#1A1A1A", border: "1px solid rgba(242,240,233,0.08)", borderRadius: 16, maxWidth: 640, width: "100%", maxHeight: "85vh", overflowY: "auto", scrollbarWidth: "none", padding: "48px 52px", position: "relative" }}>
             <button onClick={() => setCollectionInfoOpen(false)} style={{ position: "absolute", top: 18, right: 20, background: "none", border: "none", color: "rgba(242,240,233,0.4)", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>✕</button>
-            <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "#CC5833", margin: "0 0 12px" }}>Wall Art</p>
+            <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "#9E7134", margin: "0 0 12px" }}>Wall Art</p>
             <p style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "clamp(20px,3vw,30px)", color: "#F2F0E9", margin: "0 0 36px", letterSpacing: "0.06em", textTransform: "uppercase", lineHeight: 1.15 }}>The Collection</p>
             <p style={{ fontFamily: "var(--font-detail)", fontSize: 15, color: "rgba(242,240,233,0.7)", lineHeight: 1.85, margin: 0 }}>
               Your text here — write about the wall art range, the designs, materials, what makes them distinct.

@@ -2489,7 +2489,7 @@ function ProjectInfoPopup({ project, onClose }) {
         <div style={{ flexShrink: 0, padding: "28px 32px 20px", borderBottom: "1px solid rgba(242,240,233,0.08)" }}>
           <button onClick={onClose} style={{ position: "absolute", top: 16, right: 18, background: "none", border: "none", color: "rgba(242,240,233,0.35)", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>✕</button>
           {project.location && (
-            <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#CC5833", margin: "0 0 8px" }}>
+            <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#9E7134", margin: "0 0 8px" }}>
               {project.location}
             </p>
           )}
