@@ -221,100 +221,77 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
-  // UPDATING — two crossing instances in the collapsed strip
+  // UPDATING — single word, original warm lighting, independent x/y axes = true random path
   useEffect(() => {
     if (fanOpen) return;
-    const w1 = document.querySelector(".updtg-w1");
-    const w2 = document.querySelector(".updtg-w2");
-    if (!w1 || !w2) return;
+    const w = document.querySelector(".updtg-w1");
+    if (!w) return;
 
-    gsap.set(w1, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", x: -220 });
-    gsap.set(w2, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", x:  220 });
+    gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" });
 
-    // W1 — original scale range, seeked mid-cycle so visible immediately
-    const tl1 = gsap.fromTo(w1,
+    const tl = gsap.fromTo(w,
       { scale: 0.6, opacity: 0.03 },
       { scale: 1.0, opacity: 0.08, duration: 22, ease: "sine.inOut", yoyo: true, repeat: -1 }
     );
-    tl1.seek(11);
+    tl.seek(11);
 
-    // W2 — slightly smaller, offset phase
-    const tl2 = gsap.fromTo(w2,
-      { scale: 0.55, opacity: 0.03 },
-      { scale: 0.88, opacity: 0.07, duration: 18, ease: "sine.inOut", yoyo: true, repeat: -1 }
-    );
-    tl2.seek(5);
-
-    // Genuinely random drift — irregular speed, sudden lurches, pauses, direction reversals
-    const randDrift = (el, yRange, phase) => {
-      const eases = ["none", "power2.in", "power3.out", "sine.inOut", "power1.in", "expo.out", "circ.in", "back.out(1.4)"];
-      const go = () => {
-        // Occasionally lurch to a totally different spot (20% chance), else small step
-        const bigMove = Math.random() < 0.2;
-        const x = bigMove
-          ? (Math.random() - 0.5) * 920
-          : (Math.random() - 0.5) * 300;
-        const y = (Math.random() - 0.5) * yRange;
-        // Wildly varying duration — some snappy, some glacial
-        const dur = bigMove
-          ? 0.6 + Math.random() * 1.8
-          : 2 + Math.random() * 11;
-        const ease = eases[Math.floor(Math.random() * eases.length)];
-        // Random pause before next move (0–2.5s)
-        const pause = Math.random() * 2500;
-        gsap.to(el, { x, y, duration: dur, ease, onComplete: () => setTimeout(go, pause) });
-      };
-      setTimeout(go, phase);
+    // x and y move on completely independent loops — creates genuinely random 2D paths
+    const pos = { x: 0, y: 0 };
+    const moveX = () => {
+      const x = (Math.random() - 0.5) * 880;
+      const dur = 3 + Math.random() * 10;
+      gsap.to(pos, { x, duration: dur, ease: "sine.inOut", onUpdate: () => gsap.set(w, { x: pos.x }), onComplete: moveX });
     };
-    randDrift(w1, 24, 0);
-    randDrift(w2, 30, 1700);
+    const moveY = () => {
+      const y = (Math.random() - 0.5) * 26;
+      const dur = 2 + Math.random() * 7;
+      gsap.to(pos, { y, duration: dur, ease: "sine.inOut", onUpdate: () => gsap.set(w, { y: pos.y }), onComplete: moveY });
+    };
+    moveX();
+    moveY();
 
-    // Original warm light-from-below system — applied to each instance
-    const makeLight = (selector, lts, wash) => {
-      const light = document.querySelector(selector);
-      const update = () => {
-        if (!light) return;
-        const r = wash.rise;
-        const vertical = `linear-gradient(to top,
-          rgba(128,114,103,1.0) 0%,
-          rgba(108,97,88,0.80) ${r * 0.35}%,
-          rgba(30,28,26,0.40) ${r}%,
-          rgba(0,0,0,1.0) ${r + 10}%,
-          rgba(0,0,0,1.0) 100%
-        )`;
-        const beams = lts.map(l =>
-          `radial-gradient(ellipse 80px 150px at ${l.x}% 115%, rgba(170,152,135,1.0) 0%, rgba(140,126,114,0.70) 30%, transparent 62%)`
-        );
-        light.style.webkitBackgroundClip = "text";
-        light.style.backgroundClip = "text";
-        light.style.webkitTextFillColor = "transparent";
-        light.style.color = "transparent";
-        light.style.backgroundImage = [vertical, ...beams].join(", ");
-      };
-      update();
-      gsap.to(wash, { rise: 60, duration: 10, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: update });
-      const scan = (lt, minD, maxD) => {
-        const target = 5 + Math.random() * 90;
-        const dur = minD + Math.random() * (maxD - minD);
-        gsap.to(lt, { x: target, duration: dur, ease: "sine.inOut", onUpdate: update, onComplete: () => scan(lt, minD, maxD) });
-      };
-      lts.forEach((lt, i) => scan(lt, 2 + i, 5 + i * 1.5));
+    // Original warm light-from-below — unchanged
+    const light = document.querySelector(".letter-light");
+    const wash = { rise: 25 };
+    const lts = [{ x: 15 }, { x: 60 }, { x: 40 }];
+
+    const updateLights = () => {
+      if (!light) return;
+      const r = wash.rise;
+      const vertical = `linear-gradient(to top,
+        rgba(128,114,103,1.0) 0%,
+        rgba(108,97,88,0.80) ${r * 0.35}%,
+        rgba(30,28,26,0.40) ${r}%,
+        rgba(0,0,0,1.0) ${r + 10}%,
+        rgba(0,0,0,1.0) 100%
+      )`;
+      const beams = lts.map(l =>
+        `radial-gradient(ellipse 80px 150px at ${l.x}% 115%, rgba(170,152,135,1.0) 0%, rgba(140,126,114,0.70) 30%, transparent 62%)`
+      );
+      light.style.webkitBackgroundClip = "text";
+      light.style.backgroundClip = "text";
+      light.style.webkitTextFillColor = "transparent";
+      light.style.color = "transparent";
+      light.style.backgroundImage = [vertical, ...beams].join(", ");
     };
 
-    const lts1 = [{ x: 15 }, { x: 60 }, { x: 40 }];
-    const lts2 = [{ x: 25 }, { x: 50 }, { x: 75 }];
-    const wash1 = { rise: 25 };
-    const wash2 = { rise: 38 };
+    updateLights();
+    gsap.to(wash, { rise: 60, duration: 16, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: updateLights });
 
-    makeLight(".letter-light", lts1, wash1);
-    makeLight(".letter-light-2", lts2, wash2);
+    const scanBeam = (lt, minDur, maxDur) => {
+      const target = 5 + Math.random() * 90;
+      const dur = minDur + Math.random() * (maxDur - minDur);
+      gsap.to(lt, { x: target, duration: dur, ease: "sine.inOut", onUpdate: updateLights, onComplete: () => scanBeam(lt, minDur, maxDur) });
+    };
+    scanBeam(lts[0], 3, 7);
+    scanBeam(lts[1], 4, 9);
+    scanBeam(lts[2], 2, 5);
 
     return () => {
-      gsap.killTweensOf(w1);
-      gsap.killTweensOf(w2);
-      gsap.killTweensOf(wash1);
-      gsap.killTweensOf(wash2);
-      [...lts1, ...lts2].forEach(l => gsap.killTweensOf(l));
+      gsap.killTweensOf(w);
+      gsap.killTweensOf(pos);
+      gsap.killTweensOf(wash);
+      lts.forEach(l => gsap.killTweensOf(l));
     };
   }, [fanOpen]);
 
@@ -410,21 +387,13 @@ export function CommissionsSection() {
           </div>
         )}
 
-        {/* UPDATING text — two crossing instances */}
+        {/* UPDATING text */}
         {!fanOpen && (
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none", userSelect: "none", overflow: "hidden", zIndex: 2 }}>
-            {/* Instance 1 — 130px */}
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
               <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
                 UPDATING
                 <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
-              </span>
-            </span>
-            {/* Instance 2 — 108px, offset phase */}
-            <span className="updtg-w2" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
-              <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "108px", lineHeight: 1, letterSpacing: "0.14em", color: "rgba(128,114,103,0.14)", whiteSpace: "nowrap" }}>
-                UPDATING
-                <span aria-hidden="true" className="letter-light-2" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "108px", lineHeight: 1, letterSpacing: "0.14em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
               </span>
             </span>
           </div>
