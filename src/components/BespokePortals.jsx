@@ -221,52 +221,53 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
-  // UPDATING — single word, original warm lighting, independent x/y axes = true random path
+  // UPDATING — compound sine waves = continuous organic motion that never repeats
   useEffect(() => {
     if (fanOpen) return;
     const w = document.querySelector(".updtg-w1");
     if (!w) return;
 
-    gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" });
+    gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", opacity: 1 });
 
+    // Slow breath on scale — stays ≤ 1 so text stays clipped in strip
     const tl = gsap.fromTo(w,
-      { scale: 0.6, opacity: 0.03 },
-      { scale: 1.0, opacity: 0.08, duration: 22, ease: "sine.inOut", yoyo: true, repeat: -1 }
+      { scale: 0.78 },
+      { scale: 1.0, duration: 18, ease: "sine.inOut", yoyo: true, repeat: -1 }
     );
-    tl.seek(11);
+    tl.seek(9);
 
-    // x and y move on completely independent loops — creates genuinely random 2D paths
-    const pos = { x: 0, y: 0 };
-    const moveX = () => {
-      const x = (Math.random() - 0.5) * 880;
-      const dur = 3 + Math.random() * 10;
-      gsap.to(pos, { x, duration: dur, ease: "sine.inOut", onUpdate: () => gsap.set(w, { x: pos.x }), onComplete: moveX });
+    // Compound sine at irrational ratios — smooth, continuous, never repeats
+    // x: three waves at golden-ratio-spaced frequencies
+    // y: two waves, much smaller amplitude, different rates
+    let t = 0;
+    const tick = () => {
+      t += 0.006;
+      const x = Math.sin(t)          * 280
+              + Math.sin(t * 1.618)  * 160
+              + Math.sin(t * 0.382)  * 120;
+      const y = Math.sin(t * 1.272)  *  10
+              + Math.sin(t * 0.763)  *   8;
+      gsap.set(w, { x, y });
     };
-    const moveY = () => {
-      const y = (Math.random() - 0.5) * 26;
-      const dur = 2 + Math.random() * 7;
-      gsap.to(pos, { y, duration: dur, ease: "sine.inOut", onUpdate: () => gsap.set(w, { y: pos.y }), onComplete: moveY });
-    };
-    moveX();
-    moveY();
+    gsap.ticker.add(tick);
 
-    // Original warm light-from-below — unchanged
+    // Warm light-from-below — brighter, more visible
     const light = document.querySelector(".letter-light");
-    const wash = { rise: 25 };
+    const wash = { rise: 28 };
     const lts = [{ x: 15 }, { x: 60 }, { x: 40 }];
 
     const updateLights = () => {
       if (!light) return;
       const r = wash.rise;
       const vertical = `linear-gradient(to top,
-        rgba(128,114,103,1.0) 0%,
-        rgba(108,97,88,0.80) ${r * 0.35}%,
-        rgba(30,28,26,0.40) ${r}%,
+        rgba(160,138,118,1.0) 0%,
+        rgba(135,118,100,0.85) ${r * 0.35}%,
+        rgba(40,35,30,0.45) ${r}%,
         rgba(0,0,0,1.0) ${r + 10}%,
         rgba(0,0,0,1.0) 100%
       )`;
       const beams = lts.map(l =>
-        `radial-gradient(ellipse 80px 150px at ${l.x}% 115%, rgba(170,152,135,1.0) 0%, rgba(140,126,114,0.70) 30%, transparent 62%)`
+        `radial-gradient(ellipse 100px 180px at ${l.x}% 118%, rgba(200,175,148,1.0) 0%, rgba(165,142,120,0.75) 30%, transparent 60%)`
       );
       light.style.webkitBackgroundClip = "text";
       light.style.backgroundClip = "text";
@@ -276,7 +277,7 @@ export function CommissionsSection() {
     };
 
     updateLights();
-    gsap.to(wash, { rise: 60, duration: 16, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: updateLights });
+    gsap.to(wash, { rise: 65, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: updateLights });
 
     const scanBeam = (lt, minDur, maxDur) => {
       const target = 5 + Math.random() * 90;
@@ -288,8 +289,8 @@ export function CommissionsSection() {
     scanBeam(lts[2], 2, 5);
 
     return () => {
+      gsap.ticker.remove(tick);
       gsap.killTweensOf(w);
-      gsap.killTweensOf(pos);
       gsap.killTweensOf(wash);
       lts.forEach(l => gsap.killTweensOf(l));
     };
@@ -391,7 +392,7 @@ export function CommissionsSection() {
         {!fanOpen && (
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none", userSelect: "none", overflow: "hidden", zIndex: 2 }}>
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
-              <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
+              <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.38)", whiteSpace: "nowrap" }}>
                 UPDATING
                 <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
               </span>
