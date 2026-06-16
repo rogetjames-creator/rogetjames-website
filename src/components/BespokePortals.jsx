@@ -294,8 +294,8 @@ export function CommissionsSection() {
 
   return (
     <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
-      <div className="px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51, overflow: "hidden" }}>
-        <UpdatingMarquee top="20%" fontSize="14px" opacity={0.06} duration={34} cycleDuration={5} zIndex={-1} />
+      <div className="bg-matt-black px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51, overflow: "hidden", minHeight: "140px" }}>
+        <UpdatingMarquee top="50%" fontSize="140px" opacity={0.06} duration={34} cycleDuration={5} zIndex={-1} center />
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
           <span className="bespoke-heading inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Bespoke</span>
