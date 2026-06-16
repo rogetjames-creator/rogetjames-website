@@ -368,6 +368,20 @@ export function CommissionsSection() {
           </div>
         </div>
 
+        {/* Faint "UPDATING" label beneath the portal row, slowly brightening and dimming */}
+        <div
+          className="updating-label"
+          style={{
+            position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)",
+            fontFamily: "var(--font-detail)", fontSize: "10px", letterSpacing: "0.3em",
+            textTransform: "uppercase", color: "var(--color-cream)",
+            pointerEvents: "none", zIndex: 4,
+          }}
+          aria-hidden="true"
+        >
+          Updating
+        </div>
+
         {/* Close button — in the strip, top-right, only when open */}
         {fanOpen && (
           <button

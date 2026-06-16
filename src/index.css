@@ -480,6 +480,15 @@ h1, h2, h3 {
   animation: marquee-scroll 24s linear infinite;
 }
 
+/* ── "Updating" faint label under Bespoke portals ───────────────────── */
+@keyframes updating-pulse {
+  0%, 100% { opacity: 0.12; }
+  50%      { opacity: 0.32; }
+}
+.updating-label {
+  animation: updating-pulse 7s ease-in-out infinite;
+}
+
 /* ── Pill border-trace on hover ───────────────────────────────────────── */
 .pill-trace {
   position: relative;
