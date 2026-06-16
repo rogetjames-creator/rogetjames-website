@@ -389,21 +389,32 @@ export function CommissionsSection() {
         const svgW = oR * 2;
         const cX = oR;
         const rX = cX + hR, lX = cX - hR;
+        const d = `M0,0 H${svgW} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`;
+        const boxStyle = { position: "absolute", top: 0, left: "50%", transform: `translateX(-${cX}px)`, width: svgW, height: svgH, pointerEvents: "none" };
         return (
-          <svg className="hidden md:block" style={{
-            position: "absolute", top: 0, left: "50%", transform: `translateX(-${cX}px)`,
-            pointerEvents: "none", zIndex: 50,
-          }} width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
-            <path
-              fillRule="evenodd"
-              fill="#F2F0E9"
-              fillOpacity="0.18"
-              stroke="#F2F0E9"
-              strokeOpacity="0.45"
-              strokeWidth="1.5"
-              d={`M0,0 H${svgW} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`}
-            />
-          </svg>
+          <>
+            {/* Textured frosted-glass blur, clipped to the exact same arch shape */}
+            <div className="hidden md:block" style={{
+              ...boxStyle,
+              zIndex: 49,
+              backdropFilter: "blur(16px) saturate(120%)",
+              WebkitBackdropFilter: "blur(16px) saturate(120%)",
+              clipPath: `path("evenodd", "${d}")`,
+              WebkitClipPath: `path("evenodd", "${d}")`,
+            }} />
+            <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 50 }}
+              width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+              <path
+                fillRule="evenodd"
+                fill="#F2F0E9"
+                fillOpacity="0.10"
+                stroke="#F2F0E9"
+                strokeOpacity="0.12"
+                strokeWidth="1.5"
+                d={d}
+              />
+            </svg>
+          </>
         );
       })()}
 
