@@ -84,16 +84,16 @@ export default function Process() {
       });
 
       const procCards = gsap.utils.toArray(".process-card", cardsRef.current);
-      const isMob = window.innerWidth < 768;
 
       procCards.forEach((card, i) => {
-        const fromX = i % 2 === 0 ? (isMob ? -30 : -160) : (isMob ? 30 : 160);
-        const cardStart = i * 1.4;
-        const cardEnd = cardStart + 1.3;
+        gsap.set(card, { transformOrigin: "top center" });
+        const cardStart = i * 0.55;
+        const cardEnd = cardStart + 1.8;
 
+        // Slow, deliberate accordion drop — no bounce, settles smoothly into place
         tl.fromTo(card,
-          { x: fromX, opacity: 0 },
-          { x: 0, opacity: 1, duration: 1.3, ease: "sine.inOut", force3D: true },
+          { y: -22, opacity: 0, scaleY: 0.88 },
+          { y: 0, opacity: 1, scaleY: 1, duration: 1.8, ease: "power3.out", force3D: true },
           cardStart
         );
 

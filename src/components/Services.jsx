@@ -94,18 +94,33 @@ export default function Services() {
         },
       });
 
-      // Left to right — each card waits for the previous to fully appear
-      tl.fromTo(
-        serviceCards,
-        { opacity: 0 },
-        { opacity: 1, duration: 1.6, stagger: 1.6, ease: "sine.inOut" }
+      // Centre card (Bespoke Design) settles into place first; the two
+      // outer cards then glide outward from the centre into their slots —
+      // smooth, fluid, deliberate, no bounce.
+      const centerCard = serviceCards[1];
+      const centerLeft = centerCard ? centerCard.offsetLeft : 0;
+
+      tl.fromTo(centerCard,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 1.4, ease: "power3.out" },
+        0
       );
 
-      // Underline sweeps — card i finishes at: i * 1.6 + 1.6
+      serviceCards.forEach((card, i) => {
+        if (i === 1) return;
+        const deltaX = centerLeft - card.offsetLeft;
+        tl.fromTo(card,
+          { opacity: 0, x: deltaX },
+          { opacity: 1, x: 0, duration: 1.6, ease: "power3.out" },
+          0.5
+        );
+      });
+
+      // Underline sweeps — once each card has settled
       serviceCards.forEach((card, i) => {
         const ul = card?.querySelector(".service-underline");
         if (!ul) return;
-        const t = i * 1.6 + 1.6;
+        const t = i === 1 ? 1.6 : 2.3;
         tl.to(ul, { scaleX: 1, duration: 0.55, ease: "power2.out" }, t);
         tl.to(ul, { x: 200, opacity: 0, duration: 0.45, ease: "power2.in" }, t + 0.7);
       });
