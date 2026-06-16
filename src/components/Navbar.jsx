@@ -131,7 +131,7 @@ export default function Navbar({ quoteCount = 0 }) {
     <>
       <nav
         ref={navRef}
-        className={`fixed top-0 left-0 z-[100] flex items-center justify-between gap-1 px-6 py-3 transition-all duration-500 ${
+        className={`group fixed top-0 left-0 z-[100] flex items-center justify-between gap-1 px-6 py-3 transition-all duration-500 ${
           scrolled ? "shadow-lg" : ""
         }`}
         style={{ width: "100%", background: scrolled ? "rgba(158, 113, 52, 0.45)" : "transparent" }}
@@ -146,7 +146,7 @@ export default function Navbar({ quoteCount = 0 }) {
           ROGET<span className="font-normal italic font-drama">james</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300">
           {/* Collection dropdown */}
           <div className="relative" onMouseEnter={() => setCollectionOpen(true)} onMouseLeave={() => setCollectionOpen(false)}>
             <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 nav-link-glow text-cream/70`}>
