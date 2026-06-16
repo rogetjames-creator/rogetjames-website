@@ -148,8 +148,8 @@ function ReelsPortal() {
           padding: "9px",
           background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
           boxShadow: glowing
-            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.28), 0 0 55px 14px rgba(255,255,255,0.13), 0 0 90px 28px rgba(255,255,255,0.06)"
-            : "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.28)",
+            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.55)"
+            : "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.22)",
           transition: "box-shadow 0.6s ease",
         }}
         aria-label="Reels"
