@@ -2290,7 +2290,7 @@ export function ScreensGalleryModal({ onClose }) {
                 className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${isFilter ? " pill-active" : ""}`}
                 style={{
                   background: "transparent",
-                  borderColor: isFilter ? "#b85c38" : isPosition ? "rgba(242,240,233,0.8)" : "rgba(242,240,233,0.45)",
+                  borderColor: isFilter ? "#9e7134" : isPosition ? "rgba(242,240,233,0.8)" : "rgba(242,240,233,0.45)",
                   color:       isFilter ? "#f2f0e9"  : isPosition ? "#f2f0e9"               : "rgba(242,240,233,0.9)",
                   whiteSpace: "nowrap",
                 }}>
@@ -2314,11 +2314,11 @@ export function ScreensGalleryModal({ onClose }) {
                 className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
                 style={{
                   width: 30, height: 30, flexShrink: 0,
-                  borderColor: designPillsOpen ? "#b85c38" : "rgba(242,240,233,0.3)",
-                  background: designPillsOpen ? "#b85c38" : "transparent",
+                  borderColor: designPillsOpen ? "#9e7134" : "rgba(242,240,233,0.3)",
+                  background: designPillsOpen ? "#9e7134" : "transparent",
                   color: designPillsOpen ? "#f2f0e9" : "rgba(242,240,233,0.6)",
                 }}
-                onMouseEnter={e => { if (!designPillsOpen) { e.currentTarget.style.background = "#b85c38"; e.currentTarget.style.borderColor = "#b85c38"; e.currentTarget.style.color = "#f2f0e9"; }}}
+                onMouseEnter={e => { if (!designPillsOpen) { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
                 onMouseLeave={e => { if (!designPillsOpen) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}}
               >
                 ✦
@@ -2331,7 +2331,7 @@ export function ScreensGalleryModal({ onClose }) {
             {/* Active design shown inline when drawer closed */}
             {!designPillsOpen && activeDesign && (
               <span className="font-detail text-[9px] uppercase tracking-[0.14em] px-3 py-1 rounded-full border"
-                style={{ borderColor: "#b85c38", color: "#f2f0e9", background: "transparent" }}>
+                style={{ borderColor: "#9e7134", color: "#f2f0e9", background: "transparent" }}>
                 {activeDesign}
               </span>
             )}
@@ -2342,7 +2342,7 @@ export function ScreensGalleryModal({ onClose }) {
               <button
                 onClick={() => { setActiveDesign(null); setFlatIdx(null); setSlideIdx(0); setDesignPillsOpen(false); }}
                 className="pill-trace flex-shrink-0 px-3 py-1 rounded-full font-detail text-[8px] uppercase tracking-[0.14em] border transition-colors duration-200"
-                style={{ background: "transparent", borderColor: !activeDesign ? "#b85c38" : "rgba(242,240,233,0.45)", color: "#f2f0e9", whiteSpace: "nowrap" }}>
+                style={{ background: "transparent", borderColor: !activeDesign ? "#9e7134" : "rgba(242,240,233,0.45)", color: "#f2f0e9", whiteSpace: "nowrap" }}>
                 All
               </button>
               {tabDesigns.map((d) => {
@@ -2351,7 +2351,7 @@ export function ScreensGalleryModal({ onClose }) {
                   <button key={d.name}
                     onClick={() => { setActiveDesign(d.name); setFlatIdx(null); setSlideIdx(0); }}
                     className={`pill-trace flex-shrink-0 px-3 py-1 rounded-full font-detail text-[8px] uppercase tracking-[0.14em] border transition-colors duration-200${isActive ? " pill-active" : ""}`}
-                    style={{ background: "transparent", borderColor: isActive ? "#b85c38" : "rgba(242,240,233,0.45)", color: "#f2f0e9", whiteSpace: "nowrap" }}>
+                    style={{ background: "transparent", borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.45)", color: "#f2f0e9", whiteSpace: "nowrap" }}>
                     {d.name}
                   </button>
                 );
@@ -2454,7 +2454,7 @@ export function ScreensGalleryModal({ onClose }) {
                     ref={isActive ? activeThumbRef : null}
                     onClick={() => { setFlatIdx(fi); setSlideIdx(0); setJumpByDesign(true); }}
                     className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
-                    style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#b85c38" : "transparent"}`, opacity: isActive ? 1 : isSameDesign ? 0.75 : 0.35, transition: "all 0.2s" }}>
+                    style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : isSameDesign ? 0.75 : 0.35, transition: "all 0.2s" }}>
                     <img src={it.img} alt={it.name} className="w-full h-full object-cover" />
                   </div>
                 );
@@ -2598,7 +2598,7 @@ export function ProjectsGalleryModal({ onClose }) {
               className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${isActive ? " pill-active" : ""}`}
               style={{
                 background: "transparent",
-                borderColor: isActive ? "#b85c38" : isPosition ? "rgba(242,240,233,0.8)" : "rgba(242,240,233,0.45)",
+                borderColor: isActive ? "#9e7134" : isPosition ? "rgba(242,240,233,0.8)" : "rgba(242,240,233,0.45)",
                 color:       isActive ? "#f2f0e9"  : isPosition ? "#f2f0e9"               : "rgba(242,240,233,0.9)",
                 whiteSpace: "nowrap",
               }}
@@ -2675,7 +2675,7 @@ export function ProjectsGalleryModal({ onClose }) {
                   return (
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
-                      style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#b85c38" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
+                      style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
                       <img src={src} alt={it.name} className="w-full h-full object-cover" />
                     </div>
                   );
@@ -2866,7 +2866,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                   return (
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
-                      style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#b85c38" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
+                      style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
                       <img src={src} alt={it.name} className="w-full h-full object-cover" />
                     </div>
                   );

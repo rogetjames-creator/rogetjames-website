@@ -2507,7 +2507,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
           }
           {!isAll && !searchQuery && (
             <button onClick={() => setSliding(s => !s)} className={`pill-trace font-detail text-[9px] uppercase tracking-[0.18em] px-3 py-1 rounded-full border transition-colors duration-200${sliding ? " pill-active" : ""}`}
-              style={{ borderColor: sliding ? "#b85c38" : "rgba(242,240,233,0.2)", color: sliding ? "#b85c38" : "rgba(242,240,233,0.45)", background: "transparent" }}>
+              style={{ borderColor: sliding ? "#9e7134" : "rgba(242,240,233,0.2)", color: sliding ? "#9e7134" : "rgba(242,240,233,0.45)", background: "transparent" }}>
               {sliding ? "⏸ Slide" : "▶ Slide"}
             </button>
           )}
@@ -2525,7 +2525,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             {SCULPTURE_CATS.map(({ id, label }) => (
               <button key={id} onClick={() => { setSculptureCat(id); setCardIdx(0); setTab("all"); }}
                 className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${sculptureCat === id ? " pill-active" : ""}`}
-                style={{ background: "transparent", borderColor: sculptureCat === id ? "#b85c38" : "rgba(242,240,233,0.35)", color: sculptureCat === id ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
+                style={{ background: "transparent", borderColor: sculptureCat === id ? "#9e7134" : "rgba(242,240,233,0.35)", color: sculptureCat === id ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
                 {label}
               </button>
             ))}
@@ -2548,11 +2548,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
                 style={{
                   width: 30, height: 30, flexShrink: 0,
-                  borderColor: pillsOpen ? "#b85c38" : "rgba(242,240,233,0.3)",
-                  background: pillsOpen ? "#b85c38" : "transparent",
+                  borderColor: pillsOpen ? "#9e7134" : "rgba(242,240,233,0.3)",
+                  background: pillsOpen ? "#9e7134" : "transparent",
                   color: pillsOpen ? "#f2f0e9" : "rgba(242,240,233,0.6)",
                 }}
-                onMouseEnter={e => { if (!pillsOpen) { e.currentTarget.style.background = "#b85c38"; e.currentTarget.style.borderColor = "#b85c38"; e.currentTarget.style.color = "#f2f0e9"; }}}
+                onMouseEnter={e => { if (!pillsOpen) { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
                 onMouseLeave={e => { if (!pillsOpen) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}}
               >
                 ✦
@@ -2565,7 +2565,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             {/* Active series shown inline when drawer closed */}
             {!pillsOpen && !isAll && (
               <span className="font-detail text-[9px] uppercase tracking-[0.14em] px-3 py-1 rounded-full border"
-                style={{ borderColor: "#b85c38", color: "#f2f0e9", background: "transparent" }}>
+                style={{ borderColor: "#9e7134", color: "#f2f0e9", background: "transparent" }}>
                 {drilledSeries?.label ?? filteredSeries.find(s => s.id === tab)?.label}
               </span>
             )}
@@ -2579,7 +2579,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             <div className="flex flex-wrap gap-2 px-5 pb-3">
               <button onClick={() => { setTab("all"); setDrilledSeries(null); setPillsOpen(false); /* collapse on All */ }}
                 className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-all duration-200${isAll ? " pill-active" : ""}`}
-                style={{ background: "transparent", borderColor: isAll ? "#b85c38" : "rgba(242,240,233,0.35)", color: isAll ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
+                style={{ background: "transparent", borderColor: isAll ? "#9e7134" : "rgba(242,240,233,0.35)", color: isAll ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
                 All
               </button>
               {filteredSeries.map((s) => {
@@ -2587,7 +2587,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 return (
                   <button key={s.id} onClick={() => { setTab(s.id); setDrilledSeries(s); }}
                     className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${isActive ? " pill-active" : ""}`}
-                    style={{ background: "transparent", borderColor: isActive ? "#b85c38" : "rgba(242,240,233,0.35)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
+                    style={{ background: "transparent", borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.35)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
                     {s.label}
                   </button>
                 );
@@ -2681,7 +2681,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                   <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{item.name}</p>
                   <button onClick={() => setShowDetails(d => !d)}
                     className={`pill-trace font-detail text-[9px] uppercase tracking-[0.18em] px-3 py-1 rounded-full border transition-colors duration-200${showDetails ? " pill-active" : ""}`}
-                    style={{ borderColor: showDetails ? "#b85c38" : "rgba(242,240,233,0.25)", color: showDetails ? "#b85c38" : "rgba(242,240,233,0.6)", background: "transparent" }}>
+                    style={{ borderColor: showDetails ? "#9e7134" : "rgba(242,240,233,0.25)", color: showDetails ? "#9e7134" : "rgba(242,240,233,0.6)", background: "transparent" }}>
                     {showDetails ? "Close" : "Details"}
                   </button>
                 </div>
@@ -2705,7 +2705,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     <p className="font-detail text-[10px] uppercase tracking-[0.16em]" style={{ color: "rgba(242,240,233,0.5)" }}>Sizes</p>
                     {sizes.map(t => (
                       <div key={t.id} className="flex flex-col gap-0.5">
-                        {t.label !== "Standard" && <span className="font-detail text-[10px] uppercase tracking-wider" style={{ color: "#b85c38" }}>{t.label}</span>}
+                        {t.label !== "Standard" && <span className="font-detail text-[10px] uppercase tracking-wider" style={{ color: "#9e7134" }}>{t.label}</span>}
                         <span className="font-detail text-sm" style={{ color: "rgba(242,240,233,0.9)" }}>{t.dims}</span>
                         {t.fixings != null && t.fixings !== 0 && <span className="font-detail text-[10px]" style={{ color: "rgba(242,240,233,0.45)" }}>{t.fixings} fixings</span>}
                       </div>
@@ -2730,7 +2730,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                   {!showPricing ? (
                     <button onClick={() => setShowPricing(true)}
                       className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200"
-                      style={{ background: "rgba(184,92,56,0.15)", border: "1px solid rgba(184,92,56,0.4)", color: "#b85c38" }}>
+                      style={{ background: "rgba(184,92,56,0.15)", border: "1px solid rgba(184,92,56,0.4)", color: "#9e7134" }}>
                       View Pricing
                     </button>
                   ) : (
@@ -2771,7 +2771,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                 setPostcodeStep(false);
                               }}
                               className="w-full py-2 rounded-lg font-detail text-[10px] uppercase tracking-[0.18em] transition-all"
-                              style={{ background: postcodeInput.length === 4 ? "#b85c38" : "rgba(242,240,233,0.08)", color: postcodeInput.length === 4 ? "#f2f0e9" : "rgba(242,240,233,0.3)", border: "none" }}>
+                              style={{ background: postcodeInput.length === 4 ? "#9e7134" : "rgba(242,240,233,0.08)", color: postcodeInput.length === 4 ? "#f2f0e9" : "rgba(242,240,233,0.3)", border: "none" }}>
                               Confirm
                             </button>
                           </div>
@@ -2799,7 +2799,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
                               <button key={m} onClick={() => setSelectedMat(m)}
                                 className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
-                                style={{ background: selectedMat === m ? "rgba(184,92,56,0.2)" : "transparent", border: `1px solid ${selectedMat === m ? "#b85c38" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#b85c38" : "rgba(242,240,233,0.6)" }}>
+                                style={{ background: selectedMat === m ? "rgba(184,92,56,0.2)" : "transparent", border: `1px solid ${selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.6)" }}>
                                 {m === "aluminium" ? "Powder Coated" : "Corten"}
                               </button>
                             ))}
@@ -2821,7 +2821,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             return (
                               <button key={t.id} onClick={() => setSelectedSize(t)}
                                 className="w-full flex justify-between items-center px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{ background: isSelected ? "rgba(184,92,56,0.15)" : "transparent", border: `1px solid ${isSelected ? "#b85c38" : "rgba(242,240,233,0.1)"}`, cursor: "pointer" }}>
+                                style={{ background: isSelected ? "rgba(184,92,56,0.15)" : "transparent", border: `1px solid ${isSelected ? "#9e7134" : "rgba(242,240,233,0.1)"}`, cursor: "pointer" }}>
                                 <span className="font-detail text-xs text-left" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>{sizeLabel}</span>
                                 <span className="font-heading font-semibold text-sm" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>
                                   {p != null ? `$${p.toLocaleString()}` : "Enquire"}
@@ -2867,7 +2867,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                 style={{
                                   background: canAdd ? "rgba(184,92,56,0.15)" : "rgba(242,240,233,0.04)",
                                   border: `1px solid ${canAdd ? "rgba(184,92,56,0.4)" : "rgba(242,240,233,0.1)"}`,
-                                  color: canAdd ? "#b85c38" : "rgba(242,240,233,0.25)",
+                                  color: canAdd ? "#9e7134" : "rgba(242,240,233,0.25)",
                                   cursor: canAdd ? "pointer" : "default",
                                 }}>
                                 Add to Quote
@@ -2903,7 +2903,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                       <div key={`${iIdx}-${sIdx}`}
                         onClick={() => { setCardIdx(iIdx); setSlideIdx(sIdx); setShowDetails(false); }}
                         className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
-                        style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#b85c38" : "transparent"}`, opacity: isActive ? 1 : iIdx === cardIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
+                        style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === cardIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
                         <img src={img} alt={it.name} className="w-full h-full object-cover" />
                       </div>
                     );
@@ -2956,7 +2956,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               <span
                 className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
                 style={{ width: 30, height: 30, flexShrink: 0, borderColor: "rgba(242,240,233,0.3)", background: "transparent", color: "rgba(242,240,233,0.6)" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#b85c38"; e.currentTarget.style.borderColor = "#b85c38"; e.currentTarget.style.color = "#f2f0e9"; }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}
               >✦</span>
               <span className="font-detail text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(242,240,233,0.75)" }}>All</span>
@@ -3013,8 +3013,8 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
     : inSection
       ? "rgba(242,240,233,0.75)"
       : "rgba(242,240,233,0.35)";
-  const dotBg     = inSection ? "#b85c38" : "transparent";
-  const dotBorder = inSection ? "#b85c38" : "rgba(242,240,233,0.35)";
+  const dotBg     = inSection ? "#9e7134" : "transparent";
+  const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
   return (
     <>
       <span
@@ -3043,7 +3043,7 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
                       transform: "translate(-50%, -50%)",
                       width: 5, height: 5,
                       borderRadius: "50%",
-                      border: "0.5px solid #b85c38",
+                      border: "0.5px solid #9e7134",
                       animation: "bcl-ripple 2.4s ease-out infinite",
                       pointerEvents: "none",
                     }} />
@@ -3058,11 +3058,11 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
               )}
               <button
                 onClick={() => { setSelectedCategory(id); setCategoryClicked(true); setCardDeckOpen(true); }}
-                onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#b85c38"; e.currentTarget.style.color = "#f2f0e9"; }}}
+                onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
                 onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
                 className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
                 style={{
-                  borderColor: isActive ? "#b85c38" : "rgba(242,240,233,0.3)",
+                  borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)",
                   color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)",
                   cursor: "pointer",
                   boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)",

@@ -490,7 +490,7 @@ h1, h2, h3 {
   position: absolute;
   inset: -1px;
   border-radius: 9999px;
-  border: 1.5px solid #b85c38;
+  border: 1.5px solid #9e7134;
   clip-path: inset(0 100% 0 0 round 9999px);
   transition: clip-path 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
