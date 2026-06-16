@@ -426,7 +426,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             onClick={() => onOpen ? onOpen() : canOpen && setPopOpen(true)}
             onMouseEnter={() => setGlowing(true)}
             onMouseLeave={() => setGlowing(false)}
-            className="group relative cursor-pointer"
+            className="group relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             style={{
               borderRadius: "50%",
               padding: "9px",
