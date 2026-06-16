@@ -139,7 +139,7 @@ export function CommissionsSection() {
 
   // Init: side portals hidden, Practice collapsed
   useEffect(() => {
-    gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0 });
+    gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0, visibility: "hidden" });
     if (practiceRevealRef.current) {
       gsap.set(practiceRevealRef.current, { height: 0, overflow: "hidden" });
     }
@@ -155,10 +155,11 @@ export function CommissionsSection() {
         if (stripRef.current) stripRef.current.style.overflow = "visible";
         // 2. Fan portals after strip is open
         if (window.innerWidth >= 768) {
-          gsap.fromTo(leftRef.current,       { x: 0, opacity: 0, scale: 0.25 }, { x: -300, opacity: 1, scale: 1, duration: 5.0, ease: "sine.inOut" });
-          gsap.fromTo(rightRef.current,      { x: 0, opacity: 0, scale: 0.25 }, { x:  300, opacity: 1, scale: 1, duration: 5.0, ease: "sine.inOut" });
-          gsap.fromTo(leftOuterRef.current,  { x: 0, opacity: 0, scale: 0.15 }, { x: -580, opacity: 1, scale: 1, duration: 6.0, ease: "sine.inOut", delay: 0.4 });
-          gsap.fromTo(rightOuterRef.current, { x: 0, opacity: 0, scale: 0.15 }, { x:  580, opacity: 1, scale: 1, duration: 6.0, ease: "sine.inOut", delay: 0.4 });
+          gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { opacity: 1, visibility: "visible" });
+          gsap.fromTo(leftRef.current,       { x: 0 }, { x: -300, duration: 5.0, ease: "none" });
+          gsap.fromTo(rightRef.current,      { x: 0 }, { x:  300, duration: 5.0, ease: "none" });
+          gsap.fromTo(leftOuterRef.current,  { x: 0 }, { x: -580, duration: 5.0, ease: "none" });
+          gsap.fromTo(rightOuterRef.current, { x: 0 }, { x:  580, duration: 5.0, ease: "none" });
         }
       },
     });
@@ -318,7 +319,7 @@ export function CommissionsSection() {
         {/* Portal fan */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={110} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
           </div>
           <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
@@ -341,7 +342,7 @@ export function CommissionsSection() {
             <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
           </div>
           <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={110} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
           </div>
         </div>
 
