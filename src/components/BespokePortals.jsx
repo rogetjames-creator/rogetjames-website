@@ -321,7 +321,8 @@ export function CommissionsSection() {
             children can ever show, regardless of their own opacity). */}
         {!fanOpen && (
           <div style={{
-            position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%)",
+            position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%) rotate(-90deg)",
+            transformOrigin: "left center",
             display: "flex", flexDirection: "column", gap: "8px",
             pointerEvents: "auto", zIndex: 5,
           }}>
