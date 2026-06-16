@@ -150,7 +150,7 @@ export default function Services() {
           <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">
             Custom Services
           </span>
-          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3">
+          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>
             Three Paths{" "}
             <span className="text-cream/60">Forward</span>
           </h2>

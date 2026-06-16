@@ -138,7 +138,7 @@ export default function Process() {
           <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">
             How It Works
           </span>
-          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3">
+          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>
             The <span className="text-cream/60">Protocol</span>
           </h2>
           <p className="font-detail text-warm-gray text-[10px] max-w-xl mt-4 leading-relaxed mx-auto uppercase tracking-[0.2em]">

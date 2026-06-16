@@ -537,7 +537,7 @@ export default function DiscoverPortals() {
     <section className="bg-graphite overflow-x-hidden">
       <div ref={headerRef} className="px-8 pt-20 pb-10 text-center">
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Discover</span>
-        <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3">Portals</h2>
+        <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Portals</h2>
       </div>
       <div className="w-full h-px bg-white/10" />
       <div className="bg-matt-black px-8 py-[55px]">
