@@ -336,19 +336,31 @@ export function CommissionsSection() {
               hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
-            {/* Frosted arch — rect top tall enough to hold Bespoke heading, curved bottom, clean circle hole */}
-            <svg style={{ position: "absolute", top: "-150px", left: "0", pointerEvents: "none", zIndex: 50 }}
-              width="266" height="426" viewBox="0 0 266 426">
-              <path
-                fillRule="evenodd"
-                fill="#F2F0E9"
-                fillOpacity="0.10"
-                stroke="#F2F0E9"
-                strokeOpacity="0.22"
-                strokeWidth="1"
-                d="M0,0 H266 V293 A133,133,0,1,1,0,293 Z M257,293 A124,124,0,1,0,9,293 A124,124,0,1,0,257,293 Z"
-              />
-            </svg>
+            {(() => {
+              // All values derived from the portal size so proportions are always correct
+              const outer = 266;       // portal button outer diameter
+              const oR = 133;          // outer radius
+              const hR = 108;          // hole radius — 25px ring visible each side
+              const topH = 110;        // rect height above circle centre (≈40% of outer diameter)
+              const cY = topH + oR;    // circle centre Y in SVG = 243
+              const svgH = cY + oR;    // total SVG height = 376
+              const rX = oR + hR;      // hole right x = 241
+              const lX = oR - hR;      // hole left x = 25
+              return (
+                <svg style={{ position: "absolute", top: `-${topH}px`, left: "0", pointerEvents: "none", zIndex: 50 }}
+                  width={outer} height={svgH} viewBox={`0 0 ${outer} ${svgH}`}>
+                  <path
+                    fillRule="evenodd"
+                    fill="#F2F0E9"
+                    fillOpacity="0.11"
+                    stroke="#F2F0E9"
+                    strokeOpacity="0.25"
+                    strokeWidth="1"
+                    d={`M0,0 H${outer} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`}
+                  />
+                </svg>
+              );
+            })()}
           </div>
 
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
