@@ -100,12 +100,15 @@ const SIDE_PORTAL_CONCEPTS = {
 };
 
 // Faint "UPDATING" text that drifts left to right, letters floating up and down at random
-function UpdatingMarquee({ top, fontSize, opacity, duration, zIndex }) {
+function UpdatingMarquee({ top, fontSize, opacity, duration, zIndex, center }) {
   const word = "UPDATING";
   return (
     <div
-      className="updating-marquee"
-      style={{ top, fontSize, opacity, zIndex, letterSpacing: "0.08em", animationDuration: `${duration}s` }}
+      className={`updating-marquee${center ? " updating-marquee--center" : ""}`}
+      style={{
+        top, fontSize, opacity, zIndex, letterSpacing: "0.08em", animationDuration: `${duration}s`,
+        lineHeight: 1,
+      }}
       aria-hidden="true"
     >
       {word.split("").map((ch, i) => (
@@ -333,7 +336,7 @@ export function CommissionsSection() {
       >
         {/* Faint drifting "UPDATING" text, behind the portal fan and frosted arch */}
         <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
-          <UpdatingMarquee top="38%" fontSize="20px" opacity={0.08} duration={42} zIndex={0} />
+          <UpdatingMarquee top="50%" fontSize="140px" opacity={0.08} duration={42} zIndex={0} center />
         </div>
 
         {/* Hover warm edge — bottom border glow when collapsed */}

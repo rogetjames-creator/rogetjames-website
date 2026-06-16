@@ -486,6 +486,10 @@ h1, h2, h3 {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(100vw); }
 }
+@keyframes updating-drift-centered {
+  0%   { transform: translate(-100%, -50%); }
+  100% { transform: translate(100vw, -50%); }
+}
 @keyframes updating-letter-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-1em); }
@@ -505,6 +509,9 @@ h1, h2, h3 {
   animation-name: updating-letter-float;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+}
+.updating-marquee--center {
+  animation-name: updating-drift-centered;
 }
 
 /* ── Pill border-trace on hover ───────────────────────────────────────── */
