@@ -221,80 +221,6 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
-  // UPDATING — compound sine waves = continuous organic motion that never repeats
-  useEffect(() => {
-    if (fanOpen) return;
-    const w = document.querySelector(".updtg-w1");
-    if (!w) return;
-
-    gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", opacity: 1 });
-
-    // Slow breath on scale — stays ≤ 1 so text stays clipped in strip
-    const tl = gsap.fromTo(w,
-      { scale: 0.78 },
-      { scale: 1.0, duration: 18, ease: "sine.inOut", yoyo: true, repeat: -1 }
-    );
-    tl.seek(9);
-
-    // Compound sine at irrational ratios — smooth, continuous, never repeats
-    // x: three waves at golden-ratio-spaced frequencies
-    // y: two waves, much smaller amplitude, different rates
-    let t = 0;
-    const tick = () => {
-      t += 0.006;
-      const x = Math.sin(t)          * 280
-              + Math.sin(t * 1.618)  * 160
-              + Math.sin(t * 0.382)  * 120;
-      const y = Math.sin(t * 1.272)  *  10
-              + Math.sin(t * 0.763)  *   8;
-      gsap.set(w, { x, y });
-    };
-    gsap.ticker.add(tick);
-
-    // Warm light-from-below — brighter, more visible
-    const light = document.querySelector(".letter-light");
-    const wash = { rise: 28 };
-    const lts = [{ x: 15 }, { x: 60 }, { x: 40 }];
-
-    const updateLights = () => {
-      if (!light) return;
-      const r = wash.rise;
-      const vertical = `linear-gradient(to top,
-        rgba(160,138,118,1.0) 0%,
-        rgba(135,118,100,0.85) ${r * 0.35}%,
-        rgba(40,35,30,0.45) ${r}%,
-        rgba(0,0,0,1.0) ${r + 10}%,
-        rgba(0,0,0,1.0) 100%
-      )`;
-      const beams = lts.map(l =>
-        `radial-gradient(ellipse 100px 180px at ${l.x}% 118%, rgba(200,175,148,1.0) 0%, rgba(165,142,120,0.75) 30%, transparent 60%)`
-      );
-      light.style.webkitBackgroundClip = "text";
-      light.style.backgroundClip = "text";
-      light.style.webkitTextFillColor = "transparent";
-      light.style.color = "transparent";
-      light.style.backgroundImage = [vertical, ...beams].join(", ");
-    };
-
-    updateLights();
-    gsap.to(wash, { rise: 65, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: updateLights });
-
-    const scanBeam = (lt, minDur, maxDur) => {
-      const target = 5 + Math.random() * 90;
-      const dur = minDur + Math.random() * (maxDur - minDur);
-      gsap.to(lt, { x: target, duration: dur, ease: "sine.inOut", onUpdate: updateLights, onComplete: () => scanBeam(lt, minDur, maxDur) });
-    };
-    scanBeam(lts[0], 3, 7);
-    scanBeam(lts[1], 4, 9);
-    scanBeam(lts[2], 2, 5);
-
-    return () => {
-      gsap.ticker.remove(tick);
-      gsap.killTweensOf(w);
-      gsap.killTweensOf(wash);
-      lts.forEach(l => gsap.killTweensOf(l));
-    };
-  }, [fanOpen]);
 
 
   // Practice text — fired when fan opens
@@ -388,17 +314,6 @@ export function CommissionsSection() {
           </div>
         )}
 
-        {/* UPDATING text */}
-        {!fanOpen && (
-          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", userSelect: "none", overflow: "hidden", zIndex: 2 }}>
-            <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
-              <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.38)", whiteSpace: "nowrap" }}>
-                UPDATING
-                <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
-              </span>
-            </span>
-          </div>
-        )}
 
         {/* Portal fan */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
