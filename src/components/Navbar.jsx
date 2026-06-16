@@ -131,12 +131,10 @@ export default function Navbar({ quoteCount = 0 }) {
     <>
       <nav
         ref={navRef}
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-1 px-2 py-2 transition-all duration-500 ${
-          scrolled
-            ? "backdrop-blur-xl border border-white/25 shadow-lg rounded-2xl"
-            : "bg-transparent rounded-2xl"
+        className={`fixed top-0 left-0 z-[100] flex items-center gap-1 px-6 py-3 transition-all duration-500 ${
+          scrolled ? "shadow-lg" : ""
         }`}
-        style={{ width: "fit-content", maxWidth: "calc(100vw - 2rem)", background: scrolled ? "rgba(158, 113, 52, 0.45)" : "transparent" }}
+        style={{ width: "100%", background: "#9E7134" }}
       >
         <a
           href="#"
@@ -151,7 +149,7 @@ export default function Navbar({ quoteCount = 0 }) {
         <div className="hidden md:flex items-center gap-1">
           {/* Collection dropdown */}
           <div className="relative" onMouseEnter={() => setCollectionOpen(true)} onMouseLeave={() => setCollectionOpen(false)}>
-            <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>
+            <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white`}>
               Collection
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${collectionOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -169,7 +167,7 @@ export default function Navbar({ quoteCount = 0 }) {
 
           {/* Bespoke dropdown */}
           <div className="relative" onMouseEnter={() => setBespokeOpen(true)} onMouseLeave={() => setBespokeOpen(false)}>
-            <button onClick={scrollTo("#bespoke")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>
+            <button onClick={scrollTo("#bespoke")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white`}>
               Bespoke
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${bespokeOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -186,14 +184,12 @@ export default function Navbar({ quoteCount = 0 }) {
           </div>
 
           {/* Process */}
-          <a href="#process" onClick={scrollTo("#process")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>Process</a>
+          <a href="#process" onClick={scrollTo("#process")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 text-cream/70 hover:text-white`}>Process</a>
 
           {/* Catalogues dropdown */}
           <div className="relative" onMouseEnter={() => setCatOpen(true)} onMouseLeave={() => setCatOpen(false)}>
             <button
-              className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 ${
-                scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"
-              }`}
+              className="lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white"
             >
               Catalogues
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${catOpen ? "rotate-180" : ""}`}>
@@ -222,18 +218,18 @@ export default function Navbar({ quoteCount = 0 }) {
             )}
           </div>
           {/* Contact */}
-          <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream hover:bg-white/5" : "text-cream/70 hover:text-cream"}`}>Contact</a>
+          <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 text-cream/70 hover:text-white`}>Contact</a>
 
           <button
             onClick={() => setSearchOpen(true)}
-            className={`lift-hover p-2 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream" : "text-cream/70 hover:text-cream"}`}
+            className="lift-hover p-2 rounded-full transition-colors duration-500 text-cream/70 hover:text-white"
             aria-label="Search"
           >
             <Search size={17} />
           </button>
           <button
             onClick={() => setClientPreviewOpen(true)}
-            className={`lift-hover p-2 rounded-full transition-colors duration-500 ${scrolled ? "text-cream/70 hover:text-cream" : "text-cream/70 hover:text-cream"}`}
+            className="lift-hover p-2 rounded-full transition-colors duration-500 text-cream/70 hover:text-white"
             aria-label="Client Preview"
             title="Client Preview"
           >
