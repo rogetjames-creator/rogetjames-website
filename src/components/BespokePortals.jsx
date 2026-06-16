@@ -316,21 +316,6 @@ export function CommissionsSection() {
           }} />
         )}
 
-        {/* Faint "Updating" label, just under the strip — absolute, no layout impact */}
-        <div
-          className="updating-label"
-          style={{
-            position: "absolute", bottom: "-26px", left: "50%", transform: "translateX(-50%)",
-            zIndex: 60,
-            fontFamily: "var(--font-bebas)", fontSize: "16px", letterSpacing: "0.25em",
-            textTransform: "uppercase", color: "var(--color-cream)",
-            pointerEvents: "none",
-          }}
-          aria-hidden="true"
-        >
-          Updating
-        </div>
-
         {/* Portal names — static left side */}
         {!fanOpen && (
           <div style={{
