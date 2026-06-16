@@ -134,7 +134,7 @@ export default function Navbar({ quoteCount = 0 }) {
         className={`fixed top-0 left-0 z-[100] flex items-center justify-between gap-1 px-6 py-3 transition-all duration-500 ${
           scrolled ? "shadow-lg" : ""
         }`}
-        style={{ width: "100%", background: "rgba(158, 113, 52, 0.45)" }}
+        style={{ width: "100%", background: scrolled ? "rgba(158, 113, 52, 0.45)" : "transparent" }}
       >
         <a
           href="#"
