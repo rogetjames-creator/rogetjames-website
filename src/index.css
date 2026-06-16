@@ -495,10 +495,6 @@ h1, h2, h3 {
   position: relative;
   overflow: visible;
 }
-/* ── Bespoke portal name list — each line lights up on its own hover ── */
-.portal-name-line:hover {
-  color: var(--color-clay-light) !important;
-}
 
 .pill-trace::after {
   content: '';

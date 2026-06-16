@@ -328,10 +328,14 @@ export function CommissionsSection() {
           }}>
             {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
               <span key={name} className="portal-name-line" style={{
-                fontFamily: "var(--font-bebas)", fontSize: "19px",
-                color: hovering ? "rgba(242,240,233,0.7)" : "rgba(111,79,36,0.85)",
+                fontFamily: "var(--font-bebas)", fontSize: "26px",
+                background: hovering
+                  ? "linear-gradient(to right, rgba(255,255,255,0.95), rgba(225,225,225,0.6))"
+                  : "linear-gradient(to right, rgba(220,220,220,0.6), rgba(110,110,110,0.6))",
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                color: "transparent", WebkitTextFillColor: "transparent",
                 letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1.3,
-                transition: "color 0.3s ease",
+                transition: "background 0.3s ease",
               }}>{name}</span>
             ))}
           </div>
