@@ -245,18 +245,29 @@ export function CommissionsSection() {
     );
     tl2.seek(5);
 
-    // Fast crossing drift — left/right sweeps with slight y float
-    const drift = (el, yRange, startDelay) => {
+    // Genuinely random drift — irregular speed, sudden lurches, pauses, direction reversals
+    const randDrift = (el, yRange, phase) => {
+      const eases = ["none", "power2.in", "power3.out", "sine.inOut", "power1.in", "expo.out", "circ.in", "back.out(1.4)"];
       const go = () => {
-        const x = (Math.random() - 0.5) * 860;
+        // Occasionally lurch to a totally different spot (20% chance), else small step
+        const bigMove = Math.random() < 0.2;
+        const x = bigMove
+          ? (Math.random() - 0.5) * 920
+          : (Math.random() - 0.5) * 300;
         const y = (Math.random() - 0.5) * yRange;
-        const dur = 7 + Math.random() * 9;
-        gsap.to(el, { x, y, duration: dur, ease: "power1.inOut", onComplete: go });
+        // Wildly varying duration — some snappy, some glacial
+        const dur = bigMove
+          ? 0.6 + Math.random() * 1.8
+          : 2 + Math.random() * 11;
+        const ease = eases[Math.floor(Math.random() * eases.length)];
+        // Random pause before next move (0–2.5s)
+        const pause = Math.random() * 2500;
+        gsap.to(el, { x, y, duration: dur, ease, onComplete: () => setTimeout(go, pause) });
       };
-      setTimeout(go, startDelay);
+      setTimeout(go, phase);
     };
-    drift(w1, 22, 0);
-    drift(w2, 28, 3200); // offset start so they don't mirror each other
+    randDrift(w1, 24, 0);
+    randDrift(w2, 30, 1700);
 
     // Original warm light-from-below system — applied to each instance
     const makeLight = (selector, lts, wash) => {
