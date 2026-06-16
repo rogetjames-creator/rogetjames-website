@@ -119,9 +119,7 @@ function ArchPortal({ slides, fanOpen, onOpen }) {
       style={{
         width: W, height: H,
         borderRadius: W / 2,
-        backdropFilter: "blur(22px)",
-        WebkitBackdropFilter: "blur(22px)",
-        background: "rgba(8,8,8,0.52)",
+        background: "rgba(10,10,10,0.82)",
         border: `1px solid ${hovered ? "rgba(255,255,255,0.48)" : "rgba(255,255,255,0.17)"}`,
         boxShadow: hovered
           ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 8px 32px rgba(0,0,0,0.95), 0 0 0 4px #0a0a0a, 0 0 0 7px rgba(255,255,255,0.55)"
