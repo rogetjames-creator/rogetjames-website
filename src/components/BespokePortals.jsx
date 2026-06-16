@@ -228,79 +228,75 @@ export function CommissionsSection() {
     const w2 = document.querySelector(".updtg-w2");
     if (!w1 || !w2) return;
 
-    // Position both at centre, offset slightly so they start apart
-    gsap.set(w1, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", x: -200, y: 0 });
-    gsap.set(w2, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", x: 200, y: 0 });
+    gsap.set(w1, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", x: -220 });
+    gsap.set(w2, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%", x:  220 });
 
-    // W1 — breathes between 0.75 and 1.0
+    // W1 — original scale range, seeked mid-cycle so visible immediately
     const tl1 = gsap.fromTo(w1,
-      { scale: 0.75, opacity: 0.05 },
-      { scale: 1.0, opacity: 0.10, duration: 14, ease: "sine.inOut", yoyo: true, repeat: -1 }
+      { scale: 0.6, opacity: 0.03 },
+      { scale: 1.0, opacity: 0.08, duration: 22, ease: "sine.inOut", yoyo: true, repeat: -1 }
     );
-    tl1.seek(7);
+    tl1.seek(11);
 
     // W2 — slightly smaller, offset phase
     const tl2 = gsap.fromTo(w2,
-      { scale: 0.65, opacity: 0.04 },
-      { scale: 0.88, opacity: 0.08, duration: 18, ease: "sine.inOut", yoyo: true, repeat: -1 }
+      { scale: 0.55, opacity: 0.03 },
+      { scale: 0.88, opacity: 0.07, duration: 18, ease: "sine.inOut", yoyo: true, repeat: -1 }
     );
-    tl2.seek(4);
+    tl2.seek(5);
 
-    // Independent crossing drift for each — fast, full-width sweeps
-    const drift = (el, yRange) => {
+    // Fast crossing drift — left/right sweeps with slight y float
+    const drift = (el, yRange, startDelay) => {
       const go = () => {
-        const x = (Math.random() - 0.5) * 900;
+        const x = (Math.random() - 0.5) * 860;
         const y = (Math.random() - 0.5) * yRange;
-        const dur = 6 + Math.random() * 8;
+        const dur = 7 + Math.random() * 9;
         gsap.to(el, { x, y, duration: dur, ease: "power1.inOut", onComplete: go });
       };
-      go();
+      setTimeout(go, startDelay);
     };
-    drift(w1, 24);
-    drift(w2, 30);
+    drift(w1, 22, 0);
+    drift(w2, 28, 3200); // offset start so they don't mirror each other
 
-    // Lighting — per-instance, randomised beams
-    const makeLight = (lightEl, lts, washObj) => {
+    // Original warm light-from-below system — applied to each instance
+    const makeLight = (selector, lts, wash) => {
+      const light = document.querySelector(selector);
       const update = () => {
-        if (!lightEl) return;
-        const r = washObj.rise;
+        if (!light) return;
+        const r = wash.rise;
         const vertical = `linear-gradient(to top,
           rgba(128,114,103,1.0) 0%,
-          rgba(108,97,88,0.75) ${r * 0.3}%,
-          rgba(30,28,26,0.35) ${r}%,
-          rgba(0,0,0,1.0) ${r + 8}%,
+          rgba(108,97,88,0.80) ${r * 0.35}%,
+          rgba(30,28,26,0.40) ${r}%,
+          rgba(0,0,0,1.0) ${r + 10}%,
           rgba(0,0,0,1.0) 100%
         )`;
         const beams = lts.map(l =>
-          `radial-gradient(ellipse ${60 + l.w}px ${120 + l.h}px at ${l.x}% 115%, rgba(175,155,138,1.0) 0%, rgba(145,128,115,0.65) 28%, transparent 58%)`
+          `radial-gradient(ellipse 80px 150px at ${l.x}% 115%, rgba(170,152,135,1.0) 0%, rgba(140,126,114,0.70) 30%, transparent 62%)`
         );
-        lightEl.style.webkitBackgroundClip = "text";
-        lightEl.style.backgroundClip = "text";
-        lightEl.style.webkitTextFillColor = "transparent";
-        lightEl.style.color = "transparent";
-        lightEl.style.backgroundImage = [vertical, ...beams].join(", ");
+        light.style.webkitBackgroundClip = "text";
+        light.style.backgroundClip = "text";
+        light.style.webkitTextFillColor = "transparent";
+        light.style.color = "transparent";
+        light.style.backgroundImage = [vertical, ...beams].join(", ");
       };
       update();
-      gsap.to(washObj, { rise: 65, duration: 8, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: update });
+      gsap.to(wash, { rise: 60, duration: 10, ease: "sine.inOut", yoyo: true, repeat: -1, onUpdate: update });
       const scan = (lt, minD, maxD) => {
-        const tx = 5 + Math.random() * 90;
-        const tw = Math.random() * 60;
-        const th = Math.random() * 80;
+        const target = 5 + Math.random() * 90;
         const dur = minD + Math.random() * (maxD - minD);
-        gsap.to(lt, { x: tx, w: tw, h: th, duration: dur, ease: "sine.inOut", onUpdate: update, onComplete: () => scan(lt, minD, maxD) });
+        gsap.to(lt, { x: target, duration: dur, ease: "sine.inOut", onUpdate: update, onComplete: () => scan(lt, minD, maxD) });
       };
-      lts.forEach((lt, i) => scan(lt, 1.5 + i, 4 + i * 1.5));
+      lts.forEach((lt, i) => scan(lt, 2 + i, 5 + i * 1.5));
     };
 
-    const light1 = document.querySelector(".letter-light-1");
-    const light2 = document.querySelector(".letter-light-2");
-    const lts1 = [{ x: 20, w: 0, h: 0 }, { x: 55, w: 30, h: 40 }, { x: 80, w: 10, h: 20 }];
-    const lts2 = [{ x: 10, w: 20, h: 10 }, { x: 45, w: 0, h: 0 }, { x: 75, w: 40, h: 60 }];
-    const wash1 = { rise: 20 };
-    const wash2 = { rise: 45 };
+    const lts1 = [{ x: 15 }, { x: 60 }, { x: 40 }];
+    const lts2 = [{ x: 25 }, { x: 50 }, { x: 75 }];
+    const wash1 = { rise: 25 };
+    const wash2 = { rise: 38 };
 
-    makeLight(light1, lts1, wash1);
-    makeLight(light2, lts2, wash2);
+    makeLight(".letter-light", lts1, wash1);
+    makeLight(".letter-light-2", lts2, wash2);
 
     return () => {
       gsap.killTweensOf(w1);
@@ -410,7 +406,7 @@ export function CommissionsSection() {
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
               <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
                 UPDATING
-                <span aria-hidden="true" className="letter-light-1" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
+                <span aria-hidden="true" className="letter-light" style={{ position: "absolute", inset: 0, fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", WebkitTextFillColor: "transparent", whiteSpace: "nowrap" }}>UPDATING</span>
               </span>
             </span>
             {/* Instance 2 — 108px, offset phase */}
