@@ -316,6 +316,21 @@ export function CommissionsSection() {
           }} />
         )}
 
+        {/* Faint "Updating" label, just under the strip — absolute, no layout impact */}
+        <div
+          className="updating-label"
+          style={{
+            position: "absolute", bottom: "-26px", left: "50%", transform: "translateX(-50%)",
+            zIndex: 60,
+            fontFamily: "var(--font-bebas)", fontSize: "16px", letterSpacing: "0.25em",
+            textTransform: "uppercase", color: "var(--color-cream)",
+            pointerEvents: "none",
+          }}
+          aria-hidden="true"
+        >
+          Updating
+        </div>
+
         {/* Portal names — static left side */}
         {!fanOpen && (
           <div style={{
@@ -380,19 +395,6 @@ export function CommissionsSection() {
         )}
       </div>
 
-      {/* Faint "Updating" label, centered under the portal strip, slowly brightening and dimming */}
-      <div
-        className="updating-label hidden md:block text-center"
-        style={{
-          position: "relative", zIndex: 60,
-          fontFamily: "var(--font-detail)", fontSize: "10px", letterSpacing: "0.3em",
-          textTransform: "uppercase", color: "var(--color-cream)",
-          padding: "10px 0", pointerEvents: "none",
-        }}
-        aria-hidden="true"
-      >
-        Updating
-      </div>
 
       {/* Frosted arch — anchored to the section's actual top edge (measured, not guessed),
           hole sized to clear the portal's outer ring so it is never clipped */}

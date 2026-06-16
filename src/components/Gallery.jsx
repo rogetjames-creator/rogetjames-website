@@ -2730,7 +2730,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                   {!showPricing ? (
                     <button onClick={() => setShowPricing(true)}
                       className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200"
-                      style={{ background: "rgba(184,92,56,0.15)", border: "1px solid rgba(184,92,56,0.4)", color: "#9e7134" }}>
+                      style={{ background: "rgba(158,113,52,0.15)", border: "1px solid rgba(158,113,52,0.4)", color: "#9e7134" }}>
                       View Pricing
                     </button>
                   ) : (
@@ -2799,7 +2799,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
                               <button key={m} onClick={() => setSelectedMat(m)}
                                 className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
-                                style={{ background: selectedMat === m ? "rgba(184,92,56,0.2)" : "transparent", border: `1px solid ${selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.6)" }}>
+                                style={{ background: selectedMat === m ? "rgba(158,113,52,0.2)" : "transparent", border: `1px solid ${selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.6)" }}>
                                 {m === "aluminium" ? "Powder Coated" : "Corten"}
                               </button>
                             ))}
@@ -2821,7 +2821,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             return (
                               <button key={t.id} onClick={() => setSelectedSize(t)}
                                 className="w-full flex justify-between items-center px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{ background: isSelected ? "rgba(184,92,56,0.15)" : "transparent", border: `1px solid ${isSelected ? "#9e7134" : "rgba(242,240,233,0.1)"}`, cursor: "pointer" }}>
+                                style={{ background: isSelected ? "rgba(158,113,52,0.15)" : "transparent", border: `1px solid ${isSelected ? "#9e7134" : "rgba(242,240,233,0.1)"}`, cursor: "pointer" }}>
                                 <span className="font-detail text-xs text-left" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>{sizeLabel}</span>
                                 <span className="font-heading font-semibold text-sm" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>
                                   {p != null ? `$${p.toLocaleString()}` : "Enquire"}
@@ -2865,8 +2865,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                 }}
                                 className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200 mt-1"
                                 style={{
-                                  background: canAdd ? "rgba(184,92,56,0.15)" : "rgba(242,240,233,0.04)",
-                                  border: `1px solid ${canAdd ? "rgba(184,92,56,0.4)" : "rgba(242,240,233,0.1)"}`,
+                                  background: canAdd ? "rgba(158,113,52,0.15)" : "rgba(242,240,233,0.04)",
+                                  border: `1px solid ${canAdd ? "rgba(158,113,52,0.4)" : "rgba(242,240,233,0.1)"}`,
                                   color: canAdd ? "#9e7134" : "rgba(242,240,233,0.25)",
                                   cursor: canAdd ? "pointer" : "default",
                                 }}>
