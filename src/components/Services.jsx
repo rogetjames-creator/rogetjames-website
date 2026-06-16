@@ -209,7 +209,7 @@ export default function Services() {
                       className="btn-magnetic btn-service-cta inline-flex items-center justify-center w-full py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#0d0d0d" }}
                     >
                       <span className="btn-bg rounded-full bg-black/30" />
-                      <span className="relative z-10">{service.cta}</span>
+                      <span className="relative z-10 text-cream/45">{service.cta}</span>
                     </button>
                     <div
                       className="absolute bottom-full mb-2 left-0 right-0 rounded-2xl bg-charcoal/95 border border-white/10 overflow-hidden backdrop-blur-sm shadow-xl z-20"
@@ -232,7 +232,7 @@ export default function Services() {
                     className="btn-magnetic btn-service-cta inline-flex items-center justify-center py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#0d0d0d" }}
                   >
                     <span className={`btn-bg rounded-full ${service.featured ? "bg-black/30" : "bg-black/30"}`} />
-                    <span className="relative z-10">{service.cta}</span>
+                    <span className="relative z-10 text-cream/45">{service.cta}</span>
                   </a>
                 )}
                 </div>
