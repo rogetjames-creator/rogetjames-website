@@ -384,6 +384,7 @@ export function CommissionsSection() {
       <div
         className="updating-label hidden md:block text-center"
         style={{
+          position: "relative", zIndex: 60,
           fontFamily: "var(--font-detail)", fontSize: "10px", letterSpacing: "0.3em",
           textTransform: "uppercase", color: "var(--color-cream)",
           padding: "10px 0", pointerEvents: "none",
