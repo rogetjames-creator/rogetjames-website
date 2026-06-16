@@ -99,6 +99,30 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
+// Faint "UPDATING" text that drifts left to right, letters floating up and down at random
+function UpdatingMarquee({ top, fontSize, opacity, duration, zIndex }) {
+  const word = "UPDATING";
+  return (
+    <div
+      className="updating-marquee"
+      style={{ top, fontSize, opacity, zIndex, letterSpacing: "0.08em", animationDuration: `${duration}s` }}
+      aria-hidden="true"
+    >
+      {word.split("").map((ch, i) => (
+        <span
+          key={i}
+          style={{
+            animationDuration: `${2.6 + (i % 5) * 0.55}s`,
+            animationDelay: `${(i * 0.37) % 2.4}s`,
+          }}
+        >
+          {ch}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 // Tight pulse rings for the standalone center portal
 function PulseRings({ active, size }) {
   if (!active) return null;
@@ -265,7 +289,8 @@ export function CommissionsSection() {
 
   return (
     <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
-      <div className="px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51 }}>
+      <div className="px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51, overflow: "hidden" }}>
+        <UpdatingMarquee top="20%" fontSize="14px" opacity={0.06} duration={34} zIndex={-1} />
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
           <span className="bespoke-heading inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Bespoke</span>
@@ -306,6 +331,11 @@ export function CommissionsSection() {
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       >
+        {/* Faint drifting "UPDATING" text, behind the portal fan and frosted arch */}
+        <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
+          <UpdatingMarquee top="38%" fontSize="20px" opacity={0.08} duration={42} zIndex={0} />
+        </div>
+
         {/* Hover warm edge — bottom border glow when collapsed */}
         {!fanOpen && (
           <div style={{
