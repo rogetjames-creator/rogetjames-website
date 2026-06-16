@@ -344,7 +344,7 @@ export function CommissionsSection() {
           </div>
 
           {/* Center portal */}
-          <div ref={centerPortalRef} className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
+          <div ref={centerPortalRef} className="relative" style={{ zIndex: 51 }} onClick={e => fanOpen && e.stopPropagation()}>
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
               size={248}
