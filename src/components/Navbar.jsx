@@ -149,7 +149,7 @@ export default function Navbar({ quoteCount = 0 }) {
         <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
           {/* Collection dropdown */}
           <div className="relative" onMouseEnter={() => setCollectionOpen(true)} onMouseLeave={() => setCollectionOpen(false)}>
-            <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white`}>
+            <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 nav-link-glow text-cream/70`}>
               Collection
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${collectionOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -167,7 +167,7 @@ export default function Navbar({ quoteCount = 0 }) {
 
           {/* Bespoke dropdown */}
           <div className="relative" onMouseEnter={() => setBespokeOpen(true)} onMouseLeave={() => setBespokeOpen(false)}>
-            <button onClick={scrollTo("#bespoke")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white`}>
+            <button onClick={scrollTo("#bespoke")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 nav-link-glow text-cream/70`}>
               Bespoke
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${bespokeOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -184,12 +184,12 @@ export default function Navbar({ quoteCount = 0 }) {
           </div>
 
           {/* Process */}
-          <a href="#process" onClick={scrollTo("#process")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 text-cream/70 hover:text-white`}>Process</a>
+          <a href="#process" onClick={scrollTo("#process")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 nav-link-glow text-cream/70`}>Process</a>
 
           {/* Catalogues dropdown */}
           <div className="relative" onMouseEnter={() => setCatOpen(true)} onMouseLeave={() => setCatOpen(false)}>
             <button
-              className="lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white"
+              className="lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 nav-link-glow text-cream/70"
             >
               Catalogues
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${catOpen ? "rotate-180" : ""}`}>
@@ -218,20 +218,20 @@ export default function Navbar({ quoteCount = 0 }) {
             )}
           </div>
           {/* Contact */}
-          <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 text-cream/70 hover:text-white`}>Contact</a>
+          <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 nav-link-glow text-cream/70`}>Contact</a>
         </div>
 
         <div className="hidden md:flex items-center gap-1">
           <button
             onClick={() => setSearchOpen(true)}
-            className="lift-hover p-2 rounded-full transition-colors duration-500 text-cream/70 hover:text-white"
+            className="lift-hover p-2 rounded-full transition-colors duration-500 nav-link-glow text-cream/70"
             aria-label="Search"
           >
             <Search size={17} />
           </button>
           <button
             onClick={() => setClientPreviewOpen(true)}
-            className="lift-hover p-2 rounded-full transition-colors duration-500 text-cream/70 hover:text-white"
+            className="lift-hover p-2 rounded-full transition-colors duration-500 nav-link-glow text-cream/70"
             aria-label="Client Preview"
             title="Client Preview"
           >

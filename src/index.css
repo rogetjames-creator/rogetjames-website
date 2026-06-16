@@ -481,6 +481,15 @@ h1, h2, h3 {
   animation: marquee-scroll 24s linear infinite;
 }
 
+/* ── Navbar links — brighten with a soft glow on hover ──────────────────── */
+.nav-link-glow {
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+}
+.nav-link-glow:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 12px rgba(255,255,255,0.65);
+}
+
 /* ── Pill border-trace on hover ───────────────────────────────────────── */
 .pill-trace {
   position: relative;
