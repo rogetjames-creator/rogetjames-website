@@ -322,14 +322,14 @@ export function CommissionsSection() {
         {!fanOpen && (
           <div style={{
             position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%)",
-            display: "flex", flexDirection: "column", gap: "2px",
+            display: "flex", flexDirection: "column", gap: "8px",
             pointerEvents: "auto", zIndex: 5,
           }}>
             {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
               <span key={name} className="portal-name-line" style={{
-                fontFamily: "var(--font-detail)", fontSize: "7px",
+                fontFamily: "var(--font-detail)", fontSize: "13px",
                 color: hovering ? "rgba(242,240,233,0.7)" : "rgba(242,240,233,0.28)",
-                letterSpacing: "0.18em", textTransform: "uppercase", lineHeight: 1.1,
+                letterSpacing: "0.18em", textTransform: "uppercase", lineHeight: 1.3,
                 transition: "color 0.3s ease",
               }}>{name}</span>
             ))}
