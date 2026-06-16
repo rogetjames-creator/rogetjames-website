@@ -9,6 +9,21 @@ gsap.registerPlugin(ScrollTrigger);
 
 const SERVICES = [
   {
+    icon: Gem,
+    title: "Bespoke Design",
+    subtitle: "Crafting a Vision",
+    description:
+      "Commission a completely original piece.",
+    features: [
+      "Original design creation",
+      "In-situ rendering previews",
+      "Multi-medium: steel, stone, concrete, wood",
+      "Project coordination",
+    ],
+    cta: "Start a Commission",
+    featured: true,
+  },
+  {
     icon: Hexagon,
     title: "Catalogue Designs",
     subtitle: "Ready to Specify",
@@ -24,21 +39,6 @@ const SERVICES = [
     ctaCatalogues: true,
     featured: false,
     texture: "/images/concrete-texture.jpg",
-  },
-  {
-    icon: Gem,
-    title: "Bespoke Design",
-    subtitle: "Crafting a Vision",
-    description:
-      "Commission a completely original piece.",
-    features: [
-      "Original design creation",
-      "In-situ rendering previews",
-      "Multi-medium: steel, stone, concrete, wood",
-      "Project coordination",
-    ],
-    cta: "Start a Commission",
-    featured: true,
   },
   {
     icon: Layers,
@@ -94,25 +94,30 @@ export default function Services() {
         },
       });
 
-      // Centre card (Bespoke Design) settles into place first; the two
-      // outer cards then glide outward from the centre into their slots —
-      // smooth, fluid, deliberate, no bounce.
+      // Centre card (Catalogue Designs) is fixed — it simply settles into
+      // place first. The left card (Bespoke Design) then emerges from
+      // behind the centre and drifts into its slot; the right card
+      // (Commercial & Public Art) follows last. Slow, smooth, meditative —
+      // no bounce, no urgency.
       const centerCard = serviceCards[1];
       const centerLeft = centerCard ? centerCard.offsetLeft : 0;
 
       tl.fromTo(centerCard,
         { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, duration: 1.4, ease: "power3.out" },
+        { opacity: 1, y: 0, duration: 1.6, ease: "sine.out" },
         0
       );
 
-      serviceCards.forEach((card, i) => {
-        if (i === 1) return;
+      const order = [0, 2]; // left, then right
+      order.forEach((i, seq) => {
+        const card = serviceCards[i];
+        if (!card) return;
         const deltaX = centerLeft - card.offsetLeft;
+        const start = 1.4 + seq * 1.8;
         tl.fromTo(card,
-          { opacity: 0, x: deltaX },
-          { opacity: 1, x: 0, duration: 1.6, ease: "power3.out" },
-          0.5
+          { opacity: 0, scale: 0.82, x: deltaX },
+          { opacity: 1, scale: 1, x: 0, duration: 2.2, ease: "sine.out" },
+          start
         );
       });
 
@@ -120,7 +125,7 @@ export default function Services() {
       serviceCards.forEach((card, i) => {
         const ul = card?.querySelector(".service-underline");
         if (!ul) return;
-        const t = i === 1 ? 1.6 : 2.3;
+        const t = i === 1 ? 1.6 : i === 0 ? 3.6 : 5.4;
         tl.to(ul, { scaleX: 1, duration: 0.55, ease: "power2.out" }, t);
         tl.to(ul, { x: 200, opacity: 0, duration: 0.45, ease: "power2.in" }, t + 0.7);
       });
