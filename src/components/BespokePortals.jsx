@@ -99,35 +99,6 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
-// Faint "UPDATING" text that drifts left to right, letters floating up and down at random
-function UpdatingMarquee({ top, fontSize, opacity, duration, cycleDuration = 6, zIndex, center }) {
-  const word = "UPDATING";
-  return (
-    <div
-      className={`updating-marquee${center ? " updating-marquee--center" : ""}`}
-      style={{
-        top, fontSize, opacity, zIndex, letterSpacing: "0.08em",
-        lineHeight: 1,
-        "--drift-duration": `${duration}s`,
-        "--cycle-duration": `${cycleDuration}s`,
-      }}
-      aria-hidden="true"
-    >
-      {word.split("").map((ch, i) => (
-        <span
-          key={i}
-          style={{
-            animationDuration: `${cycleDuration * (0.85 + ((i * 0.61) % 0.5))}s`,
-            animationDelay: `${(i * 0.71 + (i % 3) * 0.4) % cycleDuration}s`,
-          }}
-        >
-          {ch}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 // Tight pulse rings for the standalone center portal
 function PulseRings({ active, size }) {
   if (!active) return null;
@@ -294,8 +265,7 @@ export function CommissionsSection() {
 
   return (
     <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
-      <div className="bg-matt-black px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51, overflow: "hidden", minHeight: "140px" }}>
-        <UpdatingMarquee top="50%" fontSize="140px" opacity={0.06} duration={34} cycleDuration={5} zIndex={-1} center />
+      <div className="px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51 }}>
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
           <span className="bespoke-heading inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Bespoke</span>
@@ -336,11 +306,6 @@ export function CommissionsSection() {
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       >
-        {/* Faint drifting "UPDATING" text, behind the portal fan and frosted arch */}
-        <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
-          <UpdatingMarquee top="50%" fontSize="140px" opacity={0.08} duration={42} cycleDuration={7} zIndex={0} center />
-        </div>
-
         {/* Hover warm edge — bottom border glow when collapsed */}
         {!fanOpen && (
           <div style={{
