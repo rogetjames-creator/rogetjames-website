@@ -176,7 +176,7 @@ export default function Services() {
                   </span>
                 </div>
 
-                <h3 className="font-heading font-bold text-xl md:text-2xl mb-3 text-cream/75 transition-colors duration-500 group-hover:text-cream">
+                <h3 className="font-heading font-bold text-xl md:text-2xl mb-3 text-cream/45 transition-colors duration-500 group-hover:text-cream/60">
                   <span className="relative inline-block">
                     {service.title}
                     <span className="service-underline" style={{ position: "absolute", bottom: "-2px", left: 0, right: 0, height: "1px", background: "rgba(242,240,233,0.35)", display: "block", transformOrigin: "left center", transform: "scaleX(0)" }} />

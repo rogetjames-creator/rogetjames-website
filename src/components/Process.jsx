@@ -165,7 +165,7 @@ export default function Process() {
                 </div>
 
                 {/* Title */}
-                <h3 className="font-heading font-bold text-lg text-cream/80 mt-1 transition-colors duration-500 group-hover:text-cream">
+                <h3 className="font-heading font-bold text-lg text-cream/45 mt-1 transition-colors duration-500 group-hover:text-cream/60">
                   <span className="relative inline-block">
                     {step.title}
                     <span
