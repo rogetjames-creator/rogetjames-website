@@ -343,8 +343,12 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal */}
-          <div ref={centerPortalRef} className="relative" style={{ zIndex: 51 }} onClick={e => fanOpen && e.stopPropagation()}>
+          {/* Center portal — fixed to the collapsed strip's vertical centre so it never shifts when the strip expands */}
+          <div
+            ref={centerPortalRef}
+            style={{ position: "absolute", top: "70px", left: "50%", transform: "translate(-50%, -50%)", zIndex: 51 }}
+            onClick={e => fanOpen && e.stopPropagation()}
+          >
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
               size={248}
