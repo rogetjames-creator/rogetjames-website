@@ -206,7 +206,7 @@ function ClientPage({ clientCode, project, onBack, onClose }) {
           <p className="font-detail text-sm text-cream/45 uppercase tracking-wider">Concepts coming soon</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto flex-1 pb-4" data-lenis-prevent style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(196,80,24,0.4) transparent" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto flex-1 pb-4" data-lenis-prevent style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(158, 113, 52,0.4) transparent" }}>
           {visibleItems.map((item, i) => (
             <button
               key={i}
@@ -278,7 +278,7 @@ function AdminPage({ onBack, onClose }) {
         </button>
       </div>
 
-      <div className="overflow-y-auto flex-1 pb-4 space-y-10" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(196,80,24,0.4) transparent" }}>
+      <div className="overflow-y-auto flex-1 pb-4 space-y-10" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(158, 113, 52,0.4) transparent" }}>
         {clientEntries.map(([code, project]) => (
           <div key={code}>
             {/* Client header */}
@@ -422,7 +422,7 @@ export default function ClientPreview({ onClose }) {
       className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-jet/96 backdrop-blur-xl"
       onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 60%, rgba(196,80,24,0.04) 0%, transparent 70%)" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 60%, rgba(158, 113, 52,0.04) 0%, transparent 70%)" }} />
 
       {view?.type === "client" ? (
         <div ref={cardRef} className="relative w-full overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 2rem)" }}>
@@ -463,7 +463,7 @@ export default function ClientPreview({ onClose }) {
                   autoCapitalize="characters"
                   spellCheck={false}
                   className="w-full bg-cream/5 border border-cream/20 focus:border-clay/70 rounded-2xl px-5 py-3.5 text-center font-heading font-semibold text-cream text-lg tracking-[0.2em] uppercase placeholder:text-cream/45 placeholder:font-detail placeholder:text-sm placeholder:tracking-widest placeholder:normal-case outline-none transition-colors duration-200"
-                  style={{ caretColor: "#C45018" }}
+                  style={{ caretColor: "#9E7134" }}
                 />
                 {error && <p className="font-detail text-[11px] text-clay text-center mt-2 leading-relaxed">{error}</p>}
               </div>

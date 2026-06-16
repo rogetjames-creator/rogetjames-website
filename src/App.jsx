@@ -144,15 +144,15 @@ function ScrollArrows() {
         <button
           key={dir}
           onMouseDown={e => {
-            e.currentTarget.style.background = "#C45018";
+            e.currentTarget.style.background = "#9E7134";
             e.currentTarget.style.color = "#EDE8DF";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,80,24,0.2), 0 0 20px rgba(196,80,24,0.4)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(158, 113, 52,0.2), 0 0 20px rgba(158, 113, 52,0.4)";
             handleDown(dir);
           }}
           onMouseUp={e => {
             e.currentTarget.style.background = "transparent";
             e.currentTarget.style.color = "#EDE8DF";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,80,24,0.2), 0 0 16px rgba(196,80,24,0.35)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(158, 113, 52,0.2), 0 0 16px rgba(158, 113, 52,0.35)";
           }}
           onTouchStart={() => handleDown(dir)}
           aria-label={label}
@@ -160,19 +160,19 @@ function ScrollArrows() {
           style={{
             background: "transparent",
             color: "rgba(237,232,223,0.5)",
-            border: "1.5px solid rgba(196,80,24,0.4)",
+            border: "1.5px solid rgba(158, 113, 52,0.4)",
             opacity: dir === 1 && atBottom ? 0 : 1,
             pointerEvents: dir === 1 && atBottom ? "none" : "auto",
             transition: "opacity 0.4s ease",
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = "#C45018";
+            e.currentTarget.style.borderColor = "#9E7134";
             e.currentTarget.style.color = "#EDE8DF";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,80,24,0.2), 0 0 16px rgba(196,80,24,0.35)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(158, 113, 52,0.2), 0 0 16px rgba(158, 113, 52,0.35)";
           }}
           onMouseLeave={e => {
             e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "rgba(196,80,24,0.4)";
+            e.currentTarget.style.borderColor = "rgba(158, 113, 52,0.4)";
             e.currentTarget.style.color = "rgba(237,232,223,0.5)";
             e.currentTarget.style.boxShadow = "none";
           }}

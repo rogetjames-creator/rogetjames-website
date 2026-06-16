@@ -13,7 +13,7 @@ const STATUS_CONFIG = {
   "In Progress": { label: "In Progress",  dot: "#f59e0b" },
   "Review":      { label: "Under Review", dot: "#a78bfa" },
   "Complete":    { label: "Complete",     dot: "#34d399" },
-  "Delivered":   { label: "Delivered",    dot: "#c45018" },
+  "Delivered":   { label: "Delivered",    dot: "#9e7134" },
 };
 
 // ── Fullscreen lightbox ──────────────────────────────────────
@@ -195,7 +195,7 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
                 width: i === idx ? 20 : 6,
                 height: 4,
                 borderRadius: 999,
-                background: i === idx ? "#c45018" : "rgba(237,232,223,0.3)",
+                background: i === idx ? "#9e7134" : "rgba(237,232,223,0.3)",
               }}
             />
           ))}
@@ -311,7 +311,7 @@ function GallerySlideshow({ images, onOpenLightbox }) {
                   width: i === idx ? 16 : 5,
                   height: 3,
                   borderRadius: 999,
-                  background: i === idx ? "#c45018" : "rgba(237,232,223,0.2)",
+                  background: i === idx ? "#9e7134" : "rgba(237,232,223,0.2)",
                 }}
               />
             ))}
@@ -671,7 +671,7 @@ function VerifyStep({ token, onVerified }) {
 
   return (
     <div className="min-h-screen bg-jet flex items-center justify-center px-6">
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 55%, rgba(196,80,24,0.05) 0%, transparent 65%)" }} />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 55%, rgba(158, 113, 52,0.05) 0%, transparent 65%)" }} />
       <div ref={formRef} className="relative w-full max-w-sm opacity-0">
         <div className="bg-white/8 border border-white/18 rounded-[2rem] p-8 backdrop-blur-sm">
           <div className="text-center mb-8">
@@ -698,7 +698,7 @@ function VerifyStep({ token, onVerified }) {
                 placeholder="Your email address"
                 autoComplete="email"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/30 outline-none transition-colors duration-200"
-                style={{ caretColor: "#C45018" }}
+                style={{ caretColor: "#9E7134" }}
               />
               {error && (
                 <p className="font-detail text-[11px] text-clay text-center mt-2 leading-relaxed">{error}</p>
@@ -776,7 +776,7 @@ function AdminPanel() {
                 onChange={e => setSecret(e.target.value)}
                 placeholder="Admin password"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-heading text-cream tracking-[0.15em] placeholder:text-cream/30 placeholder:font-detail placeholder:text-sm placeholder:tracking-widest outline-none transition-colors"
-                style={{ caretColor: "#C45018" }}
+                style={{ caretColor: "#9E7134" }}
               />
               <button
                 type="submit"
@@ -813,7 +813,7 @@ function AdminPanel() {
               onChange={e => { setInviteEmail(e.target.value); setResult(null); }}
               placeholder="client@email.com"
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 font-detail text-cream placeholder:text-cream/30 outline-none transition-colors"
-              style={{ caretColor: "#C45018" }}
+              style={{ caretColor: "#9E7134" }}
             />
             <button
               type="submit"

@@ -310,7 +310,7 @@ export function CommissionsSection() {
         {!fanOpen && (
           <div style={{
             position: "absolute", bottom: 0, left: 0, right: 0, height: "1px",
-            background: hovering ? "rgba(196,80,24,0.45)" : "rgba(242,240,233,0.08)",
+            background: hovering ? "rgba(158, 113, 52,0.45)" : "rgba(242,240,233,0.08)",
             transition: "background 0.5s ease",
             pointerEvents: "none", zIndex: 5,
           }} />

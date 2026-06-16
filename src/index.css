@@ -20,9 +20,9 @@
   --color-moss: #5C3D2E;
   --color-moss-light: #7A5240;
   --color-moss-dark: #3D2820;
-  --color-clay: #C45018;
-  --color-clay-light: #D86830;
-  --color-clay-dark: #8C3210;
+  --color-clay: #9E7134;
+  --color-clay-light: #AD8652;
+  --color-clay-dark: #6F4F24;
   --color-cream: #EDE8DF;
   --color-cream-dark: #DDD7CC;
   --color-matt-black: #020202;
@@ -169,7 +169,7 @@ h1, h2, h3 {
   inset: 0;
   border-radius: 9999px;
   padding: 2px;
-  background: conic-gradient(from -90deg, #C45018 var(--sweep-angle), transparent var(--sweep-angle));
+  background: conic-gradient(from -90deg, #9E7134 var(--sweep-angle), transparent var(--sweep-angle));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -183,7 +183,7 @@ h1, h2, h3 {
   inset: 0;
   border-radius: 9999px;
   padding: 2px;
-  background: conic-gradient(from -90deg, #C45018 var(--sweep-angle), transparent var(--sweep-angle));
+  background: conic-gradient(from -90deg, #9E7134 var(--sweep-angle), transparent var(--sweep-angle));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -198,7 +198,7 @@ h1, h2, h3 {
 }
 
 .filter-btn-active {
-  background-color: #C45018;
+  background-color: #9E7134;
   color: #1A1A1A;
 }
 
@@ -226,12 +226,12 @@ h1, h2, h3 {
 }
 
 .btn-magnetic:active {
-  background-color: #C45018 !important;
+  background-color: #9E7134 !important;
   color: #000000 !important;
 }
 
 .btn-magnetic:active .btn-bg {
-  background-color: #C45018 !important;
+  background-color: #9E7134 !important;
 }
 
 .btn-magnetic:active * {
@@ -247,7 +247,7 @@ h1, h2, h3 {
   color: var(--color-cream) !important;
 }
 .btn-service-cta:active {
-  box-shadow: 0 0 0 1.5px #C45018 !important;
+  box-shadow: 0 0 0 1.5px #9E7134 !important;
 }
 
 /* ── Interactive Lifts ───────────────────── */

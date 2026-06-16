@@ -178,7 +178,7 @@ function SchedulerCard() {
           >
             <path
               d="M1 1L1 15L5 11L9 19L12 17.5L8 10L13 10L1 1Z"
-              fill="#C45018"
+              fill="#9E7134"
               stroke="#fff"
               strokeWidth="1"
             />

@@ -1808,7 +1808,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
       const observer = new IntersectionObserver(([entry]) => {
         if (entry.isIntersecting) {
           gsap.to(spans, {
-            rotationY: 0, opacity: 1, color: "#C45018",
+            rotationY: 0, opacity: 1, color: "#9E7134",
             duration: 0.5, stagger: 0.04, ease: "back.out(1.4)",
             onComplete: () => gsap.set(spans, { clearProps: "rotationY,transformPerspective,transformOrigin" }),
           });
@@ -2065,7 +2065,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
               activeTab === tab.id ? "filter-btn-active" : "filter-btn-inactive"
             }`}
             style={{
-              backgroundColor: activeTab === tab.id ? "#C45018" : "#1A1A1A",
+              backgroundColor: activeTab === tab.id ? "#9E7134" : "#1A1A1A",
               color: activeTab === tab.id ? "#1A1A1A" : "#F2F0E9",
               border: activeTab === tab.id ? "none" : "1px solid rgba(242,240,233,0.15)",
               transition: "background-color 0.6s ease 0.7s, color 0.6s ease 0.7s",

@@ -147,23 +147,23 @@ export default function ChatWidget() {
         aria-label="Open chat"
         className="fixed bottom-6 left-6 z-[95] flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
         style={{
-          background: open ? "#C45018" : "transparent",
+          background: open ? "#9E7134" : "transparent",
           color: open ? "#EDE8DF" : "rgba(237,232,223,0.6)",
-          border: "1.5px solid rgba(196,80,24,0.4)",
-          boxShadow: open ? "0 0 0 3px rgba(196,80,24,0.2), 0 0 20px rgba(196,80,24,0.3)" : "none",
+          border: "1.5px solid rgba(158, 113, 52,0.4)",
+          boxShadow: open ? "0 0 0 3px rgba(158, 113, 52,0.2), 0 0 20px rgba(158, 113, 52,0.3)" : "none",
           opacity: modalOpen ? 0 : 1,
           pointerEvents: modalOpen ? "none" : "auto",
         }}
         onMouseEnter={e => {
           if (!open) {
-            e.currentTarget.style.borderColor = "#C45018";
+            e.currentTarget.style.borderColor = "#9E7134";
             e.currentTarget.style.color = "#EDE8DF";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,80,24,0.2), 0 0 20px rgba(196,80,24,0.35)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(158, 113, 52,0.2), 0 0 20px rgba(158, 113, 52,0.35)";
           }
         }}
         onMouseLeave={e => {
           if (!open) {
-            e.currentTarget.style.borderColor = "rgba(196,80,24,0.4)";
+            e.currentTarget.style.borderColor = "rgba(158, 113, 52,0.4)";
             e.currentTarget.style.color = "rgba(237,232,223,0.6)";
             e.currentTarget.style.boxShadow = "none";
           }

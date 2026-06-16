@@ -1362,7 +1362,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
       const observer = new IntersectionObserver(([entry]) => {
         if (entry.isIntersecting) {
           gsap.to(spans, {
-            rotationY: 0, opacity: 1, color: "#C45018",
+            rotationY: 0, opacity: 1, color: "#9E7134",
             duration: 0.5, stagger: 0.04, ease: "back.out(1.4)",
             onComplete: () => gsap.set(spans, { clearProps: "rotationY,transformPerspective,transformOrigin" }),
           });
@@ -1606,7 +1606,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                   onClick={clearFilters}
                   className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
                   style={{
-                    backgroundColor: !hasFilters ? "#C45018" : "#1A1A1A",
+                    backgroundColor: !hasFilters ? "#9E7134" : "#1A1A1A",
                     color: "#F2F0E9",
                     border: !hasFilters ? "none" : "1px solid rgba(242,240,233,0.15)",
                     transition: "background-color 0.3s ease",
@@ -1633,7 +1633,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                         isActive ? "filter-btn-active" : "filter-btn-inactive"
                       }`}
                       style={{
-                        backgroundColor: isActive ? "#C45018" : "#1A1A1A",
+                        backgroundColor: isActive ? "#9E7134" : "#1A1A1A",
                         color: "#F2F0E9",
                         border: isActive ? "none" : "1px solid rgba(242,240,233,0.15)",
                         transition: "background-color 0.6s ease 0.7s, opacity 0.3s ease",
@@ -1662,7 +1662,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                         onClick={() => switchCategory(cat.id)}
                         className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
                         style={{
-                          backgroundColor: isActive ? "#C45018" : "#1A1A1A",
+                          backgroundColor: isActive ? "#9E7134" : "#1A1A1A",
                           color: "#F2F0E9",
                           border: isActive ? "none" : "1px solid rgba(242,240,233,0.15)",
                           transition: "background-color 0.3s ease, opacity 0.3s ease",
@@ -1733,14 +1733,14 @@ function GalleryModal({ onClose, initialCategory = null }) {
                     <button
                       onClick={() => setActiveScreenDesign(null)}
                       className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                      style={{ backgroundColor: !activeScreenDesign ? "#C45018" : "#1A1A1A", color: "#F2F0E9", border: !activeScreenDesign ? "none" : "1px solid rgba(242,240,233,0.15)", transition: "background-color 0.3s ease" }}
+                      style={{ backgroundColor: !activeScreenDesign ? "#9E7134" : "#1A1A1A", color: "#F2F0E9", border: !activeScreenDesign ? "none" : "1px solid rgba(242,240,233,0.15)", transition: "background-color 0.3s ease" }}
                     >All designs</button>
                     {SCREEN_DESIGNS.filter(d => d.items.length > 0).map(design => (
                       <button
                         key={design.name}
                         onClick={() => setActiveScreenDesign(design.name)}
                         className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                        style={{ backgroundColor: activeScreenDesign === design.name ? "#C45018" : "#1A1A1A", color: "#F2F0E9", border: activeScreenDesign === design.name ? "none" : "1px solid rgba(242,240,233,0.15)", transition: "background-color 0.3s ease" }}
+                        style={{ backgroundColor: activeScreenDesign === design.name ? "#9E7134" : "#1A1A1A", color: "#F2F0E9", border: activeScreenDesign === design.name ? "none" : "1px solid rgba(242,240,233,0.15)", transition: "background-color 0.3s ease" }}
                       >{design.name}</button>
                     ))}
                   </div>
