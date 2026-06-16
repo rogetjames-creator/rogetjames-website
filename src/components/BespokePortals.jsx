@@ -321,20 +321,21 @@ export function CommissionsSection() {
             children can ever show, regardless of their own opacity). */}
         {!fanOpen && (
           <div style={{
-            position: "absolute", left: "78px", top: "calc(50% + 62px)", transform: "translateY(-50%) rotate(-90deg)",
+            position: "absolute", left: "78px", top: "calc(50% + 68px)", transform: "translateY(-50%) rotate(-90deg)",
             transformOrigin: "left center",
             display: "flex", flexDirection: "column", gap: "9px",
             pointerEvents: "auto", zIndex: 5,
           }}>
             {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
               <span key={name} className="portal-name-line" style={{
-                fontFamily: "var(--font-bebas)", fontSize: "26px",
+                fontFamily: "var(--font-bebas)", fontSize: "18px",
+                width: "138px", display: "inline-block", textAlign: "center",
                 background: hovering
-                  ? "linear-gradient(to right, rgba(255,255,255,0.95), rgba(225,225,225,0.6))"
-                  : "linear-gradient(to right, rgba(220,220,220,0.6), rgba(110,110,110,0.6))",
+                  ? "linear-gradient(to right, rgba(255,255,255,0.85), rgba(255,255,255,0.1))"
+                  : "linear-gradient(to right, rgba(220,220,220,0.45), rgba(60,60,60,0.08))",
                 WebkitBackgroundClip: "text", backgroundClip: "text",
                 color: "transparent", WebkitTextFillColor: "transparent",
-                letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1.3,
+                letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1.3,
                 transition: "background 0.3s ease",
               }}>{name}</span>
             ))}
