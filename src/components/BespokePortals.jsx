@@ -336,15 +336,17 @@ export function CommissionsSection() {
               hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
-            {/* Frosted arch overlay — SVG evenodd punches circle cleanly */}
-            <svg style={{ position: "absolute", top: "-96px", left: "0", pointerEvents: "none", zIndex: 50 }}
-              width="266" height="362" viewBox="0 0 266 362">
+            {/* Frosted arch overlay — rect top + curved bottom following circle, ring border, circle hole */}
+            <svg style={{ position: "absolute", top: "-89px", left: "-9px", pointerEvents: "none", zIndex: 50 }}
+              width="284" height="364" viewBox="0 0 284 364">
               <path
                 fillRule="evenodd"
-                fill="rgba(242,240,233,0.10)"
-                stroke="rgba(242,240,233,0.20)"
+                fill="#F2F0E9"
+                fillOpacity="0.10"
+                stroke="#F2F0E9"
+                strokeOpacity="0.22"
                 strokeWidth="1"
-                d="M0,0 H266 V362 H0 Z M133,96 A133,133,0,1,0,133,362 A133,133,0,1,0,133,96 Z"
+                d="M0,0 H284 V222 A142,142,0,1,1,0,222 Z M142,98 A124,124,0,1,0,142,346 A124,124,0,1,0,142,98 Z"
               />
             </svg>
           </div>
