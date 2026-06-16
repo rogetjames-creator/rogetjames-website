@@ -368,20 +368,6 @@ export function CommissionsSection() {
           </div>
         </div>
 
-        {/* Faint "UPDATING" label beneath the portal row, slowly brightening and dimming */}
-        <div
-          className="updating-label"
-          style={{
-            position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)",
-            fontFamily: "var(--font-detail)", fontSize: "10px", letterSpacing: "0.3em",
-            textTransform: "uppercase", color: "var(--color-cream)",
-            pointerEvents: "none", zIndex: 4,
-          }}
-          aria-hidden="true"
-        >
-          Updating
-        </div>
-
         {/* Close button — in the strip, top-right, only when open */}
         {fanOpen && (
           <button
@@ -392,6 +378,19 @@ export function CommissionsSection() {
             <X size={13} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
           </button>
         )}
+      </div>
+
+      {/* Faint "Updating" label, centered under the portal strip, slowly brightening and dimming */}
+      <div
+        className="updating-label hidden md:block text-center"
+        style={{
+          fontFamily: "var(--font-detail)", fontSize: "10px", letterSpacing: "0.3em",
+          textTransform: "uppercase", color: "var(--color-cream)",
+          padding: "10px 0", pointerEvents: "none",
+        }}
+        aria-hidden="true"
+      >
+        Updating
       </div>
 
       {/* Frosted arch — anchored to the section's actual top edge (measured, not guessed),
