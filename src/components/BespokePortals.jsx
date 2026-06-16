@@ -99,6 +99,94 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
+// Upside-down arch / pill portal — frosted glass with cycling image circle at top
+function ArchPortal({ slides, fanOpen, onOpen }) {
+  const [slideIdx, setSlideIdx] = useState(0);
+  const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => setSlideIdx(i => (i + 1) % slides.length), 3200);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const W = 152, H = 264, circleSize = 118;
+
+  return (
+    <div
+      onClick={onOpen}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: W, height: H,
+        borderRadius: W / 2,
+        backdropFilter: "blur(22px)",
+        WebkitBackdropFilter: "blur(22px)",
+        background: "rgba(8,8,8,0.52)",
+        border: `1px solid ${hovered ? "rgba(255,255,255,0.48)" : "rgba(255,255,255,0.17)"}`,
+        boxShadow: hovered
+          ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 8px 32px rgba(0,0,0,0.95), 0 0 0 4px #0a0a0a, 0 0 0 7px rgba(255,255,255,0.55)"
+          : "inset 0 -4px 8px rgba(0,0,0,0.45), 0 8px 40px rgba(0,0,0,0.7), 0 0 0 4px #0a0a0a, 0 0 0 6px rgba(255,255,255,0.22)",
+        transition: "border-color 0.4s ease, box-shadow 0.4s ease",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        paddingTop: "15px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Circular image window */}
+      <div style={{
+        width: circleSize, height: circleSize,
+        borderRadius: "50%",
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.18)",
+        flexShrink: 0,
+        position: "relative",
+        zIndex: 2,
+      }}>
+        {slides.map((slide, i) => {
+          const src = typeof slide === "string" ? slide : slide.src;
+          return (
+            <img key={i} src={src} alt="" style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%",
+              objectFit: "cover",
+              opacity: i === slideIdx ? 1 : 0,
+              transition: "opacity 1.4s ease",
+            }} />
+          );
+        })}
+      </div>
+
+      {/* Label */}
+      <div style={{ marginTop: "16px", textAlign: "center", position: "relative", zIndex: 2 }}>
+        <span style={{
+          fontFamily: "var(--font-detail)",
+          fontSize: "9px",
+          color: hovered ? "rgba(242,240,233,0.88)" : "rgba(242,240,233,0.42)",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          transition: "color 0.4s ease",
+        }}>
+          {fanOpen ? "Screens" : "View"}
+        </span>
+      </div>
+
+      {/* Inner glass gradient */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, transparent 35%, rgba(0,0,0,0.18) 100%)",
+        borderRadius: W / 2,
+        pointerEvents: "none",
+        zIndex: 1,
+      }} />
+    </div>
+  );
+}
+
 // Tight pulse rings for the standalone center portal
 function PulseRings({ active, size }) {
   if (!active) return null;
@@ -325,15 +413,11 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal */}
+          {/* Center portal — arch/pill frosted glass */}
           <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
-            <MiniPortal
-              portal={SIDE_PORTAL_LEFT}
-              size={248}
-              hideLabel
-              ringOnly
-              hoverLabel={fanOpen ? "Screens" : "View"}
-              hoverLabelSize="16px"
+            <ArchPortal
+              slides={SIDE_PORTAL_LEFT.slides}
+              fanOpen={fanOpen}
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
           </div>
