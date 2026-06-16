@@ -109,7 +109,7 @@ function ArchPortal({ slides, fanOpen, onOpen }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  const W = 152, H = 264, circleSize = 118;
+  const W = 248, H = 340, circleSize = 210;
 
   return (
     <div
