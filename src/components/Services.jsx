@@ -206,7 +206,7 @@ export default function Services() {
                   <div className="relative">
                     <button
                       onClick={() => setCatPopover((o) => !o)}
-                      className="btn-magnetic btn-service-cta inline-flex items-center justify-center w-full py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#1c1c1c" }}
+                      className="btn-magnetic btn-service-cta inline-flex items-center justify-center w-full py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#0d0d0d" }}
                     >
                       <span className="btn-bg rounded-full bg-black/30" />
                       <span className="relative z-10">{service.cta}</span>
@@ -229,7 +229,7 @@ export default function Services() {
                 ) : (
                   <a
                     href="#contact"
-                    className="btn-magnetic btn-service-cta inline-flex items-center justify-center py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#1c1c1c" }}
+                    className="btn-magnetic btn-service-cta inline-flex items-center justify-center py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#0d0d0d" }}
                   >
                     <span className={`btn-bg rounded-full ${service.featured ? "bg-black/30" : "bg-black/30"}`} />
                     <span className="relative z-10">{service.cta}</span>
