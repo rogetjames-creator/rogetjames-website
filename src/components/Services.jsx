@@ -115,8 +115,8 @@ export default function Services() {
         const deltaX = centerLeft - card.offsetLeft;
         const start = 1.4 + seq * 1.8;
         tl.fromTo(card,
-          { opacity: 0, scale: 0.82, x: deltaX },
-          { opacity: 1, scale: 1, x: 0, duration: 2.2, ease: "sine.out" },
+          { opacity: 0, x: deltaX },
+          { opacity: 1, x: 0, duration: 2.2, ease: "sine.out" },
           start
         );
       });

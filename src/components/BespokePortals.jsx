@@ -146,9 +146,8 @@ export function CommissionsSection() {
     };
     measure();
     window.addEventListener("resize", measure);
-    const t = setTimeout(measure, 1500); // re-measure after fan-open strip animation settles
-    return () => { window.removeEventListener("resize", measure); clearTimeout(t); };
-  }, [fanOpen]);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
