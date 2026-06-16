@@ -490,9 +490,19 @@ h1, h2, h3 {
   0%   { transform: translate(-100%, -50%); }
   100% { transform: translate(100vw, -50%); }
 }
-@keyframes updating-letter-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-1em); }
+/* Letters randomly fall into place, hold, then fall back out */
+@keyframes letter-fall-cycle {
+  0%   { opacity: 0; transform: translateY(-0.9em); }
+  14%  { opacity: 1; transform: translateY(0); }
+  55%  { opacity: 1; transform: translateY(0); }
+  72%  { opacity: 0; transform: translateY(0.9em); }
+  100% { opacity: 0; transform: translateY(-0.9em); }
+}
+/* Whole word brightens briefly once the letters have settled */
+@keyframes word-highlight {
+  0%, 35%  { color: var(--color-cream); text-shadow: none; }
+  50%      { color: #fff; text-shadow: 0 0 10px rgba(242,240,233,0.85), 0 0 26px rgba(158,113,52,0.55); }
+  65%, 100% { color: var(--color-cream); text-shadow: none; }
 }
 .updating-marquee {
   position: absolute;
@@ -501,17 +511,20 @@ h1, h2, h3 {
   font-family: var(--font-bebas);
   text-transform: uppercase;
   color: var(--color-cream);
-  animation: updating-drift linear infinite;
+  animation-name: updating-drift, word-highlight;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-duration: var(--drift-duration, 40s), var(--cycle-duration, 6s);
   will-change: transform;
 }
 .updating-marquee span {
   display: inline-block;
-  animation-name: updating-letter-float;
+  animation-name: letter-fall-cycle;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
 .updating-marquee--center {
-  animation-name: updating-drift-centered;
+  animation-name: updating-drift-centered, word-highlight;
 }
 
 /* ── Pill border-trace on hover ───────────────────────────────────────── */
