@@ -99,95 +99,6 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
-// Arch/pill portal — semi-transparent frosted body, circle image window at top,
-// hangs downward from strip top so it never bleeds into the Bespoke heading above.
-function ArchPortal({ slides, fanOpen, onOpen }) {
-  const [slideIdx, setSlideIdx] = useState(0);
-  const [hovered, setHovered] = useState(false);
-
-  useEffect(() => {
-    const timer = setInterval(() => setSlideIdx(i => (i + 1) % slides.length), 3200);
-    return () => clearInterval(timer);
-  }, [slides.length]);
-
-  // Pill: 160px wide, 290px tall. Circle: 130px. Top-aligned in strip so body hangs below.
-  const W = 160, H = 290, circleSize = 130, pad = 14;
-
-  return (
-    <div
-      onClick={onOpen}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: W, height: H,
-        borderRadius: W / 2,
-        // Semi-transparent frosted body — no backdrop-filter to avoid bleed
-        background: "rgba(22,22,22,0.62)",
-        border: `1px solid ${hovered ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.20)"}`,
-        boxShadow: hovered
-          ? "0 0 0 4px #0a0a0a, 0 0 0 7px rgba(255,255,255,0.55), 0 12px 40px rgba(0,0,0,0.9)"
-          : "0 0 0 4px #0a0a0a, 0 0 0 6px rgba(255,255,255,0.22), 0 8px 32px rgba(0,0,0,0.7)",
-        transition: "border-color 0.4s ease, box-shadow 0.4s ease",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        paddingTop: `${pad}px`,
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Circular image window */}
-      <div style={{
-        width: circleSize, height: circleSize,
-        borderRadius: "50%",
-        overflow: "hidden",
-        border: "1px solid rgba(255,255,255,0.22)",
-        flexShrink: 0,
-        position: "relative",
-        zIndex: 2,
-      }}>
-        {slides.map((slide, i) => {
-          const src = typeof slide === "string" ? slide : slide.src;
-          return (
-            <img key={i} src={src} alt="" style={{
-              position: "absolute", inset: 0,
-              width: "100%", height: "100%",
-              objectFit: "cover",
-              opacity: i === slideIdx ? 1 : 0,
-              transition: "opacity 1.4s ease",
-            }} />
-          );
-        })}
-      </div>
-
-      {/* Label */}
-      <div style={{ marginTop: "18px", textAlign: "center", position: "relative", zIndex: 2 }}>
-        <span style={{
-          fontFamily: "var(--font-detail)",
-          fontSize: "9px",
-          color: hovered ? "rgba(242,240,233,0.88)" : "rgba(242,240,233,0.42)",
-          letterSpacing: "0.22em",
-          textTransform: "uppercase",
-          transition: "color 0.4s ease",
-        }}>
-          {fanOpen ? "Screens" : "View"}
-        </span>
-      </div>
-
-      {/* Subtle inner sheen */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 30%, rgba(0,0,0,0.15) 100%)",
-        borderRadius: W / 2,
-        pointerEvents: "none",
-        zIndex: 1,
-      }} />
-    </div>
-  );
-}
-
 // Tight pulse rings for the standalone center portal
 function PulseRings({ active, size }) {
   if (!active) return null;
@@ -414,11 +325,15 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal — arch/pill frosted glass, top-aligned so pill hangs below strip */}
-          <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
-            <ArchPortal
-              slides={SIDE_PORTAL_LEFT.slides}
-              fanOpen={fanOpen}
+          {/* Center portal */}
+          <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
+            <MiniPortal
+              portal={SIDE_PORTAL_LEFT}
+              size={248}
+              hideLabel
+              ringOnly
+              hoverLabel={fanOpen ? "Screens" : "View"}
+              hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
           </div>
