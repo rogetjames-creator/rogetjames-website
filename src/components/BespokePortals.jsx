@@ -346,7 +346,7 @@ export function CommissionsSection() {
                 stroke="#F2F0E9"
                 strokeOpacity="0.22"
                 strokeWidth="1"
-                d="M0,0 H284 V222 A142,142,0,1,1,0,222 Z M142,98 A124,124,0,1,0,142,346 A124,124,0,1,0,142,98 Z"
+                d="M0,0 H284 V222 A142,142,0,1,1,0,222 Z M266,222 A124,124,0,1,0,18,222 A124,124,0,1,0,266,222 Z"
               />
             </svg>
           </div>
