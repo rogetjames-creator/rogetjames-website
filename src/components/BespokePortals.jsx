@@ -110,8 +110,8 @@ function ArchPortal({ slides, fanOpen, onOpen }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  // Pill: 140px wide, 220px tall. Circle: 110px. Fits within the expanded strip (240px).
-  const W = 140, H = 220, circleSize = 110, pad = 12;
+  // Pill: 160px wide, 290px tall. Circle: 130px. Top-aligned in strip so body hangs below.
+  const W = 160, H = 290, circleSize = 130, pad = 14;
 
   return (
     <div
@@ -335,29 +335,14 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative", paddingBottom: "160px" }}>
-
-      {/* Frosted glass pill — desktop only, sits behind heading + portal */}
-      <div aria-hidden="true" className="hidden md:block" style={{
-        position: "absolute",
-        left: "50%",
-        transform: "translateX(-50%)",
-        top: 0,
-        width: "310px",
-        height: "520px",
-        borderRadius: "0 0 155px 155px",
-        background: "rgba(255,255,255,0.05)",
-        border: "1px solid rgba(255,255,255,0.20)",
-        pointerEvents: "none",
-        zIndex: 0,
-      }} />
-
-      <div className="relative px-8 pt-12 pb-24 text-center" style={{ zIndex: 1 }}>
+    <section id="bespoke" ref={sectionRef} className="bg-graphite">
+      <div className="px-8 pt-12 pb-24 text-center">
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
           <span className="bespoke-heading inline-block text-cream/60">Bespoke</span>
         </h2>
       </div>
+      <div className="w-full h-px bg-white/10" />
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
@@ -387,11 +372,20 @@ export function CommissionsSection() {
       <div
         ref={stripRef}
         className="bg-matt-black relative hidden md:block"
-        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer", position: "relative", zIndex: 1, background: "transparent" }}
+        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer" }}
         onClick={!fanOpen ? () => setFanOpen(true) : undefined}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       >
+        {/* Hover warm edge — bottom border glow when collapsed */}
+        {!fanOpen && (
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0, height: "1px",
+            background: hovering ? "rgba(196,80,24,0.45)" : "rgba(242,240,233,0.08)",
+            transition: "background 0.5s ease",
+            pointerEvents: "none", zIndex: 5,
+          }} />
+        )}
 
         {/* Portal names — static left side */}
         {!fanOpen && (
@@ -420,15 +414,11 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal */}
-          <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
-            <MiniPortal
-              portal={SIDE_PORTAL_LEFT}
-              size={248}
-              hideLabel
-              ringOnly
-              hoverLabel={fanOpen ? "Screens" : "View"}
-              hoverLabelSize="16px"
+          {/* Center portal — arch/pill frosted glass, top-aligned so pill hangs below strip */}
+          <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
+            <ArchPortal
+              slides={SIDE_PORTAL_LEFT.slides}
+              fanOpen={fanOpen}
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
           </div>
@@ -452,6 +442,8 @@ export function CommissionsSection() {
           </button>
         )}
       </div>
+
+      <div className="w-full h-px bg-white/10" />
 
       {/* The Practice — revealed when fan opens */}
       <div ref={practiceRevealRef}>
