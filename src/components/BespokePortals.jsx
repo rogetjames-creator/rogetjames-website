@@ -229,16 +229,18 @@ export function CommissionsSection() {
 
     gsap.set(w, { xPercent: -50, yPercent: -50, transformOrigin: "50% 50%" });
 
+    // Scale stays ≤1 so text never overflows the clipped strip
     const tl = gsap.fromTo(w,
-      { scale: 0.6, opacity: 0.03 },
-      { scale: 2.0, opacity: 0.08, duration: 38, ease: "sine.inOut", yoyo: true, repeat: -1 }
+      { scale: 0.72, opacity: 0.04 },
+      { scale: 1.0, opacity: 0.09, duration: 28, ease: "sine.inOut", yoyo: true, repeat: -1 }
     );
-    tl.seek(19);
+    tl.seek(14);
 
+    // Drift horizontally only — y stays within strip height
     const drift = () => {
-      const x = (Math.random() - 0.5) * 900;
-      const y = (Math.random() - 0.5) * 40;
-      const dur = 45 + Math.random() * 25;
+      const x = (Math.random() - 0.5) * 600;
+      const y = (Math.random() - 0.5) * 16;
+      const dur = 40 + Math.random() * 20;
       gsap.to(w, { x, y, duration: dur, ease: "sine.inOut" });
       setTimeout(drift, dur * 680);
     };
@@ -381,7 +383,7 @@ export function CommissionsSection() {
 
         {/* UPDATING text — always in the strip */}
         {!fanOpen && (
-          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", userSelect: "none", overflow: "visible", zIndex: 2 }}>
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", userSelect: "none", overflow: "hidden", zIndex: 2 }}>
             <span className="updtg-w1" style={{ position: "absolute", display: "inline-block", top: "50%", left: "50%", transformOrigin: "center center", opacity: 0 }}>
               <span style={{ position: "relative", display: "inline-block", fontFamily: "Impact,'Arial Narrow',sans-serif", fontSize: "130px", lineHeight: 1, letterSpacing: "0.10em", color: "rgba(128,114,103,0.18)", whiteSpace: "nowrap" }}>
                 UPDATING
