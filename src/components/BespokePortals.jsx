@@ -315,19 +315,22 @@ export function CommissionsSection() {
           }} />
         )}
 
-        {/* Portal names — static left side */}
+        {/* Portal names — static left side. Dimming uses `color` alpha, not
+            parent `opacity`, so an individual line can brighten past the
+            group's resting dimness on hover (opacity on a parent caps what
+            children can ever show, regardless of their own opacity). */}
         {!fanOpen && (
           <div style={{
             position: "absolute", left: "48px", top: "50%", transform: "translateY(-50%)",
             display: "flex", flexDirection: "column", gap: "3px",
-            opacity: hovering ? 0.7 : 0.28, transition: "opacity 0.5s ease",
             pointerEvents: "auto", zIndex: 5,
           }}>
             {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
               <span key={name} className="portal-name-line" style={{
-                fontFamily: "var(--font-detail)", fontSize: "8px", color: "var(--color-cream)",
+                fontFamily: "var(--font-detail)", fontSize: "8px",
+                color: hovering ? "rgba(242,240,233,0.7)" : "rgba(242,240,233,0.28)",
                 letterSpacing: "0.2em", textTransform: "uppercase", lineHeight: 1.3,
-                transition: "opacity 0.3s ease, color 0.3s ease",
+                transition: "color 0.3s ease",
               }}>{name}</span>
             ))}
           </div>
