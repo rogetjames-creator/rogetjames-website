@@ -336,32 +336,15 @@ export function CommissionsSection() {
               hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
-            {/* Frosted arch overlay — rectangle top + circle cutout matching portal exactly */}
-            <div style={{
-              position: "absolute",
-              top: "-96px",
-              left: "0",
-              width: "266px",
-              height: "362px",
-              backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)",
-              background: "rgba(242,240,233,0.07)",
-              maskImage: `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="266" height="362"><rect width="266" height="362" fill="white"/><circle cx="133" cy="229" r="133" fill="black"/></svg>')}")`,
-              WebkitMaskImage: `url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="266" height="362"><rect width="266" height="362" fill="white"/><circle cx="133" cy="229" r="133" fill="black"/></svg>')}")`,
-              maskSize: "100% 100%",
-              WebkitMaskSize: "100% 100%",
-              pointerEvents: "none",
-              zIndex: 50,
-            }} />
-            {/* Thin border trace around the arch shape */}
-            <svg style={{ position: "absolute", top: "-96px", left: "0", pointerEvents: "none", zIndex: 51 }}
+            {/* Frosted arch overlay — SVG evenodd punches circle cleanly */}
+            <svg style={{ position: "absolute", top: "-96px", left: "0", pointerEvents: "none", zIndex: 50 }}
               width="266" height="362" viewBox="0 0 266 362">
               <path
                 fillRule="evenodd"
-                fill="none"
-                stroke="rgba(242,240,233,0.18)"
+                fill="rgba(242,240,233,0.10)"
+                stroke="rgba(242,240,233,0.20)"
                 strokeWidth="1"
-                d="M0.5,0.5 H265.5 V362 Q265.5,229 133,229 Q0.5,229 0.5,362 Z M133,229 m-132.5,0 a132.5,132.5 0 1,0 265,0 a132.5,132.5 0 1,0 -265,0"
+                d="M0,0 H266 V362 H0 Z M133,96 A133,133,0,1,0,133,362 A133,133,0,1,0,133,96 Z"
               />
             </svg>
           </div>
