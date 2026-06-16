@@ -131,10 +131,10 @@ export default function Navbar({ quoteCount = 0 }) {
     <>
       <nav
         ref={navRef}
-        className={`fixed top-0 left-0 z-[100] flex items-center gap-1 px-6 py-3 transition-all duration-500 ${
+        className={`fixed top-0 left-0 z-[100] flex items-center justify-between gap-1 px-6 py-3 transition-all duration-500 ${
           scrolled ? "shadow-lg" : ""
         }`}
-        style={{ width: "100%", background: "#9E7134" }}
+        style={{ width: "100%", background: "rgba(158, 113, 52, 0.45)" }}
       >
         <a
           href="#"
@@ -146,7 +146,7 @@ export default function Navbar({ quoteCount = 0 }) {
           ROGET<span className="font-normal italic font-drama">james</span>
         </a>
 
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
           {/* Collection dropdown */}
           <div className="relative" onMouseEnter={() => setCollectionOpen(true)} onMouseLeave={() => setCollectionOpen(false)}>
             <button className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 flex items-center gap-1 text-cream/70 hover:text-white`}>
@@ -219,7 +219,9 @@ export default function Navbar({ quoteCount = 0 }) {
           </div>
           {/* Contact */}
           <a href="#contact" onClick={scrollTo("#contact")} className={`lift-hover text-sm font-medium px-3 py-1.5 rounded-full transition-colors duration-500 text-cream/70 hover:text-white`}>Contact</a>
+        </div>
 
+        <div className="hidden md:flex items-center gap-1">
           <button
             onClick={() => setSearchOpen(true)}
             className="lift-hover p-2 rounded-full transition-colors duration-500 text-cream/70 hover:text-white"
