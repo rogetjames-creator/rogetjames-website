@@ -343,9 +343,9 @@ export function CommissionsSection() {
         left: "50%",
         transform: "translateX(-50%)",
         top: "16px",
-        width: "380px",
-        height: "440px",
-        borderRadius: "12px 12px 190px 190px",
+        width: "480px",
+        height: "460px",
+        borderRadius: "8px 8px 240px 240px",
         background: "rgba(160,160,160,0.10)",
         border: "1px solid rgba(255,255,255,0.16)",
         pointerEvents: "none",
@@ -358,7 +358,6 @@ export function CommissionsSection() {
           <span className="bespoke-heading inline-block text-cream/60">Bespoke</span>
         </h2>
       </div>
-      <div className="w-full h-px bg-white/10 relative" style={{ zIndex: 1 }} />
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
@@ -388,20 +387,11 @@ export function CommissionsSection() {
       <div
         ref={stripRef}
         className="bg-matt-black relative hidden md:block"
-        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer", position: "relative", zIndex: 1 }}
+        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer", position: "relative", zIndex: 1, background: "transparent" }}
         onClick={!fanOpen ? () => setFanOpen(true) : undefined}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       >
-        {/* Hover warm edge — bottom border glow when collapsed */}
-        {!fanOpen && (
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: "1px",
-            background: hovering ? "rgba(196,80,24,0.45)" : "rgba(242,240,233,0.08)",
-            transition: "background 0.5s ease",
-            pointerEvents: "none", zIndex: 5,
-          }} />
-        )}
 
         {/* Portal names — static left side */}
         {!fanOpen && (
@@ -462,8 +452,6 @@ export function CommissionsSection() {
           </button>
         )}
       </div>
-
-      <div className="w-full h-px bg-white/10" />
 
       {/* The Practice — revealed when fan opens */}
       <div ref={practiceRevealRef}>
