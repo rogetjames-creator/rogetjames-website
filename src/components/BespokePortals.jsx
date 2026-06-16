@@ -110,8 +110,8 @@ function ArchPortal({ slides, fanOpen, onOpen }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  // Pill: 160px wide, 290px tall. Circle: 130px. Top-aligned in strip so body hangs below.
-  const W = 160, H = 290, circleSize = 130, pad = 14;
+  // Pill: 140px wide, 220px tall. Circle: 110px. Fits within the expanded strip (240px).
+  const W = 140, H = 220, circleSize = 110, pad = 12;
 
   return (
     <div
@@ -335,14 +335,30 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite">
-      <div className="px-8 pt-12 pb-24 text-center">
+    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
+
+      {/* Frosted glass pill — desktop only, sits behind heading + portal */}
+      <div aria-hidden="true" className="hidden md:block" style={{
+        position: "absolute",
+        left: "50%",
+        transform: "translateX(-50%)",
+        top: "24px",
+        width: "460px",
+        height: "430px",
+        borderRadius: "230px",
+        background: "rgba(160,160,160,0.10)",
+        border: "1px solid rgba(255,255,255,0.16)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }} />
+
+      <div className="relative px-8 pt-12 pb-24 text-center" style={{ zIndex: 1 }}>
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
           <span className="bespoke-heading inline-block text-cream/60">Bespoke</span>
         </h2>
       </div>
-      <div className="w-full h-px bg-white/10" />
+      <div className="w-full h-px bg-white/10 relative" style={{ zIndex: 1 }} />
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
@@ -372,7 +388,7 @@ export function CommissionsSection() {
       <div
         ref={stripRef}
         className="bg-matt-black relative hidden md:block"
-        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer" }}
+        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer", position: "relative", zIndex: 1 }}
         onClick={!fanOpen ? () => setFanOpen(true) : undefined}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
@@ -414,11 +430,15 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal — arch/pill frosted glass, top-aligned so pill hangs below strip */}
-          <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
-            <ArchPortal
-              slides={SIDE_PORTAL_LEFT.slides}
-              fanOpen={fanOpen}
+          {/* Center portal */}
+          <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
+            <MiniPortal
+              portal={SIDE_PORTAL_LEFT}
+              size={248}
+              hideLabel
+              ringOnly
+              hoverLabel={fanOpen ? "Screens" : "View"}
+              hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
           </div>
