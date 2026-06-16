@@ -124,6 +124,7 @@ export function CommissionsSection() {
   const playPracticeRef = useRef(null);
   const practiceTriggerRef = useRef(null);
   const stripRef = useRef(null);
+  const centerPortalRef = useRef(null);
   const [fanOpen, setFanOpen] = useState(false);
   const [hovering, setHovering] = useState(false);
   const [sculptureOpen, setSculptureOpen] = useState(false);
@@ -131,6 +132,23 @@ export function CommissionsSection() {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
+  const [archOffset, setArchOffset] = useState(0); // measured: section top -> portal centre, in px
+
+  // Measure the real distance from the section's top edge to the centre of
+  // the portal circle, so the frosted arch's flat top can be pinned exactly
+  // to the section top regardless of heading line-wrap or viewport size.
+  useEffect(() => {
+    const measure = () => {
+      if (!sectionRef.current || !centerPortalRef.current) return;
+      const sectionRect = sectionRef.current.getBoundingClientRect();
+      const portalRect = centerPortalRef.current.getBoundingClientRect();
+      setArchOffset(Math.round(portalRect.top - sectionRect.top + portalRect.height / 2));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    const t = setTimeout(measure, 1500); // re-measure after fan-open strip animation settles
+    return () => { window.removeEventListener("resize", measure); clearTimeout(t); };
+  }, [fanOpen]);
 
   const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
@@ -246,7 +264,7 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite">
+    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
       <div className="px-8 pt-12 pb-24 text-center">
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
@@ -326,7 +344,7 @@ export function CommissionsSection() {
           </div>
 
           {/* Center portal */}
-          <div className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
+          <div ref={centerPortalRef} className="relative" style={{ zIndex: 40 }} onClick={e => fanOpen && e.stopPropagation()}>
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
               size={248}
@@ -336,31 +354,6 @@ export function CommissionsSection() {
               hoverLabelSize="16px"
               onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
-            {(() => {
-              // All values derived from the portal size so proportions are always correct
-              const outer = 266;       // portal button outer diameter
-              const oR = 133;          // outer radius
-              const hR = 108;          // hole radius — 25px ring visible each side
-              const topH = 110;        // rect height above circle centre (≈40% of outer diameter)
-              const cY = topH + oR;    // circle centre Y in SVG = 243
-              const svgH = cY + oR;    // total SVG height = 376
-              const rX = oR + hR;      // hole right x = 241
-              const lX = oR - hR;      // hole left x = 25
-              return (
-                <svg style={{ position: "absolute", top: `-${topH}px`, left: "0", pointerEvents: "none", zIndex: 50 }}
-                  width={outer} height={svgH} viewBox={`0 0 ${outer} ${svgH}`}>
-                  <path
-                    fillRule="evenodd"
-                    fill="#F2F0E9"
-                    fillOpacity="0.18"
-                    stroke="#F2F0E9"
-                    strokeOpacity="0.45"
-                    strokeWidth="1.5"
-                    d={`M0,0 H${outer} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`}
-                  />
-                </svg>
-              );
-            })()}
           </div>
 
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
@@ -382,6 +375,37 @@ export function CommissionsSection() {
           </button>
         )}
       </div>
+
+      {/* Frosted arch — anchored to the section's actual top edge (measured, not guessed),
+          hole sized to clear the portal's outer ring so it is never clipped */}
+      {archOffset > 0 && (() => {
+        const portalOuterR = 133;           // portal button outer radius (248 image + 9px ring each side)
+        const gap = 6;                      // breathing room so the hole never touches the portal ring
+        const hR = portalOuterR + gap;      // 139 — hole radius, strictly larger than the portal
+        const ring = Math.round(hR * 0.18); // ring thickness, proportional to reference file
+        const oR = hR + ring;               // outer radius of the whole arch shape
+        const cY = archOffset;              // circle centre = measured portal centre, section-relative
+        const svgH = cY + oR;               // bottom of shape
+        const svgW = oR * 2;
+        const cX = oR;
+        const rX = cX + hR, lX = cX - hR;
+        return (
+          <svg className="hidden md:block" style={{
+            position: "absolute", top: 0, left: "50%", transform: `translateX(-${cX}px)`,
+            pointerEvents: "none", zIndex: 50,
+          }} width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+            <path
+              fillRule="evenodd"
+              fill="#F2F0E9"
+              fillOpacity="0.18"
+              stroke="#F2F0E9"
+              strokeOpacity="0.45"
+              strokeWidth="1.5"
+              d={`M0,0 H${svgW} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`}
+            />
+          </svg>
+        );
+      })()}
 
       <div className="w-full h-px bg-white/10" />
 
