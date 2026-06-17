@@ -74,10 +74,7 @@ export default function Hero() {
         tl.to(ul, { x: 320, opacity: 0, duration: 0.55, ease: "power2.in" }, "+=0.35");
       }
 
-      // Logo appears after slideshow image has had time to fade in (~5s)
-      logoTimerRef.current = setTimeout(() => {
-        setLogoVisible(true);
-      }, 5000);
+      setLogoVisible(true);
     };
 
     const resetDrift = () => {
