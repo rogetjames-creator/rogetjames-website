@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
-import Lottie from "lottie-react";
+import RojLogoAnimation from "./RojLogoAnimation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,7 +39,7 @@ const DRIFT = [
 export default function Hero() {
   const sectionRef    = useRef(null);
   const underlineRef  = useRef(null);
-  const lottieLogoRef = useRef(null);
+  const _lottieLogoRef = useRef(null);
   const logoTimerRef  = useRef(null);
   const [current, setCurrent] = useState(0);
   const [slideshowReady, setSlideshowReady] = useState(false);
@@ -77,10 +77,6 @@ export default function Hero() {
       // Logo appears after slideshow image has had time to fade in (~5s)
       logoTimerRef.current = setTimeout(() => {
         setLogoVisible(true);
-        if (lottieLogoRef.current) {
-          lottieLogoRef.current.setSpeed(0.7);
-          lottieLogoRef.current.play();
-        }
       }, 5000);
     };
 
@@ -89,7 +85,6 @@ export default function Hero() {
       if (underlineRef.current) gsap.set(underlineRef.current, { scaleX: 0, x: 0, opacity: 1 });
       clearTimeout(logoTimerRef.current);
       setLogoVisible(false);
-      if (lottieLogoRef.current) lottieLogoRef.current.stop();
     };
 
     resetDrift();
@@ -142,15 +137,9 @@ export default function Hero() {
               {/* Logo anchored to exact width of this text, centered above it */}
               <span
                 className="absolute left-1/2 -translate-x-1/2"
-                style={{ bottom: "calc(100% + 10px)", opacity: logoVisible ? 0.6 : 0, transition: "opacity 1.4s ease", pointerEvents: "none" }}
+                style={{ bottom: "calc(100% + 10px)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 130, height: 130 }}
               >
-                <Lottie
-                  lottieRef={lottieLogoRef}
-                  path="/lottie/secret-gardens-logo.json"
-                  autoplay={false}
-                  loop={true}
-                  style={{ width: 130, height: 130, display: "block" }}
-                />
+                <RojLogoAnimation visible={logoVisible} />
               </span>
               Original Laser Cut Wall Art &amp; Sculpture
             </span>
