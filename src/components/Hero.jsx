@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
@@ -129,12 +130,13 @@ export default function Hero() {
 
         <div className="max-w-4xl">
 
-          {/* ROJ logo — fixed, centered, 20px below nav bar */}
-          <span
-            style={{ position: "fixed", top: 44, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 110, height: 110, zIndex: 99 }}
-          >
-            <RojLogoAnimation visible={logoVisible} />
-          </span>
+          {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
+          {createPortal(
+            <span style={{ position: "fixed", top: 44, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 110, height: 110, zIndex: 99 }}>
+              <RojLogoAnimation visible={logoVisible} />
+            </span>,
+            document.body
+          )}
 
           <p className="hero-eyebrow font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] mb-6" style={{ wordSpacing: "0.4em" }}>
             Original Laser Cut Wall Art &amp; Sculpture
