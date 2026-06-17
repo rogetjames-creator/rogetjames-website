@@ -35,6 +35,7 @@ function shuffle(arr) {
 
 export default function RojLogoAnimation({ visible }) {
   const [shown, setShown] = useState(new Set());
+  const [holding, setHolding] = useState(false);
   const timers = useRef([]);
   const cycleCount = useRef(0);
   const running = useRef(false);
@@ -71,10 +72,12 @@ export default function RojLogoAnimation({ visible }) {
       });
     });
 
-    // Hold at full logo
+    // Hold at full logo — activate drop shadow
+    after(t, () => { if (running.current) setHolding(true); });
     t += HOLD;
 
-    // Rewind — reverse order
+    // Rewind — remove drop shadow, reverse order
+    after(t, () => { if (running.current) setHolding(false); });
     [...order].reverse().forEach(idx => {
       t += STEP_OUT;
       after(t, () => {
@@ -113,7 +116,11 @@ export default function RojLogoAnimation({ visible }) {
     <svg
       viewBox="0 0 14173.2285 14173.2285"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ width: "100%", height: "100%", display: "block" }}
+      style={{
+        width: "100%", height: "100%", display: "block",
+        filter: holding ? "drop-shadow(0 0 8px rgba(237,232,223,0.45)) drop-shadow(0 2px 18px rgba(0,0,0,0.55))" : "none",
+        transition: "filter 1.2s ease",
+      }}
     >
       {PATHS.map((d, i) => (
         <path

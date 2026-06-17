@@ -132,7 +132,7 @@ export default function Hero() {
 
           {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
           {createPortal(
-            <span style={{ position: "fixed", top: 44, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 110, height: 110, zIndex: 99 }}>
+            <span style={{ position: "fixed", top: 58, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 110, height: 110, zIndex: 99 }}>
               <RojLogoAnimation visible={logoVisible} />
             </span>,
             document.body
