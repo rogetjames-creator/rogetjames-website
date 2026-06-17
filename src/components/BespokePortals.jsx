@@ -167,7 +167,7 @@ export function CommissionsSection() {
     if (!fanOpen) return;
     // 1. Expand strip from 140px to 280px, then open overflow so fan can spill
     gsap.to(stripRef.current, {
-      height: 178, duration: 1.2, ease: "sine.inOut",
+      height: 240, duration: 1.2, ease: "sine.inOut",
       onComplete: () => {
         if (stripRef.current) stripRef.current.style.overflow = "visible";
         // 2. Fan portals after strip is open
@@ -219,7 +219,7 @@ export function CommissionsSection() {
       gsap.to(el, { height: 0, duration: 1.0, ease: "power3.inOut" });
     }
     gsap.to(stripRef.current, {
-      height: 140, duration: 0.9, ease: "power3.inOut", delay: 0.6,
+      height: 200, duration: 0.9, ease: "power3.inOut", delay: 0.6,
       onComplete: () => ScrollTrigger.refresh(),
     });
     setFanOpen(false);
@@ -300,7 +300,7 @@ export function CommissionsSection() {
       <div
         ref={stripRef}
         className="bg-matt-black relative hidden md:block"
-        style={{ height: "140px", overflow: "visible", cursor: fanOpen ? "default" : "pointer" }}
+        style={{ height: "200px", overflow: "visible", cursor: fanOpen ? "default" : "pointer" }}
         onClick={!fanOpen ? () => setFanOpen(true) : undefined}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
@@ -319,7 +319,7 @@ export function CommissionsSection() {
             parent `opacity`, so an individual line can brighten past the
             group's resting dimness on hover (opacity on a parent caps what
             children can ever show, regardless of their own opacity). */}
-        {!fanOpen && (
+        {false && (
           <div style={{
             position: "absolute", left: "78px", top: "calc(50% + 68px)", transform: "translateY(-50%) rotate(-90deg)",
             transformOrigin: "left center",
@@ -343,6 +343,18 @@ export function CommissionsSection() {
         )}
 
 
+        {/* Waroona video background — only when portals are fanned out */}
+        <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
+          <video
+            autoPlay muted loop playsInline
+            ref={el => { if (el) el.playbackRate = 0.4; }}
+            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: fanOpen ? 0 : 0.35, transition: "opacity 1.2s ease" }}
+            className="waroona-video"
+          >
+            <source src="/videos/waroona.mp4" type="video/mp4" />
+          </video>
+        </div>
+
         {/* Portal fan */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
@@ -355,8 +367,8 @@ export function CommissionsSection() {
           {/* Center portal — fixed to the collapsed strip's vertical centre so it never shifts when the strip expands */}
           <div
             ref={centerPortalRef}
-            style={{ position: "absolute", top: "70px", left: "50%", transform: "translate(-50%, -50%)", zIndex: 51 }}
-            onClick={e => fanOpen && e.stopPropagation()}
+            style={{ position: "absolute", top: "70px", left: "50%", transform: "translate(-50%, -50%)", zIndex: 51, cursor: "pointer" }}
+            onClick={e => { e.stopPropagation(); if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
           >
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}

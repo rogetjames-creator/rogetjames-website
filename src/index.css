@@ -66,14 +66,21 @@
 }
 
 .btn-quote {
-  background: rgba(158, 113, 52, 0.45);
+  background: rgba(8, 7, 5, 0.72);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid rgba(237, 232, 223, 0.13);
   border-radius: 0.6rem;
-  box-shadow: inset 0 -1px 0 rgba(255,255,255,0.28), inset 0 1px 0 rgba(0,0,0,0.7), inset 0 3px 6px rgba(0,0,0,0.4);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(237,232,223,0.07);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.btn-quote:hover {
+  background: rgba(12, 10, 8, 0.82);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(237,232,223,0.1);
 }
 .btn-quote:active {
   transform: scale(0.97);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -0.5px 0 rgba(255,255,255,0.06);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
 }
 
 /* ── Base ────────────────────────────────── */
@@ -479,6 +486,18 @@ h1, h2, h3 {
 .marquee-track-fast {
   will-change: transform;
   animation: marquee-scroll 24s linear infinite;
+}
+
+/* ── Waroona strip video — slow cinematic drift ──────────────────────────── */
+@keyframes waroona-drift {
+  0%   { transform: scale(1.0) translate(0%, 0%); }
+  33%  { transform: scale(1.08) translate(-1.5%, 0.5%); }
+  66%  { transform: scale(1.05) translate(1%, -0.5%); }
+  100% { transform: scale(1.0) translate(0%, 0%); }
+}
+.waroona-video {
+  animation: waroona-drift 90s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* ── Navbar links — brighten with a soft glow on hover ──────────────────── */
