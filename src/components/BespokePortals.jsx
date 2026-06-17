@@ -347,8 +347,7 @@ export function CommissionsSection() {
         <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
           <video
             autoPlay muted loop playsInline
-            ref={el => { if (el) el.playbackRate = 0.4; }}
-            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: fanOpen ? 0 : 0.35, transition: "opacity 1.2s ease" }}
+style={{ width: "100%", height: "100%", objectFit: "cover", opacity: fanOpen ? 0 : 0.35, transition: "opacity 1.2s ease" }}
             className="waroona-video"
           >
             <source src="/videos/waroona.mp4" type="video/mp4" />
