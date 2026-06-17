@@ -137,7 +137,7 @@ export default function Hero() {
               {/* Logo anchored to exact width of this text, centered above it */}
               <span
                 className="absolute left-1/2 -translate-x-1/2"
-                style={{ bottom: "calc(100% + 10px)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 130, height: 130 }}
+                style={{ bottom: "calc(100% + 28px)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 130, height: 130 }}
               >
                 <RojLogoAnimation visible={logoVisible} />
               </span>
