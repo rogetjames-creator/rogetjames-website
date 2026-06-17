@@ -163,7 +163,7 @@ export default function Hero() {
             }}>
               Art
             </span>
-            <span className="hero-line-1 font-heading font-bold text-cream/70 text-xl md:text-4xl leading-tight ml-3 md:ml-4 relative inline-block">
+            <span className="hero-line-1 font-heading font-bold text-cream/70 text-xl md:text-4xl leading-tight ml-3 md:ml-4 relative inline-block" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)" }}>
               meets design.
               <span
                 ref={underlineRef}
