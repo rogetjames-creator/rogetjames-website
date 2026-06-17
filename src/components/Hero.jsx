@@ -158,11 +158,8 @@ export default function Hero() {
 
           <h1 className="flex items-center">
             <span className="hero-line-2 font-drama italic text-5xl md:text-8xl lg:text-[10rem] leading-[0.85]" style={{
-              background: "linear-gradient(145deg, rgba(255,253,248,0.82) 0%, rgba(220,216,208,0.60) 40%, rgba(242,240,233,0.75) 70%, rgba(255,253,248,0.52) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              filter: "drop-shadow(0 1px 0px rgba(255,253,248,0.35)) drop-shadow(0 -1px 0px rgba(0,0,0,0.4)) drop-shadow(1px 1.5px 6px rgba(0,0,0,0.25))",
+              color: "rgba(237,232,223,0.45)",
+              textShadow: "0 1px 0 rgba(255,253,248,0.30), 0 -1px 0 rgba(0,0,0,0.35), 0 2px 18px rgba(0,0,0,0.18)",
             }}>
               Art
             </span>
