@@ -343,16 +343,15 @@ export function CommissionsSection() {
         )}
 
 
-        {/* Waroona video background — only when portals are fanned out */}
+        {/* Waroona video — stored, re-enable if needed:
         <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
-          <video
-            autoPlay muted loop playsInline
-style={{ width: "100%", height: "100%", objectFit: "cover", opacity: fanOpen ? 0 : 0.35, transition: "opacity 1.2s ease" }}
-            className="waroona-video"
-          >
+          <video autoPlay muted loop playsInline
+            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: fanOpen ? 0 : 0.35, transition: "opacity 1.2s ease" }}
+            className="waroona-video">
             <source src="/videos/waroona.mp4" type="video/mp4" />
           </video>
         </div>
+        */}
 
         {/* Portal fan */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
