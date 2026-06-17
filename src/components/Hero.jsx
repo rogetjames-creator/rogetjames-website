@@ -159,7 +159,7 @@ export default function Hero() {
           <h1 className="flex items-center">
             <span className="hero-line-2 font-drama italic text-5xl md:text-8xl lg:text-[10rem] leading-[0.85]" style={{
               color: "rgba(237,232,223,0.18)",
-              textShadow: "0 1px 1px rgba(255,253,248,0.22), 0 -1px 1px rgba(0,0,0,0.28)",
+              textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)",
             }}>
               Art
             </span>
