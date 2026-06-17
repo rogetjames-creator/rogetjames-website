@@ -134,7 +134,7 @@ export default function Hero() {
 
           {/* ROJ logo — fixed, centered, 20px below nav bar */}
           <span
-            style={{ position: "fixed", top: 46, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 158, height: 158, zIndex: 99 }}
+            style={{ position: "fixed", top: 44, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 158, height: 158, zIndex: 99 }}
           >
             <RojLogoAnimation visible={logoVisible} />
           </span>
