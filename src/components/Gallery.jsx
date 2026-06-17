@@ -2297,6 +2297,10 @@ const DECK_SERIES = [...WALL_ART_SERIES, ...OTHER_CATEGORIES].map(s => ({
   items: s.items.filter(i => i.img && !i.img.includes("placeholder")),
 })).filter(s => s.items.length > 0);
 
+// Stamp every item with a stable numeric ID for reliable navigation
+let _uidCounter = 0;
+DECK_SERIES.forEach(s => s.items.forEach(it => { it._uid = ++_uidCounter; }));
+
 const DECK_ALL_ITEMS = (() => {
   const arr = DECK_SERIES.flatMap(s => s.items.flatMap(it => {
     const imgs = it.singleInAll ? [it.img] : (it.slides && it.slides.length > 1) ? it.slides : [it.img];
@@ -2386,6 +2390,16 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       setAnimDir(null);
     }, 380);
   };
+
+  // Auto-advance to next design after pausing on the last slide
+  const autoAdvanceRef = useRef(null);
+  useEffect(() => {
+    clearTimeout(autoAdvanceRef.current);
+    if (!isAll && itemSlides.length > 1 && slideIdx === itemSlides.length - 1) {
+      autoAdvanceRef.current = setTimeout(() => navigate(1), 3200);
+    }
+    return () => clearTimeout(autoAdvanceRef.current);
+  }, [slideIdx, cardIdx, tab]);
 
   // Arrow/swipe: step through slides within an item before jumping to next item
   const handleArrow = (dir) => {
