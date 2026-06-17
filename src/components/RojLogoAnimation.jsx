@@ -18,11 +18,11 @@ const PATHS = [
 // Canonical A→E build order: R-top, O-small, R-bottom, frame, O-large
 const BUILD_ORDER = [0, 2, 1, 4, 3];
 
-const STEP_IN  = 750;   // ms between each path fading in
-const STEP_OUT = 480;   // ms between each path fading out (rewind)
-const HOLD     = 2800;  // ms to hold full logo before rewinding
-const FADE_DUR = 1100;  // CSS transition duration (ms)
-const PAUSE    = 900;   // gap between rewind end and next cycle start
+const STEP_IN  = 950;   // ms between each path fading in
+const STEP_OUT = 650;   // ms between each path fading out (rewind)
+const HOLD     = 3200;  // ms to hold full logo before rewinding
+const FADE_DUR = 1600;  // CSS transition duration (ms)
+const PAUSE    = 1000;  // gap between rewind end and next cycle start
 
 function shuffle(arr) {
   const a = [...arr];
@@ -121,7 +121,7 @@ export default function RojLogoAnimation({ visible }) {
           d={d}
           fill="#EDE8DF"
           style={{
-            opacity: shown.has(i) ? 0.82 : 0,
+            opacity: shown.has(i) ? 0.38 : 0,
             transition: `opacity ${FADE_DUR}ms ease`,
           }}
         />
