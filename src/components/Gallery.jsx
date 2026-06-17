@@ -2608,7 +2608,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               : <div className="flex flex-wrap justify-center gap-2">
                   {results.map((it, i) => {
                     const sIdx = filteredSeries.findIndex(s => s.id === it._seriesId);
-                    const iIdx = filteredSeries[sIdx]?.items.findIndex(x => x.name === it.name) ?? 0;
+                    const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
                     return (
                       <div key={i} onClick={() => { setSearchQuery(""); jumpToItem(it._seriesId, iIdx, 0); }}
                         className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 transition-all duration-200"
@@ -2632,7 +2632,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
           <div className="flex flex-wrap justify-center gap-2">
             {filteredAllItems.map((it, i) => {
               const sIdx = filteredSeries.findIndex(s => s.id === it._seriesId);
-              const iIdx = filteredSeries[sIdx]?.items.findIndex(x => x.name === it.name) ?? 0;
+              const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
               const delay = (((i * 0.618) % 1) * 2.2).toFixed(2);
               return (
                 <div key={i} onClick={() => { const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
