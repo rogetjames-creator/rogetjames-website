@@ -24,7 +24,8 @@ const STEPS = [
     icon: Triangle,
     title: "Design",
     description: [
-      "Collaborate ideas with us.",
+      "see our designs in your space, let us know the details.",
+      "original bespoke concept and fabrication, Collaborate ideas with us.",
     ],
     detail: "Fees may apply.",
     color: "bg-clay",
