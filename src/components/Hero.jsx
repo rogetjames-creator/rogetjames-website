@@ -132,17 +132,15 @@ export default function Hero() {
 
         <div className="max-w-4xl">
 
+          {/* ROJ logo — fixed, centered, 20px below nav bar */}
+          <span
+            style={{ position: "fixed", top: 80, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 158, height: 158, zIndex: 99 }}
+          >
+            <RojLogoAnimation visible={logoVisible} />
+          </span>
+
           <p className="hero-eyebrow font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] mb-6" style={{ wordSpacing: "0.4em" }}>
-            <span className="relative inline-block">
-              {/* Logo anchored to exact width of this text, centered above it */}
-              <span
-                className="absolute left-1/2 -translate-x-1/2"
-                style={{ bottom: "calc(100% + 40px)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 158, height: 158 }}
-              >
-                <RojLogoAnimation visible={logoVisible} />
-              </span>
-              Original Laser Cut Wall Art &amp; Sculpture
-            </span>
+            Original Laser Cut Wall Art &amp; Sculpture
           </p>
 
           <h1 className="flex items-center">
