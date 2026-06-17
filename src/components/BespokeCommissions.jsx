@@ -521,7 +521,7 @@ function ScreensFeatureSlideshow() {
   const slide = SCREENS_SLIDESHOW_SLIDES[cur];
 
   return (
-    <div style={{ gridColumn: "1 / -1", margin: "8px 0 32px 0", position: "relative", height: "420px", borderRadius: "12px", overflow: "hidden", background: "#111" }}>
+    <div style={{ gridColumn: "1 / -1", margin: "8px 0 24px 0", position: "relative", height: "420px", borderRadius: "12px", overflow: "hidden", background: "#111" }}>
       {/* Slide image */}
       {SCREENS_SLIDESHOW_SLIDES.map((s, i) => (
         <img
@@ -2065,6 +2065,7 @@ export function ScreensGalleryModal({ onClose }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [showGrid, setShowGrid] = useState(false);
   const searchInputRef = useRef(null);
   const thumbStripRef = useRef(null);
   const activeThumbRef = useRef(null);
@@ -2286,7 +2287,7 @@ export function ScreensGalleryModal({ onClose }) {
             );
             return (
               <button key={t.id}
-                onClick={() => { setTab(t.id); setFlatIdx(null); setSlideIdx(0); setJumpByDesign(true); setActiveDesign(null); }}
+                onClick={() => { setTab(t.id); setFlatIdx(null); setSlideIdx(0); setJumpByDesign(true); setActiveDesign(null); setShowGrid(t.id !== "all"); }}
                 className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${isFilter ? " pill-active" : ""}`}
                 style={{
                   background: "transparent",
@@ -2307,7 +2308,7 @@ export function ScreensGalleryModal({ onClose }) {
           {/* Trigger row */}
           <div className="flex items-center gap-3 px-5 py-2">
             <button
-              onClick={() => setDesignPillsOpen(o => !o)}
+              onClick={() => { if (tab === "all" && !activeDesign && showGrid) { setShowGrid(false); setDesignPillsOpen(false); } else setDesignPillsOpen(o => !o); }}
               className="group flex items-center gap-2.5 transition-colors duration-200"
             >
               <span
@@ -2393,8 +2394,40 @@ export function ScreensGalleryModal({ onClose }) {
 
       {/* Grid view */}
       {!searchQuery && flatIdx === null && (
-        <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
-          {!activeDesign && <ScreensFeatureSlideshow />}
+        <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4 relative" data-lenis-prevent style={{ overflow: "hidden" }}>
+          {/* Slideshow + pill — ALL tab only, hidden once grid covers it */}
+          {tab === "all" && !activeDesign && (
+            <div style={{ opacity: showGrid ? 0 : 1, transition: "opacity 0.4s ease", pointerEvents: showGrid ? "none" : "auto" }}>
+              <ScreensFeatureSlideshow />
+              <div style={{ display: "flex", justifyContent: "center", padding: "14px 0 82px" }}>
+                <button
+                  onClick={() => setShowGrid(true)}
+                  style={{
+                    background: "rgba(10,8,6,0.55)",
+                    backdropFilter: "blur(18px) saturate(1.4)",
+                    WebkitBackdropFilter: "blur(18px) saturate(1.4)",
+                    border: "1px solid rgba(237,232,223,0.18)",
+                    borderRadius: "999px",
+                    padding: "10px 28px",
+                    color: "rgba(237,232,223,0.9)",
+                    fontFamily: "var(--font-detail)",
+                    fontSize: "11px",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+                  }}
+                >
+                  View Gallery
+                </button>
+              </div>
+            </div>
+          )}
+          {/* Grid — slides up over the slideshow like a blind */}
+          <div style={{
+            transform: tab === "all" && !activeDesign && !showGrid ? "translateY(0)" : "translateY(-508px)",
+            transition: "transform 0.9s cubic-bezier(0.22,1,0.36,1)",
+          }}>
           <div className="flex flex-wrap justify-center gap-2">
             {gridItems.map((it, i) => (
               <React.Fragment key={i}>
@@ -2418,6 +2451,7 @@ export function ScreensGalleryModal({ onClose }) {
                 </div>
               </React.Fragment>
             ))}
+          </div>
           </div>
         </div>
       )}
@@ -2443,12 +2477,13 @@ export function ScreensGalleryModal({ onClose }) {
             </div>
           </div>
 
-          {/* Thumbs strip — all images in current view; active one highlighted + auto-scrolled into view */}
+          {/* Thumbs strip */}
           <div className="flex-shrink-0 border-t border-white/10" style={{ marginTop: 24 }}>
-            <div ref={thumbStripRef} className="flex items-center gap-1.5 px-5 py-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+            <div ref={thumbStripRef} data-lenis-prevent className="flex items-center gap-1.5 px-5 py-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}
+              onWheel={e => { e.preventDefault(); thumbStripRef.current.scrollLeft += e.deltaY + e.deltaX; }}>
               {gridItems.map((it, fi) => {
                 const isActive     = fi === flatIdx;
-                const isSameDesign = it.name === curFlat.name;
+                const isSameDesign = it.name === curFlat?.name;
                 return (
                   <div key={fi}
                     ref={isActive ? activeThumbRef : null}
