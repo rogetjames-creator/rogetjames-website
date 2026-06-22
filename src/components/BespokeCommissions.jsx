@@ -1562,7 +1562,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
         </div>
 
         {/* Scrollable body */}
-        <div ref={bodyRef} className="flex-1 overflow-y-auto" data-lenis-prevent>
+        <div ref={bodyRef} className="flex-1 overflow-y-auto" data-lenis-prevent onWheel={e => e.stopPropagation()}>
           <div className="max-w-7xl mx-auto px-6 md:px-12 py-8">
 
             {/* Search results */}
