@@ -93,7 +93,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
                 i === page ? "border-clay opacity-100 scale-105" : "border-white/10 opacity-45 hover:opacity-75"
               }`}
               style={{ height: 82, width: 62 }}>
-              <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+              <img src={src} alt={`${label} page ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
             </button>
           ))}
         </div>
@@ -123,7 +123,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
             </div>
           </div>
           <div className="flex-1 overflow-auto" data-lenis-prevent>
-            <img src={pages[page]} alt="" className="w-full h-auto block max-w-4xl mx-auto p-6" />
+            <img src={pages[page]} alt={`${label} page ${page + 1}`} className="w-full h-auto block max-w-4xl mx-auto p-6" />
           </div>
         </div>
       )}

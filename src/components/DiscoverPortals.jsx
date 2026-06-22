@@ -327,7 +327,7 @@ function ArtPopup({ images, startIndex, onClose }) {
             className={`flex-none rounded-md overflow-hidden border-2 transition-all duration-200 ${i === cur ? "border-clay opacity-100" : "border-transparent opacity-50 hover:opacity-80"}`}
             style={{ width: "64px", height: "48px" }}
           >
-            <img src={p.src} alt="" className="w-full h-full object-cover" loading="lazy" />
+            <img src={p.src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
           </button>
         ))}
       </div>
@@ -450,7 +450,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
                 const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
                 return (
-                  <img key={i} src={src} alt="" className="absolute inset-0 w-full h-full object-cover"
+                  <img key={i} src={src} alt="" role="presentation" className="absolute inset-0 w-full h-full object-cover"
                     style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} loading="lazy" />
                 );
               })}

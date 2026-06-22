@@ -461,7 +461,7 @@ function ScreensStoryModal({ onClose }) {
 
         {/* Spiel header image */}
         <div style={{ position: "relative", width: "100%", height: 200, overflow: "hidden", flexShrink: 0 }}>
-          <img src="/images/screens/spiel-poster.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block" }} />
+          <img src="/images/screens/spiel-poster.jpg" alt="ROGETjames architectural screens — bespoke laser cut designs" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center", display: "block" }} />
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.35)" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -1769,7 +1769,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                             <div className="w-full overflow-hidden my-2" style={{ height: "110px" }}>
                               <div className="flex gap-2 h-full" style={{ width: "max-content", animation: "marquee-scroll 40s linear infinite", willChange: "transform" }}>
                                 {[...SCREENS_MARQUEE_IMGS, ...SCREENS_MARQUEE_IMGS].map((src, i) => (
-                                  <img key={i} src={src} alt="" className="h-full w-auto object-cover rounded" style={{ aspectRatio: "4/3", flexShrink: 0 }} />
+                                  <img key={i} src={src} alt="" role="presentation" className="h-full w-auto object-cover rounded" style={{ aspectRatio: "4/3", flexShrink: 0 }} />
                                 ))}
                               </div>
                             </div>
@@ -2950,7 +2950,7 @@ function ScreensPortal() {
       >
         <div className="relative overflow-hidden w-56 h-56 md:w-64 md:h-64" style={{ borderRadius: "50%" }}>
           {SCREENS_PORTAL_IMGS.map((img, i) => (
-            <img key={i} src={img} alt=""
+            <img key={i} src={img} alt="" role="presentation"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
           ))}
@@ -3334,7 +3334,7 @@ export default function BespokeCommissions() {
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3368,7 +3368,7 @@ export default function BespokeCommissions() {
             <div className="marquee-track-right flex gap-2 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
               {[...STRIP_IMAGES, ...STRIP_IMAGES].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden">
-                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>

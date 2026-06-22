@@ -158,7 +158,7 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
           <div key={i} className="hero-slide absolute inset-0">
             <img
               src={img.url}
-              alt=""
+              alt="" role="presentation"
               className="w-full h-full object-cover"
               style={{ transform: "scale(1.04)" }}
             />
