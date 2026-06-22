@@ -163,10 +163,11 @@ export default function Hero() {
             <span className="hero-line-2 font-drama italic text-5xl md:text-8xl lg:text-[10rem] leading-[0.85]" style={{
               color: "rgba(237,232,223,0.18)",
               textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)",
+              opacity: 0,
             }}>
               Art
             </span>
-            <span className="hero-line-1 font-heading font-bold text-cream/70 text-xl md:text-4xl leading-tight ml-3 md:ml-4 relative inline-block" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)" }}>
+            <span className="hero-line-1 font-heading font-bold text-cream/70 text-xl md:text-4xl leading-tight ml-3 md:ml-4 relative inline-block" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)", opacity: 0 }}>
               meets design.
               <span
                 ref={underlineRef}
@@ -185,7 +186,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="hero-sub font-body text-cream/85 text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed">
+          <p className="hero-sub font-body text-cream/85 text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0 }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
           </p>
         </div>
@@ -197,7 +198,7 @@ export default function Hero() {
             ["hero-loc-3", "Melbourne"],
             ["hero-loc-4", "Delivery · Australia · Wide"],
           ].map(([cls, label]) => (
-            <span key={cls} className={`${cls} font-detail text-xs text-cream/70 uppercase tracking-[0.25em]`}>
+            <span key={cls} className={`${cls} font-detail text-xs text-cream/70 uppercase tracking-[0.25em]`} style={{ opacity: 0 }}>
               {label}
             </span>
           ))}
@@ -206,7 +207,7 @@ export default function Hero() {
 
       {/* Eyebrow — centered on screen, at Gold Coast row level, fades in after all transitions */}
       <p
-        className="hero-eyebrow absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none"
+        className="hero-eyebrow absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none" style={{ opacity: 0 }}
         style={{ bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
       >
         Original Laser Cut Wall Art &amp; Sculpture
