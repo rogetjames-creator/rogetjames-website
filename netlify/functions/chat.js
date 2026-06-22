@@ -3,15 +3,15 @@ const SYSTEM_PROMPT = `Your name is Jai. You are the studio assistant for ROGETj
 SITE NAVIGATION — use these links when directing visitors to specific areas:
 
 Direct links (use these — they open the right section automatically):
-- Browse Wall Art designs: https://rogetjames-new.netlify.app/?view=wallart
-- Browse Sculpture designs: https://rogetjames-new.netlify.app/?view=sculpture
-- View Wall Art catalogue: https://rogetjames-new.netlify.app/?view=wallartcat
-- View Sculpture catalogue: https://rogetjames-new.netlify.app/?view=sculpturecat
-- Bespoke Commissions & Screens: https://rogetjames-new.netlify.app/#bespoke
-- How it works / Process: https://rogetjames-new.netlify.app/#process
-- Services overview: https://rogetjames-new.netlify.app/#services
-- Contact & quote enquiry: https://rogetjames-new.netlify.app/#contact
-- About the studio: https://rogetjames-new.netlify.app/#about
+- Browse Wall Art designs: https://rogetjames.com/?view=wallart
+- Browse Sculpture designs: https://rogetjames.com/?view=sculpture
+- View Wall Art catalogue: https://rogetjames.com/?view=wallartcat
+- View Sculpture catalogue: https://rogetjames.com/?view=sculpturecat
+- Bespoke Commissions & Screens: https://rogetjames.com/#bespoke
+- How it works / Process: https://rogetjames.com/#process
+- Services overview: https://rogetjames.com/#services
+- Contact & quote enquiry: https://rogetjames.com/#contact
+- About the studio: https://rogetjames.com/#about
 
 Wall Art series and where to find them (all via the Wall Art link above):
 - Flowers & Blooms: RUE, BLOOM, OLIN, PETUNIA, DIAMOND BLOOM, FUEILLES, FERLICE, PALM RAJA, DANDELIONS
