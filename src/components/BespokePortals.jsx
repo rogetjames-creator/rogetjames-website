@@ -427,15 +427,11 @@ export function CommissionsSection() {
               </defs>
             </svg>
 
-            {/* Textured frosted-glass blur, clipped to the exact same arch shape */}
-            <div className="hidden md:block" style={{
-              ...boxStyle,
-              zIndex: 49,
-              backdropFilter: "blur(16px) saturate(120%)",
-              WebkitBackdropFilter: "blur(16px) saturate(120%)",
-              clipPath: `url(#${clipId})`,
-              WebkitClipPath: `url(#${clipId})`,
-            }} />
+            {/* Frosted arch fill — backdrop-filter + clip-path causes GPU glitch; use tinted SVG fill only */}
+            <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 49 }}
+              width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+              <path fillRule="evenodd" fill="#F2F0E9" fillOpacity="0.06" d={d} />
+            </svg>
             <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 50 }}
               width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
               <path

@@ -27,7 +27,6 @@ const INTERVAL = 5000;
 const FADE_DURATION = 2.5;
 
 const DRIFT = [
-  { el: ".hero-eyebrow", x: -60,  y: -20, delay: 0.2  },
   { el: ".hero-line-1",  x: -80,  y: 0,   delay: 0.45 },
   { el: ".hero-line-2",  x: 60,   y: 40,  delay: 0.65 },
   { el: ".hero-sub",     x: 40,   y: 30,  delay: 0.9  },
@@ -35,6 +34,7 @@ const DRIFT = [
   { el: ".hero-loc-2",   x: 30,   y: -15, delay: 1.28 },
   { el: ".hero-loc-3",   x: -20,  y: 35,  delay: 1.41 },
   { el: ".hero-loc-4",   x: 50,   y: -25, delay: 1.54 },
+  { el: ".hero-eyebrow", x: 0,    y: 12,  delay: 3.4  },
 ];
 
 export default function Hero() {
@@ -45,6 +45,7 @@ export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [slideshowReady, setSlideshowReady] = useState(false);
   const [logoVisible, setLogoVisible] = useState(false);
+  const [logoHolding, setLogoHolding] = useState(false);
   const lenis = useLenis();
 
   // Slideshow — fades in as text settles, cycles after full interval
@@ -132,15 +133,31 @@ export default function Hero() {
 
           {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
           {createPortal(
-            <span style={{ position: "fixed", top: 76, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 110, height: 110, zIndex: 99 }}>
-              <RojLogoAnimation visible={logoVisible} />
+            <span style={{ position: "fixed", top: 76, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 124, height: 124, zIndex: 99 }}>
+              <RojLogoAnimation visible={logoVisible} onHoldChange={setLogoHolding} />
             </span>,
             document.body
           )}
-
-          <p className="hero-eyebrow font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] mb-6" style={{ wordSpacing: "0.4em" }}>
-            Original Laser Cut Wall Art &amp; Sculpture
-          </p>
+          {/* Glass fog fill — own portal so backdrop-filter is not trapped inside opacity-animated parent */}
+          {createPortal(
+            <div style={{
+              position: "fixed",
+              top: 78,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: 101,
+              height: 119,
+              borderRadius: "23px",
+              background: "rgba(237,232,223,0.07)",
+              backdropFilter: "blur(28px) brightness(1.06) saturate(0.85)",
+              WebkitBackdropFilter: "blur(28px) brightness(1.06) saturate(0.85)",
+              opacity: logoVisible && logoHolding ? 1 : 0,
+              transition: "opacity 1.4s ease",
+              pointerEvents: "none",
+              zIndex: 98,
+            }} />,
+            document.documentElement
+          )}
 
           <h1 className="flex items-center">
             <span className="hero-line-2 font-drama italic text-5xl md:text-8xl lg:text-[10rem] leading-[0.85]" style={{
@@ -186,6 +203,14 @@ export default function Hero() {
           ))}
         </div>
       </div>
+
+      {/* Eyebrow — centered on screen, at Gold Coast row level, fades in after all transitions */}
+      <p
+        className="hero-eyebrow absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none"
+        style={{ bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
+      >
+        Original Laser Cut Wall Art &amp; Sculpture
+      </p>
 
       {/* Scroll indicator */}
       <button

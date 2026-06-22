@@ -20,7 +20,7 @@ const BUILD_ORDER = [0, 2, 1, 4, 3];
 
 const STEP_IN  = 950;   // ms between each path fading in
 const STEP_OUT = 650;   // ms between each path fading out (rewind)
-const HOLD     = 7000;  // ms to hold full logo before rewinding
+const HOLD     = 15000; // ms to hold full logo before rewinding
 const FADE_DUR = 1600;  // CSS transition duration (ms)
 const PAUSE    = 1000;  // gap between rewind end and next cycle start
 
@@ -33,7 +33,7 @@ function shuffle(arr) {
   return a;
 }
 
-export default function RojLogoAnimation({ visible }) {
+export default function RojLogoAnimation({ visible, onHoldChange }) {
   const [shown, setShown] = useState(new Set());
   const [holding, setHolding] = useState(false);
   const timers = useRef([]);
@@ -63,12 +63,13 @@ export default function RojLogoAnimation({ visible }) {
 
     let t = 0;
 
-    // Fade in each path
+    // Fade in each path — glass fires with the rectangle (path 4)
     order.forEach(idx => {
       t += STEP_IN;
       after(t, () => {
         if (!running.current) return;
         setShown(prev => new Set([...prev, idx]));
+        if (idx === 4) onHoldChange?.(true);
       });
     });
 
@@ -76,13 +77,14 @@ export default function RojLogoAnimation({ visible }) {
     after(t, () => { if (running.current) setHolding(true); });
     t += HOLD;
 
-    // Rewind — remove drop shadow, reverse order
+    // Rewind — remove drop shadow, reverse order; glass disappears with the rectangle
     after(t, () => { if (running.current) setHolding(false); });
     [...order].reverse().forEach(idx => {
       t += STEP_OUT;
       after(t, () => {
         if (!running.current) return;
         setShown(prev => { const n = new Set(prev); n.delete(idx); return n; });
+        if (idx === 4) onHoldChange?.(false);
       });
     });
 
@@ -113,26 +115,29 @@ export default function RojLogoAnimation({ visible }) {
   }, [visible]);
 
   return (
-    <svg
-      viewBox="0 0 14173.2285 14173.2285"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{
-        width: "100%", height: "100%", display: "block",
-        filter: holding ? "drop-shadow(0 0 8px rgba(237,232,223,0.45)) drop-shadow(0 2px 18px rgba(0,0,0,0.55))" : "none",
-        transition: "filter 1.2s ease",
-      }}
-    >
-      {PATHS.map((d, i) => (
-        <path
-          key={i}
-          d={d}
-          fill="#EDE8DF"
-          style={{
-            opacity: shown.has(i) ? 0.38 : 0,
-            transition: `opacity ${FADE_DUR}ms ease`,
-          }}
-        />
-      ))}
-    </svg>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <svg
+        viewBox="0 0 14173.2285 14173.2285"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          position: "relative",
+          width: "100%", height: "100%", display: "block",
+          filter: holding ? "drop-shadow(0 0 8px rgba(237,232,223,0.45)) drop-shadow(0 2px 18px rgba(0,0,0,0.55))" : "none",
+          transition: "filter 1.2s ease",
+        }}
+      >
+        {PATHS.map((d, i) => (
+          <path
+            key={i}
+            d={d}
+            fill="#EDE8DF"
+            style={{
+              opacity: shown.has(i) ? 0.38 : 0,
+              transition: `opacity ${FADE_DUR}ms ease`,
+            }}
+          />
+        ))}
+      </svg>
+    </div>
   );
 }

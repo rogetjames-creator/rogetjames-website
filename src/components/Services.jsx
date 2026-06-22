@@ -15,10 +15,9 @@ const SERVICES = [
     description:
       "Commission a completely original piece.",
     features: [
-      "Original design creation",
+      "Concept to creation",
       "In-situ rendering previews",
       "Multi-medium: steel, stone, concrete, wood",
-      "Project coordination",
     ],
     cta: "Start a Commission",
     featured: true,
@@ -28,7 +27,7 @@ const SERVICES = [
     title: "Catalogue Designs",
     subtitle: "Ready to Specify",
     description:
-      "Browse our extensive catalogue of original design templates. Wall art, screens, sculpture, light features & mirrors. Available in standard sizes or custom sized.",
+      "A curated range of original designs. Wall art, screens & sculpture. Available in standard sizes or custom sized.",
     features: [
       "Corten steel or powdercoated aluminium",
       { text: "Custom colour selection", colours: true },
@@ -94,38 +93,20 @@ export default function Services() {
         },
       });
 
-      // Centre card (Catalogue Designs) is fixed — it simply settles into
-      // place first. The left card (Bespoke Design) then emerges from
-      // behind the centre and drifts into its slot; the right card
-      // (Commercial & Public Art) follows last. Slow, smooth, meditative —
-      // no bounce, no urgency.
-      const centerCard = serviceCards[1];
-      const centerLeft = centerCard ? centerCard.offsetLeft : 0;
-
-      tl.fromTo(centerCard,
-        { opacity: 0, y: 18 },
-        { opacity: 1, y: 0, duration: 1.6, ease: "sine.out" },
-        0
-      );
-
-      const order = [0, 2]; // left, then right
-      order.forEach((i, seq) => {
-        const card = serviceCards[i];
-        if (!card) return;
-        const deltaX = centerLeft - card.offsetLeft;
-        const start = 1.4 + seq * 1.8;
+      // Cards settle in place one by one — no lateral movement, no urgency.
+      serviceCards.forEach((card, i) => {
         tl.fromTo(card,
-          { opacity: 0, x: deltaX },
-          { opacity: 1, x: 0, duration: 2.2, ease: "sine.out" },
-          start
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 2.2, ease: "sine.inOut" },
+          i * 0.55
         );
       });
 
-      // Underline sweeps — once each card has settled
+      // Underline sweeps after each card settles
       serviceCards.forEach((card, i) => {
         const ul = card?.querySelector(".service-underline");
         if (!ul) return;
-        const t = i === 1 ? 1.6 : i === 0 ? 3.6 : 5.4;
+        const t = i * 0.55 + 2.0;
         tl.to(ul, { scaleX: 1, duration: 0.55, ease: "power2.out" }, t);
         tl.to(ul, { x: 200, opacity: 0, duration: 0.45, ease: "power2.in" }, t + 0.7);
       });

@@ -2341,6 +2341,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
 
   const [sculptureCat, setSculptureCat] = useState("all");
   const [drilledSeries, setDrilledSeries] = useState(null); // { id, label, items } or null
+  const [slideshowActive, setSlideshowActive] = useState(false);
+  const slideshowSnapshotRef = useRef([]);
+  const slideshowFlatIdxRef = useRef(0);
+  const slideshowTimerRef = useRef(null);
 
   const SCULPTURE_CATS = [
     { id: "all",      label: "All" },
@@ -2391,11 +2395,48 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     }, 380);
   };
 
-  // Auto-advance to next design after pausing on the last slide
+  const startSlideshow = () => {
+    slideshowSnapshotRef.current = [...filteredAllItems];
+    slideshowFlatIdxRef.current = 0;
+    const it = slideshowSnapshotRef.current[0];
+    if (!it) return;
+    const ser = filteredSeries.find(s => s.id === it._seriesId);
+    const iIdx = ser ? (() => { const i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })() : 0;
+    setTab(it._seriesId);
+    setCardIdx(iIdx);
+    setSlideIdx(it._slideIdx ?? 0);
+    setShowDetails(false);
+    setSlideshowActive(true);
+  };
+
+  const stopSlideshow = () => {
+    setSlideshowActive(false);
+    clearTimeout(slideshowTimerRef.current);
+  };
+
+  // Slideshow: auto-advance through the full flat item list
+  useEffect(() => {
+    clearTimeout(slideshowTimerRef.current);
+    if (!slideshowActive || isAll) return;
+    slideshowTimerRef.current = setTimeout(() => {
+      const snap = slideshowSnapshotRef.current;
+      if (!snap.length) return;
+      slideshowFlatIdxRef.current = (slideshowFlatIdxRef.current + 1) % snap.length;
+      const it = snap[slideshowFlatIdxRef.current];
+      const ser = filteredSeries.find(s => s.id === it._seriesId);
+      const iIdx = ser ? (() => { const i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })() : 0;
+      setTab(it._seriesId);
+      setCardIdx(iIdx);
+      setSlideIdx(it._slideIdx ?? 0);
+    }, 3500);
+    return () => clearTimeout(slideshowTimerRef.current);
+  }, [slideshowActive, tab, cardIdx, slideIdx]);
+
+  // Auto-advance to next design after pausing on the last slide (disabled during slideshow)
   const autoAdvanceRef = useRef(null);
   useEffect(() => {
     clearTimeout(autoAdvanceRef.current);
-    if (!isAll && itemSlides.length > 1 && slideIdx === itemSlides.length - 1) {
+    if (!isAll && !slideshowActive && itemSlides.length > 1 && slideIdx === itemSlides.length - 1) {
       autoAdvanceRef.current = setTimeout(() => navigate(1), 3200);
     }
     return () => clearTimeout(autoAdvanceRef.current);
@@ -2406,10 +2447,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     if (isAll) return;
     if (dir > 0 && slideIdx < itemSlides.length - 1) {
       setAnimDir(dir);
-      setTimeout(() => { setSlideIdx(i => i + 1); setAnimDir(null); }, 180);
+      setTimeout(() => { setSlideIdx(i => i + 1); setAnimDir(null); }, 380);
     } else if (dir < 0 && slideIdx > 0) {
       setAnimDir(dir);
-      setTimeout(() => { setSlideIdx(i => i - 1); setAnimDir(null); }, 180);
+      setTimeout(() => { setSlideIdx(i => i - 1); setAnimDir(null); }, 380);
     } else {
       navigate(dir);
     }
@@ -2583,6 +2624,29 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 {drilledSeries?.label ?? filteredSeries.find(s => s.id === tab)?.label}
               </span>
             )}
+            {/* Slideshow button — All view; Stop button — card view */}
+            {isAll && categoryFilter !== "sculpture" && (
+              <button onClick={startSlideshow}
+                className="ml-auto flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
+                style={{ borderColor: "rgba(242,240,233,0.25)", color: "rgba(242,240,233,0.65)", background: "transparent" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(242,240,233,0.25)"; e.currentTarget.style.color = "rgba(242,240,233,0.65)"; }}
+              >
+                <Play size={8} />
+                Slideshow
+              </button>
+            )}
+            {!isAll && slideshowActive && (
+              <button onClick={stopSlideshow}
+                className="ml-auto flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
+                style={{ borderColor: "rgba(158,113,52,0.6)", color: "#9e7134", background: "transparent" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(158,113,52,0.6)"; e.currentTarget.style.color = "#9e7134"; }}
+              >
+                <Pause size={8} />
+                Stop
+              </button>
+            )}
           </div>
           {/* Animated drawer */}
           <div style={{
@@ -2684,7 +2748,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
           <div className="flex-1 flex relative overflow-hidden min-h-0">
             {/* Main image column */}
             <div className={`flex-1 flex flex-col items-center relative min-w-0 ${isMobile ? "justify-start pt-4" : "justify-center"}`}>
-              <button onClick={() => handleArrow(-1)} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors" style={{ fontSize: 20 }}>‹</button>
+              <button onClick={() => handleArrow(-1)} className="absolute left-10 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors" style={{ fontSize: 20 }}>‹</button>
 
               {/* Card image */}
               <div style={{ transition: "opacity 0.38s ease", opacity: animDir ? 0 : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: isMobile ? "16px 20px" : "16px 64px", width: "100%" }}>
@@ -2701,7 +2765,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 </div>
               </div>
 
-              <button onClick={() => handleArrow(1)} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors" style={{ fontSize: 20 }}>›</button>
+              <button onClick={() => handleArrow(1)} className="absolute right-10 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors" style={{ fontSize: 20 }}>›</button>
             </div>
 
             {/* Details panel — slides in from right; overlay on mobile */}
@@ -2982,13 +3046,16 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
           </div>
           <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
             <div className="flex flex-wrap justify-center gap-2">
-              {drilledSeries.items.map((it, i) => (
-                <div key={i} onClick={() => { openSeries(drilledSeries.id, i); setDrilledSeries(null); }}
+              {drilledSeries.items.flatMap((it, designIdx) => {
+                const slides = (it.slides && it.slides.length > 1) ? it.slides : [it.img];
+                return slides.map((img, sIdx) => ({ img, name: it.name, designIdx, sIdx }));
+              }).map((thumb, i) => (
+                <div key={i} onClick={() => { openSeries(drilledSeries.id, thumb.designIdx, thumb.sIdx); setDrilledSeries(null); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-                  <img src={it.img} alt={it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={thumb.img} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5 pointer-events-none">
-                    <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
+                    <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{thumb.name}</p>
                   </div>
                 </div>
               ))}
@@ -3193,7 +3260,7 @@ export default function Gallery() {
   return (
     <>
       {cardDeckOpen && <CardDeckOverlay onClose={() => { setCardDeckOpen(false); setCategoryClicked(false); }} categoryFilter={selectedCategory} onOpenCatalogue={(tab) => { setCatFlipOpen(true); setCatFlipTab(tab || selectedCategory); }} onSwitchCategory={(cat) => { setSelectedCategory(cat); setCategoryClicked(true); }} />}
-      <section id="collection" ref={sectionRef} className="bg-ink pt-0 pb-20">
+      <section id="collection" ref={sectionRef} className="bg-ink pt-32 pb-20">
 
         {/* Label row */}
         <div className="gallery-strip-label max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-16 text-center">

@@ -205,15 +205,6 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
               >
                 <Instagram size={16} className="text-cream/60" />
               </a>
-              <a
-                href="https://youtube.com/@jamesroget4318"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="lift-hover w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/15 transition-colors"
-                aria-label="YouTube"
-              >
-                <Youtube size={16} className="text-cream/60" />
-              </a>
             </div>
           </div>
 
