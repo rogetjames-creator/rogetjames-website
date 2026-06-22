@@ -1347,8 +1347,9 @@ function GalleryModal({ onClose, initialCategory = null }) {
     if (!gridRef.current) return;
     const cards = gridRef.current.querySelectorAll(".gallery-card");
     if (!cards.length) return;
+    const stagger = cards.length > 50 ? 0 : 0.05;
     gsap.fromTo(cards, { y: 30, opacity: 0, scale: 0.97 }, {
-      y: 0, opacity: 1, scale: 1, duration: 0.5, stagger: 0.05, ease: "power3.out",
+      y: 0, opacity: 1, scale: 1, duration: 0.5, stagger, ease: "power3.out",
     });
   }, [activeTab, activeCategory]);
 
