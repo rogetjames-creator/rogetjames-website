@@ -388,7 +388,7 @@ function LinksPopup({ onClose }) {
   );
 }
 
-export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false }) {
+export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false }) {
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
@@ -423,10 +423,10 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             </>
           )}
           <button
-            onClick={() => onOpen ? onOpen() : canOpen && setPopOpen(true)}
+            onClick={() => { if (locked) return; onOpen ? onOpen() : canOpen && setPopOpen(true); }}
             onMouseEnter={() => setGlowing(true)}
             onMouseLeave={() => setGlowing(false)}
-            className="group relative cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            className={`group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-black ${locked ? "cursor-not-allowed" : "cursor-pointer"}`}
             style={{
               borderRadius: "50%",
               padding: "9px",
@@ -438,9 +438,9 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
               transition: "box-shadow 0.6s ease",
             }}
-            aria-label={portal.label}
+            aria-label={locked ? `${portal.label} — under construction` : portal.label}
           >
-            <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
+            <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", filter: locked ? "grayscale(0.6) brightness(0.6)" : undefined }}>
               {videos ? videos.map((v, i) => (
                 <video key={v.src} src={v.src} autoPlay muted loop playsInline
                   className="absolute inset-0 w-full h-full object-cover"
@@ -457,8 +457,10 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               <div className="absolute inset-0 pointer-events-none z-10"
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
               <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
-                style={alwaysLabel ? { opacity: 1 } : {}}>
-                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>{hoverLabel}</span>
+                style={(alwaysLabel || locked) ? { opacity: 1 } : {}}>
+                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: locked ? Math.min(parseFloat(hoverLabelSize) || 11, 10) + "px" : hoverLabelSize }}>
+                  {locked ? "Under Construction" : hoverLabel}
+                </span>
               </div>
             </div>
           {arcLabel && (() => {

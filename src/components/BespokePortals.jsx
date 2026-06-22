@@ -275,7 +275,7 @@ export function CommissionsSection() {
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
         <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={160} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
+          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={160} hideLabel hoverLabel="Sculpture" locked onOpen={() => setSculptureOpen(true)} />
           <span className="font-heading font-bold text-xs text-cream/70">Sculpture</span>
         </div>
         <div className="flex flex-col items-center gap-2">
@@ -283,15 +283,15 @@ export function CommissionsSection() {
           <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel onOpen={() => setReelsOpen(true)} />
+          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel locked onOpen={() => setReelsOpen(true)} />
           <span className="font-heading font-bold text-xs text-cream/70">Commissions</span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
+          <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel hoverLabel="Projects" locked onOpen={() => setProjectsOpen(true)} />
           <span className="font-heading font-bold text-xs text-cream/70">Projects</span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+          <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel hoverLabel="Concepts" locked onOpen={() => setConceptsOpen(true)} />
           <span className="font-heading font-bold text-xs text-cream/70">Concepts</span>
         </div>
       </div>
@@ -356,10 +356,10 @@ export function CommissionsSection() {
         {/* Portal fan */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
           <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel hoverLabel="Projects" onOpen={() => setProjectsOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel hoverLabel="Projects" locked onOpen={() => setProjectsOpen(true)} />
           </div>
           <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" locked onOpen={() => setSculptureOpen(true)} />
           </div>
 
           {/* Center portal — fixed to the collapsed strip's vertical centre so it never shifts when the strip expands */}
@@ -380,10 +380,10 @@ export function CommissionsSection() {
           </div>
 
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" onOpen={() => setReelsOpen(true)} />
+            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" locked onOpen={() => setReelsOpen(true)} />
           </div>
           <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel hoverLabel="Concepts" onOpen={() => setConceptsOpen(true)} />
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel hoverLabel="Concepts" locked onOpen={() => setConceptsOpen(true)} />
           </div>
         </div>
 
