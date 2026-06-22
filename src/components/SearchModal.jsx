@@ -224,6 +224,8 @@ export default function SearchModal({ open, onClose }) {
                     <img
                       src={item.img}
                       alt={item.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-12 h-12 rounded-lg object-cover flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity"
                     />
                     <div className="min-w-0 flex-1">

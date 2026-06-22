@@ -215,7 +215,7 @@ function ClientPage({ clientCode, project, onBack, onClose }) {
               style={{ aspectRatio: "4/3" }}
             >
               {item.src ? (
-                <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img src={item.src} alt={item.title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <p className="font-detail text-xs text-cream/55 uppercase tracking-wider">Image coming soon</p>
@@ -310,7 +310,7 @@ function AdminPage({ onBack, onClose }) {
                       className="w-full h-full"
                     >
                       {item.src ? (
-                        <img src={item.src} alt={item.title} className={`w-full h-full object-cover transition-opacity duration-300 ${hidden ? "opacity-20" : "opacity-100"}`} />
+                        <img src={item.src} alt={item.title} loading="lazy" decoding="async" className={`w-full h-full object-cover transition-opacity duration-300 ${hidden ? "opacity-20" : "opacity-100"}`} />
                       ) : (
                         <div className="w-full h-full bg-cream/5 flex items-center justify-center">
                           <p className="font-detail text-[10px] text-cream/40 uppercase tracking-wider">No image</p>
