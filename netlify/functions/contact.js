@@ -13,7 +13,7 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: JSON.stringify({ error: "Invalid request" }) };
   }
 
-  const { name, email, phone, postcode, message, selections } = body;
+  const { name, email, phone, postcode, message, selections, attachments } = body;
 
   const lines = [
     `Name: ${name || "—"}`,
@@ -38,6 +38,9 @@ exports.handler = async function(event) {
       reply_to: email || undefined,
       subject: `New enquiry from ${name || "website visitor"}`,
       text: `New enquiry from rogetjames.com\n\n${lines}`,
+      attachments: Array.isArray(attachments) && attachments.length
+        ? attachments.map((a) => ({ filename: a.filename, content: a.content }))
+        : undefined,
     }),
   });
 

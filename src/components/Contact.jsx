@@ -11,6 +11,8 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
   const successRef = useRef(null);
   const [submitted, setSubmitted] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(null);
 
   const MAX_FILES = 6;
 
@@ -26,6 +28,27 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
       return prev.filter((_, i) => i !== index);
     });
   };
+
+  const fileToCompressedAttachment = (file) =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1600;
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        resolve({
+          filename: file.name.replace(/\.[^.]+$/, "") + ".jpg",
+          content: dataUrl.split(",")[1],
+        });
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -48,15 +71,47 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    gsap.to(formRef.current, {
-      opacity: 0, scale: 0.96, y: -20, duration: 0.35, ease: "power2.in",
-      onComplete: () => {
-        setSubmitted(true);
-        onQuoteSubmitted?.();
-      },
-    });
+    setError(null);
+
+    const formData = new FormData(formRef.current);
+    setSending(true);
+    try {
+      const attachments = await Promise.all(
+        uploadedFiles.map((f) => fileToCompressedAttachment(f.file))
+      );
+
+      const payload = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        postcode: formData.get("postcode"),
+        address: formData.get("address"),
+        message: formData.get("message"),
+        selections: formData.get("design_interest"),
+        attachments,
+      };
+
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("Request failed");
+
+      gsap.to(formRef.current, {
+        opacity: 0, scale: 0.96, y: -20, duration: 0.35, ease: "power2.in",
+        onComplete: () => {
+          setSubmitted(true);
+          onQuoteSubmitted?.();
+        },
+      });
+    } catch {
+      setError("Something went wrong sending this — please try again, or email info@rogetjames.com directly.");
+    } finally {
+      setSending(false);
+    }
   };
 
   // Animate success message in after state update
@@ -192,6 +247,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     </label>
                     <input
                       type="text"
+                      name="name"
                       required
                       className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                       placeholder="Your name"
@@ -203,6 +259,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     </label>
                     <input
                       type="email"
+                      name="email"
                       required
                       className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                       placeholder="your@email.com"
@@ -216,6 +273,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                   </label>
                   <input
                     type="text"
+                    name="postcode"
                     required
                     className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                     placeholder="1234"
@@ -343,6 +401,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     Message *
                   </label>
                   <textarea
+                    name="message"
                     required
                     rows={4}
                     className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all resize-none"
@@ -350,12 +409,17 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                   />
                 </div>
 
+                {error && (
+                  <p className="text-xs text-red-400 font-detail">{error}</p>
+                )}
+
                 <button
                   type="submit"
-                  className="btn-magnetic w-full py-4 rounded-xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide"
+                  disabled={sending}
+                  className="btn-magnetic w-full py-4 rounded-xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide disabled:opacity-60"
                 >
                   <span className="btn-bg bg-clay-dark rounded-xl" />
-                  <span className="relative z-10">Send Enquiry</span>
+                  <span className="relative z-10">{sending ? "Sending…" : "Send Enquiry"}</span>
                 </button>
               </form>
             )}
