@@ -205,10 +205,10 @@ function ReelsPortal() {
   );
 }
 
-const CDN = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+const CDN = "/images/cdn-gallery";
 
 // Wall Art series — display order
-const CDN_G = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+const CDN_G = "/images/cdn-gallery";
 
 const WALL_ART_SERIES = [
   // ── AUSTRALIAN NATIVES ───────────────────

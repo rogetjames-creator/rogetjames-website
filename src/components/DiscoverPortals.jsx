@@ -29,7 +29,7 @@ const PAINTINGS = [
   { src: "/images/paintings/terra-australis.jpg",  title: "Terra Australis", medium: "Oil on canvas", dims: "1500 × 1000 mm", year: "2010", sold: true, maxW: "74%"  },
 ];
 
-const CDN_DP = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+const CDN_DP = "/images/cdn-gallery";
 
 const CLIENT_IMAGES = [
   { src: "/images/client/banksia-wall-art-series.jpg", title: "Banksia — Wall Art Series" },

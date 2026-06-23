@@ -8,7 +8,7 @@ import CatPageViewer from "./CatPageViewer";
 gsap.registerPlugin(ScrollTrigger);
 
 
-const CDN = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+const CDN = "/images/cdn-gallery";
 
 const STRIP_IMAGES = [
   `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg?h=d8252802c5923b6c85bfbb1d48ffd3f4`,

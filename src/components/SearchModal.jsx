@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
 
-const CDN = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+const CDN = "/images/cdn-gallery";
 
 // All searchable works and series across the site
 const SEARCH_INDEX = [

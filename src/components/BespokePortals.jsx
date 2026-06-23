@@ -7,7 +7,7 @@ import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, Conce
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CDN_SC = "https://cdn.myportfolio.com/b2648aa0-9d7e-45a7-9f99-54d55b4ec92e";
+const CDN_SC = "/images/cdn-gallery";
 
 const COMMISSIONS_GALLERY = [
   { src: "/images/villa-leaf/villa-leaf-trio-pool.jpg" },
