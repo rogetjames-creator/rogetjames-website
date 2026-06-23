@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import RojLogoAnimation from "./RojLogoAnimation";
+import { netlifyImg } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -116,12 +117,13 @@ export default function Hero() {
         {SLIDES.map((src, i) => (
           <img
             key={src}
-            src={src}
+            src={netlifyImg(src, { w: 1920, q: 82 })}
             alt={i === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={i !== 0}
             className="absolute inset-0 w-full h-full object-contain"
             style={{ opacity: slideshowReady && i === current ? 1 : 0, transition: `opacity ${FADE_DURATION}s ease-in-out` }}
             loading={i === 0 ? "eager" : "lazy"}
+            fetchPriority={i === 0 ? "high" : "auto"}
           />
         ))}
       </div>
