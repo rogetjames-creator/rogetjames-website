@@ -105,6 +105,9 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         onComplete: () => {
           setSubmitted(true);
           onQuoteSubmitted?.();
+          setTimeout(() => {
+            document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
         },
       });
     } catch {
