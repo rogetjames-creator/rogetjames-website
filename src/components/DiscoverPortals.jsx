@@ -456,6 +456,14 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               })}
               <div className="absolute inset-0 pointer-events-none z-10"
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
+              {!hideLabel && (
+                <div className="absolute bottom-0 left-0 right-0 z-[15] pointer-events-none flex flex-col items-center"
+                  style={{ paddingBottom: "10%", paddingTop: "22%", background: "linear-gradient(to top, rgba(0,0,0,0.68) 0%, transparent 100%)" }}>
+                  {portal.sublabel && <p className="font-detail text-cream/55 uppercase tracking-[0.18em]" style={{ fontSize: `${Math.max(6, size * 0.042)}px` }}>{portal.sublabel}</p>}
+                  <p className="font-heading font-bold text-cream/90" style={{ fontSize: `${Math.max(8, size * 0.065)}px` }}>{portal.label}</p>
+                  {locked && <p className="font-detail text-cream/50 uppercase tracking-[0.15em]" style={{ fontSize: `${Math.max(5.5, size * 0.038)}px`, marginTop: "2px" }}>Under Construction</p>}
+                </div>
+              )}
               <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
                 style={alwaysLabel ? { opacity: 1 } : {}}>
                 <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
@@ -489,13 +497,6 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
           })()}
           </button>
         </div>{/* end wrapper */}
-        {(!hideLabel || locked) && (
-          <div className="text-center">
-            {!hideLabel && portal.sublabel && <p className="font-detail text-[9px] text-warm-gray uppercase tracking-[0.22em]">{portal.sublabel}</p>}
-            <p className="font-heading font-bold text-xs text-cream/70 mt-0.5">{portal.label}</p>
-            {locked && <p className="font-detail text-[8px] text-warm-gray/50 uppercase tracking-[0.18em] mt-0.5">Under Construction</p>}
-          </div>
-        )}
       </div>
 
       {popOpen && videos && portal.popupType !== "commissions-gallery" && <VideoPopup src={videos[cur].src} title={videos[cur].title} detail={videos[cur].detail} onClose={() => setPopOpen(false)} />}
