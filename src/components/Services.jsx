@@ -149,7 +149,7 @@ export default function Services() {
             <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
           </div>
           <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">
-            Custom Services
+            Services
           </span>
           <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>
             Three Paths{" "}
