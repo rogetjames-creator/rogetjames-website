@@ -279,7 +279,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
 
                   {quoteItems.length === 0 ? (
                     <div className="w-full px-4 py-4 rounded-xl bg-white/5 border border-dashed border-white/15 text-center">
-                      <p className="text-warm-gray text-xs font-detail">Browse the collection above and click <span className="text-clay italic">details</span> on any piece to add it here</p>
+                      <p className="text-warm-gray text-xs font-detail">Browse the <a href="#collection" className="text-clay underline underline-offset-2">Collection</a> for catalogue designs — click <span className="text-clay italic">Details</span> on any piece to add it here. Or describe your interests in the message box below.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
