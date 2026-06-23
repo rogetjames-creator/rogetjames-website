@@ -47,7 +47,7 @@ const SIDE_PORTAL_LEFT = {
 
 const SIDE_PORTAL_RIGHT = {
   id: "side-right",
-  label: "",
+  label: "Sculpture",
   sublabel: "",
   slides: [
     `${CDN_SC}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg?h=b0a0ebd2ca83e06d7b56e5fbee049be2`,
@@ -126,18 +126,22 @@ export function CommissionsSection() {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
+  const [sidesVisible, setSidesVisible] = useState(false);
 
   const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 
-  // Fade side portals in at their positions on mount
+  // Reveal side portals when center is clicked
   useEffect(() => {
     const els = [leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current].filter(Boolean);
-    gsap.set(els, { opacity: 0 });
-    gsap.to(els, { opacity: 1, duration: 1.4, stagger: 0.18, ease: "power2.out", delay: 0.3 });
-  }, []);
+    if (sidesVisible) {
+      gsap.to(els, { opacity: 1, duration: 1.2, stagger: 0.15, ease: "power2.out" });
+    } else {
+      gsap.set(els, { opacity: 0 });
+    }
+  }, [sidesVisible]);
 
   // Nav dropdown
   useEffect(() => {
@@ -216,36 +220,56 @@ export function CommissionsSection() {
       <div
         ref={stripRef}
         className="bg-matt-black relative hidden md:block"
-        style={{ height: "280px", overflow: "visible" }}
+        style={{ height: "300px", overflow: "visible" }}
       >
+        {/* Arch fog — centred on the strip, hole sized to clear the center portal ring */}
+        {(() => {
+          const cY = 150;
+          const hR = 139;
+          const oR = hR + 26;
+          const svgH = cY + oR;
+          const svgW = oR * 2;
+          const cX = oR;
+          const rX = cX + hR, lX = cX - hR;
+          const d = `M0,0 H${svgW} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`;
+          const boxStyle = { position: "absolute", top: 0, left: "50%", transform: `translateX(-${cX}px)`, width: svgW, height: svgH, pointerEvents: "none", zIndex: 10 };
+          return (
+            <>
+              <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 9 }} width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+                <path fillRule="evenodd" fill="#F2F0E9" fillOpacity="0.06" d={d} />
+              </svg>
+              <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 10 }} width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
+                <path fillRule="evenodd" fill="#F2F0E9" fillOpacity="0.10" stroke="#F2F0E9" strokeOpacity="0.12" strokeWidth="1.5" d={d} />
+              </svg>
+            </>
+          );
+        })()}
+
         {/* Portals */}
         <div className="absolute inset-0 flex items-center justify-center overflow-visible">
-          <div ref={leftOuterRef} className="absolute z-0" style={{ transform: "translateX(-580px)" }}>
+          <div ref={leftOuterRef} className="absolute" style={{ transform: "translateX(-560px)", zIndex: 2 }}>
             <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hoverLabel="Projects" locked onOpen={() => setProjectsOpen(true)} />
           </div>
-          <div ref={leftRef} className="absolute z-0" style={{ transform: "translateX(-300px)" }}>
+          <div ref={leftRef} className="absolute" style={{ transform: "translateX(-310px)", zIndex: 2 }}>
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hoverLabel="Sculpture" locked onOpen={() => setSculptureOpen(true)} />
           </div>
 
-          {/* Center portal — Screens */}
-          <div
-            ref={centerPortalRef}
-            style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}
-          >
+          {/* Center portal — click to reveal sides, then opens Screens */}
+          <div ref={centerPortalRef} className="absolute" style={{ left: "50%", transform: "translateX(-50%)", zIndex: 20 }}>
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
               size={248}
               ringOnly
-              hoverLabel="Screens"
+              hoverLabel={sidesVisible ? "Screens" : "View"}
               hoverLabelSize="16px"
-              onOpen={() => setScreensOpen(true)}
+              onOpen={() => { if (!sidesVisible) { setSidesVisible(true); } else { setScreensOpen(true); } }}
             />
           </div>
 
-          <div ref={rightRef} className="absolute z-0" style={{ transform: "translateX(300px)" }}>
+          <div ref={rightRef} className="absolute" style={{ transform: "translateX(310px)", zIndex: 2 }}>
             <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hoverLabel="Commissions" locked onOpen={() => setReelsOpen(true)} />
           </div>
-          <div ref={rightOuterRef} className="absolute z-0" style={{ transform: "translateX(580px)" }}>
+          <div ref={rightOuterRef} className="absolute" style={{ transform: "translateX(560px)", zIndex: 2 }}>
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hoverLabel="Concepts" locked onOpen={() => setConceptsOpen(true)} />
           </div>
         </div>
