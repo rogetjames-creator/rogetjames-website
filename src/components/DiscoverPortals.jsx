@@ -440,7 +440,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             }}
             aria-label={locked ? `${portal.label} — under construction` : portal.label}
           >
-            <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", filter: locked ? "grayscale(0.6) brightness(0.6)" : undefined }}>
+            <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
               {videos ? videos.map((v, i) => (
                 <video key={v.src} src={v.src} autoPlay muted loop playsInline
                   className="absolute inset-0 w-full h-full object-cover"
@@ -457,8 +457,8 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               <div className="absolute inset-0 pointer-events-none z-10"
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
               <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
-                style={(alwaysLabel || locked) ? { opacity: 1 } : {}}>
-                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: locked ? Math.min(parseFloat(hoverLabelSize) || 11, 10) + "px" : hoverLabelSize }}>
+                style={alwaysLabel ? { opacity: 1 } : {}}>
+                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
                   {locked ? "Under Construction" : hoverLabel}
                 </span>
               </div>
@@ -489,10 +489,11 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
           })()}
           </button>
         </div>{/* end wrapper */}
-        {!hideLabel && (
+        {(!hideLabel || locked) && (
           <div className="text-center">
-            <p className="font-detail text-[9px] text-warm-gray uppercase tracking-[0.22em]">{portal.sublabel}</p>
+            {!hideLabel && portal.sublabel && <p className="font-detail text-[9px] text-warm-gray uppercase tracking-[0.22em]">{portal.sublabel}</p>}
             <p className="font-heading font-bold text-xs text-cream/70 mt-0.5">{portal.label}</p>
+            {locked && <p className="font-detail text-[8px] text-warm-gray/50 uppercase tracking-[0.18em] mt-0.5">Under Construction</p>}
           </div>
         )}
       </div>
