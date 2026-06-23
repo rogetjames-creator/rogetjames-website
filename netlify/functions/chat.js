@@ -137,8 +137,8 @@ Finish: Powder Coating
 
 What happens to your aluminium screen before the colour goes on:
 1. Raw aluminium — the base metal as cut
-2. Etching — the surface is chemically cleaned and slightly roughened so the coating bonds properly
-3. Conversion coating — a microscopic protective layer is bonded to the aluminium surface; this prevents corrosion and acts as a key for the powder coat
+2. Acid etching — a chemical treatment that slightly dissolves the aluminium surface; removes oxidation and contaminants, creates a uniform matte surface, and provides a mechanical key for the coating to grip. Shiny aluminium becomes a more even satin appearance. Acids used include nitric, sulfuric, or phosphoric acid depending on the process — powder coaters often refer to this whole stage as an "acid wash."
+3. Chromate-free conversion coating — a very thin chemical layer applied after etching that bonds directly to the aluminium. It improves powder coat adhesion, greatly increases corrosion resistance, and helps prevent filiform corrosion (the worm-like corrosion that can travel under a powder coat if the surface is chipped). Older systems used hexavalent chromium (recognisable by a yellow/gold tint) but these are being phased out due to health and environmental concerns. Modern systems use chromate-free alternatives.
 4. Powder coat — the colour layer is electrostatically applied and cured at high heat, bonding to the conversion coating
 
 The result is a finish with four layers of protection, not just paint on metal.
