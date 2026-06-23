@@ -62,6 +62,18 @@ export default function ChatWidget() {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   };
 
+  const closeChat = () => {
+    const userMessages = messages.filter(m => m.role === "user");
+    if (userMessages.length > 0) {
+      fetch("/api/chat-transcript", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages }),
+      }).catch(() => {});
+    }
+    setOpen(false);
+  };
+
   return (
     <>
       {/* Chat panel */}
@@ -87,7 +99,7 @@ export default function ChatWidget() {
               <p className="font-detail text-[10px] text-warm-gray/60 uppercase tracking-wider mt-0.5">ROGETjames</p>
             </div>
           </div>
-          <button onClick={() => setOpen(false)} className="text-warm-gray/40 hover:text-cream/60 transition-colors">
+          <button onClick={closeChat} className="text-warm-gray/40 hover:text-cream/60 transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -143,7 +155,7 @@ export default function ChatWidget() {
 
       {/* Toggle button */}
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={() => open ? closeChat() : setOpen(true)}
         aria-label="Open chat"
         className="fixed bottom-6 left-6 z-[95] flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
         style={{
