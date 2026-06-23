@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, lazy, Suspense } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ReactLenis, useLenis } from "lenis/react";
@@ -52,17 +52,17 @@ function Reveal({ children, label }) {
 
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import Gallery from "./components/Gallery";
-import BespokeCommissions from "./components/BespokeCommissions";
 import StudioBio from "./components/StudioBio";
 import About from "./components/About";
 import Process from "./components/Process";
 import Services from "./components/Services";
 import Contact from "./components/Contact";
-import DiscoverPortals from "./components/DiscoverPortals";
-import { CommissionsSection } from "./components/BespokePortals";
 import Footer from "./components/Footer";
 import ChatWidget from "./components/ChatWidget";
+const Gallery            = lazy(() => import("./components/Gallery"));
+const BespokeCommissions = lazy(() => import("./components/BespokeCommissions"));
+const DiscoverPortals    = lazy(() => import("./components/DiscoverPortals"));
+const CommissionsSection = lazy(() => import("./components/BespokePortals").then(m => ({ default: m.CommissionsSection })));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -234,11 +234,11 @@ export default function App() {
       <Navbar quoteCount={quoteItems.length} />
       <main>
         <Hero />
-        <Gallery />
+        <Suspense fallback={null}><Gallery /></Suspense>
         {/* <About /> */}
         {/* <BespokeCommissions /> */}
         <StudioBio />
-        <CommissionsSection />
+        <Suspense fallback={null}><CommissionsSection /></Suspense>
         <Process />
         <Services />
         <Contact
@@ -247,7 +247,7 @@ export default function App() {
           onQuoteSubmitted={clearQuoteItems}
         />
       </main>
-      <DiscoverPortals />
+      <Suspense fallback={null}><DiscoverPortals /></Suspense>
       <Footer />
       <ScrollArrows />
       <ChatWidget />
