@@ -2955,7 +2955,7 @@ function ScreensPortal() {
               style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
           ))}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/90">
-            <img src="/images/roj-logo.png" alt="ROGETjames" className="w-28 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
+            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="w-28 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
             <span className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.22em] border border-white/20 rounded-full px-4 py-1.5">
               Screens
             </span>
@@ -3023,7 +3023,7 @@ function BespokePortal() {
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
           ))}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/90">
-            <img src="/images/roj-logo.png" alt="ROGETjames" className="w-36 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
+            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="w-36 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
             <span className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.22em] border border-white/20 rounded-full px-4 py-1.5">
               View
             </span>
