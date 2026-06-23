@@ -2020,12 +2020,11 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
             {searchResults.length === 0 ? "No results found" : `${searchResults.length} result${searchResults.length !== 1 ? "s" : ""}`}
           </p>
           {searchResults.length > 0 && (
-            <div ref={searchRowRef} className="search-scroll flex gap-3 overflow-x-auto pb-2" data-lenis-prevent>
+            <div ref={searchRowRef} className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2" data-lenis-prevent>
               {searchResults.map((item, idx) => (
                 <div
                   key={idx}
-                  className="gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square flex-none"
-                  style={{ width: 'calc(20% - 9.6px)', minWidth: '160px' }}
+                  className="gallery-card group cursor-pointer rounded-xl overflow-hidden bg-cream-dark relative aspect-square"
                   onClick={() => openLightbox([item], 0, item._series)}
                 >
                   <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
