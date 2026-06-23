@@ -146,7 +146,7 @@ export default function Services() {
             <span className="bespoke-ring-1 absolute w-20 h-20 rounded-full border border-white/30" />
             <span className="bespoke-ring-2 absolute w-20 h-20 rounded-full border border-white/20" />
             <span className="bespoke-ring-3 absolute w-20 h-20 rounded-full border border-white/12" />
-            <img src="/images/roj-logo.png" alt="ROGETjames" className="relative z-10 w-full h-auto" style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
+            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
           </div>
           <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">
             Custom Services

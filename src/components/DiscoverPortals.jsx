@@ -113,7 +113,7 @@ export function CommissionsGalleryPopup({ videos, onClose, title }) {
                 transformOrigin: "left center",
               }} />
               <div style={{ position: "absolute", width: "62px", height: "62px", top: "50%", left: "50%", transform: "translate(-54%, -50%)", borderRadius: "50%", background: "#111", border: "1px solid rgba(242,240,233,0.2)" }} />
-              <img src="/images/roj-logo.png" alt="ROGETjames" style={{ position: "relative", zIndex: 1, height: "62px", opacity: 0.45, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+              <img src="/images/roj-logo.png?v=2" alt="ROGETjames" style={{ position: "relative", zIndex: 1, height: "62px", opacity: 0.45, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
             </div>
           </div>
           <button onClick={onClose} className="w-8 h-8 flex-none rounded-full border border-white/15 flex items-center justify-center text-cream/50 hover:text-cream hover:border-white/35 transition-all">
