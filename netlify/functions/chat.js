@@ -135,6 +135,14 @@ Aluminium is offered as an alternative to Corten steel for clients who prefer a 
 
 Finish: Powder Coating
 
+What happens to your aluminium screen before the colour goes on:
+1. Raw aluminium — the base metal as cut
+2. Etching — the surface is chemically cleaned and slightly roughened so the coating bonds properly
+3. Conversion coating — a microscopic protective layer is bonded to the aluminium surface; this prevents corrosion and acts as a key for the powder coat
+4. Powder coat — the colour layer is electrostatically applied and cured at high heat, bonding to the conversion coating
+
+The result is a finish with four layers of protection, not just paint on metal.
+
 All aluminium work is finished in professional-grade powder coat, carried out by specialist applicators. We specify premium exterior-rated products from Dulux and Interpon — two of Australia's most trusted architectural powder coat brands — available in hundreds of colours, textures, and gloss levels including matt, satin, and gloss finishes, as well as textured and metallic options.
 
 Powder coating forms a hard, continuous protective layer over the aluminium surface that is highly resistant to UV degradation, chipping, and fading. For standard exterior environments a quality powder coat can maintain its appearance for 15–20 years with minimal maintenance.
