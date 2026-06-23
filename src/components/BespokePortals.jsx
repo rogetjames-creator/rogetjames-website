@@ -112,7 +112,6 @@ function PulseRings({ active, size }) {
 }
 
 export function CommissionsSection() {
-  const sectionRef = useRef(null);
   const leftRef = useRef(null);
   const rightRef = useRef(null);
   const leftOuterRef = useRef(null);
@@ -127,19 +126,6 @@ export function CommissionsSection() {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
-  const [archOffset, setArchOffset] = useState(0);
-
-  useEffect(() => {
-    const measure = () => {
-      if (!sectionRef.current || !centerPortalRef.current) return;
-      const sectionRect = sectionRef.current.getBoundingClientRect();
-      const portalRect = centerPortalRef.current.getBoundingClientRect();
-      setArchOffset(Math.round(portalRect.top - sectionRect.top + portalRect.height / 2));
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
 
   const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
@@ -193,7 +179,7 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
+    <section id="bespoke" className="bg-graphite">
       <div className="px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51 }}>
         <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
@@ -244,7 +230,7 @@ export function CommissionsSection() {
           {/* Center portal — Screens */}
           <div
             ref={centerPortalRef}
-            style={{ position: "absolute", left: "50%", transform: "translate(-50%, -50%)", top: "50%", zIndex: 51 }}
+            style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}
           >
             <MiniPortal
               portal={SIDE_PORTAL_LEFT}
@@ -266,53 +252,6 @@ export function CommissionsSection() {
       </div>
 
 
-      {/* Frosted arch — anchored to the section's actual top edge (measured, not guessed),
-          hole sized to clear the portal's outer ring so it is never clipped */}
-      {archOffset > 0 && (() => {
-        const portalOuterR = 133;           // portal button outer radius (248 image + 9px ring each side)
-        const gap = 6;                      // breathing room so the hole never touches the portal ring
-        const hR = portalOuterR + gap;      // 139 — hole radius, strictly larger than the portal
-        const ring = Math.round(hR * 0.18); // ring thickness, proportional to reference file
-        const oR = hR + ring;               // outer radius of the whole arch shape
-        const cY = archOffset;              // circle centre = measured portal centre, section-relative
-        const svgH = cY + oR;               // bottom of shape
-        const svgW = oR * 2;
-        const cX = oR;
-        const rX = cX + hR, lX = cX - hR;
-        const d = `M0,0 H${svgW} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`;
-        const boxStyle = { position: "absolute", top: 0, left: "50%", transform: `translateX(-${cX}px)`, width: svgW, height: svgH, pointerEvents: "none" };
-        const clipId = "bespoke-arch-clip";
-        return (
-          <>
-            {/* SVG clipPath definition — referenced via url(), reliably supported (unlike CSS clip-path: path()) */}
-            <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-              <defs>
-                <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-                  <path d={d} clipRule="evenodd" />
-                </clipPath>
-              </defs>
-            </svg>
-
-            {/* Frosted arch fill — backdrop-filter + clip-path causes GPU glitch; use tinted SVG fill only */}
-            <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 49 }}
-              width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
-              <path fillRule="evenodd" fill="#F2F0E9" fillOpacity="0.06" d={d} />
-            </svg>
-            <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 50 }}
-              width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
-              <path
-                fillRule="evenodd"
-                fill="#F2F0E9"
-                fillOpacity="0.10"
-                stroke="#F2F0E9"
-                strokeOpacity="0.12"
-                strokeWidth="1.5"
-                d={d}
-              />
-            </svg>
-          </>
-        );
-      })()}
 
       <div className="w-full h-px bg-white/10" />
 
