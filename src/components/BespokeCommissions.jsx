@@ -2397,7 +2397,7 @@ export function ScreensGalleryModal({ onClose }) {
 
       {/* Grid view */}
       {!searchQuery && flatIdx === null && (
-        <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4 relative" data-lenis-prevent style={{ overflow: "hidden" }}>
+        <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4 relative" data-lenis-prevent>
           {/* Slideshow + pill — ALL tab only, hidden once grid covers it */}
           {tab === "all" && !activeDesign && (
             <div style={{ opacity: showGrid ? 0 : 1, transition: "opacity 0.4s ease", pointerEvents: showGrid ? "none" : "auto" }}>
