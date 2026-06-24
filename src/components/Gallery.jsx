@@ -205,10 +205,10 @@ function ReelsPortal() {
   );
 }
 
-const CDN = "/images/cdn-gallery";
+const CDN = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 // Wall Art series — display order
-const CDN_G = "/images/cdn-gallery";
+const CDN_G = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const WALL_ART_SERIES = [
   // ── AUSTRALIAN NATIVES ───────────────────
@@ -265,11 +265,11 @@ const WALL_ART_SERIES = [
       { name: "RUE the 3rd", img: "/images/flowers/rue-the-3rd.jpg" },
       { name: "OLIN",         img: "/images/flowers/olin.jpg" },
       { name: "PETUNIA",      img: "/images/flowers/petunia.jpg" },
-      { name: "DIAMOND BLOOM",img: `${CDN}/5f33d76a-d731-4265-904f-87e0f5a7eb22_rw_1200.jpg?h=8481af935944e37eb97dc7a5914e00e7` },
+      { name: "DIAMOND BLOOM",img: `${CDN}/5f33d76a-d731-4265-904f-87e0f5a7eb22_rw_1200.jpg` },
       { name: "FUEILLES",     img: "/images/flowers/fuelles.jpg" },
       { name: "FERLICE",      img: "/images/flowers/ferlice.jpg" },
       { name: "PALM RAJA",    img: "/images/flowers/palm-raja.jpg" },
-      { name: "DANDELIONS",   img: `${CDN}/03980b30-48fd-48a3-8027-741f35a87421_rw_1200.jpg?h=7a91f55af427ba6c7ccfd3662ae07c49` },
+      { name: "DANDELIONS",   img: `${CDN}/03980b30-48fd-48a3-8027-741f35a87421_rw_1200.jpg` },
       { name: "BLOOM",        img: "/images/placeholder.svg" },
     ],
   },
@@ -422,7 +422,7 @@ const OTHER_CATEGORIES = [
       { name: "BON BON",    cat: "bonbons",  img: "/images/sculptures/bon-bon.jpg" },
       { name: "MEDINA",     cat: "bonbons",  img: "/images/sculptures/medina.jpg" },
       { name: "AUTUMN LEAF",cat: "leafs",    img: "/images/autumn-leaf/leaf-bali-1.jpg", slides: ["/images/autumn-leaf/leaf-bali-1.jpg", "/images/autumn-leaf/leaf-fire.jpg", "/images/autumn-leaf/leaf-bali-2.jpg", "/images/autumn-leaf/leafs-wg-copper.jpg", "/images/autumn-leaf/leafs-wg-a.jpg", "/images/autumn-leaf/leafs-wg-black.jpg"] },
-      { name: "VILLA LEAF", cat: "leafs",    img: "/images/villa-leaf/villa-leaf-trio-pool.jpg", slides: ["/images/villa-leaf/villa-leaf-trio-pool.jpg", "/images/villa-leaf/villa-leaf-black.jpg", `${CDN}/362f312d-4a16-4ba4-ab9d-8d199041a8cb_rw_1200.jpg?h=27aeb398ec72a746b071f1d103ea59f4`] },
+      { name: "VILLA LEAF", cat: "leafs",    img: "/images/villa-leaf/villa-leaf-trio-pool.jpg", slides: ["/images/villa-leaf/villa-leaf-trio-pool.jpg", "/images/villa-leaf/villa-leaf-black.jpg", `${CDN}/362f312d-4a16-4ba4-ab9d-8d199041a8cb_rw_1200.jpg`] },
     ],
   },
 ];

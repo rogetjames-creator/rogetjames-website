@@ -29,7 +29,7 @@ const PAINTINGS = [
   { src: "/images/paintings/terra-australis.jpg",  title: "Terra Australis", medium: "Oil on canvas", dims: "1500 × 1000 mm", year: "2010", sold: true, maxW: "74%"  },
 ];
 
-const CDN_DP = "/images/cdn-gallery";
+const CDN_DP = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const CLIENT_IMAGES = [
   { src: "/images/client/banksia-wall-art-series.jpg", title: "Banksia — Wall Art Series" },
@@ -540,7 +540,7 @@ export default function DiscoverPortals() {
   return (
     <section className="bg-graphite overflow-x-hidden">
       <div ref={headerRef} className="px-8 pt-20 pb-10 text-center">
-        <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Discover</span>
+        <span className="font-detail text-xs text-cream/55 uppercase tracking-[0.2em]">Discover</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Portals</h2>
       </div>
       <div className="w-full h-px bg-white/10" />
