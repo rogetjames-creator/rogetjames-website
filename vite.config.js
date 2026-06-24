@@ -1,10 +1,30 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import { readFileSync, writeFileSync } from 'fs'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import Critters from 'critters'
+
+function criticalCssPlugin() {
+  return {
+    name: 'critical-css',
+    apply: 'build',
+    async closeBundle() {
+      const critters = new Critters({ path: resolve(__dirname, 'dist'), publicPath: '/', inlineFonts: false, pruneSource: false })
+      for (const htmlFile of ['dist/index.html', 'dist/vault.html']) {
+        const fullPath = resolve(__dirname, htmlFile)
+        try {
+          const html = readFileSync(fullPath, 'utf8')
+          const result = await critters.process(html)
+          writeFileSync(fullPath, result)
+        } catch (_) {}
+      }
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), criticalCssPlugin()],
   build: {
     rollupOptions: {
       input: {
