@@ -3039,20 +3039,31 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Drill-in: series thumb view — shown after clicking a design in ALL view */}
       {drilledSeries && (
         <div className="absolute inset-0 z-[10002] bg-jet flex flex-col">
-          <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
-            <button onClick={() => setDrilledSeries(null)} className="group flex items-center gap-2.5 transition-colors duration-200">
-              <span
-                className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
-                style={{ width: 30, height: 30, flexShrink: 0, borderColor: "rgba(242,240,233,0.3)", background: "transparent", color: "rgba(242,240,233,0.6)" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}
-              >✦</span>
-              <span className="font-detail text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(242,240,233,0.75)" }}>All</span>
-            </button>
-            <div className="flex-1 text-center">
-              <p className="font-heading font-bold text-sm text-cream tracking-wide">{drilledSeries.label}</p>
+          <div className="flex flex-col border-b border-white/10 flex-shrink-0">
+            <div className="flex items-center px-5 py-3 gap-3">
+              <button onClick={() => setDrilledSeries(null)} className="group flex items-center gap-2.5 transition-colors duration-200">
+                <span
+                  className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
+                  style={{ width: 30, height: 30, flexShrink: 0, borderColor: "rgba(242,240,233,0.3)", background: "transparent", color: "rgba(242,240,233,0.6)" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}
+                >✦</span>
+                <span className="font-detail text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(242,240,233,0.75)" }}>All</span>
+              </button>
+              <div className="flex-1 text-center">
+                <p className="font-heading font-bold text-sm text-cream tracking-wide">{drilledSeries.label}</p>
+              </div>
+              <button onClick={() => setDrilledSeries(null)} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
             </div>
-            <button onClick={() => setDrilledSeries(null)} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+            <div className="flex flex-wrap gap-2 px-5 pb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+              {filteredSeries.map((s) => (
+                <button key={s.id} onClick={() => setDrilledSeries(s)}
+                  className="flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200"
+                  style={{ borderColor: drilledSeries.id === s.id ? "#9e7134" : "rgba(242,240,233,0.25)", color: drilledSeries.id === s.id ? "#f2f0e9" : "rgba(242,240,233,0.7)", background: "transparent", whiteSpace: "nowrap" }}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
             <div className="flex flex-wrap justify-center gap-2">
