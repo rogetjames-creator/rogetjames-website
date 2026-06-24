@@ -600,8 +600,8 @@ const PIECE_SIZES = {
   ],
   // ── Banksia Collection ────────────────────
   "BANKSIA Card": [
-    { id: "s", label: "Small", dims: "900 × 1800 mm",  fixings: 6, price: 1200, priceCorten: 1200, pricePC: 1200 },
-    { id: "l", label: "Large", dims: "1184 × 2386 mm", fixings: 6, price: 1930, priceCorten: 1930, pricePC: 1930 },
+    { id: "s", label: "Small", dims: "900 × 1800 mm",  fixings: 6, price: 1200, priceCorten: 1200, pricePC: 1500, priceCortenPC: 1400 },
+    { id: "l", label: "Large", dims: "1184 × 2386 mm", fixings: 6, price: 1930, priceCorten: 1930, pricePC: 2230, priceCortenPC: 2130 },
   ],
   "BANKSIA Free Range": [
     { id: "s", label: "Small", dims: "890 mm",  fixings: 4 },
