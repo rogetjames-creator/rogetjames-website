@@ -38,6 +38,21 @@
   to = "/vault.html"
   status = 200
 
+[[redirects]]
+  from = "/stats"
+  to = "/stats.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/track-event"
+  to = "/.netlify/functions/track-event"
+  status = 200
+
+[[redirects]]
+  from = "/api/stats-data"
+  to = "/.netlify/functions/stats-data"
+  status = 200
+
 # Cache immutable hashed assets for 1 year
 [[headers]]
   for = "/assets/*"

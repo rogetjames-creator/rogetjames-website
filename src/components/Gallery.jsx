@@ -15,6 +15,13 @@ const TEMP_SHOW_ALL_PRICES = false;
 const loadPostcode = () => { try { const s = localStorage.getItem(PC_KEY); return s ? JSON.parse(s) : null; } catch { return null; } };
 const savePostcode = (info) => localStorage.setItem(PC_KEY, JSON.stringify(info));
 const checkWA = (pc) => { const n = parseInt(pc, 10); return n >= 6000 && n <= 6999; };
+const trackEvent = (payload) => {
+  fetch("/api/track-event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).catch(() => {});
+};
 const getState = (pc) => {
   const n = parseInt(pc, 10);
   if (n >= 200 && n <= 299) return "ACT";
@@ -2804,7 +2811,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 {/* Pricing */}
                 <div className="border-t pt-4" style={{ borderColor: "rgba(242,240,233,0.12)" }}>
                   {!showPricing ? (
-                    <button onClick={() => setShowPricing(true)}
+                    <button onClick={() => {
+                      setShowPricing(true);
+                      if (!postcodeInfo?.isAdmin) trackEvent({ type: "view_pricing", item: item.name, series: series?.label });
+                    }}
                       className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200"
                       style={{ background: "rgba(158,113,52,0.15)", border: "1px solid rgba(158,113,52,0.4)", color: "#9e7134" }}>
                       View Pricing
@@ -2832,6 +2842,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                   savePostcode(info);
                                   setPostcodeInfo(info);
                                   setPostcodeStep(false);
+                                  if (!isAdmin) trackEvent({ type: "postcode", postcode: postcodeInput, state, isWA });
                                 }
                               }}
                             />
@@ -2845,6 +2856,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                 savePostcode(info);
                                 setPostcodeInfo(info);
                                 setPostcodeStep(false);
+                                if (!isAdmin) trackEvent({ type: "postcode", postcode: postcodeInput, state, isWA });
                               }}
                               className="w-full py-2 rounded-lg font-detail text-[10px] uppercase tracking-[0.18em] transition-all"
                               style={{ background: postcodeInput.length === 4 ? "#9e7134" : "rgba(242,240,233,0.08)", color: postcodeInput.length === 4 ? "#f2f0e9" : "rgba(242,240,233,0.3)", border: "none" }}>
@@ -2925,6 +2937,19 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                     size: selectedSize,
                                     price: p,
                                   }}));
+                                  if (!postcodeInfo?.isAdmin) {
+                                    trackEvent({
+                                      type: "add_to_quote",
+                                      item: item.name,
+                                      series: series?.label,
+                                      material: selectedMat,
+                                      size: selectedSize?.label !== "Standard" ? selectedSize?.label : selectedSize?.dims,
+                                      price: p,
+                                      postcode: postcodeInfo?.postcode,
+                                      state: postcodeInfo?.state,
+                                      isWA: postcodeInfo?.isWA,
+                                    });
+                                  }
                                 }}
                                 className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200 mt-1"
                                 style={{

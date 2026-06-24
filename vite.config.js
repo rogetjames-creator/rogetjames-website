@@ -11,7 +11,7 @@ function criticalCssPlugin() {
     apply: 'build',
     async closeBundle() {
       const critters = new Critters({ path: resolve(__dirname, 'dist'), publicPath: '/', inlineFonts: false, pruneSource: false })
-      for (const htmlFile of ['dist/index.html', 'dist/vault.html']) {
+      for (const htmlFile of ['dist/index.html', 'dist/vault.html', 'dist/stats.html']) {
         const fullPath = resolve(__dirname, htmlFile)
         try {
           const html = readFileSync(fullPath, 'utf8')
@@ -30,8 +30,19 @@ export default defineConfig({
       input: {
         main:  resolve(__dirname, 'index.html'),
         vault: resolve(__dirname, 'vault.html'),
+        stats: resolve(__dirname, 'stats.html'),
+      },
+      output: {
+        manualChunks: {
+          'vendor-react':  ['react', 'react-dom'],
+          'vendor-gsap':   ['gsap'],
+          'vendor-lenis':  ['lenis'],
+          'vendor-lucide': ['lucide-react'],
+          'vendor-lottie': ['lottie-react'],
+        },
       },
     },
+    chunkSizeWarningLimit: 600,
   },
   server: {
     host: true,
@@ -51,20 +62,10 @@ export default defineConfig({
         target: "http://localhost:8888",
         changeOrigin: true,
       },
-    },
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-react':  ['react', 'react-dom'],
-          'vendor-gsap':   ['gsap'],
-          'vendor-lenis':  ['lenis'],
-          'vendor-lucide': ['lucide-react'],
-          'vendor-lottie': ['lottie-react'],
-        },
+      "/api/stats-data": {
+        target: "http://localhost:8888",
+        changeOrigin: true,
       },
     },
-    chunkSizeWarningLimit: 600,
   },
 })
