@@ -29,7 +29,7 @@ const PAINTINGS = [
   { src: "/images/paintings/terra-australis.jpg",  title: "Terra Australis", medium: "Oil on canvas", dims: "1500 × 1000 mm", year: "2010", sold: true, maxW: "74%"  },
 ];
 
-const CDN_DP = "/images/cdn-gallery";
+const CDN_DP = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const CLIENT_IMAGES = [
   { src: "/images/client/banksia-wall-art-series.jpg", title: "Banksia — Wall Art Series" },
