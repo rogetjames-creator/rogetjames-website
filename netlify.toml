@@ -19,6 +19,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/chat-transcript"
+  to = "/.netlify/functions/chat-transcript"
+  status = 200
+
+[[redirects]]
   from = "/api/vault-invite"
   to = "/.netlify/functions/vault-invite"
   status = 200
