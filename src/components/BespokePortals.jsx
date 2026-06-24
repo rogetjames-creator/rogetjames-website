@@ -468,7 +468,7 @@ export function CommissionsSection() {
               transformOrigin: "left center",
               transform: "scaleX(0)",
             }} />
-            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto"
+            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035"
               style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
           </div>
         </div>
