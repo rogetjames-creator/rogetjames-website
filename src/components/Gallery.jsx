@@ -3179,6 +3179,7 @@ export default function Gallery() {
   const [categoryClicked, setCategoryClicked] = useState(false);
   const [inSection, setInSection] = useState(false);
   const [stripPaused, _setStripPaused] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
   const sectionRef      = useRef(null);
   const gateLeftRef     = useRef(null);
   const gateRightRef    = useRef(null);
@@ -3241,6 +3242,16 @@ export default function Gallery() {
     return () => obs.disconnect();
   }, []);
 
+  // Only one of the desktop/mobile strip layouts is mounted at a time —
+  // both used to render simultaneously (just CSS-hidden), which meant two
+  // <video> elements were autoplaying the reels portal at once and mobile
+  // browsers would silently drop the visible one in favour of the hidden one.
+  useEffect(() => {
+    const update = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   // Deep-link handler — ?view=wallart / sculpture / wallartcat / sculpturecat
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -3286,7 +3297,8 @@ export default function Gallery() {
         </div>
 
         {/* ── Desktop: converging strips ──────────────────── */}
-        <div className="hidden md:flex flex-col items-center">
+        {isDesktop && (
+        <div className="flex flex-col items-center">
           {/* Faint rule above strip */}
           <div className="w-full h-px bg-white/20 mb-4" />
 
@@ -3327,9 +3339,11 @@ export default function Gallery() {
           <div className="w-full h-px bg-white/20 mt-4" />
 
         </div>
+        )}
 
         {/* ── Mobile: stacked strips + center button ──────── */}
-        <div className="md:hidden flex flex-col">
+        {!isDesktop && (
+        <div className="flex flex-col">
 
           {/* Top strip */}
           <div className="relative h-28 overflow-hidden">
@@ -3363,6 +3377,7 @@ export default function Gallery() {
             <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-ink to-transparent pointer-events-none" />
           </div>
         </div>
+        )}
 
       </section>
 
