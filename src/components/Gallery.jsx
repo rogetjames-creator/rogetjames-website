@@ -1046,7 +1046,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
             <div className="flex gap-2">
               {availableMats.map(mat => (
                 <button key={mat.id} onClick={() => setSelectedMaterial(mat.id)}
-                  className={`flex-1 py-2.5 px-3 rounded-xl border text-center transition-all duration-150 ${selectedMaterial === mat.id ? "border-clay text-clay" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
+                  className={`flex-1 py-2.5 px-3 rounded-xl border text-center transition-all duration-150 ${selectedMaterial === mat.id ? "border-yellow-400 text-yellow-400" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
                   <p className="font-detail text-[11px] leading-snug">{mat.label}</p>
                 </button>
               ))}
@@ -2877,7 +2877,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
                               <button key={m} onClick={() => setSelectedMat(m)}
                                 className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
-                                style={{ background: selectedMat === m ? "rgba(158,113,52,0.2)" : "transparent", border: `1px solid ${selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.6)" }}>
+                                style={{ background: selectedMat === m ? "rgba(255,220,50,0.15)" : "transparent", border: `1px solid ${selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.75)" }}>
                                 {m === "aluminium" ? "Powder Coated" : "Corten"}
                               </button>
                             ))}
