@@ -2327,7 +2327,6 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [postcodeStep, setPostcodeStep] = useState(false);
   const [selectedMat, setSelectedMat] = useState("aluminium");
   const [selectedSize, setSelectedSize] = useState(null);
-  const [tempRegion, setTempRegion] = useState("WA");
   const slideRef = useRef(null);
   const touchStartX = useRef(0);
 
@@ -2861,16 +2860,6 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                         )
                       ) : (
                         <div className="flex flex-col gap-2">
-                          {/* TEMP region toggle */}
-                          <div className="flex gap-1 mb-1">
-                            {["WA", "Interstate"].map(r => (
-                              <button key={r} onClick={() => setTempRegion(r)}
-                                className="flex-1 py-1 rounded font-detail text-[9px] uppercase tracking-wider transition-all"
-                                style={{ background: tempRegion === r ? "rgba(255,200,0,0.18)" : "transparent", border: `1px solid ${tempRegion === r ? "rgba(255,200,0,0.6)" : "rgba(242,240,233,0.15)"}`, color: tempRegion === r ? "rgb(255,200,0)" : "rgba(242,240,233,0.4)" }}>
-                                {r}
-                              </button>
-                            ))}
-                          </div>
                           {/* Material selector */}
                           <div className="flex gap-2">
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
@@ -2885,14 +2874,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           {sizes.length > 0 ? sizes.map(t => {
                             const isCorten = selectedMat === "corten";
                             let p;
-                            if (tempRegion === "WA") {
+                            if (postcodeInfo.isWA) {
                               p = isCorten ? (t.priceCorten ?? null) : (t.price ?? null);
                             } else {
                               p = isCorten ? (t.priceCortenPC ?? null) : (t.pricePC ?? null);
                             }
-                            // Admin: also show other-states price if different
-                            const _pStdAdmin = postcodeInfo.isAdmin ? (isCorten ? (t.priceCorten ?? t.price) : t.price) : null;
-                            const _pWAAdmin  = postcodeInfo.isAdmin ? p : null;
                             const sizeLabel = t.label !== "Standard" ? t.label : t.dims;
                             const isSelected = selectedSize?.id === t.id;
                             return (
@@ -2921,7 +2907,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             const t = selectedSize;
                             let p = null;
                             if (t) {
-                              if (tempRegion === "WA") {
+                              if (postcodeInfo.isWA) {
                                 p = isCorten ? (t.priceCorten ?? null) : (t.price ?? null);
                               } else {
                                 p = isCorten ? (t.priceCortenPC ?? null) : (t.pricePC ?? null);
