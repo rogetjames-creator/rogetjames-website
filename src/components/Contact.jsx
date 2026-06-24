@@ -105,9 +105,6 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         onComplete: () => {
           setSubmitted(true);
           onQuoteSubmitted?.();
-          setTimeout(() => {
-            document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }, 100);
         },
       });
     } catch {
@@ -117,9 +114,10 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
     }
   };
 
-  // Animate success message in after state update
+  // Animate success message in after state update, and make sure it's actually on screen
   useEffect(() => {
     if (submitted && successRef.current) {
+      successRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       gsap.fromTo(
         successRef.current,
         { opacity: 0, scale: 0.92, y: 20 },
