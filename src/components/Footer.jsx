@@ -63,7 +63,7 @@ export default function Footer() {
             <a href="#" onClick={e => { e.preventDefault(); scrollTo("#"); }} className="font-heading font-bold text-2xl text-cream">
               ROGET<span className="font-normal italic font-drama">james</span>
             </a>
-            <p className="text-cream/40 text-sm mt-4 max-w-xs leading-relaxed">
+            <p className="text-cream/60 text-sm mt-4 max-w-xs leading-relaxed">
               Original bespoke designs & catalogued creations. Laser-cut wall
               art, sculpture & architectural features crafted in Australia.
             </p>
@@ -90,7 +90,7 @@ export default function Footer() {
           {/* Nav Columns */}
           {NAV_COLS.map((col) => (
             <div key={col.title}>
-              <h4 className="font-detail text-xs text-cream/30 uppercase tracking-[0.15em] mb-4">
+              <h4 className="font-detail text-xs text-cream/60 uppercase tracking-[0.15em] mb-4">
                 {col.title}
               </h4>
               <ul className="space-y-2.5">
@@ -112,10 +112,10 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-cream/5 pt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-          <p className="text-cream/40 text-xs font-detail">
+          <p className="text-cream/55 text-sm font-detail">
             All images are the designs and works of ROGETjames.
           </p>
-          <p className="text-cream/40 text-xs font-detail">
+          <p className="text-cream/55 text-sm font-detail">
             &copy; {new Date().getFullYear()} ROGETjames. All rights reserved.
           </p>
         </div>
