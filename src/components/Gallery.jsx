@@ -4,7 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
-import { CommissionsGalleryPopup } from "./DiscoverPortals";
+import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
+import { SculptureGalleryModal, ScreensGalleryModal } from "./BespokeCommissions";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -88,7 +89,36 @@ const REELS = [
 
 const PORTAL_REELS = REELS.filter(r => !r.noPortal);
 
-function ReelsPortal() {
+const SCULPTURE_PORTAL = {
+  id: "gallery-sculpture",
+  label: "Sculpture",
+  sublabel: "",
+  slides: [
+    "/images/marakesh/marakesh-1.jpg",
+    "/images/autumn-leaf/leaf-fire.jpg",
+    "/images/sculptures/medina.jpg",
+    "/images/halo/pavia-1.jpg",
+    "/images/sculptures/bon-bon.jpg",
+    "/images/villa-leaf/villa-leaf-trio-pool.jpg",
+  ],
+};
+
+const SCREENS_PORTAL = {
+  id: "gallery-screens",
+  label: "Screens",
+  sublabel: "",
+  slides: [
+    { src: "/images/screens/orian-wall-decor.jpg", pos: "5% 5%", scale: 1.5 },
+    "/images/screens/strip/ferlie-close.jpg",
+    "/images/screens/strip/grail-close.jpg",
+    "/images/screens/wattle-close-tdl.jpg",
+    "/images/screens/viasi-close-up.jpg",
+    "/images/screens/elle-corten.jpg",
+    { src: "/images/bloom/bloom-closeup.jpg", pos: "center top" },
+  ],
+};
+
+function ReelsPortal({ onOpen }) {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [glowing, setGlowing] = useState(false);
   const [curReel, setCurReel] = useState(0);
@@ -149,7 +179,7 @@ function ReelsPortal() {
       {/* Portal sphere */}
       <button
         ref={portalRef}
-        onClick={() => setGalleryOpen(true)}
+        onClick={() => onOpen ? onOpen() : setGalleryOpen(true)}
         onMouseEnter={() => setGlowing(true)}
         onMouseLeave={() => setGlowing(false)}
         className="group relative cursor-pointer"
@@ -158,7 +188,7 @@ function ReelsPortal() {
           padding: "9px",
           background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
           boxShadow: glowing
-            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.55)"
+            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)"
             : "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.22)",
           transition: "box-shadow 0.6s ease",
         }}
@@ -187,10 +217,12 @@ function ReelsPortal() {
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 18%)"
           }} />
-          {/* Hover overlay — subtle dim only, no play button */}
-          <div className="absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/30" />
-          {/* Arc label — hover only */}
-          <svg viewBox="0 0 256 256" className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true">
+          {/* Hover overlay — darken + centre label */}
+          <div className="absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-black/50 flex items-center justify-center">
+            <span style={{ fontFamily: "'Jost','DM Sans',sans-serif", fontWeight: 400, fontSize: "12px", letterSpacing: "4px", color: "rgba(242,240,233,0.85)", textShadow: "0 0 8px rgba(0,0,0,0.9)", textTransform: "uppercase" }}>WALL ART</span>
+          </div>
+          {/* Arc label — always visible */}
+          <svg viewBox="0 0 256 256" className="absolute inset-0 w-full h-full pointer-events-none z-20" aria-hidden="true">
             <defs>
               <path id="roj-reels-arc" d="M 36,61 A 112,112 0 0,1 220,61" />
               <filter id="roj-reels-shadow" x="-30%" y="-80%" width="160%" height="260%">
@@ -198,7 +230,7 @@ function ReelsPortal() {
               </filter>
             </defs>
             <text fill="rgba(242,240,233,0.85)" fontSize="12" fontFamily="'Jost','DM Sans',sans-serif" fontWeight="400" letterSpacing="4" filter="url(#roj-reels-shadow)">
-              <textPath href="#roj-reels-arc" startOffset="50%" textAnchor="middle">REELS</textPath>
+              <textPath href="#roj-reels-arc" startOffset="50%" textAnchor="middle">WALL ART</textPath>
             </text>
           </svg>
         </div>
@@ -215,10 +247,10 @@ function ReelsPortal() {
   );
 }
 
-const CDN = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 // Wall Art series — display order
-const CDN_G = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN_G = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const WALL_ART_SERIES = [
   // ── AUSTRALIAN NATIVES ───────────────────
@@ -603,8 +635,8 @@ const PIECE_SIZES = {
   ],
   // ── Banksia Collection ────────────────────
   "BANKSIA Card": [
-    { id: "s", label: "Small", dims: "900 × 1800 mm",  fixings: 6, price: 1200, priceCorten: 1200, pricePC: 1200 },
-    { id: "l", label: "Large", dims: "1184 × 2386 mm", fixings: 6, price: 1930, priceCorten: 1930, pricePC: 1930 },
+    { id: "s", label: "Small", dims: "900 × 1800 mm",  fixings: 6, price: 1200, priceCorten: 1200, pricePC: 1500, priceCortenPC: 1400 },
+    { id: "l", label: "Large", dims: "1184 × 2386 mm", fixings: 6, price: 1930, priceCorten: 1930, pricePC: 2230, priceCortenPC: 2130 },
   ],
   "BANKSIA Free Range": [
     { id: "s", label: "Small", dims: "890 mm",  fixings: 4 },
@@ -1049,7 +1081,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
             <div className="flex gap-2">
               {availableMats.map(mat => (
                 <button key={mat.id} onClick={() => setSelectedMaterial(mat.id)}
-                  className={`flex-1 py-2.5 px-3 rounded-xl border text-center transition-all duration-150 ${selectedMaterial === mat.id ? "border-clay text-clay" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
+                  className={`flex-1 py-2.5 px-3 rounded-xl border text-center transition-all duration-150 bg-transparent ${selectedMaterial === mat.id ? "border-[#9e7134] text-[#9e7134]" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
                   <p className="font-detail text-[11px] leading-snug">{mat.label}</p>
                 </button>
               ))}
@@ -1061,10 +1093,10 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
             <div className="flex gap-2 flex-wrap">
               {sizeTiers.map(t => (
                 <button key={t.id} onClick={() => setSelectedSize(t.id)}
-                  className={`flex-1 min-w-[4rem] py-2.5 rounded-xl border text-center transition-all duration-150 ${selectedSize === t.id ? "border-clay text-clay" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
-                  {t.label !== "Standard" && <p className={`font-detail text-[9px] uppercase tracking-wider mb-0.5 ${selectedSize === t.id ? "text-clay/90" : "text-cream/70"}`}>{t.label}</p>}
+                  className={`flex-1 min-w-[4rem] py-2.5 rounded-xl border text-center transition-all duration-150 bg-transparent ${selectedSize === t.id ? "border-[#9e7134] text-[#9e7134]" : "border-white/15 text-cream/75 hover:border-white/35 hover:text-cream"}`}>
+                  {t.label !== "Standard" && <p className={`font-detail text-[9px] uppercase tracking-wider mb-0.5 ${selectedSize === t.id ? "text-[#9e7134]/90" : "text-cream/70"}`}>{t.label}</p>}
                   <p className="font-detail text-[11px] font-medium leading-tight">{t.dims}</p>
-                  {t.fixings != null && t.fixings !== 0 && <p className={`font-detail text-[9px] mt-0.5 ${selectedSize === t.id ? "text-clay/70" : "text-cream/60"}`}>{t.fixings} fixings</p>}
+                  {t.fixings != null && t.fixings !== 0 && <p className={`font-detail text-[9px] mt-0.5 ${selectedSize === t.id ? "text-[#9e7134]/70" : "text-cream/60"}`}>{t.fixings} fixings</p>}
                 </button>
               ))}
             </div>
@@ -2880,7 +2912,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
                               <button key={m} onClick={() => setSelectedMat(m)}
                                 className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
-                                style={{ background: selectedMat === m ? "rgba(158,113,52,0.2)" : "transparent", border: `1px solid ${selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.6)" }}>
+                                style={{ background: selectedMat === m ? "rgba(255,220,50,0.15)" : "transparent", border: `1px solid ${selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.75)" }}>
                                 {m === "aluminium" ? "Powder Coated" : "Corten"}
                               </button>
                             ))}
@@ -3042,20 +3074,31 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Drill-in: series thumb view — shown after clicking a design in ALL view */}
       {drilledSeries && (
         <div className="absolute inset-0 z-[10002] bg-jet flex flex-col">
-          <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
-            <button onClick={() => setDrilledSeries(null)} className="group flex items-center gap-2.5 transition-colors duration-200">
-              <span
-                className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
-                style={{ width: 30, height: 30, flexShrink: 0, borderColor: "rgba(242,240,233,0.3)", background: "transparent", color: "rgba(242,240,233,0.6)" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}
-              >✦</span>
-              <span className="font-detail text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(242,240,233,0.75)" }}>All</span>
-            </button>
-            <div className="flex-1 text-center">
-              <p className="font-heading font-bold text-sm text-cream tracking-wide">{drilledSeries.label}</p>
+          <div className="flex flex-col border-b border-white/10 flex-shrink-0">
+            <div className="flex items-center px-5 py-3 gap-3">
+              <button onClick={() => setDrilledSeries(null)} className="group flex items-center gap-2.5 transition-colors duration-200">
+                <span
+                  className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
+                  style={{ width: 30, height: 30, flexShrink: 0, borderColor: "rgba(242,240,233,0.3)", background: "transparent", color: "rgba(242,240,233,0.6)" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}
+                >✦</span>
+                <span className="font-detail text-[9px] uppercase tracking-[0.18em]" style={{ color: "rgba(242,240,233,0.75)" }}>All</span>
+              </button>
+              <div className="flex-1 text-center">
+                <p className="font-heading font-bold text-sm text-cream tracking-wide">{drilledSeries.label}</p>
+              </div>
+              <button onClick={() => setDrilledSeries(null)} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
             </div>
-            <button onClick={() => setDrilledSeries(null)} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+            <div className="flex flex-wrap gap-2 px-5 pb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+              {filteredSeries.map((s) => (
+                <button key={s.id} onClick={() => setDrilledSeries(s)}
+                  className="flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200"
+                  style={{ borderColor: drilledSeries.id === s.id ? "#9e7134" : "rgba(242,240,233,0.25)", color: drilledSeries.id === s.id ? "#f2f0e9" : "rgba(242,240,233,0.7)", background: "transparent", whiteSpace: "nowrap" }}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
             <div className="flex flex-wrap justify-center gap-2">
@@ -3100,7 +3143,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     </div>
   );
 }
-function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection }) {
+function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection, setSculpOpen, setScreensOpen }) {
   const [hovered, setHovered] = useState(false);
   const browseColor = hovered
     ? "rgba(242,240,233,0.95)"
@@ -3109,6 +3152,28 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
       : "rgba(242,240,233,0.35)";
   const dotBg     = inSection ? "#9e7134" : "transparent";
   const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
+
+  const GoldDot = () => (
+    <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: dotBg, border: `1px solid ${dotBorder}`, display: "block", transition: "background 0.4s, border-color 0.4s", flexShrink: 0 }} />
+      {inSection && (
+        <span style={{
+          position: "absolute", top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)", width: 5, height: 5,
+          borderRadius: "50%", border: "0.5px solid #9e7134",
+          animation: "bcl-ripple 2.4s ease-out infinite", pointerEvents: "none",
+        }} />
+      )}
+      <style>{`@keyframes bcl-ripple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; } 100% { transform: translate(-50%,-50%) scale(8); opacity: 0; } }`}</style>
+    </span>
+  );
+
+  const pills = [
+    { id: "sculpture", label: "Sculpture", onOpen: () => setSculpOpen(true) },
+    { id: "wall-art",  label: "Wall Art",  onOpen: () => { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); } },
+    { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
+  ];
+
   return (
     <>
       <span
@@ -3117,56 +3182,47 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
       >
         Browse Collection
       </span>
-      <div className="flex items-center gap-5">
-        {[
-          { id: "wall-art",  label: "Wall Art" },
-          { id: "sculpture", label: "Sculpture" },
-        ].map(({ id, label }, idx) => {
-          const isActive = categoryClicked && selectedCategory === id;
-          return (
-            <React.Fragment key={id}>
-              {idx === 1 && (
-                <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                  {/* solid dot */}
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: dotBg, border: `1px solid ${dotBorder}`, display: "block", transition: "background 0.4s, border-color 0.4s", flexShrink: 0 }} />
-                  {/* ripple ring — only visible when inSection */}
-                  {inSection && (
-                    <span style={{
-                      position: "absolute",
-                      top: "50%", left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: 5, height: 5,
-                      borderRadius: "50%",
-                      border: "0.5px solid #9e7134",
-                      animation: "bcl-ripple 2.4s ease-out infinite",
-                      pointerEvents: "none",
-                    }} />
-                  )}
-                  <style>{`
-                    @keyframes bcl-ripple {
-                      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.7; }
-                      100% { transform: translate(-50%,-50%) scale(8); opacity: 0; }
-                    }
-                  `}</style>
-                </span>
-              )}
-              <button
-                onClick={() => { setSelectedCategory(id); setCategoryClicked(true); setCardDeckOpen(true); }}
-                onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
-                onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
-                className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
-                style={{
-                  borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)",
-                  color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)",
-                  cursor: "pointer",
-                  boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)",
-                }}
-              >
-                {label}
-              </button>
-            </React.Fragment>
-          );
-        })}
+      {/* 3-col grid: Wall Art locked to centre column, Screens/Sculpture in equal outer columns */}
+      {/* 5-col grid: 1fr | dot | Wall Art | dot | 1fr — dots are each in their own column so gap is identical on both sides */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto 1fr", alignItems: "center", columnGap: "16px", width: "100%" }}>
+        {/* Col 1 — Screens, flush right */}
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          {(() => { const { id, label, onOpen } = pills[0]; const isActive = categoryClicked && selectedCategory === id; return (
+            <button onClick={onOpen}
+              onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+              onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+              style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+              {label}
+            </button>
+          ); })()}
+        </div>
+        {/* Col 2 — left dot */}
+        <GoldDot />
+        {/* Col 3 — Wall Art, centred */}
+        {(() => { const { id, label, onOpen } = pills[1]; const isActive = categoryClicked && selectedCategory === id; return (
+          <button onClick={onOpen}
+            onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+            onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+            className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+            style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+            {label}
+          </button>
+        ); })()}
+        {/* Col 4 — right dot */}
+        <GoldDot />
+        {/* Col 5 — Sculpture, flush left */}
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          {(() => { const { id, label, onOpen } = pills[2]; const isActive = categoryClicked && selectedCategory === id; return (
+            <button onClick={onOpen}
+              onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+              onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+              style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+              {label}
+            </button>
+          ); })()}
+        </div>
       </div>
     </>
   );
@@ -3178,6 +3234,8 @@ export default function Gallery() {
   const [catFlipOpen, setCatFlipOpen] = useState(false);
   const [catFlipTab, setCatFlipTab] = useState("wall-art");
   const [cardDeckOpen, setCardDeckOpen] = useState(false);
+  const [sculpOpen, setSculpOpen] = useState(false);
+  const [screensOpen, setScreensOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("wall-art");
   const [categoryClicked, setCategoryClicked] = useState(false);
   const [inSection, setInSection] = useState(false);
@@ -3295,7 +3353,7 @@ export default function Gallery() {
           {/* Browse Collection + Wall Art / Sculpture */}
           <div ref={wallArtLabelRef} className="flex flex-col items-center gap-3 mt-6">
             {/* Browse Collection label — lights up on hover of either option */}
-            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} />
+            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} setSculpOpen={setSculpOpen} setScreensOpen={setScreensOpen} />
           </div>
         </div>
 
@@ -3310,7 +3368,7 @@ export default function Gallery() {
             <div ref={gateLeftRef}  className="absolute inset-y-0 left-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
             <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
 
-            {/* Left strip — scrolls leftward away from center */}
+            {/* Left strip */}
             <div className="flex-1 overflow-hidden">
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
@@ -3321,12 +3379,10 @@ export default function Gallery() {
               </div>
             </div>
 
-            {/* Center — Reels portal, overflows strip vertically */}
-            <div className="flex-none self-center mx-8 relative z-30">
-              <ReelsPortal />
-            </div>
+            {/* Centre spacer — keeps strip images clear of the portal column */}
+            <div className="flex-none" style={{ width: "338px" }} />
 
-            {/* Right strip — scrolls rightward away from center */}
+            {/* Right strip */}
             <div className="flex-1 overflow-hidden">
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
@@ -3340,6 +3396,14 @@ export default function Gallery() {
 
           {/* Faint rule below strip */}
           <div className="w-full h-px bg-white/20 mt-4" />
+
+          {/* All three portals in one column — equal gap guaranteed.
+              Negative margin pulls Wall Art up to float in the strip centre. */}
+          <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
+            <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
+            <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+          </div>
 
         </div>
         )}
@@ -3361,11 +3425,16 @@ export default function Gallery() {
             <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-ink to-transparent pointer-events-none" />
           </div>
 
-          {/* Center — Reels portal */}
+          {/* Center — Wall Art portal */}
           <div className="flex justify-center py-8">
-            <ReelsPortal />
+            <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
           </div>
 
+          {/* Sculpture + Screens portals — mobile */}
+          <div className="flex flex-col items-center gap-10 pt-[58px] pb-16">
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
+            <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+          </div>
 
           {/* Bottom strip */}
           <div className="relative h-28 overflow-hidden">
@@ -3391,6 +3460,8 @@ export default function Gallery() {
           onClose={() => { setCatFlipOpen(false); setCardDeckOpen(false); }}
         />
       )}
+      {sculpOpen   && <SculptureGalleryModal onClose={() => setSculpOpen(false)} />}
+      {screensOpen && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
     </>
   );
 }

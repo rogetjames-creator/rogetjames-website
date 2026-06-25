@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
 
-const CDN = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 // All searchable works and series across the site
 const SEARCH_INDEX = [

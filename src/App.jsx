@@ -234,10 +234,9 @@ export default function App() {
       <Navbar quoteCount={quoteItems.length} />
       <main>
         <Hero />
-        <Suspense fallback={null}><Gallery /></Suspense>
-        {/* <About /> */}
-        {/* <BespokeCommissions /> */}
         <StudioBio />
+        <Suspense fallback={null}><Gallery /></Suspense>
+        <About />
         <Suspense fallback={null}><CommissionsSection /></Suspense>
         <Process />
         <Services />

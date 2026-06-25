@@ -8,7 +8,7 @@ import CatPageViewer from "./CatPageViewer";
 gsap.registerPlugin(ScrollTrigger);
 
 
-const CDN = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const STRIP_IMAGES = [
   `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg`,
@@ -115,10 +115,14 @@ const COMMISSIONS = {
       id: "public-2",
       label: "SCULPTURES & TOTEMS",
       items: [
-        { name: "OMARE (Custom)",                 img: `/images/omare-marion-front.jpg` },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, slides: [`${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`, `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`, `${CDN}/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg`, `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`, `/images/omare-marion-front.jpg`, `/images/hero/hero-marakesh-tall.jpg`, `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg`] },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg` },
         { name: "Unity in Diversity",             img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`, slides: [`${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`, `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`, `${CDN}/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg`, `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`] },
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg` },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg` },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
+        { name: "MARAKESH TRIO (Custom)",         img: "/images/hero/hero-marakesh-tall.jpg" },
+        { name: "MARAKESH TRIO (Custom)",         img: `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg` },
+        { name: "OMARE (Custom)",                 img: `/images/omare-marion-front.jpg` },
         { name: "HOMEBASE Totems",                img: "/images/hero/hero-homebase-totems.jpg" },
         { name: "HOMEBASE Entrance",              img: "/images/hero/hero-homebase-entrance.jpg" },
         { name: "Homebase Motif",                 img: "/images/homebase/homebase-motif-closeup.jpg" },
@@ -129,8 +133,6 @@ const COMMISSIONS = {
         { name: "FIONA STANLEY TOTEMS",           img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
         { name: "FIONA STANLEY TOTEMS",           img: `${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg` },
         { name: "ORIAN Totem",                    img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
-        { name: "MARAKESH TRIO (Custom)",         img: "/images/hero/hero-marakesh-tall.jpg" },
-        { name: "MARAKESH TRIO (Custom)",         img: `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg` },
         { name: "REVO Planter",                   img: `${CDN}/65b28727-1582-4a73-9cef-d8da2edcf885_rw_1200.jpg` },
       ],
     },
@@ -2014,11 +2016,11 @@ function PortalLightbox({ items, index, onClose, onPrev, onNext }) {
         <ChevronLeft size={24} />
       </button>
       <div ref={contentRef} className="flex flex-col items-center justify-center px-14 md:px-20 w-full max-w-5xl gap-3"
-        style={{ height: "calc(100vh - 96px)", marginTop: "72px" }}
+        style={{ height: "calc(100vh - 72px)", marginTop: "52px" }}
         onClick={(e) => e.stopPropagation()}>
         <div className="w-full flex items-center justify-center relative flex-none">
           <img ref={imgRef} src={slides[slideIdx]} alt={item.name}
-            className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
+            className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "74vh" }} />
         </div>
         <div className="flex-shrink-0 flex flex-col items-center gap-1 pt-0 pb-4 w-full max-w-lg">
           <p className="text-cream font-heading font-semibold text-base tracking-wide">{item.name}</p>
@@ -2428,7 +2430,7 @@ export function ScreensGalleryModal({ onClose }) {
           )}
           {/* Grid — slides up over the slideshow like a blind */}
           <div style={{
-            transform: tab === "all" && !activeDesign && !showGrid ? "translateY(0)" : "translateY(-508px)",
+            transform: tab === "all" && !activeDesign && showGrid ? "translateY(-508px)" : "translateY(0)",
             transition: "transform 0.9s cubic-bezier(0.22,1,0.36,1)",
           }}>
           <div className="flex flex-wrap justify-center gap-2">

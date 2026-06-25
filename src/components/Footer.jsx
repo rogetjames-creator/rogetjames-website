@@ -6,13 +6,14 @@ const NAV_COLS = [
     links: [
       { label: "Wall Art", href: "#collection" },
       { label: "Sculpture", href: "#collection" },
+      { label: "Screens", href: "#collection" },
     ],
   },
   {
     title: "Bespoke",
     links: [
-      { label: "Screens", href: "#bespoke", event: "open-bespoke-category", detail: "screens" },
       { label: "Sculpture", href: "#bespoke", event: "open-bespoke-category", detail: "sculpture" },
+      { label: "Commissions", href: "#bespoke" },
       { label: "Projects", href: "#bespoke", event: "open-bespoke-category", detail: "projects" },
       { label: "Concepts", href: "#bespoke", event: "open-bespoke-category", detail: "concepts" },
     ],
@@ -21,16 +22,16 @@ const NAV_COLS = [
     title: "Services",
     links: [
       { label: "Catalogue Designs", href: "#services" },
-      { label: "Custom Design", href: "#services" },
-      { label: "Rendering Service", href: "#contact" },
-      { label: "Commercial", href: "#contact" },
-      { label: "Public Art", href: "#contact" },
+      { label: "Bespoke Design", href: "#bespoke" },
+      { label: "Rendering Service", href: "#process" },
+      { label: "Commercial", href: "#services" },
+      { label: "Public Art", href: "#services" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About", href: "#process" },
+      { label: "About", href: "#about" },
       { label: "Process & Ordering", href: "#process" },
       { label: "Contact", href: "#contact" },
       { label: "Agents", href: "#contact" },
@@ -78,7 +79,7 @@ export default function Footer() {
                 <Instagram size={14} className="text-cream/50" />
               </a>
               <a
-                href="mailto:info@rogetjames.com"
+                href="mailto:james@rogetjames.com"
                 className="lift-hover w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors"
                 aria-label="Email"
               >

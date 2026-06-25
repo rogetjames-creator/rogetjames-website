@@ -39,7 +39,6 @@ function YoutubeIcon() {
 }
 
 export default function Navbar({ quoteCount = 0 }) {
-  const [navVisible, setNavVisible] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
@@ -50,45 +49,6 @@ export default function Navbar({ quoteCount = 0 }) {
   const navBarRef = useRef(null);
   const menuRef = useRef(null);
   const lenis = useLenis();
-  const hideTimerRef = useRef(null);
-
-  // Show/hide logic: show when near top of page OR mouse near top of screen
-  useEffect(() => {
-    const onScroll = () => {
-      const atTop = window.scrollY < 80;
-      if (atTop) {
-        setNavVisible(true);
-      } else {
-        clearTimeout(hideTimerRef.current);
-        hideTimerRef.current = setTimeout(() => {
-          setNavVisible(false);
-        }, 800);
-      }
-    };
-    const onMouseMove = (e) => {
-      if (e.clientY < 60) {
-        setNavVisible(true);
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("mousemove", onMouseMove);
-      clearTimeout(hideTimerRef.current);
-    };
-  }, []);
-
-  // GSAP slide the glass bar in/out
-  useEffect(() => {
-    const bar = navBarRef.current;
-    if (!bar) return;
-    if (navVisible) {
-      gsap.to(bar, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" });
-    } else {
-      gsap.to(bar, { y: -80, opacity: 0, duration: 0.35, ease: "power2.in" });
-    }
-  }, [navVisible]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -142,17 +102,12 @@ export default function Navbar({ quoteCount = 0 }) {
 
   const handleLogoClick = useCallback((e) => {
     e.preventDefault();
-    // If nav is hidden, show it; if already visible, scroll to top
-    if (!navVisible) {
-      setNavVisible(true);
+    if (lenis) {
+      lenis.scrollTo(document.body, { duration: 2.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
     } else {
-      if (lenis) {
-        lenis.scrollTo(document.body, { duration: 2.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [navVisible, lenis]);
+  }, [lenis]);
 
   return (
     <>
@@ -183,8 +138,8 @@ export default function Navbar({ quoteCount = 0 }) {
         ref={navBarRef}
         className="fixed top-0 left-0 z-[100] w-full"
         style={{
-          transform: "translateY(-80px)",
-          opacity: 0,
+          transform: "translateY(0)",
+          opacity: 1,
           background: "rgba(14, 12, 10, 0.45)",
           backdropFilter: "blur(22px) saturate(1.4)",
           WebkitBackdropFilter: "blur(22px) saturate(1.4)",
@@ -206,7 +161,7 @@ export default function Navbar({ quoteCount = 0 }) {
               </button>
               {collectionOpen && (
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
-                  {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }].map(({ label, tab }) => (
+                  {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                       className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200">
                       {label}
@@ -307,7 +262,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Collection</span>
             <div className="flex gap-5">
-              {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }].map(({ label, tab }) => (
+              {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
                 <button key={tab} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                   className="text-cream text-lg font-heading font-medium lift-hover">
                   {label}
