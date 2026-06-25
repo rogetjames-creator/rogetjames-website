@@ -94,6 +94,8 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
+const IS_DEV = import.meta.env.DEV;
+
 export function CommissionsSection() {
   const [sculptureOpen, setSculptureOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
@@ -130,18 +132,18 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked />
-        <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setSculptureOpen(true)  : undefined} />
+        <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setReelsOpen(true)      : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setProjectsOpen(true)   : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setConceptsOpen(true)   : undefined} />
       </div>
 
       {/* Desktop — 4 portals in a row (Screens removed) */}
       <div className="bg-matt-black relative hidden md:flex items-center justify-center gap-24 py-10">
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked />
-        <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setProjectsOpen(true)   : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setSculptureOpen(true)  : undefined} />
+        <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setReelsOpen(true)      : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setConceptsOpen(true)   : undefined} />
       </div>
 
       <div className="w-full h-px bg-white/10" />
