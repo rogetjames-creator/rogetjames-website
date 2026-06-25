@@ -87,7 +87,7 @@ export default function About() {
 
         {/* Para 2 */}
         <div className="max-w-2xl mt-8">
-          <p className="text-lg md:text-2xl font-heading font-bold leading-tight" style={{ wordSpacing: "0.22em" }}>
+          <p className="text-lg md:text-2xl font-heading font-bold leading-tight text-cream/65" style={{ wordSpacing: "0.22em" }}>
             <span className="ab-p2-bright inline-block text-cream">Drawing from</span>
             <span className="ab-p2-dim inline">{" "}</span>
             <span className="ab-p2-bright inline-block text-cream">nature</span>
