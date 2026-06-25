@@ -238,7 +238,7 @@ export default function App() {
         <Suspense fallback={null}><Gallery /></Suspense>
         <About />
         {/* <BespokeCommissions /> */}
-        <Suspense fallback={null}><CommissionsSection /></Suspense>
+        {/* CommissionsSection temporarily disabled — crash fix in progress */}
         <Process />
         <Services />
         <Contact
