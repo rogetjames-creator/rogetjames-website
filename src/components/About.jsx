@@ -87,14 +87,14 @@ export default function About() {
 
         {/* Para 2 */}
         <div className="max-w-2xl mt-8">
-          <p className="text-lg md:text-2xl font-heading font-bold leading-tight text-cream/65" style={{ wordSpacing: "0.22em" }}>
-            <span className="ab-p2-bright inline-block text-cream">Drawing from</span>
+          <p className="text-lg md:text-2xl font-heading font-bold leading-tight" style={{ wordSpacing: "0.22em", color: "rgba(237,232,223,0.65)" }}>
+            <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>Drawing from</span>
             <span className="ab-p2-dim inline">{" "}</span>
-            <span className="ab-p2-bright inline-block text-cream">nature</span>
+            <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>nature</span>
             <span className="ab-p2-dim inline">{", "}the study and appreciation of{" "}</span>
-            <span className="ab-p2-bright inline-block text-cream">cultural forms and patterns</span>
+            <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>cultural forms and patterns</span>
             <span className="ab-p2-dim inline">{", "}sculptural inspirations{" "}</span>
-            <span className="ab-p2-bright inline-block text-cream">and an active imagination.</span>
+            <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>and an active imagination.</span>
           </p>
         </div>
 
