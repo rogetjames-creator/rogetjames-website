@@ -161,7 +161,7 @@ export default function Navbar({ quoteCount = 0 }) {
               </button>
               {collectionOpen && (
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
-                  {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }].map(({ label, tab }) => (
+                  {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                       className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200">
                       {label}
@@ -262,7 +262,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Collection</span>
             <div className="flex gap-5">
-              {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }].map(({ label, tab }) => (
+              {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
                 <button key={tab} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                   className="text-cream text-lg font-heading font-medium lift-hover">
                   {label}

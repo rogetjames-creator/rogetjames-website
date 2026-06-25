@@ -6,6 +6,7 @@ const NAV_COLS = [
     links: [
       { label: "Wall Art", href: "#collection" },
       { label: "Sculpture", href: "#collection" },
+      { label: "Screens", href: "#collection" },
     ],
   },
   {
