@@ -11,8 +11,8 @@ const NAV_COLS = [
   {
     title: "Bespoke",
     links: [
-      { label: "Screens", href: "#bespoke", event: "open-bespoke-category", detail: "screens" },
       { label: "Sculpture", href: "#bespoke", event: "open-bespoke-category", detail: "sculpture" },
+      { label: "Commissions", href: "#bespoke" },
       { label: "Projects", href: "#bespoke", event: "open-bespoke-category", detail: "projects" },
       { label: "Concepts", href: "#bespoke", event: "open-bespoke-category", detail: "concepts" },
     ],
@@ -30,7 +30,7 @@ const NAV_COLS = [
   {
     title: "Company",
     links: [
-      { label: "About", href: "#process" },
+      { label: "About", href: "#about" },
       { label: "Process & Ordering", href: "#process" },
       { label: "Contact", href: "#contact" },
       { label: "Agents", href: "#contact" },
