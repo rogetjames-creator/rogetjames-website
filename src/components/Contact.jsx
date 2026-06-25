@@ -108,7 +108,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         },
       });
     } catch {
-      setError("Something went wrong sending this — please try again, or email info@rogetjames.com directly.");
+      setError("Something went wrong sending this — please try again, or email james@rogetjames.com directly.");
     } finally {
       setSending(false);
     }
@@ -156,14 +156,14 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
 
             <div className="contact-reveal mt-10 space-y-5">
               <a
-                href="mailto:info@rogetjames.com"
+                href="mailto:james@rogetjames.com"
                 className="lift-hover flex items-center gap-4 text-cream group"
               >
                 <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/15 transition-colors">
                   <Mail size={16} className="text-clay" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm text-clay">info@rogetjames.com</p>
+                  <p className="font-medium text-sm text-clay">james@rogetjames.com</p>
                   <p className="text-warm-gray text-xs">Primary email</p>
                 </div>
               </a>
