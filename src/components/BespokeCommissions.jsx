@@ -2428,7 +2428,7 @@ export function ScreensGalleryModal({ onClose }) {
           )}
           {/* Grid — slides up over the slideshow like a blind */}
           <div style={{
-            transform: tab === "all" && !activeDesign && !showGrid ? "translateY(0)" : "translateY(-508px)",
+            transform: tab === "all" && !activeDesign && showGrid ? "translateY(-508px)" : "translateY(0)",
             transition: "transform 0.9s cubic-bezier(0.22,1,0.36,1)",
           }}>
           <div className="flex flex-wrap justify-center gap-2">
