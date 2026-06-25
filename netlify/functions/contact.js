@@ -33,8 +33,8 @@ exports.handler = async function(event) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "ROGETjames Website <onboarding@resend.dev>",
-      to: "rogetjames@gmail.com",
+      from: "ROGETjames Website <noreply@rogetjames.com>",
+      to: "james@rogetjames.com",
       reply_to: email || undefined,
       subject: `New enquiry from ${name || "website visitor"}`,
       text: `New enquiry from rogetjames.com\n\n${lines}`,
