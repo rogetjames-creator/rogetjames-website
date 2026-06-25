@@ -2016,11 +2016,11 @@ function PortalLightbox({ items, index, onClose, onPrev, onNext }) {
         <ChevronLeft size={24} />
       </button>
       <div ref={contentRef} className="flex flex-col items-center justify-center px-14 md:px-20 w-full max-w-5xl gap-3"
-        style={{ height: "calc(100vh - 96px)", marginTop: "72px" }}
+        style={{ height: "calc(100vh - 72px)", marginTop: "52px" }}
         onClick={(e) => e.stopPropagation()}>
         <div className="w-full flex items-center justify-center relative flex-none">
           <img ref={imgRef} src={slides[slideIdx]} alt={item.name}
-            className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
+            className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "74vh" }} />
         </div>
         <div className="flex-shrink-0 flex flex-col items-center gap-1 pt-0 pb-4 w-full max-w-lg">
           <p className="text-cream font-heading font-semibold text-base tracking-wide">{item.name}</p>
