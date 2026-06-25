@@ -3166,9 +3166,9 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
   );
 
   const pills = [
-    { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
-    { id: "wall-art",  label: "Wall Art",  onOpen: () => { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); } },
     { id: "sculpture", label: "Sculpture", onOpen: () => setSculpOpen(true) },
+    { id: "wall-art",  label: "Wall Art",  onOpen: () => { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); } },
+    { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
   ];
 
   return (

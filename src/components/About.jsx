@@ -91,7 +91,7 @@ export default function About() {
             <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>Drawing from</span>
             <span className="ab-p2-dim inline">{" "}</span>
             <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>nature</span>
-            <span className="ab-p2-dim inline">{", "}the study and appreciation of{" "}</span>
+            <span className="ab-p2-dim inline">{" "}and the study and appreciation of{" "}</span>
             <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>cultural forms and patterns</span>
             <span className="ab-p2-dim inline">{", "}sculptural inspirations{" "}</span>
             <span className="ab-p2-bright inline-block" style={{ color: "#EDE8DF" }}>and an active imagination.</span>
