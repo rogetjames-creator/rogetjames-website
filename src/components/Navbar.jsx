@@ -138,8 +138,8 @@ export default function Navbar({ quoteCount = 0 }) {
         ref={navBarRef}
         className="fixed top-0 left-0 z-[100] w-full"
         style={{
-          transform: "translateY(-80px)",
-          opacity: 0,
+          transform: "translateY(0)",
+          opacity: 1,
           background: "rgba(14, 12, 10, 0.45)",
           backdropFilter: "blur(22px) saturate(1.4)",
           WebkitBackdropFilter: "blur(22px) saturate(1.4)",
