@@ -3180,11 +3180,12 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
         Browse Collection
       </span>
       {/* 3-col grid: Wall Art locked to centre column, Screens/Sculpture in equal outer columns */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "20px", width: "100%" }}>
-        {/* Left col — Screens, flush right */}
+      {/* 5-col grid: 1fr | dot | Wall Art | dot | 1fr — dots are each in their own column so gap is identical on both sides */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto 1fr", alignItems: "center", columnGap: "16px", width: "100%" }}>
+        {/* Col 1 — Screens, flush right */}
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           {(() => { const { id, label, onOpen } = pills[0]; const isActive = categoryClicked && selectedCategory === id; return (
-            <button key={id} onClick={onOpen}
+            <button onClick={onOpen}
               onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
               onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
               className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
@@ -3193,26 +3194,24 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
             </button>
           ); })()}
         </div>
-
-        {/* Centre col — dot · Wall Art · dot */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <GoldDot />
-          {(() => { const { id, label, onOpen } = pills[1]; const isActive = categoryClicked && selectedCategory === id; return (
-            <button key={id} onClick={onOpen}
-              onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
-              onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
-              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
-              style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
-              {label}
-            </button>
-          ); })()}
-          <GoldDot />
-        </div>
-
-        {/* Right col — Sculpture, flush left */}
+        {/* Col 2 — left dot */}
+        <GoldDot />
+        {/* Col 3 — Wall Art, centred */}
+        {(() => { const { id, label, onOpen } = pills[1]; const isActive = categoryClicked && selectedCategory === id; return (
+          <button onClick={onOpen}
+            onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+            onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+            className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+            style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+            {label}
+          </button>
+        ); })()}
+        {/* Col 4 — right dot */}
+        <GoldDot />
+        {/* Col 5 — Sculpture, flush left */}
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           {(() => { const { id, label, onOpen } = pills[2]; const isActive = categoryClicked && selectedCategory === id; return (
-            <button key={id} onClick={onOpen}
+            <button onClick={onOpen}
               onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
               onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
               className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
