@@ -21,7 +21,7 @@ const NAV_COLS = [
     title: "Services",
     links: [
       { label: "Catalogue Designs", href: "#services" },
-      { label: "Custom Design", href: "#services" },
+      { label: "Bespoke Design", href: "#bespoke" },
       { label: "Rendering Service", href: "#contact" },
       { label: "Commercial", href: "#contact" },
       { label: "Public Art", href: "#contact" },
