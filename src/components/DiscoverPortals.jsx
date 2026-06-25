@@ -66,17 +66,6 @@ const PORTALS = [
     slideScale: 0.92,
     popupType: "links",
   },
-  {
-    id: "reels",
-    label: "Reels",
-    sublabel: "Behind the Work",
-    slides: [],
-    videos: [
-      { src: "/videos/natives-collage-2.mp4", title: "CUSTOM Natives — Collage", detail: "A commission in our native botanicals series — hand-composed and laser cut to order.", poster: "/images/concept-4-natives.jpg" },
-      { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "", poster: "/images/reels/waroona-thumb.jpg" },
-    ],
-    popupType: "commissions-gallery",
-  },
 ];
 
 export function CommissionsGalleryPopup({ videos, onClose, title }) {
@@ -399,7 +388,7 @@ function LinksPopup({ onClose }) {
   );
 }
 
-export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false, noDarkHover = false }) {
+export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false }) {
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
@@ -475,7 +464,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                   {locked && <p className="font-detail text-cream/50 uppercase tracking-[0.15em]" style={{ fontSize: `${Math.max(5.5, size * 0.038)}px`, marginTop: "2px" }}>Under Construction</p>}
                 </div>
               )}
-              <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 opacity-0 group-hover:opacity-100${noDarkHover ? "" : " bg-black/60"}`}
+              <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
                 style={alwaysLabel ? { opacity: 1 } : {}}>
                 <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
                   {locked ? "Under Construction" : hoverLabel}

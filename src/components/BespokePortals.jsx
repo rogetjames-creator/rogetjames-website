@@ -60,35 +60,6 @@ const SIDE_PORTAL_RIGHT = {
   ],
 };
 
-const WALL_ART_PORTAL = {
-  id: "wall-art",
-  label: "Wall Art",
-  sublabel: "",
-  slides: [
-    { src: `/images/screens/orian-wall-decor.jpg`, pos: "5% 5%", scale: 1.5 },
-    `/images/screens/strip/ferlie-close.jpg`,
-    `/images/screens/strip/grail-close.jpg`,
-    `/images/screens/wattle-close-tdl.jpg`,
-    `/images/screens/viasi-close-up.jpg`,
-    `/images/screens/elle-corten.jpg`,
-    { src: `/images/bloom/bloom-closeup.jpg`, pos: "center top" },
-  ],
-};
-
-const SCULPTURE_PORTAL_DATA = {
-  id: "sculpture-portal",
-  label: "Sculpture",
-  sublabel: "",
-  slides: [
-    "/images/marakesh/marakesh-1.jpg",
-    "/images/autumn-leaf/leaf-fire.jpg",
-    "/images/sculptures/medina.jpg",
-    "/images/halo/pavia-1.jpg",
-    "/images/sculptures/bon-bon.jpg",
-    "/images/villa-leaf/villa-leaf-trio-pool.jpg",
-  ],
-};
-
 const SIDE_PORTAL_PROJECTS = {
   id: "side-projects",
   label: "Projects",
@@ -312,7 +283,7 @@ export function CommissionsSection() {
           <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel locked noDarkHover onOpen={() => setReelsOpen(true)} />
+          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel locked onOpen={() => setReelsOpen(true)} />
           <span className="font-heading font-bold text-xs text-cream/70">Commissions</span>
         </div>
         <div className="flex flex-col items-center gap-2">
@@ -395,21 +366,21 @@ export function CommissionsSection() {
           <div
             ref={centerPortalRef}
             style={{ position: "absolute", top: "70px", left: "50%", transform: "translate(-50%, -50%)", zIndex: 51, cursor: "pointer" }}
-            onClick={e => { e.stopPropagation(); if (!fanOpen) setFanOpen(true); else document.querySelector("#collection")?.scrollIntoView({ behavior: "smooth" }); }}
+            onClick={e => { e.stopPropagation(); if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
           >
             <MiniPortal
-              portal={WALL_ART_PORTAL}
+              portal={SIDE_PORTAL_LEFT}
               size={248}
               hideLabel
               ringOnly
-              hoverLabel={fanOpen ? "Wall Art" : "View"}
+              hoverLabel={fanOpen ? "Screens" : "View"}
               hoverLabelSize="16px"
-              onOpen={() => { if (!fanOpen) setFanOpen(true); else document.querySelector("#collection")?.scrollIntoView({ behavior: "smooth" }); }}
+              onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
             />
           </div>
 
           <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel locked noDarkHover onOpen={() => setReelsOpen(true)} />
+            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" locked onOpen={() => setReelsOpen(true)} />
           </div>
           <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel hoverLabel="Concepts" locked onOpen={() => setConceptsOpen(true)} />
@@ -428,11 +399,6 @@ export function CommissionsSection() {
         )}
       </div>
 
-      {/* Portal column — Sculpture (B) and Screens (C) — desktop only, always visible */}
-      <div className="bg-matt-black hidden md:flex flex-col items-center gap-8 py-10" style={{ zIndex: 52, position: "relative" }}>
-        <MiniPortal portal={SCULPTURE_PORTAL_DATA} size={186} hoverLabel="Sculpture" onOpen={() => setSculptureOpen(true)} />
-        <MiniPortal portal={SIDE_PORTAL_LEFT} size={124} hoverLabel="Screens" onOpen={() => setScreensOpen(true)} />
-      </div>
 
       {/* Frosted arch — anchored to the section's actual top edge (measured, not guessed),
           hole sized to clear the portal's outer ring so it is never clipped */}
