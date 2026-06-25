@@ -78,7 +78,7 @@ export default function Footer() {
                 <Instagram size={14} className="text-cream/50" />
               </a>
               <a
-                href="mailto:info@rogetjames.com"
+                href="mailto:james@rogetjames.com"
                 className="lift-hover w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors"
                 aria-label="Email"
               >

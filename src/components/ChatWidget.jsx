@@ -52,7 +52,7 @@ export default function ChatWidget() {
       const data = await res.json();
       setMessages(prev => [...prev, { role: "assistant", content: data.reply || "Sorry, I couldn't get a response. Please try again." }]);
     } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Something went wrong. Please try again or contact us directly at info@rogetjames.com." }]);
+      setMessages(prev => [...prev, { role: "assistant", content: "Something went wrong. Please try again or contact us directly at james@rogetjames.com." }]);
     } finally {
       setLoading(false);
     }
