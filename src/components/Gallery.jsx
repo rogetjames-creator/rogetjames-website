@@ -29,9 +29,12 @@ const getState = (pc) => {
   if (n >= 1000 && n <= 1999) return "NSW";
   if (n >= 2000 && n <= 2599) return "NSW";
   if (n >= 2600 && n <= 2618) return "ACT";
+  if (n >= 2900 && n <= 2920) return "ACT";
   if (n >= 2619 && n <= 2999) return "NSW";
   if (n >= 3000 && n <= 3999) return "VIC";
+  if (n >= 8000 && n <= 8999) return "VIC";
   if (n >= 4000 && n <= 4999) return "QLD";
+  if (n >= 9000 && n <= 9999) return "QLD";
   if (n >= 5000 && n <= 5999) return "SA";
   if (n >= 6000 && n <= 6999) return "WA";
   if (n >= 7000 && n <= 7999) return "TAS";
