@@ -244,10 +244,10 @@ function ReelsPortal({ onOpen }) {
   );
 }
 
-const CDN = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 // Wall Art series — display order
-const CDN_G = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN_G = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const WALL_ART_SERIES = [
   // ── AUSTRALIAN NATIVES ───────────────────

@@ -237,8 +237,7 @@ export default function App() {
         <StudioBio />
         <Suspense fallback={null}><Gallery /></Suspense>
         <About />
-        {/* <BespokeCommissions /> */}
-        {/* CommissionsSection temporarily disabled — crash fix in progress */}
+        <Suspense fallback={null}><CommissionsSection /></Suspense>
         <Process />
         <Services />
         <Contact

@@ -1,13 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const CDN_SC = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const COMMISSIONS_GALLERY = [
   { src: "/images/villa-leaf/villa-leaf-trio-pool.jpg" },
@@ -99,134 +94,18 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
-// Tight pulse rings for the standalone center portal
-function PulseRings({ active, size }) {
-  if (!active) return null;
-  const inset = -(size * 0.04);
-  return (
-    <>
-      <span style={{ position: "absolute", inset, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.35)", animation: "portal-pulse-tight 2.2s ease-out infinite", pointerEvents: "none", zIndex: 50 }} />
-      <span style={{ position: "absolute", inset, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.22)", animation: "portal-pulse-tight 2.2s ease-out 0.75s infinite", pointerEvents: "none", zIndex: 50 }} />
-      <span style={{ position: "absolute", inset, borderRadius: "50%", border: "1px solid rgba(242,240,233,0.12)", animation: "portal-pulse-tight 2.2s ease-out 1.5s infinite", pointerEvents: "none", zIndex: 50 }} />
-    </>
-  );
-}
-
 export function CommissionsSection() {
-  const sectionRef = useRef(null);
-  const leftRef = useRef(null);
-  const rightRef = useRef(null);
-  const leftOuterRef = useRef(null);
-  const rightOuterRef = useRef(null);
-  const practiceLineRef = useRef(null);
-  const practiceLineRightRef = useRef(null);
-  const practiceRevealRef = useRef(null);
-  const playPracticeRef = useRef(null);
-  const practiceTriggerRef = useRef(null);
-  const stripRef = useRef(null);
-  const centerPortalRef = useRef(null);
-  const [fanOpen, setFanOpen] = useState(false);
-  const [hovering, setHovering] = useState(false);
   const [sculptureOpen, setSculptureOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
-  const [archOffset, setArchOffset] = useState(0); // measured: section top -> portal centre, in px
 
-  // Measure the real distance from the section's top edge to the centre of
-  // the portal circle, so the frosted arch's flat top can be pinned exactly
-  // to the section top regardless of heading line-wrap or viewport size.
-  useEffect(() => {
-    const measure = () => {
-      if (!sectionRef.current || !centerPortalRef.current) return;
-      const sectionRect = sectionRef.current.getBoundingClientRect();
-      const portalRect = centerPortalRef.current.getBoundingClientRect();
-      setArchOffset(Math.round(portalRect.top - sectionRect.top + portalRect.height / 2));
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-
-  const anyOpen = screensOpen || projectsOpen || conceptsOpen || reelsOpen;
+  const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 
-  // Init: side portals hidden, Practice collapsed
-  useEffect(() => {
-    gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { x: 0, opacity: 0, visibility: "hidden" });
-    if (practiceRevealRef.current) {
-      gsap.set(practiceRevealRef.current, { height: 0, overflow: "hidden" });
-    }
-  }, []);
-
-  // Fan open — strip expands first, then portals fan out
-  useEffect(() => {
-    if (!fanOpen) return;
-    // 1. Expand strip from 140px to 280px, then open overflow so fan can spill
-    gsap.to(stripRef.current, {
-      height: 240, duration: 1.2, ease: "sine.inOut",
-      onComplete: () => {
-        if (stripRef.current) stripRef.current.style.overflow = "visible";
-        // 2. Fan portals after strip is open
-        if (window.innerWidth >= 768) {
-          gsap.set([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current], { opacity: 1, visibility: "visible" });
-          gsap.fromTo(leftRef.current,       { x: 0 }, { x: -300, duration: 5.0, ease: "none" });
-          gsap.fromTo(rightRef.current,      { x: 0 }, { x:  300, duration: 5.0, ease: "none" });
-          gsap.fromTo(leftOuterRef.current,  { x: 0 }, { x: -580, duration: 5.0, ease: "none" });
-          gsap.fromTo(rightOuterRef.current, { x: 0 }, { x:  580, duration: 5.0, ease: "none" });
-        }
-      },
-    });
-    // 3. Reveal Practice after strip + fan settle
-    const el = practiceRevealRef.current;
-    if (el) {
-      gsap.to(el, {
-        height: "auto", duration: 1.6, ease: "power3.inOut", delay: 1.4,
-        clearProps: "overflow",
-        onComplete: () => {
-          ScrollTrigger.refresh();
-          setTimeout(() => {
-            ScrollTrigger.refresh();
-            const el = practiceTriggerRef.current;
-            if (!el) return;
-            const rect = el.getBoundingClientRect();
-            if (rect.top < window.innerHeight) {
-              playPracticeRef.current?.();
-            } else {
-              ScrollTrigger.create({
-                trigger: el,
-                start: "top bottom",
-                once: true,
-                onEnter: () => playPracticeRef.current?.(),
-              });
-            }
-          }, 200);
-        },
-      });
-    }
-  }, [fanOpen]);
-
-  // Close — collapse fan + Practice + shrink strip
-  const closeSection = () => {
-    gsap.to([leftRef.current, rightRef.current, leftOuterRef.current, rightOuterRef.current],
-      { x: 0, opacity: 0, duration: 1.0, ease: "power2.in" });
-    const el = practiceRevealRef.current;
-    if (el) {
-      gsap.set(el, { overflow: "hidden" });
-      gsap.to(el, { height: 0, duration: 1.0, ease: "power3.inOut" });
-    }
-    gsap.to(stripRef.current, {
-      height: 200, duration: 0.9, ease: "power3.inOut", delay: 0.6,
-      onComplete: () => ScrollTrigger.refresh(),
-    });
-    setFanOpen(false);
-  };
-
-
-  // Nav dropdown
   useEffect(() => {
     const handler = (e) => {
       const cat = e.detail;
@@ -239,16 +118,12 @@ export function CommissionsSection() {
     return () => window.removeEventListener("open-bespoke-category", handler);
   }, []);
 
-
-
-  // Practice text now lives in About.jsx — no GSAP needed here
-
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
-      <div className="px-8 pt-12 pb-24 text-center" style={{ position: "relative", zIndex: 51 }}>
+    <section id="bespoke" className="bg-graphite">
+      <div className="px-8 pt-12 pb-10 text-center">
         <span className="font-detail text-xs text-cream/55 uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
-          <span className="bespoke-heading inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Bespoke</span>
+          <span className="inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Bespoke</span>
         </h2>
       </div>
       <div className="w-full h-px bg-white/10" />
@@ -256,74 +131,20 @@ export function CommissionsSection() {
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={160} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_LEFT}     size={200} hideLabel centerLabel="Screens"     hoverLabel="Under Construction" locked />
         <MiniPortal portal={COMMISSIONS_PORTAL}   size={160} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked />
         <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked />
       </div>
 
-      {/* Desktop — all 5 portals always visible in a row */}
+      {/* Desktop — 4 portals in a row (Screens removed) */}
       <div className="bg-matt-black relative hidden md:flex items-center justify-center gap-12 py-20">
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel centerLabel="Projects"   hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={130} hideLabel centerLabel="Sculpture"  hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_LEFT}     size={248} hideLabel centerLabel="Screens"    hoverLabel="Under Construction" hoverLabelSize="16px" locked />
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={130} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked />
         <MiniPortal portal={COMMISSIONS_PORTAL}   size={130} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel centerLabel="Concepts"   hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked />
       </div>
 
-
-      {/* Frosted arch — anchored to the section's actual top edge (measured, not guessed),
-          hole sized to clear the portal's outer ring so it is never clipped */}
-      {archOffset > 0 && (() => {
-        const portalOuterR = 133;           // portal button outer radius (248 image + 9px ring each side)
-        const gap = 6;                      // breathing room so the hole never touches the portal ring
-        const hR = portalOuterR + gap;      // 139 — hole radius, strictly larger than the portal
-        const ring = Math.round(hR * 0.18); // ring thickness, proportional to reference file
-        const oR = hR + ring;               // outer radius of the whole arch shape
-        const cY = archOffset;              // circle centre = measured portal centre, section-relative
-        const svgH = cY + oR;               // bottom of shape
-        const svgW = oR * 2;
-        const cX = oR;
-        const rX = cX + hR, lX = cX - hR;
-        const d = `M0,0 H${svgW} V${cY} A${oR},${oR},0,1,1,0,${cY} Z M${rX},${cY} A${hR},${hR},0,1,0,${lX},${cY} A${hR},${hR},0,1,0,${rX},${cY} Z`;
-        const boxStyle = { position: "absolute", top: 0, left: "50%", transform: `translateX(-${cX}px)`, width: svgW, height: svgH, pointerEvents: "none" };
-        const clipId = "bespoke-arch-clip";
-        return (
-          <>
-            {/* SVG clipPath definition — referenced via url(), reliably supported (unlike CSS clip-path: path()) */}
-            <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-              <defs>
-                <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-                  <path d={d} clipRule="evenodd" />
-                </clipPath>
-              </defs>
-            </svg>
-
-            {/* Frosted arch fill — backdrop-filter + clip-path causes GPU glitch; use tinted SVG fill only */}
-            <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 49 }}
-              width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
-              <path fillRule="evenodd" fill="#F2F0E9" fillOpacity="0.06" d={d} />
-            </svg>
-            <svg className="hidden md:block" style={{ ...boxStyle, zIndex: 50 }}
-              width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`}>
-              <path
-                fillRule="evenodd"
-                fill="#F2F0E9"
-                fillOpacity="0.10"
-                stroke="#F2F0E9"
-                strokeOpacity="0.12"
-                strokeWidth="1.5"
-                d={d}
-              />
-            </svg>
-          </>
-        );
-      })()}
-
       <div className="w-full h-px bg-white/10" />
-
-      {/* Practice text now lives in About.jsx */}
-      <div ref={practiceRevealRef} />
 
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}

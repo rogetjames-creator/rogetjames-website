@@ -8,7 +8,7 @@ import CatPageViewer from "./CatPageViewer";
 gsap.registerPlugin(ScrollTrigger);
 
 
-const CDN = "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const STRIP_IMAGES = [
   `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg`,
