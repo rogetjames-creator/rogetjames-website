@@ -4,7 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
-import { CommissionsGalleryPopup } from "./DiscoverPortals";
+import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
+import { SculptureGalleryModal, ScreensGalleryModal } from "./BespokeCommissions";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -85,7 +86,36 @@ const REELS = [
 
 const PORTAL_REELS = REELS.filter(r => !r.noPortal);
 
-function ReelsPortal() {
+const SCULPTURE_PORTAL = {
+  id: "gallery-sculpture",
+  label: "Sculpture",
+  sublabel: "",
+  slides: [
+    "/images/marakesh/marakesh-1.jpg",
+    "/images/autumn-leaf/leaf-fire.jpg",
+    "/images/sculptures/medina.jpg",
+    "/images/halo/pavia-1.jpg",
+    "/images/sculptures/bon-bon.jpg",
+    "/images/villa-leaf/villa-leaf-trio-pool.jpg",
+  ],
+};
+
+const SCREENS_PORTAL = {
+  id: "gallery-screens",
+  label: "Screens",
+  sublabel: "",
+  slides: [
+    { src: "/images/screens/orian-wall-decor.jpg", pos: "5% 5%", scale: 1.5 },
+    "/images/screens/strip/ferlie-close.jpg",
+    "/images/screens/strip/grail-close.jpg",
+    "/images/screens/wattle-close-tdl.jpg",
+    "/images/screens/viasi-close-up.jpg",
+    "/images/screens/elle-corten.jpg",
+    { src: "/images/bloom/bloom-closeup.jpg", pos: "center top" },
+  ],
+};
+
+function ReelsPortal({ onOpen }) {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [glowing, setGlowing] = useState(false);
   const [curReel, setCurReel] = useState(0);
@@ -146,7 +176,7 @@ function ReelsPortal() {
       {/* Portal sphere */}
       <button
         ref={portalRef}
-        onClick={() => setGalleryOpen(true)}
+        onClick={() => onOpen ? onOpen() : setGalleryOpen(true)}
         onMouseEnter={() => setGlowing(true)}
         onMouseLeave={() => setGlowing(false)}
         className="group relative cursor-pointer"
@@ -155,7 +185,7 @@ function ReelsPortal() {
           padding: "9px",
           background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
           boxShadow: glowing
-            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.55)"
+            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)"
             : "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #0a0a0a, 0 0 0 8px rgba(255,255,255,0.22)",
           transition: "box-shadow 0.6s ease",
         }}
@@ -184,10 +214,12 @@ function ReelsPortal() {
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, transparent 18%)"
           }} />
-          {/* Hover overlay — subtle dim only, no play button */}
-          <div className="absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/30" />
-          {/* Arc label — hover only */}
-          <svg viewBox="0 0 256 256" className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true">
+          {/* Hover overlay — darken + centre label */}
+          <div className="absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-150 bg-black/50 flex items-center justify-center">
+            <span style={{ fontFamily: "'Jost','DM Sans',sans-serif", fontWeight: 400, fontSize: "12px", letterSpacing: "4px", color: "rgba(242,240,233,0.85)", textShadow: "0 0 8px rgba(0,0,0,0.9)", textTransform: "uppercase" }}>WALL ART</span>
+          </div>
+          {/* Arc label — always visible */}
+          <svg viewBox="0 0 256 256" className="absolute inset-0 w-full h-full pointer-events-none z-20" aria-hidden="true">
             <defs>
               <path id="roj-reels-arc" d="M 36,61 A 112,112 0 0,1 220,61" />
               <filter id="roj-reels-shadow" x="-30%" y="-80%" width="160%" height="260%">
@@ -195,7 +227,7 @@ function ReelsPortal() {
               </filter>
             </defs>
             <text fill="rgba(242,240,233,0.85)" fontSize="12" fontFamily="'Jost','DM Sans',sans-serif" fontWeight="400" letterSpacing="4" filter="url(#roj-reels-shadow)">
-              <textPath href="#roj-reels-arc" startOffset="50%" textAnchor="middle">REELS</textPath>
+              <textPath href="#roj-reels-arc" startOffset="50%" textAnchor="middle">WALL ART</textPath>
             </text>
           </svg>
         </div>
@@ -3108,7 +3140,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     </div>
   );
 }
-function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection }) {
+function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection, setSculpOpen, setScreensOpen }) {
   const [hovered, setHovered] = useState(false);
   const browseColor = hovered
     ? "rgba(242,240,233,0.95)"
@@ -3117,6 +3149,28 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
       : "rgba(242,240,233,0.35)";
   const dotBg     = inSection ? "#9e7134" : "transparent";
   const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
+
+  const GoldDot = () => (
+    <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: dotBg, border: `1px solid ${dotBorder}`, display: "block", transition: "background 0.4s, border-color 0.4s", flexShrink: 0 }} />
+      {inSection && (
+        <span style={{
+          position: "absolute", top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)", width: 5, height: 5,
+          borderRadius: "50%", border: "0.5px solid #9e7134",
+          animation: "bcl-ripple 2.4s ease-out infinite", pointerEvents: "none",
+        }} />
+      )}
+      <style>{`@keyframes bcl-ripple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; } 100% { transform: translate(-50%,-50%) scale(8); opacity: 0; } }`}</style>
+    </span>
+  );
+
+  const pills = [
+    { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
+    { id: "wall-art",  label: "Wall Art",  onOpen: () => { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); } },
+    { id: "sculpture", label: "Sculpture", onOpen: () => setSculpOpen(true) },
+  ];
+
   return (
     <>
       <span
@@ -3125,56 +3179,48 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
       >
         Browse Collection
       </span>
-      <div className="flex items-center gap-5">
-        {[
-          { id: "wall-art",  label: "Wall Art" },
-          { id: "sculpture", label: "Sculpture" },
-        ].map(({ id, label }, idx) => {
-          const isActive = categoryClicked && selectedCategory === id;
-          return (
-            <React.Fragment key={id}>
-              {idx === 1 && (
-                <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                  {/* solid dot */}
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: dotBg, border: `1px solid ${dotBorder}`, display: "block", transition: "background 0.4s, border-color 0.4s", flexShrink: 0 }} />
-                  {/* ripple ring — only visible when inSection */}
-                  {inSection && (
-                    <span style={{
-                      position: "absolute",
-                      top: "50%", left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: 5, height: 5,
-                      borderRadius: "50%",
-                      border: "0.5px solid #9e7134",
-                      animation: "bcl-ripple 2.4s ease-out infinite",
-                      pointerEvents: "none",
-                    }} />
-                  )}
-                  <style>{`
-                    @keyframes bcl-ripple {
-                      0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.7; }
-                      100% { transform: translate(-50%,-50%) scale(8); opacity: 0; }
-                    }
-                  `}</style>
-                </span>
-              )}
-              <button
-                onClick={() => { setSelectedCategory(id); setCategoryClicked(true); setCardDeckOpen(true); }}
-                onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
-                onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
-                className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
-                style={{
-                  borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)",
-                  color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)",
-                  cursor: "pointer",
-                  boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)",
-                }}
-              >
-                {label}
-              </button>
-            </React.Fragment>
-          );
-        })}
+      {/* 3-col grid: Wall Art locked to centre column, Screens/Sculpture in equal outer columns */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: "20px", width: "100%" }}>
+        {/* Left col — Screens, flush right */}
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          {(() => { const { id, label, onOpen } = pills[0]; const isActive = categoryClicked && selectedCategory === id; return (
+            <button key={id} onClick={onOpen}
+              onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+              onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+              style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+              {label}
+            </button>
+          ); })()}
+        </div>
+
+        {/* Centre col — dot · Wall Art · dot */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <GoldDot />
+          {(() => { const { id, label, onOpen } = pills[1]; const isActive = categoryClicked && selectedCategory === id; return (
+            <button key={id} onClick={onOpen}
+              onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+              onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+              style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+              {label}
+            </button>
+          ); })()}
+          <GoldDot />
+        </div>
+
+        {/* Right col — Sculpture, flush left */}
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          {(() => { const { id, label, onOpen } = pills[2]; const isActive = categoryClicked && selectedCategory === id; return (
+            <button key={id} onClick={onOpen}
+              onMouseEnter={e => { setHovered(true); if (!isActive) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
+              onMouseLeave={e => { setHovered(false); if (!isActive) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; }}}
+              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+              style={{ borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.3)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.85)", cursor: "pointer", boxShadow: isActive ? "none" : "0 0 0 1px rgba(242,240,233,0.18)" }}>
+              {label}
+            </button>
+          ); })()}
+        </div>
       </div>
     </>
   );
@@ -3186,6 +3232,8 @@ export default function Gallery() {
   const [catFlipOpen, setCatFlipOpen] = useState(false);
   const [catFlipTab, setCatFlipTab] = useState("wall-art");
   const [cardDeckOpen, setCardDeckOpen] = useState(false);
+  const [sculpOpen, setSculpOpen] = useState(false);
+  const [screensOpen, setScreensOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("wall-art");
   const [categoryClicked, setCategoryClicked] = useState(false);
   const [inSection, setInSection] = useState(false);
@@ -3303,7 +3351,7 @@ export default function Gallery() {
           {/* Browse Collection + Wall Art / Sculpture */}
           <div ref={wallArtLabelRef} className="flex flex-col items-center gap-3 mt-6">
             {/* Browse Collection label — lights up on hover of either option */}
-            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} />
+            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} setSculpOpen={setSculpOpen} setScreensOpen={setScreensOpen} />
           </div>
         </div>
 
@@ -3318,7 +3366,7 @@ export default function Gallery() {
             <div ref={gateLeftRef}  className="absolute inset-y-0 left-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
             <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
 
-            {/* Left strip — scrolls leftward away from center */}
+            {/* Left strip */}
             <div className="flex-1 overflow-hidden">
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
@@ -3329,12 +3377,10 @@ export default function Gallery() {
               </div>
             </div>
 
-            {/* Center — Reels portal, overflows strip vertically */}
-            <div className="flex-none self-center mx-8 relative z-30">
-              <ReelsPortal />
-            </div>
+            {/* Centre spacer — keeps strip images clear of the portal column */}
+            <div className="flex-none" style={{ width: "338px" }} />
 
-            {/* Right strip — scrolls rightward away from center */}
+            {/* Right strip */}
             <div className="flex-1 overflow-hidden">
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
@@ -3348,6 +3394,14 @@ export default function Gallery() {
 
           {/* Faint rule below strip */}
           <div className="w-full h-px bg-white/20 mt-4" />
+
+          {/* All three portals in one column — equal gap guaranteed.
+              Negative margin pulls Wall Art up to float in the strip centre. */}
+          <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
+            <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
+            <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+          </div>
 
         </div>
         )}
@@ -3369,11 +3423,16 @@ export default function Gallery() {
             <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-ink to-transparent pointer-events-none" />
           </div>
 
-          {/* Center — Reels portal */}
+          {/* Center — Wall Art portal */}
           <div className="flex justify-center py-8">
-            <ReelsPortal />
+            <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
           </div>
 
+          {/* Sculpture + Screens portals — mobile */}
+          <div className="flex flex-col items-center gap-10 pt-[58px] pb-16">
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
+            <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+          </div>
 
           {/* Bottom strip */}
           <div className="relative h-28 overflow-hidden">
@@ -3399,6 +3458,8 @@ export default function Gallery() {
           onClose={() => { setCatFlipOpen(false); setCardDeckOpen(false); }}
         />
       )}
+      {sculpOpen   && <SculptureGalleryModal onClose={() => setSculpOpen(false)} />}
+      {screensOpen && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
     </>
   );
 }

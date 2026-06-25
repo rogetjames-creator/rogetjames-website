@@ -236,7 +236,7 @@ export default function App() {
         <Hero />
         <StudioBio />
         <Suspense fallback={null}><Gallery /></Suspense>
-        {/* <About /> */}
+        <About />
         {/* <BespokeCommissions /> */}
         <Suspense fallback={null}><CommissionsSection /></Suspense>
         <Process />

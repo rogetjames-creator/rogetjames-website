@@ -241,26 +241,7 @@ export function CommissionsSection() {
 
 
 
-  // Practice text — fired when fan opens
-  useEffect(() => {
-    gsap.set(".about-practice-label", { y: -10, opacity: 0 });
-    gsap.set(".para1-bright",   { x: 28, opacity: 0 });
-    gsap.set(".para1-dim-word", { opacity: 0 });
-    gsap.set(".para2-bright",   { x: 28, opacity: 0 });
-    gsap.set(".para2-dim",      { opacity: 0 });
-    gsap.set(practiceLineRef.current,      { scaleX: 0 });
-    gsap.set(practiceLineRightRef.current, { scaleX: 0 });
-
-    playPracticeRef.current = () => {
-      gsap.to(practiceLineRef.current,      { scaleX: 1, duration: 1.1, ease: "power3.out" });
-      gsap.to(practiceLineRightRef.current, { scaleX: 1, duration: 1.1, ease: "power3.out" });
-      gsap.to(".about-practice-label", { y: 0, opacity: 1, duration: 1.8, ease: "power1.out" });
-      gsap.to(".para1-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 0.4 });
-      gsap.to(".para1-dim-word", { opacity: 1, duration: 1.6, stagger: 0.28, ease: "power1.out", delay: 3.2 });
-      gsap.to(".para2-bright",   { x: 0, opacity: 1, duration: 3.2, stagger: 0.45, ease: "power1.out", delay: 9.0 });
-      gsap.to(".para2-dim",      { opacity: 1, duration: 4.2, stagger: 0.65, ease: "power1.out", delay: 12.5 });
-    };
-  }, []);
+  // Practice text now lives in About.jsx — no GSAP needed here
 
   return (
     <section id="bespoke" ref={sectionRef} className="bg-graphite" style={{ position: "relative" }}>
@@ -274,129 +255,20 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-14 flex flex-col items-center gap-10 md:hidden w-full">
-        <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={160} hideLabel hoverLabel="Sculpture" locked onOpen={() => setSculptureOpen(true)} />
-          <span className="font-heading font-bold text-xs text-cream/70">Sculpture</span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_LEFT} size={200} hideLabel hoverLabel="Screens" noGlow onOpen={() => setScreensOpen(true)} />
-          <span className="font-heading font-bold text-xs text-cream/70">Screens</span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={COMMISSIONS_PORTAL} size={160} hideLabel hoverLabel="Commissions" alwaysLabel locked onOpen={() => setReelsOpen(true)} />
-          <span className="font-heading font-bold text-xs text-cream/70">Commissions</span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel hoverLabel="Projects" locked onOpen={() => setProjectsOpen(true)} />
-          <span className="font-heading font-bold text-xs text-cream/70">Projects</span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel hoverLabel="Concepts" locked onOpen={() => setConceptsOpen(true)} />
-          <span className="font-heading font-bold text-xs text-cream/70">Concepts</span>
-        </div>
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={160} hideLabel centerLabel="Sculpture"   hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_LEFT}     size={200} hideLabel centerLabel="Screens"     hoverLabel="Under Construction" locked />
+        <MiniPortal portal={COMMISSIONS_PORTAL}   size={160} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={160} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={160} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked />
       </div>
 
-      {/* Desktop horizontal fan — starts half-height, expands on click */}
-      <div
-        ref={stripRef}
-        className="bg-matt-black relative hidden md:block"
-        style={{ height: "200px", overflow: "visible", cursor: fanOpen ? "default" : "pointer" }}
-        onClick={!fanOpen ? () => setFanOpen(true) : undefined}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
-        {/* Hover warm edge — bottom border glow when collapsed */}
-        {!fanOpen && (
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, height: "1px",
-            background: hovering ? "rgba(158, 113, 52,0.45)" : "rgba(242,240,233,0.08)",
-            transition: "background 0.5s ease",
-            pointerEvents: "none", zIndex: 5,
-          }} />
-        )}
-
-        {/* Portal names — static left side. Dimming uses `color` alpha, not
-            parent `opacity`, so an individual line can brighten past the
-            group's resting dimness on hover (opacity on a parent caps what
-            children can ever show, regardless of their own opacity). */}
-        {false && (
-          <div style={{
-            position: "absolute", left: "78px", top: "calc(50% + 68px)", transform: "translateY(-50%) rotate(-90deg)",
-            transformOrigin: "left center",
-            display: "flex", flexDirection: "column", gap: "9px",
-            pointerEvents: "auto", zIndex: 5,
-          }}>
-            {["Screens", "Sculpture", "Projects", "Commissions", "Concepts"].map((name) => (
-              <span key={name} className="portal-name-line" style={{
-                fontFamily: "var(--font-bebas)", fontSize: "18px",
-                width: "138px", display: "inline-block", textAlign: "center",
-                background: hovering
-                  ? "linear-gradient(to right, rgba(255,255,255,0.85), rgba(255,255,255,0.1))"
-                  : "linear-gradient(to right, rgba(220,220,220,0.45), rgba(60,60,60,0.08))",
-                WebkitBackgroundClip: "text", backgroundClip: "text",
-                color: "transparent", WebkitTextFillColor: "transparent",
-                letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1.3,
-                transition: "background 0.3s ease",
-              }}>{name}</span>
-            ))}
-          </div>
-        )}
-
-
-        {/* Waroona video — stored, re-enable if needed:
-        <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0, pointerEvents: "none" }}>
-          <video autoPlay muted loop playsInline
-            style={{ width: "100%", height: "100%", objectFit: "cover", opacity: fanOpen ? 0 : 0.35, transition: "opacity 1.2s ease" }}
-            className="waroona-video">
-            <source src="/videos/waroona.mp4" type="video/mp4" />
-          </video>
-        </div>
-        */}
-
-        {/* Portal fan */}
-        <div className="absolute inset-0 flex items-center justify-center overflow-visible">
-          <div ref={leftOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel hoverLabel="Projects" locked onOpen={() => setProjectsOpen(true)} />
-          </div>
-          <div ref={leftRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={130} hideLabel hoverLabel="Sculpture" locked onOpen={() => setSculptureOpen(true)} />
-          </div>
-
-          {/* Center portal — fixed to the collapsed strip's vertical centre so it never shifts when the strip expands */}
-          <div
-            ref={centerPortalRef}
-            style={{ position: "absolute", top: "70px", left: "50%", transform: "translate(-50%, -50%)", zIndex: 51, cursor: "pointer" }}
-            onClick={e => { e.stopPropagation(); if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
-          >
-            <MiniPortal
-              portal={SIDE_PORTAL_LEFT}
-              size={248}
-              hideLabel
-              ringOnly
-              hoverLabel={fanOpen ? "Screens" : "View"}
-              hoverLabelSize="16px"
-              onOpen={() => { if (!fanOpen) setFanOpen(true); else setScreensOpen(true); }}
-            />
-          </div>
-
-          <div ref={rightRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={COMMISSIONS_PORTAL} size={130} hideLabel hoverLabel="Commissions" locked onOpen={() => setReelsOpen(true)} />
-          </div>
-          <div ref={rightOuterRef} className="absolute z-0" style={{ opacity: 0 }}>
-            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel hoverLabel="Concepts" locked onOpen={() => setConceptsOpen(true)} />
-          </div>
-        </div>
-
-        {/* Close button — in the strip, top-right, only when open */}
-        {fanOpen && (
-          <button
-            onClick={closeSection}
-            className="group absolute top-4 right-6 z-30 w-8 h-8 rounded-full border border-cream/20 flex items-center justify-center transition-all duration-300 hover:border-clay hover:bg-clay/10"
-            aria-label="Close section"
-          >
-            <X size={13} className="text-cream/40 group-hover:text-clay transition-colors duration-300" />
-          </button>
-        )}
+      {/* Desktop — all 5 portals always visible in a row */}
+      <div className="bg-matt-black relative hidden md:flex items-center justify-center gap-12 py-20">
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={130} hideLabel centerLabel="Projects"   hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={130} hideLabel centerLabel="Sculpture"  hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_LEFT}     size={248} hideLabel centerLabel="Screens"    hoverLabel="Under Construction" hoverLabelSize="16px" locked />
+        <MiniPortal portal={COMMISSIONS_PORTAL}   size={130} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={130} hideLabel centerLabel="Concepts"   hoverLabel="Under Construction" locked />
       </div>
 
 
@@ -450,60 +322,8 @@ export function CommissionsSection() {
 
       <div className="w-full h-px bg-white/10" />
 
-      {/* The Practice — revealed when fan opens */}
-      <div ref={practiceRevealRef}>
-        <div style={{ paddingTop: "220px" }} className="pb-0 flex flex-col items-center">
-          <div className="relative flex items-center justify-center overflow-visible" style={{ width: "80px", height: "80px" }}>
-            <span ref={practiceLineRef} style={{
-              position: "absolute", right: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
-              width: "90px", height: "1.5px",
-              background: "rgba(242,240,233,0.35)",
-              transformOrigin: "right center",
-              transform: "scaleX(0)",
-            }} />
-            <span ref={practiceLineRightRef} style={{
-              position: "absolute", left: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
-              width: "90px", height: "1.5px",
-              background: "rgba(242,240,233,0.35)",
-              transformOrigin: "left center",
-              transform: "scaleX(0)",
-            }} />
-            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035"
-              style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
-          </div>
-        </div>
-        <div className="about-practice-label px-8 pt-4 pb-0 text-center">
-          <span className="font-detail text-xs text-cream/90 uppercase tracking-[0.2em]">The Practice</span>
-        </div>
-        <div className="max-w-2xl mx-auto px-8 pt-8 pb-0 text-center">
-          <p className="about-practice-para1 text-lg md:text-2xl font-heading font-bold leading-tight" style={{ wordSpacing: "0.22em" }}>
-            {"Our work lives in two worlds — an evolving catalogue of".split(" ").map((word, i) => (
-              <span key={`a${i}`} className="para1-dim-word inline-block text-cream/40">{word}&thinsp;</span>
-            ))}
-            {" "}<span className="para1-bright inline-block text-cream/90">signature designs</span>{" "}
-            {"and fully bespoke commissions crafted".split(" ").map((word, i) => (
-              <span key={`b${i}`} className="para1-dim-word inline-block text-cream/40">{word}&thinsp;</span>
-            ))}
-            {" "}<span className="para1-bright inline-block text-cream/90">for the spaces they will define.</span>
-          </p>
-          <div className="about-practice-para2 mt-8">
-            <p className="text-cream/65 text-base leading-relaxed">
-              <span className="para2-bright inline-block text-cream">Drawing from</span>
-              <span className="para2-dim inline">{" "}</span>
-              <span className="para2-bright inline-block text-cream">nature</span>
-              <span className="para2-dim inline">{", "}the study and appreciation of{" "}</span>
-              <span className="para2-bright inline-block text-cream">cultural forms and patterns</span>
-              <span className="para2-dim inline">{", "}sculptural inspirations{" "}</span>
-              <span className="para2-bright inline-block text-cream">and an active imagination.</span>
-            </p>
-          </div>
-        </div>
-        {/* Scroll trigger sentinel — animation fires when this point enters view */}
-        <div ref={practiceTriggerRef} style={{ height: "1px", marginTop: "60px" }} />
-        <div style={{ height: "260px" }} />
-
-        <div style={{ height: "64px" }} />
-      </div>
+      {/* Practice text now lives in About.jsx */}
+      <div ref={practiceRevealRef} />
 
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}

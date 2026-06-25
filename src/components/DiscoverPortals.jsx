@@ -66,6 +66,20 @@ const PORTALS = [
     slideScale: 0.92,
     popupType: "links",
   },
+  {
+    id: "reels",
+    label: "Reels",
+    sublabel: "Behind the Work",
+    slides: [],
+    videos: [
+      { src: "/videos/reels/branches.mp4",    title: "Branches",                 detail: "A close-up reel of the Branches laser-cut design — birds perched on delicate steel branches.", poster: "/images/reels/branches-thumb.jpg" },
+      { src: "/videos/reels/rue.mp4",         title: "Rue",                      detail: "Rue — a ROGETjames reel.", poster: "/images/reels/rue-thumb.jpg" },
+      { src: "/videos/reels/banksia.mp4",     title: "Banksia",                  detail: "Banksia — a ROGETjames reel.", poster: "/images/reels/banksia-thumb.jpg" },
+      { src: "/videos/reels/b-editions.mp4",  title: "B Editions",               detail: "B Editions — a curated collection reel.", poster: "/images/reels/b-editions-thumb.jpg" },
+      { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "Waroona — a ROGETjames reel.", poster: "/images/reels/waroona-thumb.jpg" },
+    ],
+    popupType: "commissions-gallery",
+  },
 ];
 
 export function CommissionsGalleryPopup({ videos, onClose, title }) {
@@ -388,13 +402,20 @@ function LinksPopup({ onClose }) {
   );
 }
 
-export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false }) {
+export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false, noDarkHover = false, goldHover = false, centerLabel = null }) {
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
   const timerRef = useRef(null);
   const videos = portal.videos || (portal.video ? [{ src: portal.video, title: portal.videoTitle, detail: portal.videoDetail }] : null);
   const canOpen = videos || portal.popup || portal.popupType;
+
+  useEffect(() => {
+    portal.slides.forEach(slide => {
+      const src = typeof slide === "string" ? slide : slide?.src;
+      if (src) { const img = new Image(); img.src = src; }
+    });
+  }, []);
 
   useEffect(() => {
     if (videos) {
@@ -432,9 +453,11 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               padding: "9px",
               background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
               boxShadow: (glowing && !noGlow)
-                ? ringOnly
-                  ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.55)"
-                  : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
+                ? goldHover
+                  ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)"
+                  : ringOnly
+                    ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.55)"
+                    : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
                 : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
               transition: "box-shadow 0.6s ease",
             }}
@@ -451,11 +474,16 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
                 return (
                   <img key={i} src={src} alt="" role="presentation" className="absolute inset-0 w-full h-full object-cover"
-                    style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} loading="lazy" />
+                    style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} />
                 );
               })}
               <div className="absolute inset-0 pointer-events-none z-10"
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
+              {centerLabel && (
+                <div className="absolute inset-0 z-[14] flex items-center justify-center pointer-events-none transition-opacity duration-150 opacity-100 group-hover:opacity-0">
+                  <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>{centerLabel}</span>
+                </div>
+              )}
               {!hideLabel && (
                 <div className="absolute bottom-0 left-0 right-0 z-[15] pointer-events-none flex flex-col items-center"
                   style={{ paddingBottom: "10%", paddingTop: "22%", background: "linear-gradient(to top, rgba(0,0,0,0.68) 0%, transparent 100%)" }}>
@@ -464,7 +492,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                   {locked && <p className="font-detail text-cream/50 uppercase tracking-[0.15em]" style={{ fontSize: `${Math.max(5.5, size * 0.038)}px`, marginTop: "2px" }}>Under Construction</p>}
                 </div>
               )}
-              <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-400 bg-black/60 opacity-0 group-hover:opacity-100"
+              <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100${noDarkHover ? "" : " bg-black/60"}`}
                 style={alwaysLabel ? { opacity: 1 } : {}}>
                 <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
                   {locked ? "Under Construction" : hoverLabel}
@@ -487,7 +515,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 <defs>
                   <path id={`arc-${portal.id}`} d={`M ${cx - r},${cy} A ${r},${r} 0 0,1 ${cx + r},${cy}`} />
                 </defs>
-                <text fill="rgba(255,255,255,0.80)" fontSize={fs} fontFamily="var(--font-heading, sans-serif)" fontWeight="700" letterSpacing={ls}>
+                <text fill="rgba(255,255,255,0.80)" fontSize={fs} fontFamily="'Jost','DM Sans',sans-serif" fontWeight="400" letterSpacing={ls}>
                   <textPath href={`#arc-${portal.id}`} startOffset="50%" textAnchor="middle" dy="-3">
                     {arcLabel.toUpperCase()}
                   </textPath>
