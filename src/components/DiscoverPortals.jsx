@@ -406,7 +406,9 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
+  const [tapped, setTapped] = useState(false);
   const timerRef = useRef(null);
+  const tapTimerRef = useRef(null);
   const videos = portal.videos || (portal.video ? [{ src: portal.video, title: portal.videoTitle, detail: portal.videoDetail }] : null);
   const canOpen = videos || portal.popup || portal.popupType;
 
@@ -430,6 +432,8 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
     return () => clearInterval(timerRef.current);
   }, [portal.slides.length, videos?.length]);
 
+  useEffect(() => () => clearTimeout(tapTimerRef.current), []);
+
   return (
     <>
       <div className="flex flex-col items-center gap-3">
@@ -444,7 +448,15 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             </>
           )}
           <button
-            onClick={() => { if (locked) return; onOpen ? onOpen() : canOpen && setPopOpen(true); }}
+            onClick={() => {
+              if (locked) {
+                setTapped(true);
+                clearTimeout(tapTimerRef.current);
+                tapTimerRef.current = setTimeout(() => setTapped(false), 1800);
+                return;
+              }
+              onOpen ? onOpen() : canOpen && setPopOpen(true);
+            }}
             onMouseEnter={() => setGlowing(true)}
             onMouseLeave={() => setGlowing(false)}
             className={`group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-black ${locked ? "cursor-not-allowed" : "cursor-pointer"}`}
@@ -493,7 +505,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 </div>
               )}
               <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100${noDarkHover ? "" : " bg-black/60"}`}
-                style={alwaysLabel ? { opacity: 1 } : {}}>
+                style={alwaysLabel || tapped ? { opacity: 1 } : {}}>
                 <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
                   {locked ? "Under Construction" : hoverLabel}
                 </span>
@@ -572,13 +584,13 @@ export default function DiscoverPortals() {
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Portals</h2>
       </div>
       <div className="w-full h-px bg-white/10" />
-      <div className="bg-matt-black px-8 py-[55px]">
-        <div className={`flex justify-center ${isMobile ? "items-start gap-3" : "items-end gap-10 md:gap-20"}`}>
+      <div className={`bg-matt-black py-[55px] ${isMobile ? "px-2" : "px-8"}`}>
+        <div className={`flex justify-center ${isMobile ? "items-start gap-1.5" : "items-end gap-10 md:gap-20"}`}>
           {PORTALS.map(portal => (
             <MiniPortal
               key={portal.id}
               portal={portal}
-              size={isMobile ? Math.round((portal.size ?? 166) * 0.53) : (portal.size ?? 166)}
+              size={isMobile ? Math.round((portal.size ?? 166) * 0.4) : (portal.size ?? 166)}
               onOpen={getOnOpen(portal)}
               hoverLabel="View"
             />

@@ -3425,13 +3425,9 @@ export default function Gallery() {
             <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-ink to-transparent pointer-events-none" />
           </div>
 
-          {/* Center — Wall Art portal */}
-          <div className="flex justify-center py-8">
+          {/* All three portals in one column — equal gap guaranteed. */}
+          <div className="flex flex-col items-center gap-10 py-8">
             <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
-          </div>
-
-          {/* Sculpture + Screens portals — mobile */}
-          <div className="flex flex-col items-center gap-10 pt-[58px] pb-16">
             <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
