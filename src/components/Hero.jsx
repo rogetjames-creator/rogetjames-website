@@ -188,7 +188,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="hero-sub font-body text-cream/85 text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0 }}>
+          <p className="hero-sub font-body text-cream/85 text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 8px rgba(0,0,0,0.55)" }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
           </p>
         </div>
@@ -204,13 +204,18 @@ export default function Hero() {
               {label}
             </span>
           ))}
+
+          {/* Eyebrow — mobile only, sits below the location list so it doesn't overlap it */}
+          <p className="hero-eyebrow md:hidden mt-4 font-heading font-semibold text-[10px] text-cream/75 uppercase tracking-[0.35em]" style={{ opacity: 0 }}>
+            Original Laser Cut Wall Art &amp; Sculpture
+          </p>
         </div>
       </div>
 
-      {/* Eyebrow — centered on screen, at Gold Coast row level, fades in after all transitions */}
+      {/* Eyebrow — desktop: centered on screen, at Gold Coast row level, fades in after all transitions */}
       <p
-        className="hero-eyebrow absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none" style={{ opacity: 0 }}
-        style={{ bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
+        className="hero-eyebrow hidden md:block absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none"
+        style={{ opacity: 0, bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
       >
         Original Laser Cut Wall Art &amp; Sculpture
       </p>

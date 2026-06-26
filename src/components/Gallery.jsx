@@ -3319,6 +3319,20 @@ export default function Gallery() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Navbar's Collection dropdown/submenu dispatches this to actually open
+  // the catalogue overlay for the chosen category — scrolling to
+  // #collection alone only reveals the static strip section.
+  useEffect(() => {
+    const handler = (e) => {
+      const cat = e.detail;
+      if (cat === "wall-art") { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); }
+      else if (cat === "sculpture") { setSculpOpen(true); }
+      else if (cat === "screens") { setScreensOpen(true); }
+    };
+    window.addEventListener("open-collection-category", handler);
+    return () => window.removeEventListener("open-collection-category", handler);
+  }, []);
+
   return (
     <>
       {cardDeckOpen && <CardDeckOverlay onClose={() => { setCardDeckOpen(false); setCategoryClicked(false); }} categoryFilter={selectedCategory} onOpenCatalogue={(tab) => { setCatFlipOpen(true); setCatFlipTab(tab || selectedCategory); }} onSwitchCategory={(cat) => { setSelectedCategory(cat); setCategoryClicked(true); }} />}

@@ -1,0 +1,162 @@
+Ok in downloadsdiff --git a/CLAUDE.md b/CLAUDE.md
+index 31f777b..02d98ee 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -13,7 +13,7 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
+ - Do not say "Great!", "Sure!", "Of course!", "Happy to help" or anything like it.
+ - Do not narrate what you are about to do — just do it.
+ - Responses are short and direct. One sentence where one sentence is enough.
+-- This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational.
++- This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational. Never use affirming/complimentary phrases like "Good choice" or "Great question" in chat widget replies — just answer. Keep chat widget replies short; avoid long-winded answers.
+ 
+ **Autonomy — mandatory:**
+ - James is not a developer. His role is aesthetic direction, not technical operation.
+@@ -33,7 +33,9 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
+ 
+ ## Project
+ 
+-Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames-new.netlify.app/ (preview — will become rogetjames.com on launch). Deployed automatically to Netlify on every push to `main`.
++Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames.com/. Deployed automatically to Netlify on every push to `main`.
++
++**Correct GitHub repo — mandatory:** Netlify pulls from `github.com/rogetjames-creator/rogetjames-website`. This is the only repo that deploys to the live site. A separate repo, `github.com/ciaran-finnegan/rogetjames-website`, is not connected to Netlify — commits pushed there never go live. If a Claude Code session is scoped to the wrong repo, changes will build and commit successfully but never appear on rogetjames.com. Always confirm which repo a session has access to before assuming a push will deploy.
+ 
+ ## Commands
+ 
+diff --git a/netlify/functions/chat.js b/netlify/functions/chat.js
+index a0ba1dd..0ad850d 100644
+--- a/netlify/functions/chat.js
++++ b/netlify/functions/chat.js
+@@ -4,8 +4,9 @@ Tone and style — mandatory:
+ - Factual and direct. No pleasantries, no filler, no enthusiasm.
+ - Never compliment a visitor's choice ("great choice", "lovely", "perfect", etc.) — they are the judge, not you.
+ - No sales pitch. Do not volunteer information they did not ask for.
+-- When someone mentions a design or category, give a brief one-line confirmation and send the relevant link. That is all.
+-- Only provide sizes, pricing, or detailed specs if they specifically ask.
++- When someone mentions a design or category, give a short, slightly descriptive reply (a sentence or two) and send the relevant link. Don't go beyond that — no lists of sizes, series, or designs unless asked. If there's more you could tell them, close with a short, varied offer to say more (e.g. "Happy to go into more detail if useful" / "Let me know if you'd like more on that" / "I can elaborate if you're after more") — vary the phrasing, don't repeat the same line every time.
++- Only provide sizes or detailed specs if they specifically ask.
++- Never state a price. Pricing depends on postcode (regional pricing) — direct them to view the piece's details on the catalogue and enter their postcode there.
+ - Ask if they need help finding something or need specific information — then answer what they ask.
+ - Keep responses short. One or two sentences where possible.
+ 
+@@ -132,6 +133,7 @@ Key points for clients:
+ - Placing a Corten piece over paving in a rain-exposed area will cause rust stains on the ground — this is something to plan for
+ - For landscape and garden settings we recommend positioning over a garden bed, soil, or gravel rather than hard paving
+ - During the weathering phase, runoff can stain adjacent light-coloured surfaces — allow for this in the installation plan
++- Standard 30–40 mm wall spacers (supplied with the piece) hold it proud of the wall, which also helps prevent rust runoff from leaching directly onto the wall surface
+ - In coastal Australian environments (exposed beachfront), a sealed finish may be worth considering
+ - Corten can be sealed at any stage of the patina process to lock in a particular tone if preferred
+ 
+@@ -183,7 +185,7 @@ Installation steps:
+ 1. Hold or position the piece against the wall where it will be mounted
+ 2. Mark the fixing hole positions on the wall
+ 3. Drill appropriate holes for the supplied fixings, or suitable alternatives
+-4. Place the supplied spacers behind the piece — these hold it slightly proud of the wall for the best visual effect and to allow air circulation
++4. Place the supplied spacers behind the piece — standard spacers are 30–40 mm, holding the piece proud of the wall for the best visual effect (the gap creates shadow that highlights the design) and to allow air circulation. For Corten pieces, this gap also helps prevent rust runoff from leaching onto the wall
+ 5. Screw in the fixings — once the first mount is secured, the piece will hold its position and remaining fixings can be installed without needing to support the full weight
+ 
+ Most pieces come with all fixings included. If you have questions about installation on a specific wall type, get in touch via email.
+@@ -334,9 +336,11 @@ Contact:
+ - Website: rogetjames.com
+ 
+ Tone and scope:
+-- Be warm, knowledgeable and concise. You represent a premium creative studio — avoid overly salesy language.
++- Be concise and factual. Answer the question directly in as few sentences as possible — no filler, no padding.
++- Never use affirming or complimentary phrases like "Good choice", "Great question", "Happy to help", or similar. Do not praise, validate, or react to what the person said — just answer it.
++- You represent a premium creative studio — avoid overly salesy language.
+ - You are here specifically to help with questions about ROGETjames: designs, materials, sizes, commissions, process, delivery, installation, and maintenance. Do not answer questions outside this scope. If someone asks something unrelated, politely let them know: "I'm here to help with questions about ROGETjames designs and commissions — feel free to ask anything about our work."
+-- If someone asks for pricing, explain that pricing depends on the design, size, and material, and encourage them to send an enquiry via the contact form on the website or email james@rogetjames.com — James will come back to them personally.
++- Never state a price yourself, even if you think you know it — pricing requires a postcode (regional pricing varies). If someone asks for pricing, tell them to open the piece's details on the catalogue and enter their postcode to see pricing: https://rogetjames.com/?view=wallartcat (or sculpture catalogue link if relevant).
+ - If someone asks about deposits or payment: 50% deposit to start, balance before delivery. Terms may vary by order.
+ - If someone asks about lead times for catalogue works: approximately 4–6 weeks. Always suggest they enquire for current scheduling.
+ - Never mention a phone number, studio address, or visiting in person — not even if asked directly. If someone asks for an address or phone number, direct them to james@rogetjames.com only.
+diff --git a/src/components/Gallery.jsx b/src/components/Gallery.jsx
+index dbc7ea3..05bd3c3 100644
+--- a/src/components/Gallery.jsx
++++ b/src/components/Gallery.jsx
+@@ -3319,6 +3319,20 @@ export default function Gallery() {
+     return () => clearTimeout(timer);
+   }, []);
+ 
++  // Navbar's Collection dropdown/submenu dispatches this to actually open
++  // the catalogue overlay for the chosen category — scrolling to
++  // #collection alone only reveals the static strip section.
++  useEffect(() => {
++    const handler = (e) => {
++      const cat = e.detail;
++      if (cat === "wall-art") { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); }
++      else if (cat === "sculpture") { setSculpOpen(true); }
++      else if (cat === "screens") { setScreensOpen(true); }
++    };
++    window.addEventListener("open-collection-category", handler);
++    return () => window.removeEventListener("open-collection-category", handler);
++  }, []);
++
+   return (
+     <>
+       {cardDeckOpen && <CardDeckOverlay onClose={() => { setCardDeckOpen(false); setCategoryClicked(false); }} categoryFilter={selectedCategory} onOpenCatalogue={(tab) => { setCatFlipOpen(true); setCatFlipTab(tab || selectedCategory); }} onSwitchCategory={(cat) => { setSelectedCategory(cat); setCategoryClicked(true); }} />}
+diff --git a/src/components/Hero.jsx b/src/components/Hero.jsx
+index 2d88653..1f60384 100644
+--- a/src/components/Hero.jsx
++++ b/src/components/Hero.jsx
+@@ -188,7 +188,7 @@ export default function Hero() {
+             </span>
+           </h1>
+ 
+-          <p className="hero-sub font-body text-cream/85 text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0 }}>
++          <p className="hero-sub font-body text-cream/85 text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 8px rgba(0,0,0,0.55)" }}>
+             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
+           </p>
+         </div>
+@@ -204,13 +204,18 @@ export default function Hero() {
+               {label}
+             </span>
+           ))}
++
++          {/* Eyebrow — mobile only, sits below the location list so it doesn't overlap it */}
++          <p className="hero-eyebrow md:hidden mt-4 font-heading font-semibold text-[10px] text-cream/75 uppercase tracking-[0.35em]" style={{ opacity: 0 }}>
++            Original Laser Cut Wall Art &amp; Sculpture
++          </p>
+         </div>
+       </div>
+ 
+-      {/* Eyebrow — centered on screen, at Gold Coast row level, fades in after all transitions */}
++      {/* Eyebrow — desktop: centered on screen, at Gold Coast row level, fades in after all transitions */}
+       <p
+-        className="hero-eyebrow absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none" style={{ opacity: 0 }}
+-        style={{ bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
++        className="hero-eyebrow hidden md:block absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none"
++        style={{ opacity: 0, bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
+       >
+         Original Laser Cut Wall Art &amp; Sculpture
+       </p>
+diff --git a/src/components/Navbar.jsx b/src/components/Navbar.jsx
+index 07bbbdc..c412994 100644
+--- a/src/components/Navbar.jsx
++++ b/src/components/Navbar.jsx
+@@ -86,7 +86,7 @@ export default function Navbar({ quoteCount = 0 }) {
+     }
+   }, [mobileOpen, lenis]);
+ 
+-  const closeMenu = useCallback(() => setMobileOpen(false), []);
++  const closeMenu = useCallback(() => { setMobileOpen(false); lenis?.start(); }, [lenis]);
+ 
+   const scrollTo = useCallback((href, closeMobileMenu = false) => (e) => {
+     e.preventDefault();
+@@ -162,7 +162,7 @@ export default function Navbar({ quoteCount = 0 }) {
+               {collectionOpen && (
+                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
+                   {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
+-                    <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
++                    <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
+                       className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200">
+                       {label}
+                     </button>
+@@ -263,7 +263,7 @@ export default function Navbar({ quoteCount = 0 }) {
+             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Collection</span>
+             <div className="flex gap-5">
+               {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
+-                <button key={tab} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
++                <button key={tab} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
+                   className="text-cream text-lg font-heading font-medium lift-hover">
+                   {label}
+                 </button>

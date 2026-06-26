@@ -13,7 +13,7 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 - Do not say "Great!", "Sure!", "Of course!", "Happy to help" or anything like it.
 - Do not narrate what you are about to do — just do it.
 - Responses are short and direct. One sentence where one sentence is enough.
-- This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational.
+- This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational. Never use affirming/complimentary phrases like "Good choice" or "Great question" in chat widget replies — just answer. Keep chat widget replies short; avoid long-winded answers.
 
 **Autonomy — mandatory:**
 - James is not a developer. His role is aesthetic direction, not technical operation.
@@ -33,7 +33,9 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 
 ## Project
 
-Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames-new.netlify.app/ (preview — will become rogetjames.com on launch). Deployed automatically to Netlify on every push to `main`.
+Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames.com/. Deployed automatically to Netlify on every push to `main`.
+
+**Correct GitHub repo — mandatory:** Netlify pulls from `github.com/rogetjames-creator/rogetjames-website`. This is the only repo that deploys to the live site. A separate repo, `github.com/ciaran-finnegan/rogetjames-website`, is not connected to Netlify — commits pushed there never go live. If a Claude Code session is scoped to the wrong repo, changes will build and commit successfully but never appear on rogetjames.com. Always confirm which repo a session has access to before assuming a push will deploy.
 
 ## Commands
 
