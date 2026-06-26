@@ -3444,18 +3444,6 @@ export default function Gallery() {
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 
-          {/* Bottom strip */}
-          <div className="relative h-28 overflow-hidden">
-            <div className="marquee-track-right flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
-              {[...stripImages, ...stripImages].map((src, i) => (
-                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => setCardDeckOpen(true)}>
-                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
-                </div>
-              ))}
-            </div>
-            <div className="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-ink to-transparent pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-ink to-transparent pointer-events-none" />
-          </div>
         </div>
         )}
 
