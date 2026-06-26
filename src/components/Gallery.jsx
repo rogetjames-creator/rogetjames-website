@@ -2590,7 +2590,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 </button>
               </div>
             : <>
-                {categoryFilter !== "sculpture" && onSwitchCategory && (
+                {!isMobile && categoryFilter !== "sculpture" && onSwitchCategory && (
                   <button
                     onClick={() => onSwitchCategory("sculpture")}
                     className="pill-trace font-detail text-[9px] uppercase tracking-[0.18em] px-3 py-1.5 rounded-full border border-white/20 bg-transparent text-cream/88 hover:text-cream hover:border-white/50 transition-colors duration-200 whitespace-nowrap"
@@ -2598,7 +2598,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     Browse Sculpture
                   </button>
                 )}
-                {categoryFilter === "sculpture" && onSwitchCategory && (
+                {!isMobile && categoryFilter === "sculpture" && onSwitchCategory && (
                   <button
                     onClick={() => onSwitchCategory("wall-art")}
                     className="pill-trace font-detail text-[9px] uppercase tracking-[0.18em] px-3 py-1.5 rounded-full border border-white/20 bg-transparent text-cream/88 hover:text-cream hover:border-white/50 transition-colors duration-200 whitespace-nowrap"
@@ -2613,7 +2613,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 </button>
               </>
           }
-          {!isAll && !searchQuery && (
+          {!isMobile && !isAll && !searchQuery && (
             <button onClick={() => setSliding(s => !s)} className={`pill-trace font-detail text-[9px] uppercase tracking-[0.18em] px-3 py-1 rounded-full border transition-colors duration-200${sliding ? " pill-active" : ""}`}
               style={{ borderColor: sliding ? "#9e7134" : "rgba(242,240,233,0.2)", color: sliding ? "#9e7134" : "rgba(242,240,233,0.45)", background: "transparent" }}>
               {sliding ? "⏸ Slide" : "▶ Slide"}
