@@ -2567,7 +2567,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
           <div style={{ width: 8 }} />
           {categoryFilter !== "sculpture" && (
             <button onClick={() => setCollectionInfoOpen(true)}
-              className="group relative flex items-center justify-center rounded-full border border-white/25 bg-transparent hover:border-clay hover:bg-clay/10 transition-all duration-150"
+              className="group relative flex items-center justify-center rounded-full border bg-transparent hover:border-clay hover:bg-clay/10 transition-all duration-150"
+              style={{ borderColor: "rgba(242,240,233,0.88)" }}
               style={{ width: 22, height: 22, flexShrink: 0 }}>
               <span style={{ fontFamily: "var(--font-detail)", fontSize: 11, color: "rgba(242,240,233,0.88)", lineHeight: 1, userSelect: "none" }}>i</span>
               <span className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 font-detail text-[9px] uppercase tracking-[0.16em] text-cream/50 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-100" style={{ transitionDelay: "80ms" }}>
