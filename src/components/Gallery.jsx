@@ -2647,8 +2647,26 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Series tabs — hidden while searching or in sculpture view */}
       {!searchQuery && categoryFilter !== "sculpture" && (
         <div className="flex-shrink-0 border-b border-white/8 px-5 py-2" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {/* Row 1 — Slideshow / Stop */}
-          <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          {/* Row 1 — Edition pills, centred on one line */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "nowrap", overflowX: "auto", scrollbarWidth: "none" }}>
+            <button onClick={() => { setTab("all"); setDrilledSeries(null); }}
+              className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-all duration-200${isAll ? " pill-active" : ""}`}
+              style={{ background: "transparent", borderColor: isAll ? "#9e7134" : "rgba(242,240,233,0.35)", color: isAll ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
+              All
+            </button>
+            {filteredSeries.map((s) => {
+              const isActive = tab === s.id || drilledSeries?.id === s.id;
+              return (
+                <button key={s.id} onClick={() => { setTab(s.id); setDrilledSeries(s); }}
+                  className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${isActive ? " pill-active" : ""}`}
+                  style={{ background: "transparent", borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.35)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+          {/* Row 2 — Slideshow / Stop, centred below */}
+          <div style={{ display: "flex", justifyContent: "center" }}>
             {isAll && (
               <button onClick={startSlideshow}
                 className="flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
@@ -2671,24 +2689,6 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 Stop
               </button>
             )}
-          </div>
-          {/* Row 2 — Edition pills, centred */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "nowrap", overflowX: "auto", scrollbarWidth: "none" }}>
-            <button onClick={() => { setTab("all"); setDrilledSeries(null); }}
-              className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-all duration-200${isAll ? " pill-active" : ""}`}
-              style={{ background: "transparent", borderColor: isAll ? "#9e7134" : "rgba(242,240,233,0.35)", color: isAll ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
-              All
-            </button>
-            {filteredSeries.map((s) => {
-              const isActive = tab === s.id || drilledSeries?.id === s.id;
-              return (
-                <button key={s.id} onClick={() => { setTab(s.id); setDrilledSeries(s); }}
-                  className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-colors duration-200${isActive ? " pill-active" : ""}`}
-                  style={{ background: "transparent", borderColor: isActive ? "#9e7134" : "rgba(242,240,233,0.35)", color: isActive ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
-                  {s.label}
-                </button>
-              );
-            })}
           </div>
         </div>
       )}
