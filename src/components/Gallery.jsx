@@ -2557,7 +2557,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       <div className="flex flex-col flex-shrink-0">
       <div className="flex items-center px-5 py-3 gap-3" style={{ borderBottom: categoryFilter === "sculpture" ? "none" : "1px solid rgba(255,255,255,0.1)" }}>
         {/* Left — logo */}
-        <span className="font-heading font-bold text-sm tracking-widest text-cream flex-none">ROGET<span className="font-light italic">james</span></span>
+        <button onClick={() => { onClose(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-heading font-bold text-sm tracking-widest text-cream flex-none">ROGET<span className="font-light italic">james</span></button>
         {/* Centre — catalogue + info */}
         <div className="flex-1 flex justify-center items-center gap-1.5">
           <button onClick={() => onOpenCatalogue?.(categoryFilter)}

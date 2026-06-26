@@ -2231,10 +2231,10 @@ export function ScreensGalleryModal({ onClose }) {
     >
       {/* Top bar */}
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
-        <span className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
+        <button onClick={() => { onClose(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
           ROGET<span className="font-light italic">james</span>
           <span className="font-detail text-[9px] font-normal not-italic uppercase tracking-[0.2em] text-cream/50 ml-2">· Screens</span>
-        </span>
+        </button>
         <div className="flex-1 flex justify-center">
           <button onClick={() => setShowCat(true)}
             className="pill-trace font-detail text-[9px] uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-white/35 bg-transparent text-cream/88 transition-colors duration-200">
@@ -2617,10 +2617,10 @@ export function ProjectsGalleryModal({ onClose }) {
     <div className="fixed inset-0 z-[10000] bg-jet flex flex-col">
       {/* Top bar */}
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
-        <span className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
+        <button onClick={() => { onClose(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
           ROGET<span className="font-light italic">james</span>
           <span className="font-detail text-[9px] font-normal not-italic uppercase tracking-[0.2em] text-cream/50 ml-2">· Projects</span>
-        </span>
+        </button>
         <div className="flex-1" />
         <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
       </div>
@@ -2786,10 +2786,10 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
     >
       {/* Top bar */}
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3 relative">
-        <span className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
+        <button onClick={() => { onClose(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
           ROGET<span className="font-light italic">james</span>
           <span className="font-detail text-[9px] font-normal not-italic uppercase tracking-[0.2em] text-cream/50 ml-2">· {labelProp}</span>
-        </span>
+        </button>
         <div className="flex-1" />
 
         {/* Search */}
