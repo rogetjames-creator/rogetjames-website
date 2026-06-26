@@ -2645,41 +2645,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Series tabs — hidden while searching or in sculpture view */}
       {!searchQuery && categoryFilter !== "sculpture" && (
         <div className="flex-shrink-0 border-b border-white/8">
-          {/* Trigger row */}
-          <div className="flex items-center gap-3 px-5 py-2">
-            <button
-              onClick={() => setPillsOpen(o => !o)}
-              className="group flex items-center gap-2.5 transition-colors duration-200"
-            >
-              <span
-                className="flex items-center justify-center rounded-full border font-detail text-[8px] uppercase tracking-[0.14em] transition-all duration-200"
-                style={{
-                  width: 30, height: 30, flexShrink: 0,
-                  borderColor: pillsOpen ? "#9e7134" : "rgba(242,240,233,0.3)",
-                  background: pillsOpen ? "#9e7134" : "transparent",
-                  color: pillsOpen ? "#f2f0e9" : "rgba(242,240,233,0.6)",
-                }}
-                onMouseEnter={e => { if (!pillsOpen) { e.currentTarget.style.background = "#9e7134"; e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}}
-                onMouseLeave={e => { if (!pillsOpen) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.6)"; }}}
-              >
-                ✦
-              </span>
-              <span className="font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
-                style={{ color: pillsOpen ? "#f2f0e9" : "rgba(242,240,233,0.75)" }}>
-                The Editions
-              </span>
-            </button>
-            {/* Active series shown inline when drawer closed */}
-            {!pillsOpen && !isAll && (
-              <span className="font-detail text-[9px] uppercase tracking-[0.14em] px-3 py-1 rounded-full border"
-                style={{ borderColor: "#9e7134", color: "#f2f0e9", background: "transparent" }}>
-                {drilledSeries?.label ?? filteredSeries.find(s => s.id === tab)?.label}
-              </span>
-            )}
+          <div className="flex items-center gap-2 px-5 py-2">
             {/* Slideshow button — All view; Stop button — card view */}
             {isAll && categoryFilter !== "sculpture" && (
               <button onClick={startSlideshow}
-                className="ml-auto flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
+                className="flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200 mr-2"
                 style={{ borderColor: "rgba(242,240,233,0.25)", color: "rgba(242,240,233,0.65)", background: "transparent" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(242,240,233,0.25)"; e.currentTarget.style.color = "rgba(242,240,233,0.65)"; }}
@@ -2690,7 +2660,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             )}
             {!isAll && slideshowActive && (
               <button onClick={stopSlideshow}
-                className="ml-auto flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
+                className="flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200 mr-2"
                 style={{ borderColor: "rgba(158,113,52,0.6)", color: "#9e7134", background: "transparent" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(158,113,52,0.6)"; e.currentTarget.style.color = "#9e7134"; }}
@@ -2699,15 +2669,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 Stop
               </button>
             )}
-          </div>
-          {/* Animated drawer */}
-          <div style={{
-            overflow: "hidden",
-            maxHeight: pillsOpen ? "200px" : "0px",
-            transition: "max-height 0.35s cubic-bezier(0.4,0,0.2,1)",
-          }}>
-            <div className="flex flex-wrap gap-2 px-5 pb-3">
-              <button onClick={() => { setTab("all"); setDrilledSeries(null); setPillsOpen(false); /* collapse on All */ }}
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => { setTab("all"); setDrilledSeries(null); }}
                 className={`pill-trace flex-shrink-0 px-4 py-1.5 rounded-full font-detail text-[9px] uppercase tracking-[0.16em] border transition-all duration-200${isAll ? " pill-active" : ""}`}
                 style={{ background: "transparent", borderColor: isAll ? "#9e7134" : "rgba(242,240,233,0.35)", color: isAll ? "#f2f0e9" : "rgba(242,240,233,0.88)", whiteSpace: "nowrap" }}>
                 All
