@@ -188,7 +188,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 8px rgba(0,0,0,0.55)" }}>
+          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.8)" }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
           </p>
         </div>
