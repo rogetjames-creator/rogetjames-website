@@ -2768,9 +2768,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               <button onClick={() => handleArrow(-1)} className="absolute left-10 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors" style={{ fontSize: 20 }}>‹</button>
 
               {/* Card image */}
-              <div style={{ transition: "opacity 0.38s ease", opacity: animDir ? 0 : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: isMobile ? "16px 20px" : "16px 64px", width: "100%" }}>
+              <div style={{ transition: "opacity 0.7s ease", opacity: animDir ? 0 : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: isMobile ? "16px 20px" : "16px 64px", width: "100%" }}>
                 <img src={displayImg} alt={item.name}
-                  style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
+                  style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)", transition: "opacity 0.7s ease" }} />
                 {/* Title + Details directly under image */}
                 <div className="flex items-center gap-4">
                   <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{item.name}</p>
