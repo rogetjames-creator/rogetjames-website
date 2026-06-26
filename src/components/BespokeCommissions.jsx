@@ -2247,17 +2247,17 @@ export function ScreensGalleryModal({ onClose }) {
                 <input ref={searchInputRef} type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                   onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 180)}
                   placeholder="Search designs…"
-                  className="bg-white/6 border border-white/15 rounded-full pl-3 pr-7 py-1.5 font-detail text-[12px] text-cream placeholder:text-cream/30 focus:outline-none focus:border-clay/50 transition-colors w-36"
+                  className="bg-white/6 border border-white/15 rounded-full pl-3 pr-7 py-1.5 font-detail text-[12px] text-cream placeholder:text-cream/30 focus:outline-none focus:border-clay/50 transition-colors w-24 md:w-36"
                   autoFocus />
                 <button onClick={() => { setSearchQuery(""); setSearchOpen(false); }} className="absolute right-2.5 text-cream/30 hover:text-cream/70 transition-colors"><X size={10} /></button>
               </div>
             : <button onClick={() => { setSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 50); }}
                 className="flex items-center gap-2 text-cream/40 hover:text-cream transition-colors" aria-label="Search">
-                <span className="font-detail text-[9px] uppercase tracking-[0.2em]">Refine Search</span>
+                <span className="hidden md:inline font-detail text-[9px] uppercase tracking-[0.2em]">Refine Search</span>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="6" cy="6" r="4"/><line x1="9.5" y1="9.5" x2="13" y2="13"/></svg>
               </button>
           }
-          <button onClick={onClose} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+          <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
         </div>
       </div>
 
@@ -2622,7 +2622,7 @@ export function ProjectsGalleryModal({ onClose }) {
           <span className="font-detail text-[9px] font-normal not-italic uppercase tracking-[0.2em] text-cream/50 ml-2">· Projects</span>
         </span>
         <div className="flex-1" />
-        <button onClick={onClose} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+        <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
       </div>
 
       {/* Category pills */}
@@ -2803,7 +2803,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
               <input ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchFocused(true)} onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
                 placeholder="search sculpture…"
-                className="bg-transparent text-cream text-[13px] outline-none ml-2 w-32 placeholder-cream/30 font-detail" />
+                className="bg-transparent text-cream text-[13px] outline-none ml-2 w-20 md:w-32 placeholder-cream/30 font-detail" />
             )}
           </div>
           {/* Suggestions dropdown */}
@@ -2826,7 +2826,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
           )}
         </div>
 
-        <button onClick={onClose} className="text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+        <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
       </div>
 
       {/* Search results */}
