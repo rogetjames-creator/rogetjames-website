@@ -2393,6 +2393,18 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     { id: "leafs",    label: "Leaf Sculptures" },
   ];
 
+  const prevCategoryFilter = useRef(categoryFilter);
+  useEffect(() => {
+    if (prevCategoryFilter.current !== categoryFilter) {
+      prevCategoryFilter.current = categoryFilter;
+      setTab("all");
+      setDrilledSeries(null);
+      setCardIdx(0);
+      setSlideIdx(0);
+      setSculptureCat("all");
+    }
+  }, [categoryFilter]);
+
   const wallArtIds = new Set(WALL_ART_SERIES.map(s => s.id));
   const filteredSeries = (() => {
     const base = categoryFilter === "sculpture"
