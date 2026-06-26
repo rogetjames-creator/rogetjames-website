@@ -34,7 +34,7 @@ const NAV_COLS = [
       { label: "About", href: "#about" },
       { label: "Process & Ordering", href: "#process" },
       { label: "Contact", href: "#contact" },
-      { label: "Agents", href: "#contact" },
+      { label: "Links", href: "#discover-portals", event: "open-discover-portal-links" },
     ],
   },
 ];

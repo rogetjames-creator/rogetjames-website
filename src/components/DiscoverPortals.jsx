@@ -556,6 +556,13 @@ export default function DiscoverPortals() {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [clientReelsOpen, setClientReelsOpen] = useState(false);
+  const [linksOpen, setLinksOpen] = useState(false);
+
+  useEffect(() => {
+    const openLinks = () => setLinksOpen(true);
+    window.addEventListener("open-discover-portal-links", openLinks);
+    return () => window.removeEventListener("open-discover-portal-links", openLinks);
+  }, []);
 
   useEffect(() => {
     if (!headerRef.current) return;
@@ -578,7 +585,7 @@ export default function DiscoverPortals() {
   };
 
   return (
-    <section className="bg-graphite overflow-x-hidden">
+    <section id="discover-portals" className="bg-graphite overflow-x-hidden">
       <div ref={headerRef} className="px-8 pt-20 pb-10 text-center">
         <span className="font-detail text-xs text-cream/55 uppercase tracking-[0.2em]">Discover</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Portals</h2>
@@ -600,6 +607,7 @@ export default function DiscoverPortals() {
       <div className="w-full h-px bg-white/10" />
       <div style={{ height: bottomH || 160 }} />
       {clientReelsOpen && <ArtPopup images={CLIENT_IMAGES} startIndex={0} onClose={() => setClientReelsOpen(false)} />}
+      {linksOpen && <LinksPopup onClose={() => setLinksOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
       {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
