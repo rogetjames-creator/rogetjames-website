@@ -3109,8 +3109,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             <button onClick={() => setCollectionInfoOpen(false)} style={{ position: "absolute", top: 18, right: 20, background: "none", border: "none", color: "rgba(242,240,233,0.4)", cursor: "pointer", fontSize: 20, lineHeight: 1 }}>✕</button>
             <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase", color: "#9E7134", margin: "0 0 12px" }}>Wall Art</p>
             <p style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: "clamp(20px,3vw,30px)", color: "#F2F0E9", margin: "0 0 36px", letterSpacing: "0.06em", textTransform: "uppercase", lineHeight: 1.15 }}>The Collection</p>
-            <p style={{ fontFamily: "var(--font-detail)", fontSize: 15, color: "rgba(242,240,233,0.7)", lineHeight: 1.85, margin: 0 }}>
-              Your text here — write about the wall art range, the designs, materials, what makes them distinct.
+            <p style={{ fontFamily: "var(--font-detail)", fontSize: 15, color: "rgba(242,240,233,0.7)", lineHeight: 1.85, margin: "0 0 24px" }}>
+              The Wall Art Collection is a curated gallery of freeform designs, each conceived as a standalone artwork — created for architectural, interior, and landscape settings. Colour finishes and material options tailor each piece to its space.
+            </p>
+            <p style={{ fontFamily: "var(--font-detail)", fontSize: 13, color: "rgba(242,240,233,0.4)", lineHeight: 1.7, margin: 0 }}>
+              Click "Details" for size options and pricing.
             </p>
           </div>
         </div>
