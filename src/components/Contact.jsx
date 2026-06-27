@@ -73,14 +73,16 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (sending) return;
     setError(null);
 
     const formData = new FormData(formRef.current);
     setSending(true);
     try {
-      const attachments = await Promise.all(
-        uploadedFiles.map((f) => fileToCompressedAttachment(f.file))
-      );
+      // A single unreadable image must not block the whole enquiry — skip it.
+      const attachments = (await Promise.all(
+        uploadedFiles.map((f) => fileToCompressedAttachment(f.file).catch(() => null))
+      )).filter(Boolean);
 
       const payload = {
         name: formData.get("name"),
@@ -267,6 +269,11 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     type="text"
                     name="postcode"
                     required
+                    inputMode="numeric"
+                    pattern="\d{4}"
+                    maxLength={4}
+                    autoComplete="postal-code"
+                    title="Enter a 4-digit Australian postcode"
                     className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                     placeholder="1234"
                   />
@@ -381,6 +388,8 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                         type="tel"
                         required={uploadedFiles.length > 0}
                         name="phone"
+                        inputMode="tel"
+                        autoComplete="tel"
                         className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                         placeholder="+61 400 000 000"
                       />
