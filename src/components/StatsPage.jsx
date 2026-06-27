@@ -89,7 +89,7 @@ export default function StatsPage() {
     );
   }
 
-  const { records, summary } = data;
+  const { records, summary, chats } = data;
 
   return (
     <div className="min-h-screen bg-jet px-6 py-12">
@@ -136,6 +136,29 @@ export default function StatsPage() {
                     {[r.Postcode, r.State, r.Region].filter(Boolean).join(" · ")}
                   </p>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mt-6">
+          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-4">
+            Q &amp; Ai conversations{chats?.length ? ` · ${chats.length}` : ""}
+          </p>
+          <div className="space-y-4 max-h-[520px] overflow-y-auto">
+            {(!chats || chats.length === 0) && (
+              <p className="font-detail text-sm text-cream/40">No conversations recorded yet.</p>
+            )}
+            {(chats || []).map(c => (
+              <div key={c.id} className="border-b border-white/8 pb-4 last:border-0">
+                <span className="font-detail text-[10px] text-cream/35">{new Date(c.createdTime).toLocaleString()}</span>
+                <div className="mt-1.5 space-y-1.5">
+                  {(c.messages || []).map((m, i) => (
+                    <p key={i} className={`font-detail text-sm leading-relaxed ${m.role === "user" ? "text-cream/90" : "text-cream/50"}`}>
+                      <span className="text-clay/70">{m.role === "user" ? "Q: " : "Jai: "}</span>{m.content}
+                    </p>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

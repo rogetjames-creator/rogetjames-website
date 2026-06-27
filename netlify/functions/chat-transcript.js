@@ -31,6 +31,21 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: JSON.stringify({ error: "No messages" }) };
   }
 
+  // Store the conversation in Netlify Blobs so the questions can be reviewed
+  // on the /stats dashboard, not only emailed. Best-effort — never blocks.
+  try {
+    const { getStore } = await import("@netlify/blobs");
+    const store = getStore({ name: "chat-transcripts", consistency: "strong" });
+    const key = `${new Date().toISOString()}_${Math.random().toString(36).slice(2, 8)}`;
+    await store.setJSON(key, {
+      createdTime: new Date().toISOString(),
+      questions: messages.filter(m => m.role === "user").map(m => m.content),
+      messages: messages
+        .filter(m => m.role === "user" || m.role === "assistant")
+        .map(m => ({ role: m.role, content: m.content })),
+    });
+  } catch { /* storage is best-effort */ }
+
   const lines = messages
     .filter(m => m.role === "user" || m.role === "assistant")
     .map(m => `${m.role === "user" ? "Visitor" : "Jai"}: ${m.content}`)

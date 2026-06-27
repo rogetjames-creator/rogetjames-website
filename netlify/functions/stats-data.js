@@ -45,7 +45,21 @@ export default async function handler(req) {
     if (f.Postcode) summary.byPostcode[f.Postcode] = (summary.byPostcode[f.Postcode] || 0) + 1;
   }
 
-  return json({ records: records.slice(0, 200), summary }, 200);
+  // Q & Ai conversations, stored by chat-transcript.js.
+  let chats = [];
+  try {
+    const chatStore = getStore({ name: "chat-transcripts", consistency: "strong" });
+    const { blobs } = await chatStore.list();
+    const entries = await Promise.all(
+      blobs.map(async (b) => {
+        const v = await chatStore.get(b.key, { type: "json" }).catch(() => null);
+        return v ? { id: b.key, ...v } : null;
+      })
+    );
+    chats = entries.filter(Boolean).sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime)).slice(0, 100);
+  } catch { /* chat store optional */ }
+
+  return json({ records: records.slice(0, 200), summary, chats }, 200);
 }
 
 function emptySummary() {
