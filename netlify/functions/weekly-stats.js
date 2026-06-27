@@ -1,32 +1,27 @@
-// Scheduled function — runs every Monday morning and emails James a
-// summary of the past week's pricing/postcode interest, pulled from
-// the "Pricing Interest" Airtable table written by track-event.js.
-const TABLE_NAME = process.env.AIRTABLE_ANALYTICS_TABLE || "Pricing Interest";
+// Scheduled function — runs every Monday morning and emails James a summary of
+// the past week's pricing/postcode interest, read from the "pricing-interest"
+// Netlify Blobs store written by track-event.js.
+import { getStore } from "@netlify/blobs";
+
+const STORE_NAME = "pricing-interest";
 
 export default async function handler() {
-  const apiKey    = process.env.AIRTABLE_API_KEY;
-  const baseId    = process.env.AIRTABLE_BASE_ID;
   const resendKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.VAULT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>";
-  const toEmail   = "james@rogetjames.com";
+  const fromEmail = process.env.CONTACT_FROM_EMAIL || process.env.VAULT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>";
+  const toEmail   = process.env.NOTIFY_EMAIL || "james@rogetjames.com";
 
-  if (!apiKey || !baseId || !resendKey) return new Response("ok");
+  if (!resendKey) return new Response("ok");
 
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const formula = encodeURIComponent(`IS_AFTER(CREATED_TIME(), DATETIME_PARSE("${since}"))`);
-  const tableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}?pageSize=100&filterByFormula=${formula}`;
+  const sinceTs = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
   let records = [];
-  let offset;
   try {
-    do {
-      const url = offset ? `${tableUrl}&offset=${offset}` : tableUrl;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
-      if (!res.ok) return new Response("ok"); // table may not exist yet — nothing to report
-      const data = await res.json();
-      records = records.concat(data.records || []);
-      offset = data.offset;
-    } while (offset);
+    const store = getStore({ name: STORE_NAME, consistency: "strong" });
+    const { blobs } = await store.list();
+    const entries = await Promise.all(
+      blobs.map((b) => store.get(b.key, { type: "json" }).catch(() => null))
+    );
+    records = entries.filter(Boolean).filter((r) => new Date(r.createdTime).getTime() >= sinceTs);
   } catch {
     return new Response("ok");
   }
@@ -37,8 +32,7 @@ export default async function handler() {
   const byItem = {};
   const byRegion = {};
   const postcodes = [];
-  for (const r of records) {
-    const f = r.fields;
+  for (const f of records) {
     if (f.Type) byType[f.Type] = (byType[f.Type] || 0) + 1;
     if (f.Item) byItem[f.Item] = (byItem[f.Item] || 0) + 1;
     if (f.Region) byRegion[f.Region] = (byRegion[f.Region] || 0) + 1;

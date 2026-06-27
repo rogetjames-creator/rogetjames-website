@@ -1,21 +1,10 @@
-// Logs pricing & postcode interest to Airtable for the weekly stats digest.
-// Table auto-creates on first use if it doesn't exist yet (requires the
-// Airtable token to have schema write access — same token used for the vault).
-const TABLE_NAME = process.env.AIRTABLE_ANALYTICS_TABLE || "Pricing Interest";
+// Logs pricing & postcode interest to Netlify Blobs — storage built into the
+// Netlify platform, so it needs no external account or API keys. The /stats
+// dashboard and the weekly digest both read from this same store. We also
+// email James directly the moment someone enters a postcode to price a design.
+import { getStore } from "@netlify/blobs";
 
-const FIELDS = [
-  { name: "Type", type: "singleSelect", options: { choices: [
-    { name: "Postcode Entered" }, { name: "Viewed Pricing" }, { name: "Added to Quote" },
-  ] } },
-  { name: "Item", type: "singleLineText" },
-  { name: "Series", type: "singleLineText" },
-  { name: "Postcode", type: "singleLineText" },
-  { name: "State", type: "singleLineText" },
-  { name: "Region", type: "singleLineText" },
-  { name: "Material", type: "singleLineText" },
-  { name: "Size", type: "singleLineText" },
-  { name: "Price", type: "number", options: { precision: 0 } },
-];
+const STORE_NAME = "pricing-interest";
 
 export default async function handler(req, context) {
   if (req.method !== "POST") {
@@ -32,8 +21,7 @@ export default async function handler(req, context) {
   if (!type) return json({ ok: true }, 200);
 
   // Email James the moment a visitor enters a postcode to price a design — the
-  // high-intent signal. Resend only (no Airtable needed). Throttled per IP so
-  // it can't be used to flood the inbox; never blocks the visitor.
+  // high-intent signal. Throttled per IP so it can't be used to flood the inbox.
   if (type === "postcode" && process.env.RESEND_API_KEY) {
     const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "";
     if (!emailThrottled(ip)) {
@@ -41,49 +29,27 @@ export default async function handler(req, context) {
     }
   }
 
-  // Log every event to Airtable for the weekly digest / stats page, if set up.
-  const apiKey = process.env.AIRTABLE_API_KEY;
-  const baseId = process.env.AIRTABLE_BASE_ID;
-  if (!apiKey || !baseId) return json({ ok: true }, 200); // analytics store not configured — fine
+  // Persist the event to Netlify Blobs for the dashboard + weekly digest.
+  // Field names are capitalised to match what stats-data / weekly-stats read.
+  try {
+    const record = {
+      createdTime: new Date().toISOString(),
+      Type: type === "postcode" ? "Postcode Entered" : type === "add_to_quote" ? "Added to Quote" : "Viewed Pricing",
+      ...(item && { Item: item }),
+      ...(series && { Series: series }),
+      ...(postcode && { Postcode: postcode }),
+      ...(state && { State: state }),
+      ...(typeof isWA === "boolean" && { Region: isWA ? "WA" : "Interstate" }),
+      ...(material && { Material: material }),
+      ...(size && { Size: size }),
+      ...(typeof price === "number" && { Price: price }),
+    };
+    const store = getStore({ name: STORE_NAME, consistency: "strong" });
+    const key = `${record.createdTime}_${Math.random().toString(36).slice(2, 8)}`;
+    await store.setJSON(key, record);
+  } catch { /* analytics must never block the visitor */ }
 
-  const fields = {
-    Type: type === "postcode" ? "Postcode Entered" : type === "add_to_quote" ? "Added to Quote" : "Viewed Pricing",
-    ...(item && { Item: item }),
-    ...(series && { Series: series }),
-    ...(postcode && { Postcode: postcode }),
-    ...(state && { State: state }),
-    ...(typeof isWA === "boolean" && { Region: isWA ? "WA" : "Interstate" }),
-    ...(material && { Material: material }),
-    ...(size && { Size: size }),
-    ...(typeof price === "number" && { Price: price }),
-  };
-
-  const tableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}`;
-  let res = await createRecord(tableUrl, apiKey, fields);
-
-  if (res.status === 404 || res.status === 422) {
-    const created = await createTable(baseId, apiKey).catch(() => false);
-    if (created) res = await createRecord(tableUrl, apiKey, fields);
-  }
-
-  return json({ ok: res.ok }, 200);
-}
-
-async function createRecord(tableUrl, apiKey, fields) {
-  return fetch(tableUrl, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ records: [{ fields }] }),
-  });
-}
-
-async function createTable(baseId, apiKey) {
-  const res = await fetch(`https://api.airtable.com/v0/meta/bases/${baseId}/tables`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ name: TABLE_NAME, fields: FIELDS }),
-  });
-  return res.ok;
+  return json({ ok: true }, 200);
 }
 
 function originAllowed(origin) {

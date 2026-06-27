@@ -1,20 +1,17 @@
-// Powers the /stats admin page — pulls recent records from the
-// "Pricing Interest" Airtable table (written by track-event.js) and
-// returns both the raw recent events and a few rollup counts.
-const TABLE_NAME = process.env.AIRTABLE_ANALYTICS_TABLE || "Pricing Interest";
+// Powers the /stats admin page — reads recent pricing-interest events from
+// Netlify Blobs (written by track-event.js) and returns the raw recent events
+// plus rollup counts. Gated by the VAULT_ADMIN_SECRET admin password.
+import { getStore } from "@netlify/blobs";
+
+const STORE_NAME = "pricing-interest";
 
 export default async function handler(req) {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  const apiKey    = process.env.AIRTABLE_API_KEY;
-  const baseId    = process.env.AIRTABLE_BASE_ID;
   const adminPass = process.env.VAULT_ADMIN_SECRET;
-
-  if (!apiKey || !baseId || !adminPass) {
-    return json({ error: "Server configuration missing." }, 500);
-  }
+  if (!adminPass) return json({ error: "Server configuration missing." }, 500);
 
   let body;
   try { body = await req.json(); }
@@ -22,31 +19,25 @@ export default async function handler(req) {
 
   if (body.adminSecret !== adminPass) return json({ error: "Unauthorized." }, 401);
 
-  const tableUrl = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}?pageSize=100`;
-
   let records = [];
-  let offset;
   try {
-    do {
-      const url = offset ? `${tableUrl}&offset=${offset}` : tableUrl;
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
-      if (!res.ok) {
-        if (res.status === 404) return json({ records: [], summary: emptySummary() }, 200);
-        return json({ error: "Could not reach database." }, 502);
-      }
-      const data = await res.json();
-      records = records.concat(data.records || []);
-      offset = data.offset;
-    } while (offset && records.length < 1000);
+    const store = getStore({ name: STORE_NAME, consistency: "strong" });
+    const { blobs } = await store.list();
+    const entries = await Promise.all(
+      blobs.map(async (b) => {
+        const v = await store.get(b.key, { type: "json" }).catch(() => null);
+        return v ? { id: b.key, ...v } : null;
+      })
+    );
+    records = entries.filter(Boolean);
   } catch {
-    return json({ error: "Could not reach database." }, 502);
+    return json({ records: [], summary: emptySummary() }, 200);
   }
 
   records.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
   const summary = emptySummary();
-  for (const r of records) {
-    const f = r.fields;
+  for (const f of records) {
     summary.total += 1;
     if (f.Type) summary.byType[f.Type] = (summary.byType[f.Type] || 0) + 1;
     if (f.Region) summary.byRegion[f.Region] = (summary.byRegion[f.Region] || 0) + 1;
@@ -54,13 +45,7 @@ export default async function handler(req) {
     if (f.Postcode) summary.byPostcode[f.Postcode] = (summary.byPostcode[f.Postcode] || 0) + 1;
   }
 
-  const recent = records.slice(0, 200).map(r => ({
-    id: r.id,
-    createdTime: r.createdTime,
-    ...r.fields,
-  }));
-
-  return json({ records: recent, summary }, 200);
+  return json({ records: records.slice(0, 200), summary }, 200);
 }
 
 function emptySummary() {
