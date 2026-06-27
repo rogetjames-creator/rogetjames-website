@@ -197,18 +197,6 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                 </div>
               </div>
             </div>
-
-            <div className="contact-reveal flex gap-3 mt-10">
-              <a
-                href="https://instagram.com/rogetjames/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="lift-hover w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/15 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={16} className="text-cream/60" />
-              </a>
-            </div>
           </div>
 
           {/* Right: Form / Success */}
@@ -432,6 +420,19 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
               </form>
             )}
           </div>
+        </div>
+
+        {/* Instagram — centered at the bottom of the section */}
+        <div className="contact-reveal flex justify-center mt-16">
+          <a
+            href="https://instagram.com/rogetjames/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="lift-hover w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/15 transition-colors"
+            aria-label="Instagram"
+          >
+            <Instagram size={22} className="text-clay" />
+          </a>
         </div>
       </div>
     </section>
