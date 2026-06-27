@@ -349,9 +349,46 @@ Tone and scope:
 - Do not discuss other studios or competitors.
 - If you don't know something specific, direct them to james@rogetjames.com.`;
 
-export default async function handler(req) {
+const JSON_HEADERS = { "Content-Type": "application/json" };
+
+// Allow only our own site to call this endpoint. A real browser always sends
+// an Origin on POST; we block when it is present and not ours (the common
+// "ran your fetch from my page" abuse) but still allow a missing Origin so we
+// never break an unusual-but-legitimate client.
+function originAllowed(origin) {
+  if (!origin) return true;
+  try {
+    const h = new URL(origin).hostname;
+    return h === "rogetjames.com" || h === "www.rogetjames.com" || h.endsWith(".netlify.app");
+  } catch { return false; }
+}
+
+// Best-effort per-IP burst limit (per warm instance). Not a hard guarantee
+// across instances, but it blunts a single client hammering the endpoint.
+const HITS = new Map();
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 20;
+function rateLimited(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (HITS.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  HITS.set(ip, recent);
+  return recent.length > MAX_PER_WINDOW;
+}
+
+export default async function handler(req, context) {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
+  }
+
+  if (!originAllowed(req.headers.get("origin"))) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: JSON_HEADERS });
+  }
+
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for") || "";
+  if (rateLimited(ip)) {
+    return new Response(JSON.stringify({ error: "Too many requests. Please wait a moment." }), { status: 429, headers: JSON_HEADERS });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -377,6 +414,14 @@ export default async function handler(req) {
     return new Response(JSON.stringify({ error: "Missing messages" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Bound the request so a single call can't run up token costs.
+  if (messages.length > 40 || JSON.stringify(messages).length > 24000) {
+    return new Response(JSON.stringify({ error: "Conversation too long. Please start a new chat or email james@rogetjames.com." }), {
+      status: 413,
+      headers: JSON_HEADERS,
     });
   }
 

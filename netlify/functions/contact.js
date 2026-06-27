@@ -1,6 +1,43 @@
+// Block only when an Origin/Referer is present and clearly not ours, so a real
+// customer's browser (which sends the correct Origin) always gets through.
+function originAllowed(origin) {
+  if (!origin) return true;
+  try {
+    const h = new URL(origin).hostname;
+    return h === "rogetjames.com" || h === "www.rogetjames.com" || h.endsWith(".netlify.app");
+  } catch { return false; }
+}
+
+// Best-effort per-IP burst limit (per warm instance). Generous, since a real
+// person submits an enquiry rarely — this only stops scripted flooding.
+const HITS = new Map();
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 5;
+function rateLimited(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (HITS.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  HITS.set(ip, recent);
+  return recent.length > MAX_PER_WINDOW;
+}
+
 exports.handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method not allowed" };
+  }
+
+  const headers = event.headers || {};
+  if (!originAllowed(headers.origin || headers.referer)) {
+    return { statusCode: 403, body: JSON.stringify({ error: "Forbidden" }) };
+  }
+  const ip = headers["x-nf-client-connection-ip"] || headers["x-forwarded-for"] || "";
+  if (rateLimited(ip)) {
+    return { statusCode: 429, body: JSON.stringify({ error: "Too many enquiries in a short time. Please wait a moment or email james@rogetjames.com." }) };
+  }
+  // Reject oversized payloads (compressed attachments should be a few MB at most).
+  if (typeof event.body === "string" && event.body.length > 15_000_000) {
+    return { statusCode: 413, body: JSON.stringify({ error: "Attachments too large. Please send fewer or smaller images." }) };
   }
 
   const resendKey = process.env.RESEND_API_KEY;
