@@ -17,7 +17,7 @@ export default async function handler(req) {
   try { body = await req.json(); }
   catch { return json({ error: "Invalid request." }, 400); }
 
-  if (body.adminSecret !== adminPass) return json({ error: "Unauthorized." }, 401);
+  if (!safeEqual(body.adminSecret, adminPass)) return json({ error: "Unauthorized." }, 401);
 
   let records = [];
   try {
@@ -64,6 +64,14 @@ export default async function handler(req) {
 
 function emptySummary() {
   return { total: 0, byType: {}, byRegion: {}, byItem: {}, byPostcode: {} };
+}
+
+// Constant-time string comparison — avoids leaking the admin secret via response timing.
+function safeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return mismatch === 0;
 }
 
 function json(data, status) {

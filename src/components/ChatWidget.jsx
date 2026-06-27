@@ -29,7 +29,9 @@ export default function ChatWidget() {
   }, [messages, loading]);
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 300);
+    if (!open) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 300);
+    return () => clearTimeout(t);
   }, [open]);
 
   const send = async () => {

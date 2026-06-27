@@ -539,7 +539,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
         </div>{/* end wrapper */}
       </div>
 
-      {popOpen && videos && portal.popupType !== "commissions-gallery" && <VideoPopup src={videos[cur].src} title={videos[cur].title} detail={videos[cur].detail} onClose={() => setPopOpen(false)} />}
+      {popOpen && videos && portal.popupType !== "commissions-gallery" && <VideoPopup videos={videos} startIdx={cur} onClose={() => setPopOpen(false)} />}
       {popOpen && portal.popup                      && <ArtPopup   images={portal.popup} startIndex={cur} onClose={() => setPopOpen(false)} />}
       {popOpen && portal.popupType === "links"      && <LinksPopup onClose={() => setPopOpen(false)} />}
       {popOpen && portal.popupType === "commissions-gallery" && <CommissionsGalleryPopup videos={videos} images={portal.commissionImages} onClose={() => setPopOpen(false)} />}

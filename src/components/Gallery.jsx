@@ -2562,7 +2562,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     return () => window.removeEventListener("keydown", handler);
   }, [isAll, items, showDetails, slideIdx, cardIdx]);
 
-  const sizes = item ? (PIECE_SIZES[item.name] || []) : [];
+  const sizes = item ? (PIECE_SIZES[item.priceKey || item.name] || []) : [];
 
   return (
     <div className="fixed inset-0 z-[10000] bg-jet flex flex-col"

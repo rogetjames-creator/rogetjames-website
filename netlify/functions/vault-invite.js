@@ -22,7 +22,11 @@ export default async function handler(req) {
 
   const { adminSecret, clientEmail } = body;
   if (!adminSecret || !clientEmail) return json({ error: "Missing required fields." }, 400);
-  if (adminSecret !== adminPass) return json({ error: "Unauthorized." }, 401);
+  if (!safeEqual(adminSecret, adminPass)) return json({ error: "Unauthorized." }, 401);
+
+  // Reject anything that could break out of the Airtable formula string below.
+  const emailOk = typeof clientEmail === "string" && /^[^\s"'(),]{1,120}@[^\s"'(),]{1,120}$/.test(clientEmail);
+  if (!emailOk) return json({ error: "Invalid email." }, 400);
 
   // Look up client in Airtable by email
   const formula = encodeURIComponent(`LOWER({Email})="${clientEmail.toLowerCase()}"`);
@@ -47,11 +51,13 @@ export default async function handler(req) {
   // Generate and save token if not already set
   if (!token) {
     token = crypto.randomUUID().replace(/-/g, "");
-    await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}/${record.id}`, {
+    const saveRes = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}/${record.id}`, {
       method: "PATCH",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ fields: { Token: token } }),
-    });
+    }).catch(() => null);
+    // If the token never saved, the emailed link can't be verified — fail before sending it.
+    if (!saveRes || !saveRes.ok) return json({ error: "Could not save the client's access token. Please try again." }, 502);
   }
 
   const vaultUrl = `${siteUrl}/vault?token=${token}`;
@@ -144,6 +150,14 @@ function buildEmail(firstName, projectTitle, vaultUrl) {
   </table>
 </body>
 </html>`;
+}
+
+// Constant-time string comparison — avoids leaking the admin secret via response timing.
+function safeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return mismatch === 0;
 }
 
 function json(data, status) {
