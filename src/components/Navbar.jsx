@@ -84,6 +84,8 @@ export default function Navbar({ quoteCount = 0 }) {
     } else {
       gsap.to(menu, { opacity: 0, duration: 0.25, ease: "power2.in", onComplete: () => { gsap.set(menu, { visibility: "hidden" }); lenis?.start(); } });
     }
+    // Unmounting while the menu is open would otherwise leave scroll locked.
+    return () => { lenis?.start(); };
   }, [mobileOpen, lenis]);
 
   const closeMenu = useCallback(() => { setMobileOpen(false); lenis?.start(); }, [lenis]);

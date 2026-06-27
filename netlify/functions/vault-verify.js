@@ -34,6 +34,12 @@ export default async function handler(req) {
   const { token, email } = body;
   if (!token || !email) return json({ error: "Missing token or email." }, 400);
 
+  // Reject anything that could break out of the Airtable formula string below.
+  // Tokens are UUID-style; emails are normal addresses. Quotes/parens/commas/whitespace are not allowed.
+  const tokenOk = typeof token === "string" && /^[A-Za-z0-9._-]{1,100}$/.test(token);
+  const emailOk = typeof email === "string" && /^[^\s"'(),]{1,120}@[^\s"'(),]{1,120}$/.test(email);
+  if (!tokenOk || !emailOk) return json({ error: "Invalid token or email." }, 400);
+
   const formula = encodeURIComponent(`AND({Token}="${token}",LOWER({Email})="${email.toLowerCase()}")`);
   const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}?filterByFormula=${formula}`;
 
