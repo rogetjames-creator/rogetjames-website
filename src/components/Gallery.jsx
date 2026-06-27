@@ -3259,21 +3259,26 @@ export default function Gallery() {
         y: 20, opacity: 0, duration: 0.7, ease: "power3.out",
       });
 
-      // Gate reveal — two black panels slide outward from centre
-      const tl = gsap.timeline({
-        delay: 0,
-        scrollTrigger: {
-          trigger: stripAreaRef.current,
-          start: "top bottom",
-          toggleActions: "play none none none",
-        },
-      });
-      tl.to(gateLeftRef.current,  { x: "-100%", duration: 8, ease: "none" }, 0);
-      tl.to(gateRightRef.current, { x: "100%",  duration: 8, ease: "none" }, 0);
+      // Gate reveal — two black panels slide outward from centre.
+      // The gate panels only exist in the desktop strip layout, so skip
+      // building the timeline when they aren't mounted (mobile / pre-mount),
+      // which previously logged "GSAP target null not found".
+      if (gateLeftRef.current && gateRightRef.current && stripAreaRef.current) {
+        const tl = gsap.timeline({
+          delay: 0,
+          scrollTrigger: {
+            trigger: stripAreaRef.current,
+            start: "top bottom",
+            toggleActions: "play none none none",
+          },
+        });
+        tl.to(gateLeftRef.current,  { x: "-100%", duration: 8, ease: "none" }, 0);
+        tl.to(gateRightRef.current, { x: "100%",  duration: 8, ease: "none" }, 0);
+      }
 
     }, sectionRef);
     return () => ctx.revert();
-  }, []);
+  }, [isDesktop]);
 
   useEffect(() => {
     const el = sectionRef.current;
