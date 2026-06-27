@@ -70,7 +70,7 @@ exports.handler = async function(event) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "ROGETjames Website <onboarding@resend.dev>",
+      from: process.env.CONTACT_FROM_EMAIL || "ROGETjames Website <noreply@rogetjames.com>",
       to: "rogetjames@gmail.com",
       reply_to: email || undefined,
       subject: `New enquiry from ${name || "website visitor"}`,
