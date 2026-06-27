@@ -2854,7 +2854,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                   savePostcode(info);
                                   setPostcodeInfo(info);
                                   setPostcodeStep(false);
-                                  if (!isAdmin) trackEvent({ type: "postcode", postcode: postcodeInput, state, isWA });
+                                  if (!isAdmin) trackEvent({ type: "postcode", postcode: postcodeInput, state, isWA, item: item.name, series: series?.label });
                                 }
                               }}
                             />

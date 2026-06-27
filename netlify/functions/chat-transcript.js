@@ -1,6 +1,19 @@
+function originAllowed(origin) {
+  if (!origin) return true;
+  try {
+    const h = new URL(origin).hostname;
+    return h === "rogetjames.com" || h === "www.rogetjames.com" || h.endsWith(".netlify.app");
+  } catch { return false; }
+}
+
 exports.handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method not allowed" };
+  }
+
+  const headers = event.headers || {};
+  if (!originAllowed(headers.origin || headers.referer)) {
+    return { statusCode: 403, body: JSON.stringify({ error: "Forbidden" }) };
   }
 
   const resendKey = process.env.RESEND_API_KEY;
@@ -32,8 +45,8 @@ exports.handler = async function(event) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "ROGETjames Website <onboarding@resend.dev>",
-      to: "info@rogetjames.com",
+      from: process.env.CONTACT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>",
+      to: process.env.NOTIFY_EMAIL || "james@rogetjames.com",
       subject: `Q & Ai transcript — ${now}`,
       text: `Chat transcript from rogetjames.com\n${now}\n\n${lines}`,
     }),
