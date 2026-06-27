@@ -129,16 +129,13 @@
     <!-- Preload first hero image for fast LCP -->
     <link rel="preload" as="image" href="/.netlify/images?url=%2Fimages%2Fhero%2Fhero-banksia-oldmanis.jpg&w=1920&fm=webp&q=82" fetchpriority="high" />
 
-    <!-- Favicon -->
+    <!-- Favicon (hero preload above is the WebP variant Hero.jsx actually renders; no second raw-JPG preload) -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-
-    <!-- Preload first hero image for fast LCP -->
-    <link rel="preload" as="image" href="/images/hero/hero-banksia-oldmanis.jpg" fetchpriority="high" />
 
     <!-- Fonts: preload critical weight, then load full set -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

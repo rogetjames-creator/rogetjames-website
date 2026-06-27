@@ -49,7 +49,6 @@ const STEPS = [
       "Australia-wide delivery to your door.",
       "Installation available in WA via Hederablu commercial fitouts.",
     ],
-    detail: null,
     detail: "Nationally and internationally.",
     color: "bg-moss-dark",
   },

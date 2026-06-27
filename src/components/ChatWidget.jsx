@@ -49,8 +49,12 @@ export default function ChatWidget() {
           messages: next.filter(m => m.role !== "assistant" || m.content !== GREETING),
         }),
       });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply || "Sorry, I couldn't get a response. Please try again." }]);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.reply) {
+        setMessages(prev => [...prev, { role: "assistant", content: "Something went wrong. Please try again or contact us directly at james@rogetjames.com." }]);
+        return;
+      }
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
     } catch {
       setMessages(prev => [...prev, { role: "assistant", content: "Something went wrong. Please try again or contact us directly at james@rogetjames.com." }]);
     } finally {
