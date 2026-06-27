@@ -8,6 +8,15 @@
   port = 8888
   targetPort = 5173
 
+# Send the auto-generated Netlify subdomain to the canonical domain so
+# rogetjames-new.netlify.app is not indexed as a duplicate of the live site.
+# (Deploy-preview subdomains have a different host and are unaffected.)
+[[redirects]]
+  from = "https://rogetjames-new.netlify.app/*"
+  to = "https://rogetjames.com/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/api/chat"
   to = "/.netlify/functions/chat"
