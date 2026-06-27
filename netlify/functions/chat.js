@@ -439,17 +439,19 @@ export default async function handler(req, context) {
     });
   }
 
-  // Bound the request so a single call can't run up token costs.
-  if (messages.length > 40 || JSON.stringify(messages).length > 24000) {
+  // Per-conversation cap — friendly hand-off to email after a sensible number
+  // of turns. Checked before the raw size guard so a normal long chat gets the
+  // polite message rather than a generic "too long" error.
+  if (messages.filter((m) => m.role === "user").length > CONVO_CAP) {
+    return new Response(JSON.stringify({ reply: "We've covered a fair bit here — for anything more detailed, please email james@rogetjames.com." }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  // Payload backstop so a crafted request can't run up token costs.
+  if (messages.length > 60 || JSON.stringify(messages).length > 40000) {
     return new Response(JSON.stringify({ error: "Conversation too long. Please start a new chat or email james@rogetjames.com." }), {
       status: 413,
       headers: JSON_HEADERS,
     });
-  }
-
-  // Per-conversation cap — hand off to email after a sensible number of turns.
-  if (messages.filter((m) => m.role === "user").length > CONVO_CAP) {
-    return new Response(JSON.stringify({ reply: "We've covered a fair bit here — for anything more detailed, please email james@rogetjames.com." }), { status: 200, headers: JSON_HEADERS });
   }
 
   // Hard daily cap per device.
