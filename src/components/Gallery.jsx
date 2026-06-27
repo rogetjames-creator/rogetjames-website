@@ -1271,7 +1271,7 @@ function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPostcode })
 
       {showPostcodeModal && (
         <PostcodeModal
-          onSubmit={(info) => { onSetPostcode(info); setShowPostcodeModal(false); setShowPricingPopup(true); }}
+          onSubmit={(info) => { if (!info.isAdmin) trackEvent({ type: "postcode", postcode: info.postcode, state: info.state, isWA: info.isWA, item: item.name, series: seriesLabel }); onSetPostcode(info); setShowPostcodeModal(false); setShowPricingPopup(true); }}
           onDismiss={() => setShowPostcodeModal(false)}
         />
       )}
@@ -1491,7 +1491,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
 
       {showPostcodeModal && (
         <PostcodeModal
-          onSubmit={(info) => { onSetPostcode(info); setShowPostcodeModal(false); setShowPricingPopup(true); }}
+          onSubmit={(info) => { if (!info.isAdmin) trackEvent({ type: "postcode", postcode: info.postcode, state: info.state, isWA: info.isWA, item: item.name, series: item._series }); onSetPostcode(info); setShowPostcodeModal(false); setShowPricingPopup(true); }}
           onDismiss={() => setShowPostcodeModal(false)}
         />
       )}
