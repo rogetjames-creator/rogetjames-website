@@ -1583,7 +1583,7 @@ const SCREENS_STRIP_IMGS = [
 function ScreensStrip() {
   const tiles = [...SCREENS_STRIP_IMGS, ...SCREENS_STRIP_IMGS];
   return (
-    <div className="w-full overflow-hidden my-4" style={{ height: "120px" }}>
+    <div className="w-full overflow-hidden my-4" style={{ height: "120px" }} aria-hidden="true">
       <div
         className="flex gap-2 h-full"
         style={{
@@ -3363,7 +3363,7 @@ export default function Gallery() {
             <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
 
             {/* Left strip */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden" aria-hidden="true">
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => setCardDeckOpen(true)}>
@@ -3377,7 +3377,7 @@ export default function Gallery() {
             <div className="flex-none" style={{ width: "338px" }} />
 
             {/* Right strip */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden" aria-hidden="true">
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => setCardDeckOpen(true)}>
@@ -3407,7 +3407,7 @@ export default function Gallery() {
         <div className="flex flex-col">
 
           {/* Top strip */}
-          <div className="relative h-28 overflow-hidden">
+          <div className="relative h-28 overflow-hidden" aria-hidden="true">
             <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => setCardDeckOpen(true)}>
