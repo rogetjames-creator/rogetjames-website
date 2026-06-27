@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Loader } from "lucide-react";
 
 const GREETING = "I'm Jai. Ask me about designs, materials, process or commissions.";
+const CONVO_CAP = 20; // max questions per conversation before directing to email
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -34,6 +35,7 @@ export default function ChatWidget() {
   const send = async () => {
     const text = input.trim();
     if (!text || loading) return;
+    if (messages.filter(m => m.role === "user").length >= CONVO_CAP) return;
 
     const userMessage = { role: "user", content: text };
     const next = [...messages, userMessage];
@@ -77,6 +79,8 @@ export default function ChatWidget() {
     }
     setOpen(false);
   };
+
+  const capped = messages.filter(m => m.role === "user").length >= CONVO_CAP;
 
   return (
     <>
@@ -135,26 +139,35 @@ export default function ChatWidget() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
-        <div className="px-4 py-3 border-t border-white/10 flex gap-2 items-end">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKey}
-            placeholder="Ask about designs, materials, process…"
-            rows={1}
-            className="flex-1 bg-white/6 border border-white/10 rounded-xl px-3 py-2.5 text-cream/80 text-sm placeholder:text-warm-gray/30 focus:outline-none focus:border-clay/30 resize-none leading-snug"
-            style={{ maxHeight: "80px" }}
-          />
-          <button
-            onClick={send}
-            disabled={!input.trim() || loading}
-            className="w-9 h-9 rounded-xl bg-clay flex items-center justify-center text-cream flex-shrink-0 disabled:opacity-30 hover:bg-clay-light transition-colors duration-200"
-          >
-            {loading ? <Loader size={14} className="animate-spin" /> : <Send size={14} />}
-          </button>
-        </div>
+        {/* Input — replaced by an email hand-off once the conversation cap is reached */}
+        {capped ? (
+          <div className="px-4 py-4 border-t border-white/10 text-center">
+            <p className="font-detail text-xs text-warm-gray/70 leading-relaxed">
+              Thanks for chatting. For anything more, email{" "}
+              <a href="mailto:james@rogetjames.com" className="text-clay hover:text-clay-light underline underline-offset-2">james@rogetjames.com</a>.
+            </p>
+          </div>
+        ) : (
+          <div className="px-4 py-3 border-t border-white/10 flex gap-2 items-end">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Ask about designs, materials, process…"
+              rows={1}
+              className="flex-1 bg-white/6 border border-white/10 rounded-xl px-3 py-2.5 text-cream/80 text-sm placeholder:text-warm-gray/30 focus:outline-none focus:border-clay/30 resize-none leading-snug"
+              style={{ maxHeight: "80px" }}
+            />
+            <button
+              onClick={send}
+              disabled={!input.trim() || loading}
+              className="w-9 h-9 rounded-xl bg-clay flex items-center justify-center text-cream flex-shrink-0 disabled:opacity-30 hover:bg-clay-light transition-colors duration-200"
+            >
+              {loading ? <Loader size={14} className="animate-spin" /> : <Send size={14} />}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Toggle button */}

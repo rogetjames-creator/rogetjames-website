@@ -1,3 +1,5 @@
+import { getStore } from "@netlify/blobs";
+
 const SYSTEM_PROMPT = `Your name is Jai. You are the studio assistant for ROGETjames — a laser-cut wall art, sculpture and architectural features studio founded by James Roget in 2008.
 
 Tone and style — mandatory:
@@ -377,6 +379,26 @@ function rateLimited(ip) {
   return recent.length > MAX_PER_WINDOW;
 }
 
+// Max questions in one conversation before we hand off to email.
+const CONVO_CAP = 20;
+
+// Hard daily cap per device/IP, counted in Netlify Blobs so it holds across
+// function instances. Stops sustained abuse beyond a sensible daily volume.
+const DAILY_CAP = 50;
+async function dailyCapReached(ip) {
+  if (!ip) return false;
+  try {
+    const store = getStore({ name: "chat-rate", consistency: "strong" });
+    const key = `${ip}_${new Date().toISOString().slice(0, 10)}`;
+    const count = (await store.get(key, { type: "json" })) || 0;
+    if (count >= DAILY_CAP) return true;
+    await store.setJSON(key, count + 1);
+    return false;
+  } catch {
+    return false; // a storage hiccup must never block a normal visitor
+  }
+}
+
 export default async function handler(req, context) {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
@@ -423,6 +445,16 @@ export default async function handler(req, context) {
       status: 413,
       headers: JSON_HEADERS,
     });
+  }
+
+  // Per-conversation cap — hand off to email after a sensible number of turns.
+  if (messages.filter((m) => m.role === "user").length > CONVO_CAP) {
+    return new Response(JSON.stringify({ reply: "We've covered a fair bit here — for anything more detailed, please email james@rogetjames.com." }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  // Hard daily cap per device.
+  if (await dailyCapReached(ip)) {
+    return new Response(JSON.stringify({ reply: "That's the daily limit for the chat assistant. For anything further, please email james@rogetjames.com." }), { status: 200, headers: JSON_HEADERS });
   }
 
   try {
