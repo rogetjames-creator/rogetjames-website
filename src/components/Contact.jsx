@@ -227,6 +227,13 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                 <p className="text-warm-gray text-sm">
                   We shall endeavour to get back to you shortly.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => { setSubmitted(false); setUploadedFiles([]); setError(null); }}
+                  className="mt-6 font-detail text-xs text-clay uppercase tracking-[0.2em] underline underline-offset-4 hover:text-cream transition-colors"
+                >
+                  Send another enquiry
+                </button>
               </div>
             ) : (
               <form
