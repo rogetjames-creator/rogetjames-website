@@ -531,3 +531,19 @@ h1, h2, h3 {
   clip-path: inset(0 0% 0 0 round 9999px);
 }
 
+/* Respect the OS "reduce motion" setting: near-instantly settle CSS
+   animations/transitions and stop the infinite decorative loops (marquees,
+   pulses, the scroll-dot). Uses 0.001ms rather than 0 so animationend/
+   transitionend events still fire for any JS that depends on them. Lenis
+   smooth-scroll is switched to instant in App.jsx for the same setting. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

@@ -187,6 +187,11 @@ function ScrollArrows() {
 export default function App() {
   const lenisRef = useRef();
   const [quoteItems, setQuoteItems] = useState([]);
+  // Visitors who set "reduce motion" in their OS get instant scrolling
+  // (lerp 1 = no smoothing) instead of Lenis easing. The CSS reduced-motion
+  // reset in index.css tames the looping decorative animations.
+  const reduceMotion = typeof window !== "undefined"
+    && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     const handler = (e) => {
@@ -229,7 +234,7 @@ export default function App() {
     <ReactLenis
       root
       ref={lenisRef}
-      options={{ autoRaf: false, lerp: 0.1, syncTouch: false, anchors: true }}
+      options={{ autoRaf: false, lerp: reduceMotion ? 1 : 0.1, syncTouch: false, anchors: true }}
     >
       <Navbar quoteCount={quoteItems.length} />
       <main>
