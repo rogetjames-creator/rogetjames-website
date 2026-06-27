@@ -486,6 +486,22 @@ const MATERIAL_OPTIONS = [
   { id: "corten",    label: "Natural Corten Steel" },
 ];
 
+// Single source of truth for a size tier's price.
+// The four price fields form a 2×2 matrix of material × region:
+//   price          → aluminium, WA            priceCorten    → corten, WA
+//   pricePC        → aluminium, interstate     priceCortenPC  → corten, interstate
+// "PC" means PostCode (interstate), NOT powder-coat. Both the lightbox pricing
+// popup and the card-deck pricing must go through this so they can never disagree.
+// Returns null when the relevant price is unset (caller shows POA / "Enquire").
+const priceFor = (tier, material, isWA) => {
+  if (!tier) return null;
+  const corten = material === "corten";
+  const val = isWA
+    ? (corten ? tier.priceCorten : tier.price)
+    : (corten ? tier.priceCortenPC : tier.pricePC);
+  return val ?? null;
+};
+
 // Per-piece size tiers — sourced from ROGETjames 2024 catalogue
 const PIECE_SIZES = {
   // ── Flowers & Blooms ──────────────────────
@@ -1030,7 +1046,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
   const isWAUser = postcodeInfo?.isWA === true && !isAdmin;
 
   const tier = sizeTiers.find(t => t.id === selectedSize);
-  const price = selectedMaterial === "aluminium" ? (tier?.pricePC ?? tier?.price) : tier?.price;
+  const price = priceFor(tier, selectedMaterial, postcodeInfo?.isWA === true);
   const showPOA = isWAUser && !price;
   const showPrice = TEMP_SHOW_ALL_PRICES || !showPOA;
   const matLabel = MATERIAL_OPTIONS.find(m => m.id === selectedMaterial)?.label;
@@ -2896,13 +2912,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           </div>
                           {/* Price list */}
                           {sizes.length > 0 ? sizes.map(t => {
-                            const isCorten = selectedMat === "corten";
-                            let p;
-                            if (postcodeInfo.isWA) {
-                              p = isCorten ? (t.priceCorten ?? null) : (t.price ?? null);
-                            } else {
-                              p = isCorten ? (t.priceCortenPC ?? null) : (t.pricePC ?? null);
-                            }
+                            const p = priceFor(t, selectedMat, postcodeInfo.isWA);
                             const sizeLabel = t.label !== "Standard" ? t.label : t.dims;
                             const isSelected = selectedSize?.id === t.id;
                             return (
@@ -2927,16 +2937,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           </p>
                           {/* Add to Quote */}
                           {item && (() => {
-                            const isCorten = selectedMat === "corten";
-                            const t = selectedSize;
-                            let p = null;
-                            if (t) {
-                              if (postcodeInfo.isWA) {
-                                p = isCorten ? (t.priceCorten ?? null) : (t.price ?? null);
-                              } else {
-                                p = isCorten ? (t.priceCortenPC ?? null) : (t.pricePC ?? null);
-                              }
-                            }
+                            const p = priceFor(selectedSize, selectedMat, postcodeInfo.isWA);
                             const canAdd = !!selectedSize;
                             return (
                               <button
