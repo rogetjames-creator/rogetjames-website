@@ -235,10 +235,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Eyebrow — desktop: centered on screen, at Gold Coast row level, fades in after all transitions */}
+      {/* Eyebrow — desktop: centered at the bottom of the section, fades in after all transitions */}
       <p
-        className="hero-eyebrow hidden md:block absolute left-1/2 font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none"
-        style={{ opacity: 0, bottom: "7.5rem", transform: "translateX(-50%)", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
+        className="hero-eyebrow hidden md:block absolute inset-x-0 text-center font-heading font-semibold text-xs text-cream/75 uppercase tracking-[0.9em] pointer-events-none"
+        style={{ opacity: 0, bottom: "2rem", whiteSpace: "nowrap", wordSpacing: "0.4em" }}
       >
         Original Laser Cut Wall Art &amp; Sculpture
       </p>
