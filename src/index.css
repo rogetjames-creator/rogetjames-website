@@ -257,6 +257,13 @@ h1, h2, h3 {
 .btn-service-cta:active {
   box-shadow: 0 0 0 1.5px #9E7134 !important;
 }
+/* Brighten the CTA label on hover */
+.btn-service-cta * {
+  transition: color 0.35s ease;
+}
+.btn-service-cta:hover * {
+  color: var(--color-cream) !important;
+}
 
 /* ── Interactive Lifts ───────────────────── */
 
