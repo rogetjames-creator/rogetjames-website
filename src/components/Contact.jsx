@@ -249,7 +249,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                       type="text"
                       name="name"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                       placeholder="Your name"
                     />
                   </div>
@@ -261,7 +261,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                       type="email"
                       name="email"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -280,7 +280,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     maxLength={4}
                     autoComplete="postal-code"
                     title="Enter a 4-digit Australian postcode"
-                    className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                     placeholder="1234"
                   />
                 </div>
@@ -382,7 +382,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                         type="text"
                         required={uploadedFiles.length > 0}
                         name="address"
-                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                         placeholder="Street, suburb, state, postcode"
                       />
                     </div>
@@ -396,7 +396,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                         name="phone"
                         inputMode="tel"
                         autoComplete="tel"
-                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 hover:bg-black focus:bg-black transition-all"
                         placeholder="+61 400 000 000"
                       />
                     </div>
@@ -411,7 +411,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                     name="message"
                     required
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-warm-gray/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/10 text-cream text-sm font-body placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-clay/30 focus:border-clay/30 transition-all resize-none"
                     placeholder="Tell us about your project..."
                   />
                 </div>
