@@ -165,7 +165,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
                   {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
                       {label}
                     </button>
                   ))}
@@ -183,7 +183,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
                   {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => (
                     <button key={cat} onClick={() => { setBespokeOpen(false); window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
                       {label}
                     </button>
                   ))}
@@ -206,7 +206,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[180px]">
                   {CATALOGUES.map((cat) => (
                     <button key={cat.label} onClick={() => { setOpenCat(cat); setCatOpen(false); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/60 hover:text-cream transition-colors duration-200">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
                       {cat.label}
                     </button>
                   ))}
