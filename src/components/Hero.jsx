@@ -43,29 +43,39 @@ export default function Hero() {
   const underlineRef  = useRef(null);
   const _lottieLogoRef = useRef(null);
   const logoTimerRef  = useRef(null);
-  const [current, setCurrent] = useState(0);
+  const [layerIdx, setLayerIdx] = useState(() => [0, 1 % SLIDES.length]);
+  const [active, setActive] = useState(0);
+  const idxRef = useRef(0);
   const [slideshowReady, setSlideshowReady] = useState(false);
   const [logoVisible, setLogoVisible] = useState(false);
   const [logoHolding, setLogoHolding] = useState(false);
   const lenis = useLenis();
 
-  // Slideshow — fades in as text settles, cycles after full interval
+  // Reveal the slideshow once the intro text has settled.
   useEffect(() => {
-    let timer;
-    const startDelay = setTimeout(() => {
-      setSlideshowReady(true);
-      timer = setInterval(() => setCurrent((c) => (c + 1) % SLIDES.length), INTERVAL);
-    }, 2800);
-    return () => { clearTimeout(startDelay); clearInterval(timer); };
+    const t = setTimeout(() => setSlideshowReady(true), 2800);
+    return () => clearTimeout(t);
   }, []);
 
-  // Warm the next slide so the crossfade target is already fetched and decoded,
-  // which keeps the fade smooth instead of jittering on an undecoded image.
+  // Crossfade using only two image layers. The next image is fully DECODED
+  // before the fade begins, so the transition never staggers on a half-ready
+  // image, and only two layers ever composite — smooth even on slow machines.
   useEffect(() => {
-    const img = new Image();
-    img.decoding = "async";
-    img.src = netlifyImg(SLIDES[(current + 1) % SLIDES.length], { w: 1920, q: 82 });
-  }, [current]);
+    if (!slideshowReady) return;
+    let cancelled = false;
+    const id = setTimeout(async () => {
+      const nextSlide = (idxRef.current + 1) % SLIDES.length;
+      const incoming = active === 0 ? 1 : 0;
+      setLayerIdx((prev) => { const n = [...prev]; n[incoming] = nextSlide; return n; });
+      const img = new Image();
+      img.src = netlifyImg(SLIDES[nextSlide], { w: 1920, q: 82 });
+      try { await img.decode(); } catch { /* fall through — still crossfade */ }
+      if (cancelled) return;
+      idxRef.current = nextSlide;
+      setActive(incoming);
+    }, INTERVAL);
+    return () => { cancelled = true; clearTimeout(id); };
+  }, [active, slideshowReady]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -120,19 +130,19 @@ export default function Hero() {
   return (
     <section ref={sectionRef} className="relative h-dvh w-full overflow-hidden flex items-end">
 
-      {/* Slideshow */}
+      {/* Slideshow — two crossfading layers (see decode-gated loop above) */}
       <div className="absolute inset-0 bg-charcoal">
-        {SLIDES.map((src, i) => (
+        {[0, 1].map((layer) => (
           <img
-            key={src}
-            src={netlifyImg(src, { w: 1920, q: 82 })}
-            alt={i === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
-            aria-hidden={i !== 0}
+            key={layer}
+            src={netlifyImg(SLIDES[layerIdx[layer]], { w: 1920, q: 82 })}
+            alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
+            aria-hidden={layer !== 0}
             className="absolute inset-0 w-full h-full object-contain"
-            style={{ opacity: slideshowReady && i === current ? 1 : 0, transition: `opacity ${FADE_DURATION}s ease-in-out`, willChange: "opacity" }}
-            loading={i === 0 ? "eager" : "lazy"}
+            style={{ opacity: slideshowReady && active === layer ? 1 : 0, transition: `opacity ${FADE_DURATION}s ease-in-out`, willChange: "opacity" }}
+            loading={layer === 0 ? "eager" : "lazy"}
             decoding="async"
-            fetchPriority={i === 0 ? "high" : "auto"}
+            fetchPriority={layer === 0 ? "high" : "auto"}
           />
         ))}
       </div>
