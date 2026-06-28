@@ -192,12 +192,12 @@ export default function Process() {
                 {(step.detail || step.detailLink) && (
                   <div className="mt-2">
                     {step.detail && (
-                      <p className="font-detail text-[13px] text-clay leading-relaxed whitespace-pre-line">{step.detail}</p>
+                      <p className="font-detail text-sm text-clay leading-relaxed whitespace-pre-line">{step.detail}</p>
                     )}
                     {step.detailLink && (
                       <button
                         onClick={() => window.dispatchEvent(new CustomEvent("open-colour-catalogue", { detail: "dulux" }))}
-                        className="font-detail text-[13px] text-clay underline underline-offset-2 hover:text-cream transition-colors block mt-0.5"
+                        className="font-detail text-sm text-clay underline underline-offset-2 hover:text-cream transition-colors block mt-0.5"
                       >
                         {step.detailLink}
                       </button>
