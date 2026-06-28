@@ -24,8 +24,8 @@ const SLIDES = [
   "/images/marakesh/marakesh-promo.jpg",
 ];
 
-const INTERVAL = 5000;
-const FADE_DURATION = 2.5;
+const INTERVAL = 5500;
+const FADE_DURATION = 1.2;
 
 const DRIFT = [
   { el: ".hero-line-1",  x: -80,  y: 0,   delay: 0.45 },
@@ -58,6 +58,14 @@ export default function Hero() {
     }, 2800);
     return () => { clearTimeout(startDelay); clearInterval(timer); };
   }, []);
+
+  // Warm the next slide so the crossfade target is already fetched and decoded,
+  // which keeps the fade smooth instead of jittering on an undecoded image.
+  useEffect(() => {
+    const img = new Image();
+    img.decoding = "async";
+    img.src = netlifyImg(SLIDES[(current + 1) % SLIDES.length], { w: 1920, q: 82 });
+  }, [current]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -121,8 +129,9 @@ export default function Hero() {
             alt={i === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={i !== 0}
             className="absolute inset-0 w-full h-full object-contain"
-            style={{ opacity: slideshowReady && i === current ? 1 : 0, transition: `opacity ${FADE_DURATION}s ease-in-out` }}
+            style={{ opacity: slideshowReady && i === current ? 1 : 0, transition: `opacity ${FADE_DURATION}s ease-in-out`, willChange: "opacity" }}
             loading={i === 0 ? "eager" : "lazy"}
+            decoding="async"
             fetchPriority={i === 0 ? "high" : "auto"}
           />
         ))}
