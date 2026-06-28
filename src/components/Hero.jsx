@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
@@ -46,6 +46,7 @@ export default function Hero() {
   const [layerIdx, setLayerIdx] = useState(() => [0, 1 % SLIDES.length]);
   const [active, setActive] = useState(0);
   const idxRef = useRef(0);
+  const layerRefs = useRef([null, null]);
   const [slideshowReady, setSlideshowReady] = useState(false);
   const [logoVisible, setLogoVisible] = useState(false);
   const [logoHolding, setLogoHolding] = useState(false);
@@ -66,10 +67,12 @@ export default function Hero() {
     const id = setTimeout(async () => {
       const nextSlide = (idxRef.current + 1) % SLIDES.length;
       const incoming = active === 0 ? 1 : 0;
-      setLayerIdx((prev) => { const n = [...prev]; n[incoming] = nextSlide; return n; });
-      const img = new Image();
-      img.src = netlifyImg(SLIDES[nextSlide], { w: 1600, q: 82 });
-      try { await img.decode(); } catch { /* fall through — still crossfade */ }
+      // Put the next image on the hidden layer and flush it to the DOM
+      // synchronously, then decode THAT element before crossfading — so the
+      // real on-screen <img> is fully decoded and never decodes mid-fade.
+      flushSync(() => setLayerIdx((prev) => { const n = [...prev]; n[incoming] = nextSlide; return n; }));
+      const el = layerRefs.current[incoming];
+      if (el) { try { await el.decode(); } catch { /* fall through — still crossfade */ } }
       if (cancelled) return;
       idxRef.current = nextSlide;
       setActive(incoming);
@@ -135,6 +138,7 @@ export default function Hero() {
         {[0, 1].map((layer) => (
           <img
             key={layer}
+            ref={(el) => (layerRefs.current[layer] = el)}
             src={netlifyImg(SLIDES[layerIdx[layer]], { w: 1600, q: 82 })}
             alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={layer !== 0}
