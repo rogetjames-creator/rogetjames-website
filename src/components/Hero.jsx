@@ -25,7 +25,7 @@ const SLIDES = [
 ];
 
 const INTERVAL = 5500;
-const FADE_DURATION = 1.2;
+const FADE_DURATION = 1.6;
 
 const DRIFT = [
   { el: ".hero-line-1",  x: -80,  y: 0,   delay: 0.45 },
@@ -68,7 +68,7 @@ export default function Hero() {
       const incoming = active === 0 ? 1 : 0;
       setLayerIdx((prev) => { const n = [...prev]; n[incoming] = nextSlide; return n; });
       const img = new Image();
-      img.src = netlifyImg(SLIDES[nextSlide], { w: 1920, q: 82 });
+      img.src = netlifyImg(SLIDES[nextSlide], { w: 1600, q: 82 });
       try { await img.decode(); } catch { /* fall through — still crossfade */ }
       if (cancelled) return;
       idxRef.current = nextSlide;
@@ -135,11 +135,11 @@ export default function Hero() {
         {[0, 1].map((layer) => (
           <img
             key={layer}
-            src={netlifyImg(SLIDES[layerIdx[layer]], { w: 1920, q: 82 })}
+            src={netlifyImg(SLIDES[layerIdx[layer]], { w: 1600, q: 82 })}
             alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={layer !== 0}
             className="absolute inset-0 w-full h-full object-contain"
-            style={{ opacity: slideshowReady && active === layer ? 1 : 0, transition: `opacity ${FADE_DURATION}s ease-in-out`, willChange: "opacity" }}
+            style={{ opacity: slideshowReady && active === layer ? 1 : 0, transition: `opacity ${FADE_DURATION}s linear`, willChange: "opacity", transform: "translateZ(0)", backfaceVisibility: "hidden" }}
             loading={layer === 0 ? "eager" : "lazy"}
             decoding="async"
             fetchPriority={layer === 0 ? "high" : "auto"}
