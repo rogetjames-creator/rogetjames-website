@@ -50,6 +50,12 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: JSON.stringify({ error: "Invalid request" }) };
   }
 
+  // Honeypot — a real person never fills the hidden "company" field. If it's
+  // set, it's a bot: pretend success so it moves on, but send nothing.
+  if (body.company) {
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+  }
+
   const { name, email, phone, postcode, message, selections, attachments } = body;
 
   const lines = [

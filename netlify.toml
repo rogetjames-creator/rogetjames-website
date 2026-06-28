@@ -62,6 +62,19 @@
   to = "/.netlify/functions/stats-data"
   status = 200
 
+# Security headers — applied to every route. The CSP allows only the sources
+# the site actually uses (self, Google Fonts, the myportfolio image CDN); there
+# are no iframes, workers or eval in the site, so this does not break anything.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://cdn.myportfolio.com; media-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'"
+
 # Cache immutable hashed assets for 1 year
 [[headers]]
   for = "/assets/*"

@@ -92,6 +92,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         address: formData.get("address"),
         message: formData.get("message"),
         selections: formData.get("design_interest"),
+        company: formData.get("company"), // honeypot — should always be empty
         attachments,
       };
 
@@ -229,6 +230,16 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                 onSubmit={handleSubmit}
                 className="bg-white/5 rounded-[2rem] p-5 md:p-8 lg:p-10 border border-white/10 space-y-5"
               >
+                {/* Honeypot — invisible to people; bots fill it and get silently dropped */}
+                <input
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] w-px h-px opacity-0 pointer-events-none"
+                />
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block font-detail text-xs text-warm-gray uppercase tracking-wider mb-2">

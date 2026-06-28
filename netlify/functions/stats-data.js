@@ -5,13 +5,19 @@ import { getStore } from "@netlify/blobs";
 
 const STORE_NAME = "pricing-interest";
 
-export default async function handler(req) {
+export default async function handler(req, context) {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
 
   const adminPass = process.env.VAULT_ADMIN_SECRET;
   if (!adminPass) return json({ error: "Server configuration missing." }, 500);
+
+  // Throttle login attempts per IP so the admin password can't be brute-forced.
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "";
+  if (await tooManyAttempts(ip)) {
+    return json({ error: "Too many attempts. Please try again later." }, 429);
+  }
 
   let body;
   try { body = await req.json(); }
@@ -64,6 +70,22 @@ export default async function handler(req) {
 
 function emptySummary() {
   return { total: 0, byType: {}, byRegion: {}, byItem: {}, byPostcode: {} };
+}
+
+// At most 10 login attempts per IP per 10-minute window, counted in Blobs so
+// the limit holds across function instances. Bounds password brute-forcing.
+async function tooManyAttempts(ip) {
+  if (!ip) return false;
+  try {
+    const store = getStore({ name: "stats-login", consistency: "strong" });
+    const key = `${ip}_${Math.floor(Date.now() / 600000)}`;
+    const count = (await store.get(key, { type: "json" })) || 0;
+    if (count >= 10) return true;
+    await store.setJSON(key, count + 1);
+    return false;
+  } catch {
+    return false; // a storage hiccup must not lock out the legitimate admin
+  }
 }
 
 // Constant-time string comparison — avoids leaking the admin secret via response timing.
