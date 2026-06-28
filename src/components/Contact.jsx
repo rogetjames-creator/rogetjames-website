@@ -293,7 +293,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
 
                   {quoteItems.length === 0 ? (
                     <div className="w-full px-4 py-4 rounded-xl bg-white/5 border border-dashed border-white/15 text-center">
-                      <p className="text-warm-gray text-xs font-detail">Browse the <a href="#collection" className="text-clay underline underline-offset-2">Collection</a> for catalogue designs — click <span className="text-clay italic">Details</span> on any piece to add it here. Or describe your interests in the message box below.</p>
+                      <p className="text-cream/70 text-sm font-detail leading-relaxed">Browse the <a href="#collection" className="text-clay underline underline-offset-2">Collection</a> for catalogue designs — click <span className="text-clay italic">Details</span> on any piece to add it here. Or describe your interests in the message box below.</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -358,7 +358,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                       <span className="font-detail text-xs uppercase tracking-wider">
                         {uploadedFiles.length === 0 ? "Upload photos" : "Add another"}
                       </span>
-                      <span className="text-xs text-warm-gray/50">Up to {MAX_FILES} images — your space, a sketch, or inspiration</span>
+                      <span className="text-sm text-cream/70">Up to {MAX_FILES} images — your space, a sketch, or inspiration</span>
                       <input
                         type="file"
                         accept="image/*"
