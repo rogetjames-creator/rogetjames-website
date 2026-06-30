@@ -2370,9 +2370,9 @@ const DECK_ALL_ITEMS = (() => {
 // ── "Up Close" gallery ────────────────────────────────────────────────────
 // Images for the "Up Close" pill (sits next to Slideshow in the wall art
 // catalogue). Add your close-up / detail shots here, one path per line, e.g.:
-//   "/images/upclose/banksia-detail.jpg",
-//   "https://cdn.myportfolio.com/.../detail-1.jpg",
+//   { src: "/images/details/banksia-detail.jpg", name: "Banksia detail" },
 const UP_CLOSE_IMAGES = [
+  { src: "/images/details/plume-deco-rust-1.jpg", name: "Plume Deco — Corten detail" },
 ];
 
 function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory }) {
@@ -2593,9 +2593,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               <div className="h-full flex items-center justify-center text-cream/40 font-detail text-sm tracking-wide">No images yet.</div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {UP_CLOSE_IMAGES.map((src, i) => (
+                {UP_CLOSE_IMAGES.map((item, i) => (
                   <div key={i} className="rounded-xl overflow-hidden bg-charcoal" style={{ aspectRatio: "1 / 1" }}>
-                    <img src={src} alt={`Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
+                    <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                   </div>
                 ))}
               </div>
