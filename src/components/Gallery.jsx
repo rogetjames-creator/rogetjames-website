@@ -2927,7 +2927,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                 savePostcode(info);
                                 setPostcodeInfo(info);
                                 setPostcodeStep(false);
-                                if (!isAdmin) trackEvent({ type: "postcode", postcode: postcodeInput, state, isWA });
+                                if (!isAdmin) trackEvent({ type: "postcode", postcode: postcodeInput, state, isWA, item: item.name, series: series?.label });
                               }}
                               className="w-full py-2 rounded-lg font-detail text-[10px] uppercase tracking-[0.18em] transition-all"
                               style={{ background: postcodeInput.length === 4 ? "#9e7134" : "rgba(242,240,233,0.08)", color: postcodeInput.length === 4 ? "#f2f0e9" : "rgba(242,240,233,0.3)", border: "none" }}>

@@ -212,10 +212,9 @@ function VideoPopup({ videos, startIdx, onClose }) {
           src={v.src} autoPlay controls controlsList="nodownload noremoteplayback nofullscreen" disablePictureInPicture playsInline
           className="max-w-[62vw] max-h-[60vh] rounded-2xl"
         />
-        {(v.title || v.detail) && (
+        {v.title && (
           <div className="text-center max-w-[62vw]">
-            {v.title && <p className="font-heading font-semibold text-cream text-sm tracking-wide">{v.title}</p>}
-            {v.detail && <p className="font-detail text-cream/55 text-xs leading-relaxed mt-1">{v.detail}</p>}
+            <p className="font-heading font-semibold text-cream text-sm tracking-wide">{v.title}</p>
           </div>
         )}
       </div>
@@ -592,7 +591,7 @@ export default function DiscoverPortals() {
       </div>
       <div className="w-full h-px bg-white/10" />
       <div className={`bg-matt-black py-[55px] ${isMobile ? "px-2" : "px-8"}`}>
-        <div className={`flex justify-center ${isMobile ? "items-start gap-1.5" : "items-end gap-10 md:gap-20"}`}>
+        <div className={`flex justify-center ${isMobile ? "items-start gap-3" : "items-end gap-10 md:gap-20"}`}>
           {PORTALS.map(portal => (
             <MiniPortal
               key={portal.id}
