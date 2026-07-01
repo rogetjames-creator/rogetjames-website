@@ -278,7 +278,7 @@ const WALL_ART_SERIES = [
     id: "creeping-fig",
     label: "CREEPING FIGS",
     items: [
-      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], detailSlides: ["/images/creeping-fig/closeup-1.jpg", "/images/creeping-fig/closeup-2.jpg", "/images/creeping-fig/closeup-3.jpg", "/images/creeping-fig/closeup-4.jpg", "/images/creeping-fig/closeup-5.jpg", "/images/creeping-fig/closeup-6.jpg"], singleInAll: true, mediaLabel: "autumn" },
+      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], detailSlides: ["/images/creeping-fig/closeup-1.jpg", "/images/creeping-fig/closeup-2.jpg", "/images/creeping-fig/closeup-3.jpg", "/images/creeping-fig/closeup-4.jpg", "/images/creeping-fig/closeup-5.jpg", "/images/creeping-fig/closeup-6.jpg"], singleInAll: true, mediaKeys: ["creeping-fig-autumn"] },
       { name: "GRANDE",  img: "/images/creeping-fig/grande-1.jpg", slides: ["/images/creeping-fig/grande-1.jpg", "/images/creeping-fig/grande-2.jpg"] },
       { name: "SPRING",  img: "/images/creeping-fig/spring-1.jpg" },
       { name: "FIGARO",  img: "/images/creeping-fig/figaro-1.jpg" },
@@ -296,7 +296,7 @@ const WALL_ART_SERIES = [
       { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
       { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
       { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
-      { name: "GREN — Up Close", img: "/images/branches/gren-edge-1.jpg", mediaLabel: ["gren", "branches"] },
+      { name: "GREN — Up Close", img: "/images/branches/gren-edge-1.jpg", mediaKeys: ["branches-gren"] },
     ],
   },
   // ── FLOWERS & BLOOMS ─────────────────────
@@ -327,7 +327,7 @@ const WALL_ART_SERIES = [
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO", includeUploadedUpClose: true, mediaLabel: ["plume"] },
+      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO", includeUploadedUpClose: true, mediaKeys: ["plumes-deco"] },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
@@ -2410,7 +2410,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [slideshowActive, setSlideshowActive] = useState(false);
   const [upCloseOpen, setUpCloseOpen] = useState(false);
   const [uploadedUpClose, setUploadedUpClose] = useState([]);
-  const [mediaImages, setMediaImages] = useState([]); // media-library uploads, routed by label
+  const [mediaImages, setMediaImages] = useState([]); // media-library uploads, placed by exact destination key
   useEffect(() => {
     let alive = true;
     fetch("/api/up-close-list")
@@ -2419,14 +2419,12 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       .catch(() => {});
     fetch("/api/media-list")
       .then(r => r.json())
-      .then(d => { if (alive && Array.isArray(d.images)) setMediaImages(d.images.map(i => ({ src: i.src, label: i.label || "" }))); })
+      .then(d => { if (alive && Array.isArray(d.images)) setMediaImages(d.images.map(i => ({ src: i.src, destinations: i.destinations || [] }))); })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
-  // Normalised label helper for routing media images to the right place.
-  const normLabel = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-  // Media images tagged for "up close" (any label containing "upclose").
-  const mediaUpClose = mediaImages.filter(m => normLabel(m.label).includes("upclose"));
+  // Media images destined for the Up Close section.
+  const mediaUpClose = mediaImages.filter(m => m.destinations.includes("up-close"));
   const upCloseImages = [...UP_CLOSE_IMAGES, ...uploadedUpClose, ...mediaUpClose.map(m => ({ src: m.src, name: "" }))];
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
@@ -2482,13 +2480,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     if (item.includeUploadedUpClose && uploadedUpClose.length) {
       base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
     }
-    // Route media-library uploads to this design via explicit label tag(s) on
-    // the item. mediaLabel may be a string or a list; the image lands here if
-    // its label mentions any of them (so a sentence label can hit several spots).
-    if (item.mediaLabel && mediaImages.length) {
-      const tags = (Array.isArray(item.mediaLabel) ? item.mediaLabel : [item.mediaLabel]).map(normLabel);
+    // Route media-library uploads to this design via exact destination key(s)
+    // set on the item (see MediaPage.jsx DESTINATIONS for the fixed key list).
+    if (item.mediaKeys && mediaImages.length) {
       const matched = mediaImages
-        .filter(m => { const ml = normLabel(m.label); return tags.some(t => t && ml.includes(t)); })
+        .filter(m => item.mediaKeys.some(k => m.destinations.includes(k)))
         .map(m => m.src);
       base = [...base, ...matched.filter(src => !base.includes(src))];
     }

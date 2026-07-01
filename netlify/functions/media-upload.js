@@ -1,10 +1,13 @@
-// Admin-only general media upload. Stores images in Netlify Blobs with a
-// free-text label saying where they belong, so James can add images from
-// iCloud for any part of the site. Gated by the stats/vault admin password.
+// Admin-only general media upload. Stores images in Netlify Blobs, tagged with
+// exact destination keys (not free text) so placement on the site is
+// deterministic. Gated by the stats/vault admin password.
 import { getStore } from "@netlify/blobs";
 
 const STORE = "media-library";
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB per image
+
+// Must match MediaPage.jsx's DESTINATIONS keys and Gallery.jsx's mediaKeys.
+const VALID_DESTINATIONS = ["up-close", "branches-gren", "creeping-fig-autumn", "plumes-deco"];
 
 export default async function handler(req) {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -18,16 +21,18 @@ export default async function handler(req) {
 
   const store = getStore({ name: STORE, consistency: "strong" });
 
-  // List (admin) — returns all images with labels.
+  // List (admin) — returns all images with their destinations.
   if (body.action === "list") {
     const { blobs } = await store.list();
     const items = await Promise.all(
       blobs.map(async (b) => {
         const meta = await store.getMetadata(b.key).catch(() => null);
+        let destinations = [];
+        try { destinations = JSON.parse(meta?.metadata?.destinations || "[]"); } catch { /* ignore */ }
         return {
           id: b.key,
           name: meta?.metadata?.name || "",
-          label: meta?.metadata?.label || "",
+          destinations,
           createdTime: meta?.metadata?.createdTime || "",
           src: `/api/media-img?id=${encodeURIComponent(b.key)}`,
         };
@@ -43,10 +48,12 @@ export default async function handler(req) {
     return json({ ok: true });
   }
 
-  // Upload one or more (data URLs), tagged with a label.
+  // Upload one or more (data URLs), tagged with one or more destination keys.
   const images = Array.isArray(body.images) ? body.images : [];
   if (!images.length) return json({ error: "No images provided" }, 400);
-  const label = (body.label || "").toString().slice(0, 120);
+  const destinations = (Array.isArray(body.destinations) ? body.destinations : [])
+    .filter((d) => VALID_DESTINATIONS.includes(d));
+  if (!destinations.length) return json({ error: "No valid destination selected" }, 400);
 
   let saved = 0;
   for (const img of images) {
@@ -57,7 +64,12 @@ export default async function handler(req) {
     if (buf.length > MAX_BYTES) continue;
     const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     await store.set(id, buf, {
-      metadata: { name: img.name || "", label, contentType, createdTime: new Date().toISOString() },
+      metadata: {
+        name: img.name || "",
+        destinations: JSON.stringify(destinations),
+        contentType,
+        createdTime: new Date().toISOString(),
+      },
     });
     saved += 1;
   }

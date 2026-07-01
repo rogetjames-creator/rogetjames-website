@@ -2,23 +2,16 @@ import { useState, useEffect } from "react";
 
 const API = "/api/media-upload";
 
-// Mirrors the gallery's label routing so the admin can see where a batch lands.
-// A label can hit several destinations (e.g. "up close and branches").
-const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-const ROUTES = [
-  { kw: "upclose", to: "Up Close section" },
-  { kw: "branches", to: "Branches — GREN Up Close" },
-  { kw: "gren", to: "Branches — GREN Up Close" },
-  { kw: "autumn", to: "Creeping Fig — Autumn" },
-  { kw: "plume", to: "Plumes — Plume Deco" },
+// Fixed list of destinations — exact, no text-guessing. Add a new row here
+// whenever a new gallery spot needs to receive uploaded photos; the gallery
+// code (Gallery.jsx) reads images by this same "key" via item.mediaKeys.
+export const DESTINATIONS = [
+  { key: "up-close",             label: "Up Close section" },
+  { key: "branches-gren",        label: "Branches — GREN Up Close" },
+  { key: "creeping-fig-autumn",  label: "Creeping Fig — Autumn" },
+  { key: "plumes-deco",          label: "Plumes — Plume Deco" },
 ];
-function routesFor(label) {
-  const l = norm(label);
-  if (!l) return [];
-  const hits = [];
-  for (const r of ROUTES) if (l.includes(r.kw) && !hits.includes(r.to)) hits.push(r.to);
-  return hits;
-}
+const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || key;
 
 export default function MediaPage() {
   const [secret, setSecret] = useState("");
@@ -26,7 +19,7 @@ export default function MediaPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [images, setImages] = useState([]);
-  const [label, setLabel] = useState("");
+  const [selectedDests, setSelectedDests] = useState([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -76,9 +69,18 @@ export default function MediaPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const toggleDest = (key) => {
+    setSelectedDests(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
+  };
+
   const onPick = async (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+    if (!selectedDests.length) {
+      setMsg("Pick at least one destination below before choosing photos.");
+      e.target.value = "";
+      return;
+    }
     setBusy(true);
     setMsg("Uploading…");
     try {
@@ -89,13 +91,12 @@ export default function MediaPage() {
         r.readAsDataURL(file);
       });
       const payload = await Promise.all(files.map(toDataUrl));
-      const res = await call({ adminSecret: secret, images: payload, label });
+      const res = await call({ adminSecret: secret, images: payload, destinations: selectedDests });
       const json = await res.json();
       if (!res.ok || json.error) setMsg(json.error || "Upload failed.");
       else {
-        const dests = routesFor(label);
-        const where = dests.length ? ` → ${dests.join(" + ")}` : " — label not recognised, tell Claude where it goes";
-        setMsg(`Added ${json.saved} image${json.saved === 1 ? "" : "s"}${where}.`);
+        const where = selectedDests.map(labelForKey).join(" + ");
+        setMsg(`Added ${json.saved} image${json.saved === 1 ? "" : "s"} → ${where}.`);
         await refresh();
       }
     } catch {
@@ -150,10 +151,11 @@ export default function MediaPage() {
     );
   }
 
-  // Group images by label for display.
+  // Group images by their destination set for display.
   const groups = {};
   for (const im of images) {
-    const key = im.label || "— no location —";
+    const dests = Array.isArray(im.destinations) && im.destinations.length ? im.destinations : [];
+    const key = dests.length ? dests.map(labelForKey).join(" + ") : "— no destination —";
     (groups[key] = groups[key] || []).push(im);
   }
 
@@ -169,21 +171,24 @@ export default function MediaPage() {
         </div>
 
         <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
-          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-3">Add images</p>
-          <input
-            type="text"
-            value={label}
-            onChange={e => setLabel(e.target.value)}
-            placeholder="Where do these go? e.g. Banksia Round, Plumes, Hero"
-            className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-4 py-3 font-detail text-sm text-cream placeholder:text-cream/30 outline-none transition-colors mb-3"
-          />
+          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-3">1. Where do these go?</p>
+          <div className="flex flex-wrap gap-2 mb-5">
+            {DESTINATIONS.map(d => {
+              const on = selectedDests.includes(d.key);
+              return (
+                <button key={d.key} type="button" onClick={() => toggleDest(d.key)}
+                  className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                  {on ? "✓ " : ""}{d.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-3">2. Choose photos</p>
           <label className={`block w-full text-center py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide cursor-pointer hover:bg-clay-light transition-all ${busy ? "opacity-40 pointer-events-none" : ""}`}>
             {busy ? "Uploading…" : "+ Choose photos from iCloud"}
             <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
           </label>
-          <p className="font-detail text-[10px] text-cream/40 text-center mt-3 leading-relaxed">
-            Type where they belong first, then choose the photos. Tell Claude the location name and they’ll be placed on the site.
-          </p>
           {busy && (
             <div className="flex items-center justify-center gap-2 mt-4">
               <div className="w-4 h-4 border-2 border-cream/30 border-t-clay rounded-full animate-spin" />
@@ -192,7 +197,7 @@ export default function MediaPage() {
           )}
           {!busy && msg && (
             <p className="font-detail text-[12px] text-center mt-4 py-2 px-3 rounded-xl bg-clay/15 border border-clay/30 text-cream/90">
-              ✓ {msg}
+              {msg}
             </p>
           )}
         </div>
@@ -204,20 +209,14 @@ export default function MediaPage() {
         {Object.entries(groups).map(([g, ims]) => (
           <div key={g} className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">{g} · {ims.length}</p>
-            {(() => {
-              const dests = routesFor(g);
-              return (
-                <p className={`font-detail text-[10px] mb-4 ${dests.length ? "text-green-400" : "text-amber-400"}`}>
-                  {dests.length ? `✓ Live on site → ${dests.join(" + ")}` : "Not placed — label not recognised. Tell Claude where this goes."}
-                </p>
-              );
-            })()}
+            <p className={`font-detail text-[10px] mb-4 ${g === "— no destination —" ? "text-amber-400" : "text-green-400"}`}>
+              {g === "— no destination —" ? "Not placed — no destination was selected." : `✓ Live on site → ${g}`}
+            </p>
             <div className="grid grid-cols-3 gap-3">
               {ims.map((im) => (
                 <div key={im.id}>
                   <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
                     <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
-                    {/* Uploaded badge */}
                     <span className="absolute top-1 left-1 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-600/90 text-white text-[8px] font-detail uppercase tracking-wider">
                       ✓ Uploaded
                     </span>

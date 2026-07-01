@@ -1,6 +1,6 @@
-// Public list of uploaded media-library images (id, label, src). The gallery
-// reads this and routes each image into place by its label. Image bytes are
-// served by media-img; only labels + ids are exposed here.
+// Public list of uploaded media-library images (id, destinations, src). The
+// gallery reads this and places each image by its exact destination key —
+// no text-guessing.
 import { getStore } from "@netlify/blobs";
 
 const STORE = "media-library";
@@ -12,10 +12,11 @@ export default async function handler() {
     const items = await Promise.all(
       blobs.map(async (b) => {
         const meta = await store.getMetadata(b.key).catch(() => null);
+        let destinations = [];
+        try { destinations = JSON.parse(meta?.metadata?.destinations || "[]"); } catch { /* ignore */ }
         return {
           id: b.key,
-          label: meta?.metadata?.label || "",
-          name: meta?.metadata?.name || "",
+          destinations,
           createdTime: meta?.metadata?.createdTime || "",
           src: `/api/media-img?id=${encodeURIComponent(b.key)}`,
         };
