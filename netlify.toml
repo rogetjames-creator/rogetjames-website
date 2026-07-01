@@ -17,6 +17,79 @@
   status = 301
   force = true
 
+# Old site's pages (pre-rebuild) are still indexed by Google and were 404ing.
+# 301 each to the matching section on the current single-page site so Google
+# drops the stale results instead of showing dead links.
+[[redirects]]
+  from = "/about"
+  to = "/#about"
+  status = 301
+
+[[redirects]]
+  from = "/contact"
+  to = "/#contact"
+  status = 301
+
+[[redirects]]
+  from = "/custom-services"
+  to = "/#services"
+  status = 301
+
+[[redirects]]
+  from = "/homebase-landscape"
+  to = "/#bespoke"
+  status = 301
+
+[[redirects]]
+  from = "/sculpture"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/sculpture-23-new-releases"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/new-designs-23"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/copy-of-collection"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/screens"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/gates"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/ergo"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/planters"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/concrete"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/rishikesh"
+  to = "/#collection"
+  status = 301
+
 [[redirects]]
   from = "/api/chat"
   to = "/.netlify/functions/chat"
