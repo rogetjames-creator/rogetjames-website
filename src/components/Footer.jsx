@@ -45,8 +45,13 @@ function scrollTo(href) {
   target.scrollIntoView({ behavior: "smooth" });
 }
 
+// Bespoke categories locked as "under construction" in production — their
+// footer links only scroll to the section, never open a locked gallery.
+const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["sculpture", "projects", "commissions", "concepts"] : [];
+
 function handleLink(link) {
-  if (link.event) {
+  const isLockedBespoke = link.event === "open-bespoke-category" && LOCKED_BESPOKE_CATS.includes(link.detail);
+  if (link.event && !isLockedBespoke) {
     window.dispatchEvent(new CustomEvent(link.event, { detail: link.detail }));
     setTimeout(() => scrollTo(link.href), 50);
   } else {

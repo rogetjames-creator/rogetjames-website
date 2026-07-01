@@ -11,6 +11,9 @@ const CAT2 = [1, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `/images/catalogues/cat2/page
 const DULUX_PAGES    = Array.from({ length: 8 }, (_, i) => `/images/catalogues/dulux/page-${String(i + 1).padStart(2, "0")}.jpg`);
 const INTERPON_PAGES = Array.from({ length: 8 }, (_, i) => `/images/catalogues/interpon/page-${String(i + 1).padStart(2, "0")}.jpg`);
 
+// Bespoke portals locked as "under construction" in production (Screens stays open).
+const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["sculpture", "projects", "commissions", "concepts"] : [];
+
 const CATALOGUES = [
   { label: "Wall Art & Screens",                pages: CAT1 },
   { label: "Sculpture, Light Features & Mirrors", pages: CAT2 },
@@ -102,6 +105,21 @@ export default function Navbar({ quoteCount = 0 }) {
     }
   }, [lenis]);
 
+  // Bespoke categories locked as "under construction" in production. Their menu
+  // links only scroll to the Bespoke section (matching the locked portals) and
+  // never open a gallery.
+  const openBespokeCat = useCallback((cat, closeMobileMenu = false) => {
+    setBespokeOpen(false);
+    if (closeMobileMenu) { setMobileOpen(false); lenis?.start(); }
+    if (!LOCKED_BESPOKE_CATS.includes(cat)) {
+      window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat }));
+    }
+    setTimeout(() => {
+      const el = document.querySelector("#bespoke");
+      if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  }, [lenis]);
+
   const handleLogoClick = useCallback((e) => {
     e.preventDefault();
     if (lenis) {
@@ -181,12 +199,16 @@ export default function Navbar({ quoteCount = 0 }) {
               </button>
               {bespokeOpen && (
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
-                  {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => (
-                    <button key={cat} onClick={() => { setBespokeOpen(false); window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
-                      {label}
-                    </button>
-                  ))}
+                  {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
+                    const locked = LOCKED_BESPOKE_CATS.includes(cat);
+                    return (
+                      <button key={cat} onClick={() => openBespokeCat(cat)}
+                        className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)] flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream/90 hover:text-cream"}`}>
+                        {label}
+                        {locked && <Lock size={9} className="text-cream/35" />}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -276,12 +298,16 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Bespoke</span>
             <div className="flex flex-wrap justify-center gap-5">
-              {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => (
-                <button key={cat} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                  className="text-cream text-lg font-heading font-medium lift-hover">
-                  {label}
-                </button>
-              ))}
+              {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
+                const locked = LOCKED_BESPOKE_CATS.includes(cat);
+                return (
+                  <button key={cat} onClick={() => { closeMenu(); if (!locked) window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
+                    className={`text-lg font-heading font-medium lift-hover flex items-center gap-1.5 ${locked ? "text-cream/40" : "text-cream"}`}>
+                    {label}
+                    {locked && <Lock size={11} className="text-cream/35" />}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
