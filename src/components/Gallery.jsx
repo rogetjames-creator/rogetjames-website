@@ -326,7 +326,7 @@ const WALL_ART_SERIES = [
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO" },
+      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO", includeUploadedUpClose: true },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
@@ -2466,7 +2466,14 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const series = isAll ? null : filteredSeries.find(s => s.id === tab);
   const items = isAll ? [] : (series?.items || []);
   const item = isAll ? null : items[cardIdx];
-  const itemSlides = item ? (item.slides && item.slides.length > 1 ? item.slides : [item.img]) : [];
+  const itemSlides = item ? (() => {
+    let base = item.slides && item.slides.length > 1 ? [...item.slides] : [item.img];
+    // Pull in the uploaded Up Close shots so they also appear here (e.g. Plumes).
+    if (item.includeUploadedUpClose && uploadedUpClose.length) {
+      base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
+    }
+    return base;
+  })() : [];
   const displayImg = itemSlides[slideIdx] ?? item?.img;
   const [detailZoom, setDetailZoom] = useState(null);
 
@@ -2520,15 +2527,17 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     return () => clearTimeout(slideshowTimerRef.current);
   }, [slideshowActive, tab, cardIdx, slideIdx]);
 
-  // Auto-advance to next design after pausing on the last slide (disabled during slideshow)
+  // Auto-advance to next design after pausing on the last slide (disabled during
+  // slideshow, and while the expanded detail is open so it never yanks the
+  // viewer off the piece they're examining).
   const autoAdvanceRef = useRef(null);
   useEffect(() => {
     clearTimeout(autoAdvanceRef.current);
-    if (!isAll && !slideshowActive && itemSlides.length > 1 && slideIdx === itemSlides.length - 1) {
+    if (!isAll && !slideshowActive && !showDetails && itemSlides.length > 1 && slideIdx === itemSlides.length - 1) {
       autoAdvanceRef.current = setTimeout(() => navigate(1), 3200);
     }
     return () => clearTimeout(autoAdvanceRef.current);
-  }, [slideIdx, cardIdx, tab]);
+  }, [slideIdx, cardIdx, tab, showDetails]);
 
   // Arrow/swipe: step through slides within an item before jumping to next item
   const handleArrow = (dir) => {
