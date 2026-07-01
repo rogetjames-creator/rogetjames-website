@@ -41,7 +41,11 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 
 Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames.com/. Deployed automatically to Netlify on every push to `main`.
 
-**Correct GitHub repo — mandatory:** Netlify pulls from `github.com/rogetjames-creator/rogetjames-website`. This is the only repo that deploys to the live site. A separate repo, `github.com/ciaran-finnegan/rogetjames-website`, is not connected to Netlify — commits pushed there never go live. If a Claude Code session is scoped to the wrong repo, changes will build and commit successfully but never appear on rogetjames.com. Always confirm which repo a session has access to before assuming a push will deploy.
+**Correct GitHub repo — mandatory, check this first:** Netlify pulls from `github.com/rogetjames-creator/rogetjames-website`. This is the ONLY repo that deploys to the live site. James does not want work done anywhere else — ever.
+
+`github.com/ciaran-finnegan/rogetjames-website` is a stale, disconnected copy from early troubleshooting. It is NOT connected to Netlify, is NOT kept in sync, and does NOT reflect the real site. Do not read from it, write to it, answer questions about "the site" using it, or treat anything found there as current. If a session is ever scoped to `ciaran-finnegan/rogetjames-website` instead of `rogetjames-creator/rogetjames-website`, say so immediately and plainly — do not proceed as if it were the real project, and do not silently answer questions using its stale content.
+
+At the start of every session, before doing anything else, confirm the connected repository is `rogetjames-creator/rogetjames-website`. If it is not, tell James in one sentence and stop.
 
 ## Commands
 
