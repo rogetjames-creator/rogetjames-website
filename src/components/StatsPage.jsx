@@ -18,6 +18,87 @@ function CountTable({ title, data }) {
   );
 }
 
+function UpCloseUploader({ secret }) {
+  const [images, setImages] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const refresh = async () => {
+    try {
+      const res = await fetch("/api/up-close-list");
+      const json = await res.json();
+      setImages(json.images || []);
+    } catch { /* ignore */ }
+  };
+
+  useEffect(() => { refresh(); }, []);
+
+  const onPick = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setBusy(true);
+    setMsg("Uploading…");
+    try {
+      const toDataUrl = (file) => new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve({ name: file.name, dataUrl: r.result });
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      const payload = await Promise.all(files.map(toDataUrl));
+      const res = await fetch("/api/up-close-upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminSecret: secret, images: payload }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) { setMsg(json.error || "Upload failed."); }
+      else { setMsg(`Added ${json.saved} photo${json.saved === 1 ? "" : "s"}.`); await refresh(); }
+    } catch {
+      setMsg("Upload failed.");
+    } finally {
+      setBusy(false);
+      e.target.value = "";
+    }
+  };
+
+  const remove = async (id) => {
+    setBusy(true);
+    try {
+      await fetch("/api/up-close-upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminSecret: secret, action: "delete", id }),
+      });
+      await refresh();
+    } catch { /* ignore */ } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
+      <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-4">Up Close photos</p>
+      <label className={`block w-full text-center py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide cursor-pointer hover:bg-clay-light transition-all ${busy ? "opacity-40 pointer-events-none" : ""}`}>
+        {busy ? "Working…" : "+ Add photo"}
+        <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
+      </label>
+      {msg && <p className="font-detail text-[11px] text-cream/60 text-center mt-3">{msg}</p>}
+      {images.length > 0 && (
+        <div className="grid grid-cols-3 gap-2 mt-5">
+          {images.map((im) => (
+            <div key={im.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/10">
+              <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
+              <button onClick={() => remove(im.id)} aria-label="Remove"
+                className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors text-xs">
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function StatsPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -124,6 +205,8 @@ export default function StatsPage() {
             Refresh
           </button>
         </div>
+
+        <UpCloseUploader secret={secret} />
 
         <CountTable title="Activity" data={summary.byType} />
         <CountTable title="WA vs Interstate" data={summary.byRegion} />

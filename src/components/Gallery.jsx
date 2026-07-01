@@ -2408,6 +2408,16 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [drilledSeries, setDrilledSeries] = useState(null); // { id, label, items } or null
   const [slideshowActive, setSlideshowActive] = useState(false);
   const [upCloseOpen, setUpCloseOpen] = useState(false);
+  const [uploadedUpClose, setUploadedUpClose] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/up-close-list")
+      .then(r => r.json())
+      .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name }))); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+  const upCloseImages = [...UP_CLOSE_IMAGES, ...uploadedUpClose];
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
   const slideshowTimerRef = useRef(null);
@@ -2590,11 +2600,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
-            {UP_CLOSE_IMAGES.length === 0 ? (
+            {upCloseImages.length === 0 ? (
               <div className="h-full flex items-center justify-center text-cream/40 font-detail text-sm tracking-wide">No images yet.</div>
             ) : (
               <div className="flex flex-wrap justify-center gap-2">
-                {UP_CLOSE_IMAGES.map((item, i) => (
+                {upCloseImages.map((item, i) => (
                   <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80 }}>
                     <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
