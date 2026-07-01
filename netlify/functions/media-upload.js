@@ -7,7 +7,7 @@ const STORE = "media-library";
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB per image
 
 // Must match MediaPage.jsx's DESTINATIONS keys and Gallery.jsx's mediaKeys.
-const VALID_DESTINATIONS = ["up-close", "branches-gren", "creeping-fig-autumn", "plumes-deco"];
+const VALID_DESTINATIONS = ["up-close", "branches-gren", "creeping-fig-autumn", "plumes-deco", "banksia"];
 
 export default async function handler(req) {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);

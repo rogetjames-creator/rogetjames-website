@@ -10,6 +10,7 @@ export const DESTINATIONS = [
   { key: "branches-gren",        label: "Branches — GREN Up Close" },
   { key: "creeping-fig-autumn",  label: "Creeping Fig — Autumn" },
   { key: "plumes-deco",          label: "Plumes — Plume Deco" },
+  { key: "banksia",              label: "Banksia — Up Close" },
 ];
 const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || key;
 

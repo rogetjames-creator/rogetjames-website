@@ -271,6 +271,7 @@ const WALL_ART_SERIES = [
       { name: "BANKSIA Diamond",           img: "/images/placeholder.svg" },
       { name: "WANDOO DIAMOND",            img: "/images/placeholder.svg" },
       { name: "NATIVE COLLAGE",            img: "/images/placeholder.svg" },
+      { name: "BANKSIA — Up Close",        img: "/images/banksia/banksia-card-1.jpg", mediaKeys: ["banksia"] },
     ],
   },
   // ── CREEPING FIG SERIES ──────────────────
@@ -296,7 +297,7 @@ const WALL_ART_SERIES = [
       { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
       { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
       { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
-      { name: "GREN — Up Close", img: "/images/branches/gren-edge-1.jpg", mediaKeys: ["branches-gren"] },
+      { name: "GREN — Up Close", img: "/images/placeholder.svg", mediaKeys: ["branches-gren"] },
     ],
   },
   // ── FLOWERS & BLOOMS ─────────────────────
@@ -2423,8 +2424,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       .catch(() => {});
     return () => { alive = false; };
   }, []);
-  // Media images destined for the Up Close section.
-  const mediaUpClose = mediaImages.filter(m => m.destinations.includes("up-close"));
+  // The Up Close pill is the combined view of every close-up destination —
+  // not just the generic "up-close" tag, so Plumes/GREN/Autumn/Banksia uploads
+  // all appear here too, alongside their own design tile.
+  const mediaUpClose = mediaImages.filter(m => m.destinations.length > 0);
   const upCloseImages = [...UP_CLOSE_IMAGES, ...uploadedUpClose, ...mediaUpClose.map(m => ({ src: m.src, name: "" }))];
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
@@ -2482,11 +2485,14 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     }
     // Route media-library uploads to this design via exact destination key(s)
     // set on the item (see MediaPage.jsx DESTINATIONS for the fixed key list).
-    if (item.mediaKeys && mediaImages.length) {
+    if (item.mediaKeys) {
       const matched = mediaImages
         .filter(m => item.mediaKeys.some(k => m.destinations.includes(k)))
         .map(m => m.src);
-      base = [...base, ...matched.filter(src => !base.includes(src))];
+      // A pure "upload me" tile has no real slides of its own — once uploads
+      // exist, drop the placeholder cover so only the real photos show.
+      if (!item.slides && matched.length) base = matched;
+      else base = [...base, ...matched.filter(src => !base.includes(src))];
     }
     return base;
   })() : [];
