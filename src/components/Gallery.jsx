@@ -2927,7 +2927,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                       if (!postcodeInfo?.isAdmin) trackEvent({ type: "view_pricing", item: item.name, series: series?.label });
                     }}
                       className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200"
-                      style={{ background: "rgba(158,113,52,0.15)", border: "1px solid rgba(158,113,52,0.4)", color: "#9e7134" }}>
+                      style={{ background: "transparent", border: "1px solid #9e7134", color: "#9e7134" }}>
                       View Pricing
                     </button>
                   ) : (
@@ -2988,7 +2988,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
                               <button key={m} onClick={() => setSelectedMat(m)}
                                 className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
-                                style={{ background: selectedMat === m ? "rgba(255,220,50,0.15)" : "transparent", border: `1px solid ${selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.75)" }}>
+                                style={{ background: "transparent", border: `1px solid ${selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.15)"}`, boxShadow: selectedMat === m ? "0 0 0 1px #9e7134" : "none", color: selectedMat === m ? "#9e7134" : "rgba(242,240,233,0.75)" }}>
                                 {m === "aluminium" ? "Powder Coated" : "Corten"}
                               </button>
                             ))}
@@ -3001,9 +3001,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                             return (
                               <button key={t.id} onClick={() => setSelectedSize(t)}
                                 className="w-full flex justify-between items-center px-3 py-2 rounded-lg transition-all duration-150"
-                                style={{ background: isSelected ? "rgba(158,113,52,0.15)" : "transparent", border: `1px solid ${isSelected ? "#9e7134" : "rgba(242,240,233,0.1)"}`, cursor: "pointer" }}>
-                                <span className="font-detail text-xs text-left" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>{sizeLabel}</span>
-                                <span className="font-heading font-semibold text-sm" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>
+                                style={{ background: "transparent", border: "1px solid #9e7134", boxShadow: isSelected ? "0 0 0 1px #9e7134" : "none", cursor: "pointer" }}>
+                                <span className="font-detail text-xs text-left" style={{ color: isSelected ? "#9e7134" : "rgba(242,240,233,0.85)" }}>{sizeLabel}</span>
+                                <span className="font-heading font-semibold text-sm" style={{ color: isSelected ? "#9e7134" : "rgba(242,240,233,0.9)" }}>
                                   {p != null ? `$${p.toLocaleString()}` : "Enquire"}
                                 </span>
                               </button>
