@@ -74,6 +74,24 @@ export default function Navbar({ quoteCount = 0 }) {
     return () => window.removeEventListener("open-colour-catalogue", handler);
   }, []);
 
+  // Shareable deep links for the nav-bar catalogues, e.g.
+  // rogetjames.com/?catalogue=dulux . No pricing is involved, so nothing
+  // sensitive travels in the link.
+  useEffect(() => {
+    const cat = new URLSearchParams(window.location.search).get("catalogue");
+    if (!cat) return;
+    window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+    const map = {
+      wallart:   { label: "Wall Art & Screens", pages: CAT1 },
+      screens:   { label: "Wall Art & Screens", pages: CAT1 },
+      sculpture: { label: "Sculpture, Light Features & Mirrors", pages: CAT2 },
+      dulux:     { label: "Dulux Colours", pages: DULUX_PAGES },
+      interpon:  { label: "Interpon Colours", pages: INTERPON_PAGES },
+    };
+    const entry = map[cat.toLowerCase()];
+    if (entry) setTimeout(() => setOpenCat(entry), 300);
+  }, []);
+
   // Mobile menu open/close
   useEffect(() => {
     const menu = menuRef.current;
