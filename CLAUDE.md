@@ -15,6 +15,12 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 - Responses are short and direct. One sentence where one sentence is enough.
 - This applies to the AI chat widget on the site as well — responses should be factual and concise, not warm or conversational. Never use affirming/complimentary phrases like "Good choice" or "Great question" in chat widget replies — just answer. Keep chat widget replies short; avoid long-winded answers.
 
+**Pricing — mandatory, non-negotiable:**
+- NEVER display prices openly anywhere on the site. No price figures in captions, thumbnails, close-ups, tooltips, gallery labels, or shared links.
+- Pricing is ALWAYS gated behind the postcode step — prices appear only inside the postcode-gated pricing panel, after the visitor enters their postcode.
+- Do not add "from $X" summaries, price ranges, or any visible price outside that gate, even if asked to "coordinate" pricing across views.
+- No price value may ever travel in a URL or shared link.
+
 **Autonomy — mandatory:**
 - James is not a developer. His role is aesthetic direction, not technical operation.
 - Always supply URLs as clickable links, never plain text addresses.
