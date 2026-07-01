@@ -253,14 +253,6 @@ const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=
 const CDN_G = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const WALL_ART_SERIES = [
-  // ── UP CLOSE / DETAILS ───────────────────
-  {
-    id: "up-close",
-    label: "UP CLOSE",
-    items: [
-      { name: "PLUME DECO", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"] },
-    ],
-  },
   // ── AUSTRALIAN NATIVES ───────────────────
   {
     id: "australian-natives",
@@ -334,6 +326,7 @@ const WALL_ART_SERIES = [
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
+      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"] },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
@@ -2375,6 +2368,14 @@ const DECK_ALL_ITEMS = (() => {
   return arr;
 })();
 
+// ── "Up Close" gallery ────────────────────────────────────────────────────
+// Images for the "Up Close" pill (sits next to Slideshow in the wall art
+// catalogue). Add close-up / detail shots here, one per line.
+const UP_CLOSE_IMAGES = [
+  { src: "/images/details/plume-deco-rust-1.jpg", name: "Plume Deco — Corten detail" },
+  { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
+];
+
 function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory }) {
   const [tab, setTab] = useState("all");
   const [pillsOpen, setPillsOpen] = useState(false);
@@ -2406,6 +2407,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [sculptureCat, setSculptureCat] = useState("all");
   const [drilledSeries, setDrilledSeries] = useState(null); // { id, label, items } or null
   const [slideshowActive, setSlideshowActive] = useState(false);
+  const [upCloseOpen, setUpCloseOpen] = useState(false);
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
   const slideshowTimerRef = useRef(null);
@@ -2577,6 +2579,32 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
       onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50 && !isAll) handleArrow(dx < 0 ? 1 : -1); }}
     >
+      {/* Up Close gallery overlay */}
+      {upCloseOpen && (
+        <div className="absolute inset-0 flex flex-col bg-jet" style={{ zIndex: 100 }}>
+          <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 flex-shrink-0">
+            <span className="font-detail text-[10px] uppercase tracking-[0.2em] text-cream/70">Up Close</span>
+            <button onClick={() => setUpCloseOpen(false)} aria-label="Close"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-cream/60 hover:text-cream transition-colors">
+              <X size={16} />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
+            {UP_CLOSE_IMAGES.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-cream/40 font-detail text-sm tracking-wide">No images yet.</div>
+            ) : (
+              <div className="flex flex-wrap justify-center gap-2">
+                {UP_CLOSE_IMAGES.map((item, i) => (
+                  <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
+                    style={{ width: "calc(10% - 8px)", minWidth: 80 }}>
+                    <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Top bar */}
       <div className="flex flex-col flex-shrink-0">
       <div className="flex items-center px-5 py-3 gap-3" style={{ borderBottom: categoryFilter === "sculpture" ? "none" : "1px solid rgba(255,255,255,0.1)" }}>
@@ -2712,6 +2740,15 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 Stop
               </button>
             )}
+            <button onClick={() => setUpCloseOpen(true)}
+              className="flex items-center gap-1.5 pill-trace px-3 py-1 rounded-full border font-detail text-[9px] uppercase tracking-[0.18em] transition-colors duration-200"
+              style={{ borderColor: "rgba(242,240,233,0.25)", color: "rgba(242,240,233,0.65)", background: "transparent", marginLeft: 8 }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(242,240,233,0.25)"; e.currentTarget.style.color = "rgba(242,240,233,0.65)"; }}
+            >
+              <Maximize2 size={8} />
+              Up Close
+            </button>
           </div>
         </div>
       )}
