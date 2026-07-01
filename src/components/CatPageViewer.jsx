@@ -1,5 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, House } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, House, Link2, Check } from "lucide-react";
+
+// Maps a catalogue's label to its shareable link so the Copy-link button always
+// hands out a URL that actually reopens this catalogue.
+const SHARE_PATH = {
+  "Wall Art & Screens": "?catalogue=wallart",
+  "Sculpture, Light Features & Mirrors": "?catalogue=sculpture",
+  "Dulux Colours": "?catalogue=dulux",
+  "Interpon Colours": "?catalogue=interpon",
+  "Wall Art Catalogue": "?view=wallartcat",
+  "Sculpture Catalogue": "?view=sculpturecat",
+};
 
 /**
  * Simple full-screen catalogue page viewer.
@@ -11,8 +22,18 @@ import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, House } from "lucide-rea
 export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
   const [page, setPage] = useState(0);
   const [zoomed, setZoomed] = useState(false);
+  const [copied, setCopied] = useState(false);
   const total = pages.length;
   const thumbsRef = useRef(null);
+  const sharePath = SHARE_PATH[label];
+
+  const copyLink = () => {
+    if (!sharePath) return;
+    const url = window.location.origin + window.location.pathname + sharePath;
+    navigator.clipboard?.writeText(url).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
 
   const go = (dir) => setPage(p => Math.max(0, Math.min(total - 1, p + dir)));
   const goTo = (i) => setPage(i);
@@ -50,6 +71,12 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
           )}
           <span className="font-heading text-cream text-sm tracking-[0.2em] uppercase flex-1">{label}</span>
           <span className="text-cream/40 text-xs font-detail">{page + 1} / {total}</span>
+          {sharePath && (
+            <button onClick={copyLink} aria-label="Copy shareable link"
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${copied ? "bg-clay text-cream" : "bg-white/10 text-cream/50 hover:text-cream"}`}>
+              {copied ? <Check size={14} /> : <Link2 size={14} />}
+            </button>
+          )}
           <button onClick={() => setZoomed(true)}
             className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cream/50 hover:text-cream transition-colors">
             <ZoomIn size={14} />
