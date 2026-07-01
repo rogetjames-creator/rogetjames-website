@@ -286,6 +286,7 @@ const WALL_ART_SERIES = [
       { name: "ONTIO",   img: "/images/creeping-fig/ontio-1.jpg", slides: ["/images/creeping-fig/ontio-1.jpg", "/images/creeping-fig/ontio-2.jpg"] },
       { name: "NUVINE",    img: "/images/creeping-fig/nuvine-1.jpg" },
       { name: "BUTTERFLY", img: "/images/creeping-fig/butterfly-1.jpg" },
+      { name: "CREEPING FIG — Up Close", img: "/images/placeholder.svg", mediaKeys: ["creeping-fig-autumn"] },
     ],
   },
   // ── BRANCHES SERIES ──────────────────────
