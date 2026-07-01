@@ -155,13 +155,23 @@ export default function MediaPage() {
             className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-4 py-3 font-detail text-sm text-cream placeholder:text-cream/30 outline-none transition-colors mb-3"
           />
           <label className={`block w-full text-center py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide cursor-pointer hover:bg-clay-light transition-all ${busy ? "opacity-40 pointer-events-none" : ""}`}>
-            {busy ? "Working…" : "+ Choose photos from iCloud"}
+            {busy ? "Uploading…" : "+ Choose photos from iCloud"}
             <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
           </label>
           <p className="font-detail text-[10px] text-cream/40 text-center mt-3 leading-relaxed">
             Type where they belong first, then choose the photos. Tell Claude the location name and they’ll be placed on the site.
           </p>
-          {msg && <p className="font-detail text-[11px] text-cream/60 text-center mt-3">{msg}</p>}
+          {busy && (
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="w-4 h-4 border-2 border-cream/30 border-t-clay rounded-full animate-spin" />
+              <span className="font-detail text-[12px] text-cream/70">Uploading — please wait…</span>
+            </div>
+          )}
+          {!busy && msg && (
+            <p className="font-detail text-[12px] text-center mt-4 py-2 px-3 rounded-xl bg-clay/15 border border-clay/30 text-cream/90">
+              ✓ {msg}
+            </p>
+          )}
         </div>
 
         {Object.keys(groups).length === 0 && (
@@ -171,16 +181,23 @@ export default function MediaPage() {
         {Object.entries(groups).map(([g, ims]) => (
           <div key={g} className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-4">{g} · {ims.length}</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               {ims.map((im) => (
-                <div key={im.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
-                  <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
-                  <button onClick={() => remove(im.id)} aria-label="Remove"
-                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
-                  <button onClick={() => copyLink(im.src)}
-                    className="absolute bottom-1 left-1 right-1 py-1 rounded bg-black/70 text-cream/80 text-[9px] font-detail uppercase tracking-wider opacity-0 group-hover:opacity-100 hover:bg-clay hover:text-cream transition-all">
-                    Copy link
-                  </button>
+                <div key={im.id}>
+                  <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                    <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
+                    {/* Uploaded badge */}
+                    <span className="absolute top-1 left-1 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-600/90 text-white text-[8px] font-detail uppercase tracking-wider">
+                      ✓ Uploaded
+                    </span>
+                    <button onClick={() => remove(im.id)} aria-label="Remove"
+                      className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
+                    <button onClick={() => copyLink(im.src)}
+                      className="absolute bottom-1 left-1 right-1 py-1 rounded bg-black/70 text-cream/80 text-[9px] font-detail uppercase tracking-wider opacity-0 group-hover:opacity-100 hover:bg-clay hover:text-cream transition-all">
+                      Copy link
+                    </button>
+                  </div>
+                  {im.name && <p className="font-detail text-[9px] text-cream/45 mt-1 truncate" title={im.name}>{im.name}</p>}
                 </div>
               ))}
             </div>
