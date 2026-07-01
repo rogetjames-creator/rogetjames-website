@@ -97,6 +97,11 @@
   to = "/.netlify/functions/media-img"
   status = 200
 
+[[redirects]]
+  from = "/api/media-list"
+  to = "/.netlify/functions/media-list"
+  status = 200
+
 # Security headers — applied to every route. The CSP allows only the sources
 # the site actually uses (self, Google Fonts, the myportfolio image CDN); there
 # are no iframes, workers or eval in the site, so this does not break anything.

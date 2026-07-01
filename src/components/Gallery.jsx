@@ -2409,15 +2409,24 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [slideshowActive, setSlideshowActive] = useState(false);
   const [upCloseOpen, setUpCloseOpen] = useState(false);
   const [uploadedUpClose, setUploadedUpClose] = useState([]);
+  const [mediaImages, setMediaImages] = useState([]); // media-library uploads, routed by label
   useEffect(() => {
     let alive = true;
     fetch("/api/up-close-list")
       .then(r => r.json())
       .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name }))); })
       .catch(() => {});
+    fetch("/api/media-list")
+      .then(r => r.json())
+      .then(d => { if (alive && Array.isArray(d.images)) setMediaImages(d.images.map(i => ({ src: i.src, label: i.label || "" }))); })
+      .catch(() => {});
     return () => { alive = false; };
   }, []);
-  const upCloseImages = [...UP_CLOSE_IMAGES, ...uploadedUpClose];
+  // Normalised label helper for routing media images to the right place.
+  const normLabel = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  // Media images tagged for "up close" (any label containing "upclose").
+  const mediaUpClose = mediaImages.filter(m => normLabel(m.label).includes("upclose"));
+  const upCloseImages = [...UP_CLOSE_IMAGES, ...uploadedUpClose, ...mediaUpClose.map(m => ({ src: m.src, name: "" }))];
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
   const slideshowTimerRef = useRef(null);
@@ -2471,6 +2480,13 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     // Pull in the uploaded Up Close shots so they also appear here (e.g. Plumes).
     if (item.includeUploadedUpClose && uploadedUpClose.length) {
       base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
+    }
+    // Route media-library uploads to this design when their label mentions the
+    // design name (e.g. label "Creeping Fig Autumn" → the AUTUMN item).
+    const itemKey = normLabel(item.priceKey || item.name);
+    if (itemKey.length >= 4 && mediaImages.length) {
+      const matched = mediaImages.filter(m => normLabel(m.label).includes(itemKey)).map(m => m.src);
+      base = [...base, ...matched.filter(src => !base.includes(src))];
     }
     return base;
   })() : [];
