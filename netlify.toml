@@ -53,6 +53,11 @@
   status = 200
 
 [[redirects]]
+  from = "/media"
+  to = "/media.html"
+  status = 200
+
+[[redirects]]
   from = "/api/track-event"
   to = "/.netlify/functions/track-event"
   status = 200
@@ -75,6 +80,16 @@
 [[redirects]]
   from = "/api/up-close-img"
   to = "/.netlify/functions/up-close-img"
+  status = 200
+
+[[redirects]]
+  from = "/api/media-upload"
+  to = "/.netlify/functions/media-upload"
+  status = 200
+
+[[redirects]]
+  from = "/api/media-img"
+  to = "/.netlify/functions/media-img"
   status = 200
 
 # Security headers — applied to every route. The CSP allows only the sources
