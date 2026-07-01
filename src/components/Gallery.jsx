@@ -278,7 +278,7 @@ const WALL_ART_SERIES = [
     id: "creeping-fig",
     label: "CREEPING FIGS",
     items: [
-      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], detailSlides: ["/images/creeping-fig/closeup-1.jpg", "/images/creeping-fig/closeup-2.jpg", "/images/creeping-fig/closeup-3.jpg", "/images/creeping-fig/closeup-4.jpg", "/images/creeping-fig/closeup-5.jpg", "/images/creeping-fig/closeup-6.jpg"], singleInAll: true, mediaKeys: ["creeping-fig-autumn"] },
+      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], singleInAll: true, mediaKeys: ["creeping-fig-autumn"] },
       { name: "GRANDE",  img: "/images/creeping-fig/grande-1.jpg", slides: ["/images/creeping-fig/grande-1.jpg", "/images/creeping-fig/grande-2.jpg"] },
       { name: "SPRING",  img: "/images/creeping-fig/spring-1.jpg" },
       { name: "FIGARO",  img: "/images/creeping-fig/figaro-1.jpg" },
