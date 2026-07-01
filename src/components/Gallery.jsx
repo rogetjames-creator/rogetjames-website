@@ -2481,11 +2481,15 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     if (item.includeUploadedUpClose && uploadedUpClose.length) {
       base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
     }
-    // Route media-library uploads to this design when their label mentions the
-    // design name (e.g. label "Creeping Fig Autumn" → the AUTUMN item).
+    // Route media-library uploads to this design when the label and the design
+    // name overlap either way — e.g. label "Creeping Fig Autumn" → AUTUMN, or a
+    // short label "gren" → GREN Edge / Tao / Free / X.
     const itemKey = normLabel(item.priceKey || item.name);
     if (itemKey.length >= 4 && mediaImages.length) {
-      const matched = mediaImages.filter(m => normLabel(m.label).includes(itemKey)).map(m => m.src);
+      const matched = mediaImages.filter(m => {
+        const lab = normLabel(m.label);
+        return lab.length >= 4 && (lab.includes(itemKey) || itemKey.includes(lab));
+      }).map(m => m.src);
       base = [...base, ...matched.filter(src => !base.includes(src))];
     }
     return base;
