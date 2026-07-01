@@ -11,7 +11,7 @@ function criticalCssPlugin() {
     apply: 'build',
     async closeBundle() {
       const critters = new Critters({ path: resolve(__dirname, 'dist'), publicPath: '/', inlineFonts: false, pruneSource: false })
-      for (const htmlFile of ['dist/index.html', 'dist/vault.html', 'dist/stats.html', 'dist/media.html']) {
+      for (const htmlFile of ['dist/index.html', 'dist/vault.html', 'dist/stats.html', 'dist/media.html', 'dist/admin.html']) {
         const fullPath = resolve(__dirname, htmlFile)
         try {
           const html = readFileSync(fullPath, 'utf8')
@@ -32,6 +32,7 @@ export default defineConfig({
         vault: resolve(__dirname, 'vault.html'),
         stats: resolve(__dirname, 'stats.html'),
         media: resolve(__dirname, 'media.html'),
+        admin: resolve(__dirname, 'admin.html'),
       },
       output: {
         manualChunks: {
