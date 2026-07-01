@@ -2372,9 +2372,23 @@ const DECK_ALL_ITEMS = (() => {
 // Images for the "Up Close" pill (sits next to Slideshow in the wall art
 // catalogue). Add close-up / detail shots here, one per line.
 const UP_CLOSE_IMAGES = [
-  { src: "/images/details/plume-deco-rust-1.jpg", name: "Plume Deco — Corten detail" },
-  { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
+  { src: "/images/details/plume-deco-rust-1.jpg", name: "Plume Deco — Corten detail", design: "PLUME DECO" },
+  { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail", design: "PLUME DECO" },
 ];
+
+// Short price summary for an Up Close image's design — mirrors the catalogue
+// pricing so the two always coordinate. Returns null if the design has no price.
+const upClosePriceSummary = (design) => {
+  const tiers = design && PIECE_SIZES[design];
+  if (!tiers) return null;
+  const nums = (arr) => arr.filter((v) => typeof v === "number");
+  const wa = nums(tiers.map((t) => (typeof t.price === "number" ? t.price : t.priceCorten)));
+  const inter = nums(tiers.map((t) => (typeof t.pricePC === "number" ? t.pricePC : t.priceCortenPC)));
+  const w = wa.length ? Math.min(...wa) : null;
+  const i = inter.length ? Math.min(...inter) : null;
+  if (w == null && i == null) return null;
+  return { design, wa: w, inter: i };
+};
 
 function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory }) {
   const [tab, setTab] = useState("all");
@@ -2603,13 +2617,27 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             {upCloseImages.length === 0 ? (
               <div className="h-full flex items-center justify-center text-cream/40 font-detail text-sm tracking-wide">No images yet.</div>
             ) : (
-              <div className="flex flex-wrap justify-center gap-2">
-                {upCloseImages.map((item, i) => (
-                  <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
-                    style={{ width: "calc(10% - 8px)", minWidth: 80 }}>
-                    <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  </div>
-                ))}
+              <div className="flex flex-wrap justify-center gap-3">
+                {upCloseImages.map((item, i) => {
+                  const ps = upClosePriceSummary(item.design);
+                  return (
+                    <div key={i} style={{ width: "calc(14% - 12px)", minWidth: 120 }}>
+                      <div className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200">
+                        <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      </div>
+                      {ps && (
+                        <div className="mt-1.5 text-center">
+                          <p className="font-detail text-[10px] uppercase tracking-[0.12em] text-cream/80">{ps.design}</p>
+                          <p className="font-detail text-[9px] text-cream/50 leading-snug mt-0.5">
+                            {ps.wa != null && <>WA from ${ps.wa}</>}
+                            {ps.wa != null && ps.inter != null && " · "}
+                            {ps.inter != null && <>Interstate from ${ps.inter}</>}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
