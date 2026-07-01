@@ -327,7 +327,7 @@ const WALL_ART_SERIES = [
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO", includeUploadedUpClose: true },
+      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO", includeUploadedUpClose: true, mediaLabel: ["plume"] },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
