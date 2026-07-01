@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function CountTable({ title, data }) {
   const entries = Object.entries(data || {}).sort((a, b) => b[1] - a[1]);
@@ -38,9 +38,14 @@ export default function StatsPage() {
       if (!res.ok || json.error) {
         setError(json.error || "Failed to load stats.");
         setAuthed(false);
+        // A stale/wrong saved key would loop forever — clear it.
+        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
       } else {
         setAuthed(true);
         setData(json);
+        setSecret(adminSecret);
+        // Remember on this device so future visits are one-tap.
+        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
       }
     } catch {
       setError("Request failed. Check your connection.");
@@ -48,6 +53,16 @@ export default function StatsPage() {
       setLoading(false);
     }
   };
+
+  // One-tap login: accept a ?key= link (from the emailed digest) or a key
+  // remembered on this device, and sign in automatically.
+  useEffect(() => {
+    const urlKey = new URLSearchParams(window.location.search).get("key");
+    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
+    if (urlKey) window.history.replaceState({}, "", "/stats"); // hide the key from the address bar
+    if (saved) load(saved);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!authed) {
     return (

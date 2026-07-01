@@ -6,7 +6,7 @@ import { getStore } from "@netlify/blobs";
 export default async () => {
   // One-shot guard: if we've already sent, do nothing.
   const flags = getStore({ name: "digest-flags", consistency: "strong" });
-  const already = await flags.get("sent", { type: "json" }).catch(() => null);
+  const already = await flags.get("sent-v2", { type: "json" }).catch(() => null);
   if (already) return new Response("already sent");
 
   let records = [];
@@ -45,6 +45,13 @@ export default async () => {
 
   const body = recent.length ? recent.map(fmt).join("\n") : "No events found in storage.";
 
+  // One-tap dashboard link — logs in automatically and then remembers this
+  // device, so James never has to enter the password.
+  const key = encodeURIComponent(process.env.VAULT_ADMIN_SECRET || "");
+  const dashLink = key
+    ? `\n\n———\nOpen your live stats dashboard (one tap, then bookmark it):\nhttps://rogetjames.com/stats?key=${key}`
+    : "";
+
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -55,12 +62,12 @@ export default async () => {
       from: "ROGETjames Stats <onboarding@resend.dev>",
       to: ["rogetjames@gmail.com", "james@rogetjames.com"],
       subject: `Recent pricing-interest events (${recent.length})`,
-      text: `Most recent visitor pricing events on rogetjames.com:\n\n${body}`,
+      text: `Most recent visitor pricing events on rogetjames.com:\n\n${body}${dashLink}`,
     }),
   });
 
-  await flags.setJSON("sent", { at: new Date().toISOString() });
-  return new Response("sent");
+  await flags.setJSON("sent-v2", { at: new Date().toISOString() });
+  return new Response("sent-v2");
 };
 
 export const config = { schedule: "* * * * *" };
