@@ -3,15 +3,21 @@ import { useState, useEffect } from "react";
 const API = "/api/media-upload";
 
 // Mirrors the gallery's label routing so the admin can see where a batch lands.
+// A label can hit several destinations (e.g. "up close and branches").
 const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-function routeFor(label) {
+const ROUTES = [
+  { kw: "upclose", to: "Up Close section" },
+  { kw: "branches", to: "Branches — GREN Up Close" },
+  { kw: "gren", to: "Branches — GREN Up Close" },
+  { kw: "autumn", to: "Creeping Fig — Autumn" },
+  { kw: "plume", to: "Plumes — Plume Deco" },
+];
+function routesFor(label) {
   const l = norm(label);
-  if (!l) return null;
-  if (l.includes("upclose")) return "Up Close section";
-  if (l.includes("gren")) return "Branches — GREN Up Close";
-  if (l.includes("autumn")) return "Creeping Fig — Autumn";
-  if (l.includes("plume")) return "Plumes — Plume Deco";
-  return null;
+  if (!l) return [];
+  const hits = [];
+  for (const r of ROUTES) if (l.includes(r.kw) && !hits.includes(r.to)) hits.push(r.to);
+  return hits;
 }
 
 export default function MediaPage() {
@@ -86,7 +92,12 @@ export default function MediaPage() {
       const res = await call({ adminSecret: secret, images: payload, label });
       const json = await res.json();
       if (!res.ok || json.error) setMsg(json.error || "Upload failed.");
-      else { setMsg(`Added ${json.saved} image${json.saved === 1 ? "" : "s"}${label ? ` to “${label}”` : ""}.`); await refresh(); }
+      else {
+        const dests = routesFor(label);
+        const where = dests.length ? ` → ${dests.join(" + ")}` : " — label not recognised, tell Claude where it goes";
+        setMsg(`Added ${json.saved} image${json.saved === 1 ? "" : "s"}${where}.`);
+        await refresh();
+      }
     } catch {
       setMsg("Upload failed.");
     } finally {
@@ -194,10 +205,10 @@ export default function MediaPage() {
           <div key={g} className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">{g} · {ims.length}</p>
             {(() => {
-              const dest = routeFor(g);
+              const dests = routesFor(g);
               return (
-                <p className={`font-detail text-[10px] mb-4 ${dest ? "text-green-400" : "text-amber-400"}`}>
-                  {dest ? `✓ Live on site → ${dest}` : "Not placed — label not recognised. Tell Claude where this goes."}
+                <p className={`font-detail text-[10px] mb-4 ${dests.length ? "text-green-400" : "text-amber-400"}`}>
+                  {dests.length ? `✓ Live on site → ${dests.join(" + ")}` : "Not placed — label not recognised. Tell Claude where this goes."}
                 </p>
               );
             })()}

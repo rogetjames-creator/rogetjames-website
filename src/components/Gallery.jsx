@@ -296,7 +296,7 @@ const WALL_ART_SERIES = [
       { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
       { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
       { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
-      { name: "GREN — Up Close", img: "/images/branches/gren-edge-1.jpg", mediaLabel: "gren" },
+      { name: "GREN — Up Close", img: "/images/branches/gren-edge-1.jpg", mediaLabel: ["gren", "branches"] },
     ],
   },
   // ── FLOWERS & BLOOMS ─────────────────────
@@ -2482,11 +2482,14 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     if (item.includeUploadedUpClose && uploadedUpClose.length) {
       base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
     }
-    // Route media-library uploads to this design via an explicit label tag on
-    // the item (opt-in, so images land exactly where intended, not spread).
+    // Route media-library uploads to this design via explicit label tag(s) on
+    // the item. mediaLabel may be a string or a list; the image lands here if
+    // its label mentions any of them (so a sentence label can hit several spots).
     if (item.mediaLabel && mediaImages.length) {
-      const ml = normLabel(item.mediaLabel);
-      const matched = mediaImages.filter(m => normLabel(m.label).includes(ml)).map(m => m.src);
+      const tags = (Array.isArray(item.mediaLabel) ? item.mediaLabel : [item.mediaLabel]).map(normLabel);
+      const matched = mediaImages
+        .filter(m => { const ml = normLabel(m.label); return tags.some(t => t && ml.includes(t)); })
+        .map(m => m.src);
       base = [...base, ...matched.filter(src => !base.includes(src))];
     }
     return base;
