@@ -2390,7 +2390,7 @@ const upClosePriceSummary = (design) => {
   return { design, wa: w, inter: i };
 };
 
-function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory }) {
+function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory, initialPiece = null }) {
   const [tab, setTab] = useState("all");
   const [pillsOpen, setPillsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -2571,6 +2571,17 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     setSlideIdx(sIdx);
     setShowDetails(openDet);
   };
+
+  // Deep link: open a specific design's detail when shared via ?piece=<slug>.
+  useEffect(() => {
+    if (!initialPiece) return;
+    const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    for (const series of WALL_ART_SERIES) {
+      const idx = series.items.findIndex(it => slug(it.priceKey || it.name) === initialPiece || slug(it.name) === initialPiece);
+      if (idx >= 0) { setDrilledSeries(series); setTab(series.id); setCardIdx(idx); setSlideIdx(0); setShowDetails(true); break; }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPiece]);
 
   // Reset material when switching to an item that doesn't support aluminium
   useEffect(() => {
@@ -3298,6 +3309,7 @@ export default function Gallery() {
   const [catFlipOpen, setCatFlipOpen] = useState(false);
   const [catFlipTab, setCatFlipTab] = useState("wall-art");
   const [cardDeckOpen, setCardDeckOpen] = useState(false);
+  const [initialPiece, setInitialPiece] = useState(null);
   const [sculpOpen, setSculpOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("wall-art");
@@ -3386,11 +3398,20 @@ export default function Gallery() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get("view");
-    if (!view) return;
+    const piece = params.get("piece");
+    if (!view && !piece) return;
     // Clean URL without reload
     const clean = window.location.pathname + window.location.hash;
     window.history.replaceState(null, "", clean);
     const timer = setTimeout(() => {
+      if (piece) {
+        // Deep link to one design — opens its detail. Pricing stays gated behind
+        // the postcode step, so a shared link never carries price details.
+        setSelectedCategory("wall-art"); setCategoryClicked(true);
+        setInitialPiece(piece); setCardDeckOpen(true);
+        sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
       if (view === "wallart") {
         setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true);
         sectionRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -3424,7 +3445,7 @@ export default function Gallery() {
 
   return (
     <>
-      {cardDeckOpen && <CardDeckOverlay onClose={() => { setCardDeckOpen(false); setCategoryClicked(false); }} categoryFilter={selectedCategory} onOpenCatalogue={(tab) => { setCatFlipOpen(true); setCatFlipTab(tab || selectedCategory); }} onSwitchCategory={(cat) => { setSelectedCategory(cat); setCategoryClicked(true); }} />}
+      {cardDeckOpen && <CardDeckOverlay initialPiece={initialPiece} onClose={() => { setCardDeckOpen(false); setCategoryClicked(false); setInitialPiece(null); }} categoryFilter={selectedCategory} onOpenCatalogue={(tab) => { setCatFlipOpen(true); setCatFlipTab(tab || selectedCategory); }} onSwitchCategory={(cat) => { setSelectedCategory(cat); setCategoryClicked(true); }} />}
       <section id="collection" ref={sectionRef} className="bg-ink pt-32 pb-20">
 
         {/* Label row */}
