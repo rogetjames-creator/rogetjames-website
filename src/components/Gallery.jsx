@@ -278,7 +278,7 @@ const WALL_ART_SERIES = [
     id: "creeping-fig",
     label: "CREEPING FIGS",
     items: [
-      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], detailSlides: ["/images/creeping-fig/closeup-1.jpg", "/images/creeping-fig/closeup-2.jpg", "/images/creeping-fig/closeup-3.jpg", "/images/creeping-fig/closeup-4.jpg", "/images/creeping-fig/closeup-5.jpg", "/images/creeping-fig/closeup-6.jpg"], singleInAll: true },
+      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], detailSlides: ["/images/creeping-fig/closeup-1.jpg", "/images/creeping-fig/closeup-2.jpg", "/images/creeping-fig/closeup-3.jpg", "/images/creeping-fig/closeup-4.jpg", "/images/creeping-fig/closeup-5.jpg", "/images/creeping-fig/closeup-6.jpg"], singleInAll: true, mediaLabel: "autumn" },
       { name: "GRANDE",  img: "/images/creeping-fig/grande-1.jpg", slides: ["/images/creeping-fig/grande-1.jpg", "/images/creeping-fig/grande-2.jpg"] },
       { name: "SPRING",  img: "/images/creeping-fig/spring-1.jpg" },
       { name: "FIGARO",  img: "/images/creeping-fig/figaro-1.jpg" },
@@ -296,6 +296,7 @@ const WALL_ART_SERIES = [
       { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
       { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
       { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
+      { name: "GREN — Up Close", img: "/images/branches/gren-edge-1.jpg", mediaLabel: "gren" },
     ],
   },
   // ── FLOWERS & BLOOMS ─────────────────────
@@ -2481,15 +2482,11 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     if (item.includeUploadedUpClose && uploadedUpClose.length) {
       base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
     }
-    // Route media-library uploads to this design when the label and the design
-    // name overlap either way — e.g. label "Creeping Fig Autumn" → AUTUMN, or a
-    // short label "gren" → GREN Edge / Tao / Free / X.
-    const itemKey = normLabel(item.priceKey || item.name);
-    if (itemKey.length >= 4 && mediaImages.length) {
-      const matched = mediaImages.filter(m => {
-        const lab = normLabel(m.label);
-        return lab.length >= 4 && (lab.includes(itemKey) || itemKey.includes(lab));
-      }).map(m => m.src);
+    // Route media-library uploads to this design via an explicit label tag on
+    // the item (opt-in, so images land exactly where intended, not spread).
+    if (item.mediaLabel && mediaImages.length) {
+      const ml = normLabel(item.mediaLabel);
+      const matched = mediaImages.filter(m => normLabel(m.label).includes(ml)).map(m => m.src);
       base = [...base, ...matched.filter(src => !base.includes(src))];
     }
     return base;

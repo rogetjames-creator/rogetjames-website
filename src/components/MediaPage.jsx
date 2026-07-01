@@ -2,6 +2,18 @@ import { useState, useEffect } from "react";
 
 const API = "/api/media-upload";
 
+// Mirrors the gallery's label routing so the admin can see where a batch lands.
+const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+function routeFor(label) {
+  const l = norm(label);
+  if (!l) return null;
+  if (l.includes("upclose")) return "Up Close section";
+  if (l.includes("gren")) return "Branches — GREN Up Close";
+  if (l.includes("autumn")) return "Creeping Fig — Autumn";
+  if (l.includes("plume")) return "Plumes — Plume Deco";
+  return null;
+}
+
 export default function MediaPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -180,7 +192,15 @@ export default function MediaPage() {
 
         {Object.entries(groups).map(([g, ims]) => (
           <div key={g} className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
-            <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-4">{g} · {ims.length}</p>
+            <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">{g} · {ims.length}</p>
+            {(() => {
+              const dest = routeFor(g);
+              return (
+                <p className={`font-detail text-[10px] mb-4 ${dest ? "text-green-400" : "text-amber-400"}`}>
+                  {dest ? `✓ Live on site → ${dest}` : "Not placed — label not recognised. Tell Claude where this goes."}
+                </p>
+              );
+            })()}
             <div className="grid grid-cols-3 gap-3">
               {ims.map((im) => (
                 <div key={im.id}>
