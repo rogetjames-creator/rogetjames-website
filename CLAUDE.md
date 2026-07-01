@@ -39,13 +39,12 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 
 ## Project
 
-Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames.com/. Deployed automatically to Netlify on every push to `main`.
+Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames.com/.
 
-**Correct GitHub repo — mandatory, check this first:** Netlify pulls from `github.com/rogetjames-creator/rogetjames-website`. This is the ONLY repo that deploys to the live site. James does not want work done anywhere else — ever.
-
-`github.com/ciaran-finnegan/rogetjames-website` is a stale, disconnected copy from early troubleshooting. It is NOT connected to Netlify, is NOT kept in sync, and does NOT reflect the real site. Do not read from it, write to it, answer questions about "the site" using it, or treat anything found there as current. If a session is ever scoped to `ciaran-finnegan/rogetjames-website` instead of `rogetjames-creator/rogetjames-website`, say so immediately and plainly — do not proceed as if it were the real project, and do not silently answer questions using its stale content.
-
-At the start of every session, before doing anything else, confirm the connected repository is `rogetjames-creator/rogetjames-website`. If it is not, tell James in one sentence and stop.
+**Hosting and deployment — mandatory, check this first:**
+- The one and only source of truth is the GitHub repository `rogetjames-creator/rogetjames-website`.
+- Netlify is connected to that repository and watches its `main` branch. Every push to `main` triggers an automatic Netlify build and deploy — nothing else needs to happen for a change to go live.
+- At the start of every session, confirm the connected repository is `rogetjames-creator/rogetjames-website` before doing anything else. If it is not, tell James in one sentence and stop — do not proceed as if a different repository were the real project.
 
 ## Commands
 
