@@ -20,38 +20,31 @@ export default function MediaPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [images, setImages] = useState([]);
+
+  // Batch composer state
   const [selectedDests, setSelectedDests] = useState([]);
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
+  const [phase, setPhase] = useState("compose");     // compose | sending | done
+  const [doneInfo, setDoneInfo] = useState(null);    // { count, dests: [] }
+  const [note, setNote] = useState("");
 
   const call = (payload) =>
-    fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
   const login = async (adminSecret) => {
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
       const res = await call({ adminSecret, action: "list" });
       const json = await res.json();
       if (!res.ok || json.error) {
-        setError(json.error || "Failed.");
-        setAuthed(false);
+        setError(json.error || "Failed."); setAuthed(false);
         try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
       } else {
-        setAuthed(true);
-        setSecret(adminSecret);
-        setImages(json.images || []);
+        setAuthed(true); setSecret(adminSecret); setImages(json.images || []);
         try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
       }
-    } catch {
-      setError("Request failed. Check your connection.");
-    } finally {
-      setLoading(false);
-    }
+    } catch { setError("Request failed. Check your connection."); }
+    finally { setLoading(false); }
   };
 
   const refresh = async (s = secret) => {
@@ -70,53 +63,46 @@ export default function MediaPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const toggleDest = (key) => {
-    setSelectedDests(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
-  };
+  const toggleDest = (key) => setSelectedDests(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
 
   const onPick = async (e) => {
     const files = Array.from(e.target.files || []);
+    e.target.value = "";
     if (!files.length) return;
-    if (!selectedDests.length) {
-      setMsg("Pick at least one destination below before choosing photos.");
-      e.target.value = "";
-      return;
-    }
-    setBusy(true);
-    setMsg("Uploading…");
+    setNote("");
+    const toDataUrl = (file) => new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve({ name: file.name, dataUrl: r.result });
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+    const added = await Promise.all(files.map(toDataUrl));
+    setStaged(prev => [...prev, ...added]);
+  };
+
+  const removeStaged = (i) => setStaged(prev => prev.filter((_, idx) => idx !== i));
+
+  const send = async () => {
+    if (!selectedDests.length || !staged.length) return;
+    setPhase("sending");
     try {
-      const toDataUrl = (file) => new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve({ name: file.name, dataUrl: r.result });
-        r.onerror = reject;
-        r.readAsDataURL(file);
-      });
-      const payload = await Promise.all(files.map(toDataUrl));
-      const res = await call({ adminSecret: secret, images: payload, destinations: selectedDests });
+      const res = await call({ adminSecret: secret, images: staged, destinations: selectedDests });
       const json = await res.json();
-      if (!res.ok || json.error) setMsg(json.error || "Upload failed.");
-      else {
-        const where = selectedDests.map(labelForKey).join(" + ");
-        setMsg(`Added ${json.saved} image${json.saved === 1 ? "" : "s"} → ${where}.`);
-        await refresh();
-      }
+      if (!res.ok || json.error) { setNote(json.error || "Upload failed — try again."); setPhase("compose"); return; }
+      setDoneInfo({ count: json.saved, dests: [...selectedDests] });
+      setPhase("done");
+      await refresh();
     } catch {
-      setMsg("Upload failed.");
-    } finally {
-      setBusy(false);
-      e.target.value = "";
+      setNote("Upload failed — check connection and try again."); setPhase("compose");
     }
+  };
+
+  const startNewBatch = () => {
+    setStaged([]); setSelectedDests([]); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
-    setBusy(true);
-    try { await call({ adminSecret: secret, action: "delete", id }); await refresh(); }
-    catch { /* ignore */ } finally { setBusy(false); }
-  };
-
-  const copyLink = (src) => {
-    const url = window.location.origin + src;
-    try { navigator.clipboard.writeText(url); setMsg("Link copied."); } catch { setMsg(url); }
+    try { await call({ adminSecret: secret, action: "delete", id }); await refresh(); } catch { /* ignore */ }
   };
 
   if (!authed) {
@@ -132,14 +118,9 @@ export default function MediaPage() {
               <p className="font-detail text-[10px] text-cream/85 uppercase tracking-[0.25em]">Media Upload</p>
             </div>
             <form onSubmit={e => { e.preventDefault(); if (secret.trim()) login(secret.trim()); }} className="space-y-4">
-              <input
-                type="password"
-                value={secret}
-                onChange={e => setSecret(e.target.value)}
-                placeholder="Admin password"
+              <input type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder="Admin password"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-heading text-cream tracking-[0.15em] placeholder:text-cream/30 placeholder:font-detail placeholder:text-sm outline-none transition-colors"
-                style={{ caretColor: "#9E7134" }}
-              />
+                style={{ caretColor: "#9E7134" }} />
               <button type="submit" disabled={!secret.trim() || loading}
                 className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 transition-all">
                 {loading ? "Loading…" : "Enter"}
@@ -152,13 +133,15 @@ export default function MediaPage() {
     );
   }
 
-  // Group images by their destination set for display.
+  // Group existing images by destination set.
   const groups = {};
   for (const im of images) {
     const dests = Array.isArray(im.destinations) && im.destinations.length ? im.destinations : [];
     const key = dests.length ? dests.map(labelForKey).join(" + ") : "— no destination —";
     (groups[key] = groups[key] || []).push(im);
   }
+
+  const canSend = selectedDests.length > 0 && staged.length > 0;
 
   return (
     <div className="min-h-screen bg-jet px-6 py-12">
@@ -168,67 +151,92 @@ export default function MediaPage() {
             ROGET<span className="font-normal italic font-drama">james</span>
           </a>
           <div className="w-8 h-px bg-clay/50 mt-3 mb-3" />
-          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.25em]">Media Upload · {images.length} images</p>
+          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.25em]">Media Upload · {images.length} live images</p>
         </div>
 
-        <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
-          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-3">1. Where do these go?</p>
-          <div className="flex flex-wrap gap-2 mb-5">
-            {DESTINATIONS.map(d => {
-              const on = selectedDests.includes(d.key);
-              return (
-                <button key={d.key} type="button" onClick={() => toggleDest(d.key)}
-                  className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                  {on ? "✓ " : ""}{d.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-3">2. Choose photos</p>
-          <label className={`block w-full text-center py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide cursor-pointer hover:bg-clay-light transition-all ${busy ? "opacity-40 pointer-events-none" : ""}`}>
-            {busy ? "Uploading…" : "+ Choose photos from iCloud"}
-            <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
-          </label>
-          {busy && (
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <div className="w-4 h-4 border-2 border-cream/30 border-t-clay rounded-full animate-spin" />
-              <span className="font-detail text-[12px] text-cream/70">Uploading — please wait…</span>
-            </div>
-          )}
-          {!busy && msg && (
-            <p className="font-detail text-[12px] text-center mt-4 py-2 px-3 rounded-xl bg-clay/15 border border-clay/30 text-cream/90">
-              {msg}
+        {/* ── DONE STATE ─────────────────────────── */}
+        {phase === "done" && doneInfo && (
+          <div className="bg-green-600/15 border border-green-500/40 rounded-2xl p-7 mb-8 text-center">
+            <p className="font-heading text-cream text-lg mb-1">✓ Done</p>
+            <p className="font-detail text-sm text-cream/80 mb-1">
+              {doneInfo.count} photo{doneInfo.count === 1 ? "" : "s"} sent and now live in:
             </p>
-          )}
-        </div>
-
-        {Object.keys(groups).length === 0 && (
-          <p className="font-detail text-sm text-cream/40 text-center">No images uploaded yet.</p>
+            <p className="font-detail text-sm text-green-300 mb-5">{doneInfo.dests.map(labelForKey).join(" + ")}</p>
+            <button onClick={startNewBatch}
+              className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light transition-all">
+              + Start a new batch
+            </button>
+            <p className="font-detail text-[10px] text-cream/40 mt-3">Appears on the site within ~1 minute.</p>
+          </div>
         )}
 
+        {/* ── COMPOSER ───────────────────────────── */}
+        {phase !== "done" && (
+          <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
+            <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 1 — Where do these go?</p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {DESTINATIONS.map(d => {
+                const on = selectedDests.includes(d.key);
+                return (
+                  <button key={d.key} type="button" onClick={() => toggleDest(d.key)}
+                    className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                    {on ? "✓ " : ""}{d.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
+            <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
+              + Choose photos from iCloud
+              <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
+            </label>
+
+            {staged.length > 0 && (
+              <>
+                <p className="font-detail text-[10px] text-cream/50 mt-4 mb-2">{staged.length} photo{staged.length === 1 ? "" : "s"} ready to send:</p>
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {staged.map((s, i) => (
+                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-white/10">
+                      <img src={s.dataUrl} alt={s.name} className="w-full h-full object-cover" />
+                      <button onClick={() => removeStaged(i)} aria-label="Remove"
+                        className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 text-cream/80 flex items-center justify-center text-xs hover:bg-red-600 hover:text-white">×</button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mt-6 mb-3">Step 3 — Send</p>
+            <button onClick={send} disabled={!canSend || phase === "sending"}
+              className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+              {phase === "sending"
+                ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending…</>)
+                : canSend
+                  ? `Send ${staged.length} photo${staged.length === 1 ? "" : "s"} →`
+                  : (!selectedDests.length ? "Pick a destination first" : "Choose photos first")}
+            </button>
+            {note && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{note}</p>}
+          </div>
+        )}
+
+        {/* ── LIVE LIBRARY ───────────────────────── */}
+        <p className="font-detail text-[10px] text-cream/45 uppercase tracking-[0.25em] mb-4">Currently on the site</p>
+        {Object.keys(groups).length === 0 && (
+          <p className="font-detail text-sm text-cream/40 text-center">Nothing uploaded yet.</p>
+        )}
         {Object.entries(groups).map(([g, ims]) => (
           <div key={g} className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">{g} · {ims.length}</p>
             <p className={`font-detail text-[10px] mb-4 ${g === "— no destination —" ? "text-amber-400" : "text-green-400"}`}>
-              {g === "— no destination —" ? "Not placed — no destination was selected." : `✓ Live on site → ${g}`}
+              {g === "— no destination —" ? "Not placed — remove these or re-upload with a destination." : "✓ Live on site"}
             </p>
             <div className="grid grid-cols-3 gap-3">
               {ims.map((im) => (
-                <div key={im.id}>
-                  <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
-                    <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
-                    <span className="absolute top-1 left-1 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-600/90 text-white text-[8px] font-detail uppercase tracking-wider">
-                      ✓ Uploaded
-                    </span>
-                    <button onClick={() => remove(im.id)} aria-label="Remove"
-                      className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
-                    <button onClick={() => copyLink(im.src)}
-                      className="absolute bottom-1 left-1 right-1 py-1 rounded bg-black/70 text-cream/80 text-[9px] font-detail uppercase tracking-wider opacity-0 group-hover:opacity-100 hover:bg-clay hover:text-cream transition-all">
-                      Copy link
-                    </button>
-                  </div>
-                  {im.name && <p className="font-detail text-[9px] text-cream/45 mt-1 truncate" title={im.name}>{im.name}</p>}
+                <div key={im.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                  <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
+                  <button onClick={() => remove(im.id)} aria-label="Remove"
+                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
                 </div>
               ))}
             </div>
