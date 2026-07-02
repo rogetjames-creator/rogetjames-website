@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
+import { MEDIA_DESTINATIONS } from "./Gallery";
 
 const API = "/api/media-upload";
 
-// Fixed list of destinations — exact, no text-guessing. Add a new row here
-// whenever a new gallery spot needs to receive uploaded photos; the gallery
-// code (Gallery.jsx) reads images by this same "key" via item.mediaKeys.
-export const DESTINATIONS = [
-  { key: "up-close",             label: "Up Close section" },
-  { key: "branches-gren",        label: "Branches — GREN Up Close" },
-  { key: "creeping-fig-autumn",  label: "Creeping Fig — Autumn" },
-  { key: "plumes-deco",          label: "Plumes — Plume Deco" },
-  { key: "banksia",              label: "Banksia — Up Close" },
+// Destinations are generated automatically from the live catalogue categories
+// (imported from Gallery). Every category is always selectable; new categories
+// appear on their own. Photos tagged to a category show as that category's
+// "Up Close" tile. "up-close" is a combined section; "other" flags a spot that
+// isn't a category so Claude can place it.
+const DESTINATIONS = [
+  { key: "up-close", label: "Up Close (all, combined)" },
+  ...MEDIA_DESTINATIONS,
 ];
-const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || key;
+const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || (key === "other" ? "Other (see note)" : key);
 
 export default function MediaPage() {
   const [secret, setSecret] = useState("");
@@ -23,6 +23,7 @@ export default function MediaPage() {
 
   // Batch composer state
   const [selectedDests, setSelectedDests] = useState([]);
+  const [otherNote, setOtherNote] = useState("");
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
   const [phase, setPhase] = useState("compose");     // compose | sending | done
   const [doneInfo, setDoneInfo] = useState(null);    // { count, dests: [] }
@@ -86,7 +87,7 @@ export default function MediaPage() {
     if (!selectedDests.length || !staged.length) return;
     setPhase("sending");
     try {
-      const res = await call({ adminSecret: secret, images: staged, destinations: selectedDests });
+      const res = await call({ adminSecret: secret, images: staged, destinations: selectedDests, note: otherNote });
       const json = await res.json();
       if (!res.ok || json.error) { setNote(json.error || "Upload failed — try again."); setPhase("compose"); return; }
       setDoneInfo({ count: json.saved, dests: [...selectedDests] });
@@ -98,7 +99,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -174,7 +175,7 @@ export default function MediaPage() {
         {phase !== "done" && (
           <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 1 — Where do these go?</p>
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-3">
               {DESTINATIONS.map(d => {
                 const on = selectedDests.includes(d.key);
                 return (
@@ -184,7 +185,17 @@ export default function MediaPage() {
                   </button>
                 );
               })}
+              <button type="button" onClick={() => toggleDest("other")}
+                className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${selectedDests.includes("other") ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                {selectedDests.includes("other") ? "✓ " : ""}Other / not listed
+              </button>
             </div>
+            {selectedDests.includes("other") && (
+              <input type="text" value={otherNote} onChange={e => setOtherNote(e.target.value)}
+                placeholder="Type where these should go (e.g. Hero slideshow, Screens — Grail)"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6" />
+            )}
+            {!selectedDests.includes("other") && <div className="mb-6" />}
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>

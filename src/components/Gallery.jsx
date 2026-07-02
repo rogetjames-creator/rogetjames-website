@@ -271,7 +271,6 @@ const WALL_ART_SERIES = [
       { name: "BANKSIA Diamond",           img: "/images/placeholder.svg" },
       { name: "WANDOO DIAMOND",            img: "/images/placeholder.svg" },
       { name: "NATIVE COLLAGE",            img: "/images/placeholder.svg" },
-      { name: "BANKSIA — Up Close",        img: "/images/banksia/banksia-card-1.jpg", mediaKeys: ["banksia"] },
     ],
   },
   // ── CREEPING FIG SERIES ──────────────────
@@ -279,14 +278,13 @@ const WALL_ART_SERIES = [
     id: "creeping-fig",
     label: "CREEPING FIGS",
     items: [
-      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], singleInAll: true, mediaKeys: ["creeping-fig-autumn"] },
+      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], singleInAll: true },
       { name: "GRANDE",  img: "/images/creeping-fig/grande-1.jpg", slides: ["/images/creeping-fig/grande-1.jpg", "/images/creeping-fig/grande-2.jpg"] },
       { name: "SPRING",  img: "/images/creeping-fig/spring-1.jpg" },
       { name: "FIGARO",  img: "/images/creeping-fig/figaro-1.jpg" },
       { name: "ONTIO",   img: "/images/creeping-fig/ontio-1.jpg", slides: ["/images/creeping-fig/ontio-1.jpg", "/images/creeping-fig/ontio-2.jpg"] },
       { name: "NUVINE",    img: "/images/creeping-fig/nuvine-1.jpg" },
       { name: "BUTTERFLY", img: "/images/creeping-fig/butterfly-1.jpg" },
-      { name: "CREEPING FIG — Up Close", img: "/images/placeholder.svg", mediaKeys: ["creeping-fig-autumn"] },
     ],
   },
   // ── BRANCHES SERIES ──────────────────────
@@ -298,7 +296,6 @@ const WALL_ART_SERIES = [
       { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
       { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
       { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
-      { name: "GREN — Up Close", img: "/images/placeholder.svg", mediaKeys: ["branches-gren"] },
     ],
   },
   // ── FLOWERS & BLOOMS ─────────────────────
@@ -329,7 +326,6 @@ const WALL_ART_SERIES = [
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO — Up Close", img: "/images/details/plume-deco-rust-1.jpg", slides: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"], priceKey: "PLUME DECO", includeUploadedUpClose: true, mediaKeys: ["plumes-deco"] },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
@@ -472,6 +468,19 @@ const OTHER_CATEGORIES = [
     ],
   },
 ];
+
+// Self-maintaining media destinations: every catalogue category is
+// automatically an upload target (used by /media). Add a category to the
+// catalogue and it appears in the uploader with no other change. Each category
+// gets an auto "Up Close" tile (see filteredSeries) that shows its uploads.
+export const MEDIA_DESTINATIONS = [...WALL_ART_SERIES, ...OTHER_CATEGORIES]
+  .map((s) => ({ key: s.id, label: s.label }));
+
+// Existing on-disk detail shots seeded into a category's Up Close tile so they
+// keep showing alongside any uploaded ones.
+const SEED_UPCLOSE = {
+  plume: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"],
+};
 
 const ALL_TABS = [
   { id: "wall-art", label: "Wall Art" },
@@ -2454,10 +2463,25 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   }, [categoryFilter]);
 
   const wallArtIds = new Set(WALL_ART_SERIES.map(s => s.id));
+  // Images for a category's auto "Up Close" tile: seeded on-disk shots + any
+  // media-library uploads tagged with that category id.
+  const upCloseForSeries = (id) => {
+    const seed = SEED_UPCLOSE[id] || [];
+    const uploaded = mediaImages.filter(m => m.destinations.includes(id)).map(m => m.src);
+    return [...seed, ...uploaded.filter(s => !seed.includes(s))];
+  };
+
   const filteredSeries = (() => {
-    const base = categoryFilter === "sculpture"
+    const raw = categoryFilter === "sculpture"
       ? DECK_SERIES.filter(s => !wallArtIds.has(s.id))
       : DECK_SERIES.filter(s => wallArtIds.has(s.id));
+    // Append an auto Up Close tile to any category that has close-up images.
+    const base = raw.map(s => {
+      const imgs = upCloseForSeries(s.id);
+      if (!imgs.length) return s;
+      const tile = { name: `${s.label} — Up Close`, img: imgs[0], slides: imgs, _uid: `uc-${s.id}`, _autoUpClose: true };
+      return { ...s, items: [...s.items, tile] };
+    });
     if (categoryFilter !== "sculpture" || sculptureCat === "all") return base;
     return base.map(s => ({ ...s, items: s.items.filter(it => it.cat === sculptureCat) })).filter(s => s.items.length > 0);
   })();

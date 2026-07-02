@@ -8,19 +8,28 @@ const STORE = "media-library";
 // Backward compatible: new uploads carry an exact "destinations" array; older
 // uploads only have a free-text "label". Derive destinations from the label so
 // nothing uploaded before the picker rebuild is orphaned.
+// Old picker keys → real catalogue category ids (what the gallery matches on).
+const KEY_MAP = {
+  "banksia": "australian-natives",
+  "plumes-deco": "plume",
+  "branches-gren": "branches",
+  "creeping-fig-autumn": "creeping-fig",
+};
 export function destinationsFor(meta) {
   let dests = [];
   try { dests = JSON.parse(meta?.metadata?.destinations || "[]"); } catch { dests = []; }
-  if (Array.isArray(dests) && dests.length) return dests;
+  if (Array.isArray(dests) && dests.length) {
+    return [...new Set(dests.map(d => KEY_MAP[d] || d))];
+  }
   const l = (meta?.metadata?.label || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   if (!l) return [];
   const out = [];
   if (l.includes("upclose")) out.push("up-close");
-  if (l.includes("gren") || l.includes("branches")) out.push("branches-gren");
-  if (l.includes("autumn") || l.includes("creepingfig")) out.push("creeping-fig-autumn");
-  if (l.includes("plume")) out.push("plumes-deco");
-  if (l.includes("banksia")) out.push("banksia");
-  return out;
+  if (l.includes("banksia") || l.includes("wandoo") || l.includes("wattle")) out.push("australian-natives");
+  if (l.includes("gren") || l.includes("branches")) out.push("branches");
+  if (l.includes("autumn") || l.includes("creepingfig")) out.push("creeping-fig");
+  if (l.includes("plume") || l.includes("feather") || l.includes("flock")) out.push("plume");
+  return [...new Set(out)];
 }
 
 export default async function handler() {
