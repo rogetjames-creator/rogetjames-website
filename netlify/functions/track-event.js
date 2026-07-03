@@ -89,7 +89,7 @@ async function emailPostcodeAlert({ postcode, state, isWA, item, series }) {
       from: fromEmail,
       to: [toEmail],
       subject: `Pricing interest — ${postcode || "?"} (${region})${item ? ` · ${item}` : ""}`,
-      text: `Someone is checking delivery pricing on rogetjames.com.\n\n${lines}`,
+      text: `Someone is checking regional pricing on rogetjames.com.\n\n${lines}`,
     }),
   });
 }
