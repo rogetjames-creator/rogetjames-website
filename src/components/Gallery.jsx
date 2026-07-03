@@ -476,10 +476,50 @@ const OTHER_CATEGORIES = [
 export const MEDIA_DESTINATIONS = [...WALL_ART_SERIES, ...OTHER_CATEGORIES]
   .map((s) => ({ key: s.id, label: s.label }));
 
-// Existing on-disk detail shots seeded into a category's Up Close tile so they
-// keep showing alongside any uploaded ones.
+// Existing on-disk detail shots seeded into a category's Up Close tile so an
+// "Up Close" tile ALWAYS appears at the end of these galleries — no uploads
+// required. Any media-library uploads tagged to the same category are appended
+// after these (see upCloseForSeries).
 const SEED_UPCLOSE = {
-  plume: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"],
+  // Plumes — all the Plume Deco close-ups.
+  plume: [
+    "/images/details/plume-deco-rust-1.jpg",
+    "/images/details/plume-deco-rust-2.jpg",
+    "/images/plume/plume-deco-rust.jpg",
+    "/images/plume/plume-deco-black.jpg",
+    "/images/plume/plume-deco-pink.jpg",
+    "/images/plume/plume-deco-white.jpg",
+  ],
+  // Branches — the GREN close-ups.
+  branches: [
+    "/images/branches/gren-edge-1.jpg",
+    "/images/branches/gren-edge-2.jpg",
+    "/images/branches/gren-edge-3.jpg",
+    "/images/branches/gren-tao-1.jpg",
+    "/images/branches/gren-tao-2.jpg",
+    "/images/branches/gren-free-1.jpg",
+    "/images/branches/gren-x-1.jpg",
+  ],
+  // Australian Natives — the Banksia close-ups.
+  "australian-natives": [
+    "/images/banksia/banksia-deco.jpg",
+    "/images/banksia/banksia-round-2.jpg",
+    "/images/banksia/banksia-free.jpg",
+    "/images/banksia/banksia-free-4.jpg",
+    "/images/banksia/banksia-free-5.jpg",
+    "/images/banksia/banksia-framed-6.jpg",
+    "/images/banksia/banksia-framed-circle.jpg",
+    "/images/banksia/banksia-rec-framed.jpg",
+    "/images/banksia/banksia-rec-landscape.jpg",
+    "/images/banksia/banksia-oldmanis-black.jpg",
+  ],
+  // Creeping Figs — the Autumn close-ups.
+  "creeping-fig": [
+    "/images/creeping-fig/autumn-1.jpg",
+    "/images/creeping-fig/autumn-3.jpg",
+    "/images/creeping-fig/grande-2.jpg",
+    "/images/creeping-fig/ontio-2.jpg",
+  ],
 };
 
 const ALL_TABS = [
