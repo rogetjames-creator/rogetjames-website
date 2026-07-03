@@ -522,6 +522,17 @@ const SEED_UPCLOSE = {
   ],
 };
 
+// Uploaded close-ups that land in the combined "Up Close" gallery are also
+// fanned out into the matching series gallery by reading the photo's subject
+// from its name (so a photo tagged only "Up Close (all, combined)" still shows
+// in Branches/Australian Natives/etc.). Keyed by series id.
+const SERIES_KEYWORDS = {
+  branches: /gren|branch/i,
+  "australian-natives": /banksia|wandoo|wattle|native/i,
+  "creeping-fig": /autumn|creeping|fig/i,
+  plume: /plume|feather|flock/i,
+};
+
 const ALL_TABS = [
   { id: "wall-art", label: "Wall Art" },
   ...OTHER_CATEGORIES.map((c) => ({ id: c.id, label: c.label })),
@@ -2470,7 +2481,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       .catch(() => {});
     fetch("/api/media-list")
       .then(r => r.json())
-      .then(d => { if (alive && Array.isArray(d.images)) setMediaImages(d.images.map(i => ({ src: i.src, destinations: i.destinations || [] }))); })
+      .then(d => { if (alive && Array.isArray(d.images)) setMediaImages(d.images.map(i => ({ src: i.src, name: i.name || "", destinations: i.destinations || [] }))); })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -2503,12 +2514,24 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   }, [categoryFilter]);
 
   const wallArtIds = new Set(WALL_ART_SERIES.map(s => s.id));
-  // Images for a category's auto "Up Close" tile: seeded on-disk shots + any
-  // media-library uploads tagged with that category id.
+  // Images for a category's auto "Up Close" tile:
+  //   1. seeded on-disk close-ups (always present)
+  //   2. media-library uploads tagged with that exact category id
+  //   3. any Up Close upload (media library OR the older up-close store) whose
+  //      photo name names this series' subject — so close-ups tagged only to
+  //      the combined "Up Close" bucket still land in the right gallery.
   const upCloseForSeries = (id) => {
     const seed = SEED_UPCLOSE[id] || [];
-    const uploaded = mediaImages.filter(m => m.destinations.includes(id)).map(m => m.src);
-    return [...seed, ...uploaded.filter(s => !seed.includes(s))];
+    const kw = SERIES_KEYWORDS[id];
+    const nameMatch = (n) => kw ? kw.test(n || "") : false;
+    const exact = mediaImages.filter(m => m.destinations.includes(id)).map(m => m.src);
+    const byName = [
+      ...mediaImages.filter(m => nameMatch(m.name)).map(m => m.src),
+      ...uploadedUpClose.filter(u => nameMatch(u.name)).map(u => u.src),
+    ];
+    const seen = new Set(seed);
+    const extra = [...exact, ...byName].filter(s => { if (seen.has(s)) return false; seen.add(s); return true; });
+    return [...seed, ...extra];
   };
 
   const filteredSeries = (() => {

@@ -41,6 +41,7 @@ export default async function handler() {
         const meta = await store.getMetadata(b.key).catch(() => null);
         return {
           id: b.key,
+          name: meta?.metadata?.name || "",
           destinations: destinationsFor(meta),
           createdTime: meta?.metadata?.createdTime || "",
           src: `/api/media-img?id=${encodeURIComponent(b.key)}`,
