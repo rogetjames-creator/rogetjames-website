@@ -480,7 +480,12 @@ export const MEDIA_DESTINATIONS = [...WALL_ART_SERIES, ...OTHER_CATEGORIES]
 // Existing on-disk detail shots seeded into a category's Up Close tile so they
 // keep showing alongside any uploaded ones.
 const SEED_UPCLOSE = {
-  plume: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"],
+  plume: [
+    "/images/details/plume-deco-rust-1.jpg",
+    "/images/details/plume-deco-rust-2.jpg",
+    "/images/uploads/1783237275228_qn3ggo.jpg",
+    "/images/uploads/1783237275228_3bixg9.jpg",
+  ],
 };
 
 const ALL_TABS = [
