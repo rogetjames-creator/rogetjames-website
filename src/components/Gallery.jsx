@@ -292,10 +292,11 @@ const WALL_ART_SERIES = [
     id: "branches",
     label: "BRANCHES",
     items: [
-      { name: "GREN Edge", img: "/images/branches/gren-edge-1.jpg", slides: ["/images/branches/gren-edge-1.jpg", "/images/branches/gren-edge-2.jpg", "/images/branches/gren-edge-3.jpg"] },
+      { name: "GREN Edge", img: "/images/branches/gren-edge-1.jpg", slides: ["/images/branches/gren-edge-1.jpg", "/images/branches/gren-edge-3.jpg"] },
       { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
       { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
       { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
+      { name: "VITAE — GREN", img: "/images/vitae/vitae-gren-1.jpg" },
     ],
   },
   // ── FLOWERS & BLOOMS ─────────────────────
