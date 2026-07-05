@@ -94,6 +94,10 @@ Local dev via Netlify CLI runs on port 8888 and proxies the Vite dev server on 5
 - Postcode system needs review before launch — verify WA vs interstate pricing logic is correct and all state mappings are accurate (`Gallery.jsx` lines 12–16, postcode functions)
 - Netlify Coming Soon / auto-publishing lock — must be turned off in Netlify dashboard before launch
 
+## Design concepts (reference only — never deployed)
+
+- `concepts/` holds saved design experiments for James to reference. It is NOT in `public/` and NOT a build entry, so Netlify never serves it. Current: `concepts/gallery-hero-concept.html` — a "featured piece + card rail, card-expands-into-hero" gallery based on James's Globe Express reference (`concepts/reference/`). To show James, render it offline and send stills; never move it into `public/` or link it from the site without his explicit ask.
+
 ## Key conventions
 
 - **Never deploy experiments — mandatory rule:** Concepts, mock-ups, preview pages, experiments, or anything James did not explicitly ask to change must NEVER be committed to `main`/the deploy. Build them locally only and show James screenshots or a local render. Only push to the deploy the specific fixes/changes he requested. Pushing any experiment live without his explicit say-so is a serious breach.
