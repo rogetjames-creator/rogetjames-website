@@ -14,6 +14,32 @@ const DESTINATIONS = [
 ];
 const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || (key === "other" ? "Other (see note)" : key);
 
+// Phone photos can be 5-10MB — far too slow/large to send as-is. Downscale to
+// a sane display size and re-encode as JPEG before upload, so a batch sends
+// in seconds instead of timing out.
+const MAX_DIM = 2000;
+function compressToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve({ name: file.name, dataUrl: canvas.toDataURL("image/jpeg", 0.82) });
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function MediaPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -70,15 +96,14 @@ export default function MediaPage() {
     const files = Array.from(e.target.files || []);
     e.target.value = "";
     if (!files.length) return;
-    setNote("");
-    const toDataUrl = (file) => new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload = () => resolve({ name: file.name, dataUrl: r.result });
-      r.onerror = reject;
-      r.readAsDataURL(file);
-    });
-    const added = await Promise.all(files.map(toDataUrl));
-    setStaged(prev => [...prev, ...added]);
+    setNote("Preparing photos…");
+    try {
+      const added = await Promise.all(files.map(compressToDataUrl));
+      setStaged(prev => [...prev, ...added]);
+      setNote("");
+    } catch {
+      setNote("Couldn't read one of those photos — try again.");
+    }
   };
 
   const removeStaged = (i) => setStaged(prev => prev.filter((_, idx) => idx !== i));
@@ -88,13 +113,15 @@ export default function MediaPage() {
     setPhase("sending");
     try {
       const res = await call({ adminSecret: secret, images: staged, destinations: selectedDests, note: otherNote });
-      const json = await res.json();
-      if (!res.ok || json.error) { setNote(json.error || "Upload failed — try again."); setPhase("compose"); return; }
+      let json;
+      try { json = await res.json(); }
+      catch { json = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
+      if (!res.ok || json.error) { setNote(json.error || `Upload failed (status ${res.status}).`); setPhase("compose"); return; }
       setDoneInfo({ count: json.saved, dests: [...selectedDests] });
       setPhase("done");
       await refresh();
-    } catch {
-      setNote("Upload failed — check connection and try again."); setPhase("compose");
+    } catch (e) {
+      setNote("Upload failed — " + (e?.message || "check connection and try again.")); setPhase("compose");
     }
   };
 
