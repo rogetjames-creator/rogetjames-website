@@ -167,7 +167,7 @@ export default function MediaPage() {
               className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light transition-all">
               + Start a new batch
             </button>
-            <p className="font-detail text-[10px] text-cream/40 mt-3">Appears on the site within ~1 minute.</p>
+            <p className="font-detail text-[10px] text-cream/40 mt-3">Saved permanently — appears on the site within ~2 minutes.</p>
           </div>
         )}
 

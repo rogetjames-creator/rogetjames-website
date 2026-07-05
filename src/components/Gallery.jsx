@@ -2428,10 +2428,21 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       .then(r => r.json())
       .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name }))); })
       .catch(() => {});
-    fetch("/api/media-list")
-      .then(r => r.json())
-      .then(d => { if (alive && Array.isArray(d.images)) setMediaImages(d.images.map(i => ({ src: i.src, destinations: i.destinations || [] }))); })
-      .catch(() => {});
+    // Git-committed uploads (fast static file, no function call) + anything
+    // still in the older database store, merged so nothing goes missing.
+    Promise.all([
+      fetch("/media-manifest.json").then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch("/api/media-list").then(r => r.json()).catch(() => ({ images: [] })),
+    ]).then(([manifest, legacy]) => {
+      if (!alive) return;
+      const fromManifest = Array.isArray(manifest)
+        ? manifest.map(e => ({ src: `/${e.path}`, destinations: e.destinations || [] }))
+        : [];
+      const fromLegacy = Array.isArray(legacy.images)
+        ? legacy.images.map(i => ({ src: i.src, destinations: i.destinations || [] }))
+        : [];
+      setMediaImages([...fromManifest, ...fromLegacy]);
+    });
     return () => { alive = false; };
   }, []);
   // The Up Close pill is the combined view of every close-up destination —
