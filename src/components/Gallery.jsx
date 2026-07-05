@@ -2585,17 +2585,6 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     return () => clearTimeout(slideshowTimerRef.current);
   }, [slideshowActive, tab, cardIdx, slideIdx]);
 
-  // Auto-advance to next design after pausing on the last slide (disabled during
-  // slideshow, and while the expanded detail is open so it never yanks the
-  // viewer off the piece they're examining).
-  const autoAdvanceRef = useRef(null);
-  useEffect(() => {
-    clearTimeout(autoAdvanceRef.current);
-    if (!isAll && !slideshowActive && !showDetails && itemSlides.length > 1 && slideIdx === itemSlides.length - 1) {
-      autoAdvanceRef.current = setTimeout(() => navigate(1), 3200);
-    }
-    return () => clearTimeout(autoAdvanceRef.current);
-  }, [slideIdx, cardIdx, tab, showDetails]);
 
   // Arrow/swipe: step through slides within an item before jumping to next item
   const handleArrow = (dir) => {
