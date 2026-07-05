@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
-// Verifies the admin password against the media endpoint, stores it so the
-// other admin pages (stats, media) auto-open on this device, and shows a hub
-// of links to every non-public area.
+// Verifies the admin password against the stats endpoint (the simple, reliable
+// password check), stores it so the other admin pages (stats, media) auto-open
+// on this device, and shows a hub of links to every non-public area.
 export default function AdminPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -13,10 +13,10 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/media-upload", {
+      const res = await fetch("/api/stats-data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adminSecret, action: "list" }),
+        body: JSON.stringify({ adminSecret }),
       });
       const json = await res.json();
       if (!res.ok || json.error) {
