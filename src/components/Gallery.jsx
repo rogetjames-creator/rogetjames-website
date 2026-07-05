@@ -327,8 +327,8 @@ const WALL_ART_SERIES = [
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO Rust",     img: "/images/uploads/1783237275228_qn3ggo.jpg", priceKey: "PLUME DECO" },
-      { name: "PLUME DECO Rust II",  img: "/images/uploads/1783237275228_3bixg9.jpg", priceKey: "PLUME DECO" },
+      { name: "PLUME DECO Rust",     img: "/images/uploads/1783237275228_qn3ggo.jpg", priceKey: "PLUME DECO", _new: true },
+      { name: "PLUME DECO Rust II",  img: "/images/uploads/1783237275228_3bixg9.jpg", priceKey: "PLUME DECO", _new: true },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
@@ -2514,7 +2514,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       const imgs = upCloseForSeries(s.id);
       if (!imgs.length) return s;
       const tile = { name: `${s.label} — Up Close`, img: imgs[0], slides: imgs, _uid: `uc-${s.id}`, _autoUpClose: true };
-      return { ...s, items: [...s.items, tile] };
+      // Freshly uploaded pieces (_new) sit AFTER the Up Close tile so they are the very last cards.
+      const normal = s.items.filter(it => !it._new);
+      const fresh = s.items.filter(it => it._new);
+      return { ...s, items: [...normal, tile, ...fresh] };
     });
     if (categoryFilter !== "sculpture" || sculptureCat === "all") return base;
     return base.map(s => ({ ...s, items: s.items.filter(it => it.cat === sculptureCat) })).filter(s => s.items.length > 0);
