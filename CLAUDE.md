@@ -96,6 +96,7 @@ Local dev via Netlify CLI runs on port 8888 and proxies the Vite dev server on 5
 
 ## Key conventions
 
+- **Image upload placement — mandatory rule:** New image uploads for a category go in that category's **gallery, as pieces at the END** (newest last), until James says otherwise for a specific spot. Do NOT put uploads into the close-up ("Up Close") tiles unless James explicitly asks. Do NOT touch, remove, or reorder anything in the close-ups unless he explicitly asks. Example done: the two uploaded PLUME DECO Rust shots are catalogue items at the end of the Plume series in `Gallery.jsx`; the close-ups were left as their original detail shots.
 - **Hero slideshow images** — always `object-contain` on ALL screen sizes. Never change to `object-cover`. James wants the full image visible with letterboxing, not cropped to fill the screen.
 - No TypeScript — plain `.jsx` and `.js` throughout.
 - ESLint: `no-unused-vars` is `error`. Uppercase constants (`/^[A-Z_]/`) are exempt. Prefix intentionally unused destructured vars with `_`.
