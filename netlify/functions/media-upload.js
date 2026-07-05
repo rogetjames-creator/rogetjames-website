@@ -16,6 +16,7 @@ const BRANCH = "main";
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB per image
 
 const OLD_STORE = "media-library";
+const UC_STORE = "up-close-images";
 
 const isValidKey = (k) => typeof k === "string" && /^[a-z0-9-]{2,40}$/.test(k);
 
@@ -157,8 +158,62 @@ export default async function handler(req) {
       );
     } catch { /* old store optional */ }
 
-    const all = [...gitItems, ...oldItems].sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+    // "Up Close" gallery uploads live in their own store and carry no category
+    // by default — include them so they can be placed into a category here.
+    let ucItems = [];
+    try {
+      const ucStore = getStore({ name: UC_STORE, consistency: "strong" });
+      const { blobs } = await ucStore.list();
+      ucItems = await Promise.all(
+        blobs.map(async (b) => {
+          const meta = await ucStore.getMetadata(b.key).catch(() => null);
+          let dests = [];
+          try { dests = JSON.parse(meta?.metadata?.destinations || "[]"); } catch { dests = []; }
+          return {
+            id: `uc_${b.key}`,
+            name: meta?.metadata?.name || "",
+            destinations: Array.isArray(dests) ? dests.map((d) => KEY_MAP[d] || d) : [],
+            note: "",
+            createdTime: meta?.metadata?.createdTime || "",
+            src: `/api/up-close-img?id=${encodeURIComponent(b.key)}`,
+          };
+        })
+      );
+    } catch { /* up-close store optional */ }
+
+    const all = [...gitItems, ...oldItems, ...ucItems].sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
     return json({ images: all });
+  }
+
+  // Place — set which categories an already-uploaded photo shows in, without
+  // re-uploading. Works for git-committed, media-library, and up-close photos.
+  if (body.action === "assign" && body.id) {
+    const dests = [...new Set(
+      (Array.isArray(body.destinations) ? body.destinations : [])
+        .filter(isValidKey)
+        .map((d) => KEY_MAP[d] || d)
+    )];
+    try {
+      if (body.id.startsWith("git_")) {
+        if (!process.env.GITHUB_TOKEN) return json({ error: "GITHUB_TOKEN missing on server" }, 500);
+        const realId = body.id.slice(4);
+        const manifest = await getManifest();
+        const entry = manifest.find((e) => e.id === realId);
+        if (!entry) return json({ error: "Not found" }, 404);
+        entry.destinations = dests;
+        await commitBatch({ manifest, message: `Place ${realId} → ${dests.join(", ") || "none"}` });
+        return json({ ok: true, destinations: dests });
+      }
+      const storeName = body.id.startsWith("uc_") ? UC_STORE : OLD_STORE;
+      const key = body.id.startsWith("uc_") ? body.id.slice(3) : body.id;
+      const store = getStore({ name: storeName, consistency: "strong" });
+      const res = await store.getWithMetadata(key, { type: "arrayBuffer" });
+      if (!res) return json({ error: "Not found" }, 404);
+      await store.set(key, res.data, { metadata: { ...(res.metadata || {}), destinations: JSON.stringify(dests) } });
+      return json({ ok: true, destinations: dests });
+    } catch (e) {
+      return json({ error: "Place failed: " + e.message }, 500);
+    }
   }
 
   // Delete — routes to git or the old store depending on the id prefix.
@@ -174,6 +229,10 @@ export default async function handler(req) {
       } catch (e) {
         return json({ error: "Delete failed: " + e.message }, 500);
       }
+    }
+    if (body.id.startsWith("uc_")) {
+      await getStore({ name: UC_STORE, consistency: "strong" }).delete(body.id.slice(3)).catch(() => {});
+      return json({ ok: true });
     }
     await oldStore.delete(body.id).catch(() => {});
     return json({ ok: true });

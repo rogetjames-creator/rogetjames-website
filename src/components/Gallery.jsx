@@ -2427,7 +2427,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     let alive = true;
     fetch("/api/up-close-list")
       .then(r => r.json())
-      .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name }))); })
+      .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name, destinations: i.destinations || [] }))); })
       .catch(() => {});
     // Git-committed uploads (fast static file, no function call) + anything
     // still in the older database store, merged so nothing goes missing.
@@ -2480,7 +2480,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const upCloseForSeries = (id) => {
     const seed = SEED_UPCLOSE[id] || [];
     const uploaded = mediaImages.filter(m => m.destinations.includes(id)).map(m => m.src);
-    return [...seed, ...uploaded.filter(s => !seed.includes(s))];
+    const fromUpClose = uploadedUpClose.filter(u => (u.destinations || []).includes(id)).map(u => u.src);
+    const all = [...uploaded, ...fromUpClose];
+    return [...seed, ...all.filter((s, i) => !seed.includes(s) && all.indexOf(s) === i)];
   };
 
   const filteredSeries = (() => {

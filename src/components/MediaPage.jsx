@@ -55,6 +55,11 @@ export default function MediaPage() {
   const [doneInfo, setDoneInfo] = useState(null);    // { count, dests: [] }
   const [note, setNote] = useState("");
 
+  // Placing an already-uploaded photo into a category (no re-upload)
+  const [editing, setEditing] = useState(null);      // the image being placed
+  const [editDests, setEditDests] = useState([]);
+  const [savingPlace, setSavingPlace] = useState(false);
+
   const call = (payload) =>
     fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
@@ -131,6 +136,20 @@ export default function MediaPage() {
 
   const remove = async (id) => {
     try { await call({ adminSecret: secret, action: "delete", id }); await refresh(); } catch { /* ignore */ }
+  };
+
+  const openEditor = (im) => { setNote(""); setEditing(im); setEditDests(Array.isArray(im.destinations) ? im.destinations : []); };
+  const toggleEditDest = (key) => setEditDests(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
+  const savePlacement = async () => {
+    if (!editing) return;
+    setSavingPlace(true);
+    try {
+      const res = await call({ adminSecret: secret, action: "assign", id: editing.id, destinations: editDests });
+      const json = await res.json();
+      if (res.ok && !json.error) { setEditing(null); await refresh(); }
+      else setNote(json.error || "Couldn't place that photo — try again.");
+    } catch { setNote("Couldn't place that photo — check connection."); }
+    finally { setSavingPlace(false); }
   };
 
   if (!authed) {
@@ -271,16 +290,57 @@ export default function MediaPage() {
             </p>
             <div className="grid grid-cols-3 gap-3">
               {ims.map((im) => (
-                <div key={im.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
-                  <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
-                  <button onClick={() => remove(im.id)} aria-label="Remove"
-                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
+                <div key={im.id} className="rounded-lg overflow-hidden border border-white/10">
+                  <div className="relative aspect-square">
+                    <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
+                    <button onClick={() => remove(im.id)} aria-label="Remove"
+                      className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
+                  </div>
+                  <button onClick={() => openEditor(im)}
+                    className="w-full py-1.5 bg-black/40 text-cream/70 text-[10px] font-detail hover:bg-clay/50 hover:text-cream transition-colors">
+                    {im.destinations?.length ? "Placed ✓ · edit" : "+ Place in category"}
+                  </button>
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
+
+      {/* ── PLACE-IN-CATEGORY EDITOR ───────────── */}
+      {editing && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center px-6" onClick={() => setEditing(null)}>
+          <div className="w-full max-w-md bg-jet border border-white/18 rounded-2xl p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <img src={editing.src} alt="" className="w-14 h-14 rounded-lg object-cover border border-white/10" />
+              <div>
+                <p className="font-heading text-cream text-sm">Show this photo in…</p>
+                <p className="font-detail text-[11px] text-cream/50">Tick every place it should appear.</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 mb-5 max-h-[45vh] overflow-y-auto">
+              {DESTINATIONS.map(d => {
+                const on = editDests.includes(d.key);
+                return (
+                  <button key={d.key} type="button" onClick={() => toggleEditDest(d.key)}
+                    className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                    {on ? "✓ " : ""}{d.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setEditing(null)}
+                className="flex-1 py-3 rounded-2xl border border-white/20 text-cream/70 font-detail text-sm hover:border-white/40 transition-all">Cancel</button>
+              <button onClick={savePlacement} disabled={savingPlace}
+                className="flex-1 py-3 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm hover:bg-clay-light disabled:opacity-40 transition-all">
+                {savingPlace ? "Saving…" : "Save"}
+              </button>
+            </div>
+            {note && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{note}</p>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -11,9 +11,12 @@ export default async function handler() {
     const items = await Promise.all(
       blobs.map(async (b) => {
         const meta = await store.getMetadata(b.key).catch(() => null);
+        let dests = [];
+        try { dests = JSON.parse(meta?.metadata?.destinations || "[]"); } catch { dests = []; }
         return {
           id: b.key,
           name: meta?.metadata?.name || "",
+          destinations: Array.isArray(dests) ? dests : [],
           createdTime: meta?.metadata?.createdTime || "",
           src: `/api/up-close-img?id=${encodeURIComponent(b.key)}`,
         };
