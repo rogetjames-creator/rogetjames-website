@@ -2427,7 +2427,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     let alive = true;
     fetch("/api/up-close-list")
       .then(r => r.json())
-      .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name, destinations: i.destinations || [] }))); })
+      .then(d => { if (alive && Array.isArray(d.images)) setUploadedUpClose(d.images.map(i => ({ src: i.src, name: i.name, destinations: i.destinations || [], createdTime: i.createdTime || "" }))); })
       .catch(() => {});
     // Git-committed uploads (fast static file, no function call) + anything
     // still in the older database store, merged so nothing goes missing.
@@ -2437,10 +2437,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     ]).then(([manifest, legacy]) => {
       if (!alive) return;
       const fromManifest = Array.isArray(manifest)
-        ? manifest.map(e => ({ src: `/${e.path}`, destinations: e.destinations || [] }))
+        ? manifest.map(e => ({ src: `/${e.path}`, destinations: e.destinations || [], createdTime: e.createdTime || "" }))
         : [];
       const fromLegacy = Array.isArray(legacy.images)
-        ? legacy.images.map(i => ({ src: i.src, destinations: i.destinations || [] }))
+        ? legacy.images.map(i => ({ src: i.src, destinations: i.destinations || [], createdTime: i.createdTime || "" }))
         : [];
       setMediaImages([...fromManifest, ...fromLegacy]);
     });
@@ -2448,9 +2448,21 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   }, []);
   // The Up Close pill is the combined view of every close-up destination —
   // not just the generic "up-close" tag, so Plumes/GREN/Autumn/Banksia uploads
-  // all appear here too, alongside their own design tile.
+  // all appear here too, alongside their own design tile. Curated seed shots
+  // stay first; everything uploaded is ordered oldest→newest by upload time, so
+  // a newly placed close-up always lands at the END rather than jumping around.
+  const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
   const mediaUpClose = mediaImages.filter(m => m.destinations.length > 0);
-  const upCloseImages = [...UP_CLOSE_IMAGES, ...uploadedUpClose, ...mediaUpClose.map(m => ({ src: m.src, name: "" }))];
+  const upCloseImages = (() => {
+    const seedSrcs = new Set(UP_CLOSE_IMAGES.map(u => u.src));
+    const uploads = [
+      ...uploadedUpClose.map(u => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
+      ...mediaUpClose.map(m => ({ src: m.src, name: "", createdTime: m.createdTime || "" })),
+    ].filter(u => !seedSrcs.has(u.src)).sort(byUploadTime);
+    const seen = new Set();
+    const ordered = uploads.filter(u => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
+    return [...UP_CLOSE_IMAGES, ...ordered];
+  })();
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
   const slideshowTimerRef = useRef(null);
@@ -2479,10 +2491,14 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   // media-library uploads tagged with that category id.
   const upCloseForSeries = (id) => {
     const seed = SEED_UPCLOSE[id] || [];
-    const uploaded = mediaImages.filter(m => m.destinations.includes(id)).map(m => m.src);
-    const fromUpClose = uploadedUpClose.filter(u => (u.destinations || []).includes(id)).map(u => u.src);
-    const all = [...uploaded, ...fromUpClose];
-    return [...seed, ...all.filter((s, i) => !seed.includes(s) && all.indexOf(s) === i)];
+    // Seed shots first; placed uploads appended oldest→newest so new ones end up last.
+    const uploads = [
+      ...mediaImages.filter(m => m.destinations.includes(id)).map(m => ({ src: m.src, createdTime: m.createdTime || "" })),
+      ...uploadedUpClose.filter(u => (u.destinations || []).includes(id)).map(u => ({ src: u.src, createdTime: u.createdTime || "" })),
+    ].sort(byUploadTime);
+    const out = [...seed];
+    for (const u of uploads) if (!out.includes(u.src)) out.push(u.src);
+    return out;
   };
 
   const filteredSeries = (() => {
