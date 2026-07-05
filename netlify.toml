@@ -41,6 +41,11 @@
   status = 301
 
 [[redirects]]
+  from = "/landscape-design"
+  to = "/#bespoke"
+  status = 301
+
+[[redirects]]
   from = "/sculpture"
   to = "/#collection"
   status = 301
