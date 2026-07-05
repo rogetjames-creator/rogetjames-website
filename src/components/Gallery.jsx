@@ -2431,8 +2431,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       .catch(() => {});
     // Git-committed uploads (fast static file, no function call) + anything
     // still in the older database store, merged so nothing goes missing.
+    // Cache-bust the manifest so a fresh upload shows immediately instead of the
+    // browser serving a stale copy (the cause of "I uploaded it but it's not there").
     Promise.all([
-      fetch("/media-manifest.json").then(r => r.ok ? r.json() : []).catch(() => []),
+      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []),
       fetch("/api/media-list").then(r => r.json()).catch(() => ({ images: [] })),
     ]).then(([manifest, legacy]) => {
       if (!alive) return;
