@@ -20,12 +20,15 @@ export default async function handler(req, context) {
   const { type, item, series, postcode, state, isWA, material, size, price } = body;
   if (!type) return json({ ok: true }, 200);
 
-  // Email James the moment a visitor enters a postcode to price a design — the
-  // high-intent signal. Throttled per IP so it can't be used to flood the inbox.
-  if (type === "postcode" && process.env.RESEND_API_KEY) {
+  // Email James the moment a visitor shows real buying intent — entering a
+  // postcode to price a design, or adding a specific piece to their quote (the
+  // strongest signal). Throttled per IP so it can't be used to flood the inbox.
+  if (process.env.RESEND_API_KEY) {
     const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || "";
-    if (!emailThrottled(ip)) {
+    if (type === "postcode" && !emailThrottled(ip)) {
       await emailPostcodeAlert({ postcode, state, isWA, item, series }).catch(() => {});
+    } else if (type === "add_to_quote" && !emailThrottled(ip)) {
+      await emailQuoteAlert({ item, series, material, size, price, postcode, state, isWA }).catch(() => {});
     }
   }
 
@@ -90,6 +93,34 @@ async function emailPostcodeAlert({ postcode, state, isWA, item, series }) {
       to: [toEmail],
       subject: `Pricing interest — ${postcode || "?"} (${region})${item ? ` · ${item}` : ""}`,
       text: `Someone is checking regional pricing on rogetjames.com.\n\n${lines}`,
+    }),
+  });
+}
+
+async function emailQuoteAlert({ item, series, material, size, price, postcode, state, isWA }) {
+  const fromEmail = process.env.CONTACT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>";
+  const toEmail   = process.env.NOTIFY_EMAIL || "james@rogetjames.com";
+  const region = typeof isWA === "boolean" ? (isWA ? "WA" : "Interstate") : "—";
+  const when = new Date().toLocaleString("en-AU", { timeZone: "Australia/Perth", dateStyle: "medium", timeStyle: "short" });
+  const priceLine = typeof price === "number"
+    ? `$${price.toLocaleString("en-AU")}`
+    : "—";
+  const lines = [
+    `Piece: ${item || "—"}${series ? ` — ${series}` : ""}`,
+    `Material: ${material || "—"}`,
+    `Size: ${size || "—"}`,
+    `Price: ${priceLine}`,
+    `Postcode: ${postcode || "—"} (${state || "—"}, ${region})`,
+    `Time: ${when} (Perth)`,
+  ].join("\n");
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      subject: `Added to quote — ${item || "a piece"}${series ? ` · ${series}` : ""}`,
+      text: `Someone added a piece to their quote on rogetjames.com.\n\n${lines}\n\nThey have not sent the enquiry yet — this is the moment they showed interest.`,
     }),
   });
 }
