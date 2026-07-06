@@ -596,7 +596,7 @@ export default function DiscoverPortals() {
             <MiniPortal
               key={portal.id}
               portal={portal}
-              size={isMobile ? Math.round((portal.size ?? 166) * 0.4) : (portal.size ?? 166)}
+              size={isMobile ? Math.round((portal.size ?? 144) * 0.4) : (portal.size ?? 144)}
               onOpen={getOnOpen(portal)}
               hoverLabel="View"
             />
