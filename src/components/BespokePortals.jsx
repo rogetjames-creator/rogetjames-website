@@ -94,7 +94,32 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
-const IS_DEV = import.meta.env.DEV;
+// Private owner preview. The Bespoke portals are locked ("Under Construction")
+// for the public. James unlocks them on the live site by visiting once with
+// ?preview=roj-open — that saves a flag in his browser so they stay open on
+// every later visit. ?preview=off re-locks. Nobody else ever sees them.
+const PREVIEW_PASS = "roj-open";
+function ownerPreviewUnlocked() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("preview");
+    if (q === "off") {
+      localStorage.removeItem("roj_bespoke_preview");
+      window.history.replaceState({}, "", window.location.pathname);
+      return false;
+    }
+    if (q === PREVIEW_PASS) {
+      localStorage.setItem("roj_bespoke_preview", "1");
+      // Strip the pass from the address bar so it isn't visible or shareable.
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    return localStorage.getItem("roj_bespoke_preview") === "1";
+  } catch {
+    return false;
+  }
+}
+
+const IS_DEV = import.meta.env.DEV || ownerPreviewUnlocked();
 
 export function CommissionsSection() {
   const [sculptureOpen, setSculptureOpen] = useState(false);
