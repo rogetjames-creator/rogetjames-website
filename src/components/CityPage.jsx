@@ -106,7 +106,7 @@ export default function CityPage({ city }) {
                 className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
                 style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
               >
-                {name}.
+                {name}
               </span>
               {displayLine && (
                 <span
@@ -131,7 +131,6 @@ export default function CityPage({ city }) {
       <section className="bg-jet py-20 md:py-32">
         <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
           <Eyebrow>Made for {name}</Eyebrow>
-          <SectionTitle>The studio, in {name}</SectionTitle>
           <div className="space-y-6 mt-8">
             {intro.slice(1).map((para, i) => (
               <p key={i} className="font-body text-base text-cream/70 leading-relaxed">{para}</p>
@@ -176,10 +175,10 @@ export default function CityPage({ city }) {
       {/* ── Services ─────────────────────────────────────── */}
       {services.length > 0 && (
         <section className="bg-pewter py-20 md:py-32">
-          <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
+          <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
             <Eyebrow>Made in {name} & Australia-wide</Eyebrow>
             <SectionTitle>What we make</SectionTitle>
-            <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-2.5 max-w-3xl">
+            <ul className="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-2.5">
               {services.map((s, i) => (
                 <li key={i} className="font-heading font-medium text-sm md:text-base text-cream/60">{s}</li>
               ))}
@@ -191,9 +190,9 @@ export default function CityPage({ city }) {
       {/* ── Suburbs served ──────────────────────────────── */}
       {suburbs.length > 0 && (
         <section className="py-20 md:py-28">
-          <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
+          <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
             <Eyebrow>{name} & surrounds</Eyebrow>
-            <p className="font-body text-cream/55 leading-relaxed max-w-3xl text-sm md:text-base mt-5">{suburbs.join("  ·  ")}</p>
+            <p className="font-body text-cream/55 leading-relaxed text-sm md:text-base mt-5">{suburbs.join("  ·  ")}</p>
           </div>
         </section>
       )}

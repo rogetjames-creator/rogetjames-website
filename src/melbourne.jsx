@@ -27,7 +27,7 @@ const MELBOURNE = {
     { src: "/images/hero/hero-vasuki.jpg",              title: "VASUKI — Sculpture",       detail: "Placeholder — replace with real Melbourne project" },
   ],
   services: [
-    "Wall Art", "Sculpture", "Screens", "Gates & Fencing", "Privacy Panels", "Fire Features", "Public Art",
+    "Wall Art", "Sculpture", "Screens", "Gates & Fencing", "Privacy Panels", "Public Art",
   ],
   // Real Melbourne suburbs help local relevance — edit to the ones you actually serve.
   suburbs: [
