@@ -39,7 +39,7 @@ function Eyebrow({ children }) {
 
 function SectionTitle({ children }) {
   return (
-    <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={HEADING_SHADOW}>
+    <h2 className="font-syne font-bold text-xl md:text-2xl text-cream/60 tracking-tight mt-3" style={HEADING_SHADOW}>
       {children}
     </h2>
   );
@@ -103,13 +103,13 @@ export default function CityPage({ city }) {
             </p>
             <h1 className="flex flex-col">
               <span
-                className="city-h-1 font-drama italic text-5xl md:text-8xl lg:text-[10rem] leading-[0.85]"
+                className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
                 style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
               >
                 {name}.
               </span>
               <span
-                className="city-h-2 font-heading font-bold text-cream/70 text-xl md:text-4xl leading-tight mt-3 md:mt-4 max-w-2xl"
+                className="city-h-2 font-heading font-semibold text-cream/70 text-base md:text-xl leading-snug mt-4 max-w-xl"
                 style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)", opacity: 0 }}
               >
                 {displayLine}
@@ -177,9 +177,9 @@ export default function CityPage({ city }) {
           <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
             <Eyebrow>Made in {name} & Australia-wide</Eyebrow>
             <SectionTitle>What we make</SectionTitle>
-            <ul className="mt-10 flex flex-wrap gap-x-10 gap-y-4 max-w-4xl">
+            <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-2.5 max-w-3xl">
               {services.map((s, i) => (
-                <li key={i} className="font-heading font-bold text-xl md:text-2xl text-cream/50">{s}</li>
+                <li key={i} className="font-heading font-medium text-sm md:text-base text-cream/60">{s}</li>
               ))}
             </ul>
           </div>
@@ -191,7 +191,7 @@ export default function CityPage({ city }) {
         <section className="py-20 md:py-28">
           <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
             <Eyebrow>{name} & surrounds</Eyebrow>
-            <p className="font-body text-cream/55 leading-loose max-w-4xl text-base md:text-lg mt-6">{suburbs.join("  ·  ")}</p>
+            <p className="font-body text-cream/55 leading-relaxed max-w-3xl text-sm md:text-base mt-5">{suburbs.join("  ·  ")}</p>
           </div>
         </section>
       )}
@@ -199,7 +199,7 @@ export default function CityPage({ city }) {
       {/* ── CTA ──────────────────────────────────────────── */}
       <section className="border-t border-cream/[0.07]">
         <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 text-center">
-          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight max-w-3xl mx-auto" style={HEADING_SHADOW}>
+          <h2 className="font-syne font-bold text-xl md:text-3xl text-cream/60 tracking-tight max-w-2xl mx-auto" style={HEADING_SHADOW}>
             Planning a piece for a {name} home or project?
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
