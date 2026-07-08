@@ -7,18 +7,23 @@ import { netlifyImg } from "../utils/img";
 gsap.registerPlugin(ScrollTrigger);
 
 // ─────────────────────────────────────────────────────────────
-//  Reusable city / location page — matches the main site's look:
-//  matt-black canvas, object-contain hero, font-drama display type,
-//  font-detail uppercase eyebrows in clay, the ROGETjames wordmark
-//  and the charcoal rounded-top footer.
+//  Reusable city / location page. Duplicates the main site's exact
+//  design tokens so it reads as the same website:
+//   • hero          — object-contain, font-drama italic word +
+//                     font-heading line (mirrors the homepage hero)
+//   • section eyebrow — font-detail text-xs text-warm-gray uppercase tracking-[0.2em]
+//   • section title   — font-syne font-bold text-2xl/4xl/5xl text-cream/60
+//   • thumbnails      — aspect-square rounded-2xl bg-cream-dark, object-cover,
+//                       duration-700 group-hover:scale-105, name on hover
+//                       (identical to Gallery.jsx GridCard)
+//   • footer          — charcoal rounded-top ROGETjames footer
 //
-//  One data object per city (see src/melbourne.jsx). Perth and Gold
-//  Coast reuse this shell.
-//
-//  SEO note: every city MUST carry genuinely distinct copy, real
-//  projects and real suburbs — the placeholder copy is a template
-//  for James to replace, not final wording.
+//  One data object per city (see src/melbourne.jsx). Perth / Gold Coast reuse it.
+//  SEO note: every city MUST carry real, distinct copy, projects and suburbs —
+//  placeholder text here is a template for James to replace.
 // ─────────────────────────────────────────────────────────────
+
+const HEADING_SHADOW = { textShadow: "0 4px 14px rgba(0,0,0,0.55)" };
 
 function Wordmark({ className = "" }) {
   return (
@@ -28,27 +33,38 @@ function Wordmark({ className = "" }) {
   );
 }
 
+function Eyebrow({ children }) {
+  return <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">{children}</span>;
+}
+
+function SectionTitle({ children }) {
+  return (
+    <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-3" style={HEADING_SHADOW}>
+      {children}
+    </h2>
+  );
+}
+
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, heading,
-    intro, hero, projects = [], suburbs = [], services = [],
+    name, region, displayLine, intro, hero,
+    projects = [], suburbs = [], services = [],
   } = city;
 
   const rootRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero drift-in — same vocabulary as the homepage hero.
+      // Hero drift-in — same easing/duration as the homepage hero.
       gsap.fromTo(".city-eyebrow", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, delay: 0.2, ease: "power2.out" });
       gsap.fromTo(".city-h-1", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.6, delay: 0.4, ease: "power2.out" });
       gsap.fromTo(".city-h-2", { x: 40, y: 30, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.6, delay: 0.6, ease: "power2.out" });
       gsap.fromTo(".city-sub", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, delay: 0.85, ease: "power2.out" });
 
-      // Section reveals on scroll.
       gsap.utils.toArray(".city-reveal").forEach((el) => {
         gsap.fromTo(el, { y: 40, opacity: 0 }, {
           y: 0, opacity: 1, duration: 1.2, ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 85%", onEnter: () => {} },
+          scrollTrigger: { trigger: el, start: "top 85%" },
         });
       });
     }, rootRef);
@@ -70,7 +86,7 @@ export default function CityPage({ city }) {
         </div>
       </header>
 
-      {/* ── Hero — object-contain, like the main site ───── */}
+      {/* ── Hero — object-contain, mirrors the homepage hero ── */}
       <section className="relative h-dvh min-h-[560px] w-full overflow-hidden flex items-end bg-charcoal">
         <img
           src={netlifyImg(hero, { w: 1600, q: 82 })}
@@ -82,25 +98,25 @@ export default function CityPage({ city }) {
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-16 md:pb-24">
           <div className="max-w-4xl">
-            <p className="city-eyebrow font-detail text-xs uppercase tracking-[0.3em] text-clay mb-5" style={{ opacity: 0 }}>
+            <p className="city-eyebrow font-detail text-xs text-cream/70 uppercase tracking-[0.25em] mb-5" style={{ opacity: 0 }}>
               {name}, {region} · Australia-wide studio
             </p>
             <h1 className="flex flex-col">
               <span
-                className="city-h-1 font-drama italic text-6xl md:text-8xl lg:text-[9rem] leading-[0.9]"
-                style={{ color: "rgba(237,232,223,0.2)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
+                className="city-h-1 font-drama italic text-5xl md:text-8xl lg:text-[10rem] leading-[0.85]"
+                style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
               >
                 {name}.
               </span>
               <span
-                className="city-h-2 font-heading font-bold text-cream text-2xl md:text-4xl leading-tight mt-3 md:mt-4 max-w-2xl"
-                style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)", opacity: 0 }}
+                className="city-h-2 font-heading font-bold text-cream/70 text-xl md:text-4xl leading-tight mt-3 md:mt-4 max-w-2xl"
+                style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)", opacity: 0 }}
               >
                 {displayLine}
               </span>
             </h1>
             <p
-              className="city-sub font-body text-white text-base md:text-lg max-w-xl mt-6 md:mt-8 leading-relaxed"
+              className="city-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed"
               style={{ opacity: 0, textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.8)" }}
             >
               {intro[0]}
@@ -110,79 +126,97 @@ export default function CityPage({ city }) {
       </section>
 
       {/* ── Intro ────────────────────────────────────────── */}
-      <section className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-20 md:py-28">
-        <p className="font-detail text-xs uppercase tracking-[0.3em] text-clay mb-8">Made for {name}</p>
-        <div className="max-w-3xl space-y-6">
-          {intro.slice(1).map((para, i) => (
-            <p key={i} className="font-body text-lg md:text-xl text-cream/75 leading-relaxed">{para}</p>
-          ))}
+      <section className="bg-jet py-20 md:py-32">
+        <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
+          <Eyebrow>Made for {name}</Eyebrow>
+          <SectionTitle>The studio, in {name}</SectionTitle>
+          <div className="max-w-3xl space-y-6 mt-10">
+            {intro.slice(1).map((para, i) => (
+              <p key={i} className="font-body text-base md:text-lg text-cream/70 leading-relaxed">{para}</p>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── Selected work ───────────────────────────────── */}
+      {/* ── Selected work — duplicates Gallery GridCard exactly ── */}
       {projects.length > 0 && (
-        <section className="max-w-7xl mx-auto px-6 md:px-12 pb-8">
-          <p className="city-reveal font-detail text-xs uppercase tracking-[0.3em] text-clay mb-10">Selected work in {name}</p>
-          <div className="grid grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((p, i) => (
-              <figure key={i} className="city-reveal group">
-                <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-charcoal">
+        <section className="py-20 md:py-32">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="city-reveal mb-10">
+              <Eyebrow>Selected work</Eyebrow>
+              <SectionTitle>Pieces in {name}</SectionTitle>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {projects.map((p, i) => (
+                <div
+                  key={i}
+                  className="city-reveal gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
+                >
                   <img
-                    src={netlifyImg(p.src, { w: 900, q: 78 })}
-                    alt={p.title}
+                    src={netlifyImg(p.src, { w: 800, q: 78 })}
+                    alt={`${p.title} — ROGETjames`}
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.04]"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
+                    <p className="text-cream font-heading font-semibold text-sm" style={{ wordSpacing: "-0.05em" }}>{p.title}</p>
+                    {p.detail && <p className="text-cream/60 font-detail text-[9px] uppercase tracking-[0.12em] mt-0.5">{p.detail}</p>}
+                  </div>
                 </div>
-                <figcaption className="pt-4">
-                  <p className="font-heading font-semibold text-sm text-cream tracking-tight">{p.title}</p>
-                  {p.detail && <p className="font-detail text-xs text-cream/45 uppercase tracking-[0.12em] mt-1.5">{p.detail}</p>}
-                </figcaption>
-              </figure>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
       )}
 
       {/* ── Services ─────────────────────────────────────── */}
       {services.length > 0 && (
-        <section className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-20 md:py-28">
-          <p className="font-detail text-xs uppercase tracking-[0.3em] text-clay mb-8">What we make for {name} spaces</p>
-          <div className="flex flex-wrap gap-x-10 gap-y-4 max-w-4xl">
-            {services.map((s, i) => (
-              <span key={i} className="font-drama italic text-3xl md:text-4xl text-cream/85">{s}</span>
-            ))}
+        <section className="bg-pewter py-20 md:py-32">
+          <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
+            <Eyebrow>Made in {name} & Australia-wide</Eyebrow>
+            <SectionTitle>What we make</SectionTitle>
+            <ul className="mt-10 flex flex-wrap gap-x-10 gap-y-4 max-w-4xl">
+              {services.map((s, i) => (
+                <li key={i} className="font-heading font-bold text-xl md:text-2xl text-cream/50">{s}</li>
+              ))}
+            </ul>
           </div>
         </section>
       )}
 
       {/* ── Suburbs served ──────────────────────────────── */}
       {suburbs.length > 0 && (
-        <section className="city-reveal max-w-7xl mx-auto px-6 md:px-12 pb-24">
-          <p className="font-detail text-xs uppercase tracking-[0.3em] text-clay mb-6">{name} & surrounds</p>
-          <p className="font-body text-cream/55 leading-loose max-w-4xl text-lg">{suburbs.join("  ·  ")}</p>
+        <section className="py-20 md:py-28">
+          <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
+            <Eyebrow>{name} & surrounds</Eyebrow>
+            <p className="font-body text-cream/55 leading-loose max-w-4xl text-base md:text-lg mt-6">{suburbs.join("  ·  ")}</p>
+          </div>
         </section>
       )}
 
       {/* ── CTA ──────────────────────────────────────────── */}
-      <section className="city-reveal border-t border-cream/[0.07] max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 text-center">
-        <p className="font-drama text-4xl md:text-6xl text-cream leading-[1.05] max-w-3xl mx-auto">
-          Planning a piece for a {name} home or project?
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
-          <a
-            href="https://rogetjames.com/#contact"
-            className="font-detail text-xs uppercase tracking-[0.2em] text-cream rounded-full px-9 py-4 transition-colors duration-300"
-            style={{ backgroundColor: "#9E7134" }}
-          >
-            Start a conversation
-          </a>
-          <a
-            href="https://rogetjames.com/"
-            className="font-detail text-xs uppercase tracking-[0.2em] text-cream/70 border border-cream/15 rounded-full px-9 py-4 hover:border-clay hover:text-cream transition-colors duration-300"
-          >
-            See the full collection
-          </a>
+      <section className="border-t border-cream/[0.07]">
+        <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 text-center">
+          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight max-w-3xl mx-auto" style={HEADING_SHADOW}>
+            Planning a piece for a {name} home or project?
+          </h2>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+            <a
+              href="https://rogetjames.com/#contact"
+              className="font-detail text-xs uppercase tracking-[0.2em] text-cream rounded-full px-9 py-4 transition-colors duration-300"
+              style={{ backgroundColor: "#9E7134" }}
+            >
+              Start a conversation
+            </a>
+            <a
+              href="https://rogetjames.com/"
+              className="font-detail text-xs uppercase tracking-[0.2em] text-cream/70 border border-cream/15 rounded-full px-9 py-4 hover:border-clay hover:text-cream transition-colors duration-300"
+            >
+              See the full collection
+            </a>
+          </div>
         </div>
       </section>
 
