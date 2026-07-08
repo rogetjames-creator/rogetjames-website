@@ -108,15 +108,17 @@ export default function CityPage({ city }) {
               >
                 {name}.
               </span>
-              <span
-                className="city-h-2 font-heading font-semibold text-cream/70 text-base md:text-xl leading-snug mt-4 max-w-xl"
-                style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)", opacity: 0 }}
-              >
-                {displayLine}
-              </span>
+              {displayLine && (
+                <span
+                  className="city-h-2 font-heading font-semibold text-cream/70 text-base md:text-xl leading-snug mt-4 max-w-xl"
+                  style={{ textShadow: "0 2px 8px rgba(0,0,0,0.45)", opacity: 0 }}
+                >
+                  {displayLine}
+                </span>
+              )}
             </h1>
             <p
-              className="city-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed"
+              className="city-sub font-body text-white text-base md:text-lg max-w-2xl mt-6 md:mt-8 leading-relaxed"
               style={{ opacity: 0, textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.8)" }}
             >
               {intro[0]}
