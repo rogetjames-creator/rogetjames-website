@@ -1,84 +1,142 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Instagram, Mail } from "lucide-react";
 import { netlifyImg } from "../utils/img";
 
+gsap.registerPlugin(ScrollTrigger);
+
 // ─────────────────────────────────────────────────────────────
-//  Reusable city / location page.
-//  One component, one data object per city — pass a `city` prop.
-//  Melbourne is the first; Perth and Gold Coast reuse this shell.
+//  Reusable city / location page — matches the main site's look:
+//  matt-black canvas, object-contain hero, font-drama display type,
+//  font-detail uppercase eyebrows in clay, the ROGETjames wordmark
+//  and the charcoal rounded-top footer.
 //
-//  IMPORTANT (SEO): every city MUST carry genuinely distinct copy,
-//  real projects and real suburbs. Same paragraph with the city name
-//  swapped = Google "doorway page" penalty. The placeholder copy below
-//  is written as a template for James to replace with real Melbourne
-//  detail — it is not final wording.
+//  One data object per city (see src/melbourne.jsx). Perth and Gold
+//  Coast reuse this shell.
+//
+//  SEO note: every city MUST carry genuinely distinct copy, real
+//  projects and real suburbs — the placeholder copy is a template
+//  for James to replace, not final wording.
 // ─────────────────────────────────────────────────────────────
+
+function Wordmark({ className = "" }) {
+  return (
+    <a href="https://rogetjames.com/" className={`font-heading font-bold text-cream ${className}`}>
+      ROGET<span className="font-normal italic font-drama">james</span>
+    </a>
+  );
+}
 
 export default function CityPage({ city }) {
   const {
-    name,          // "Melbourne"
-    region,        // "VIC"
-    heading,
-    intro,
-    hero,
-    projects = [],
-    suburbs = [],
-    services = [],
+    name, region, displayLine, heading,
+    intro, hero, projects = [], suburbs = [], services = [],
   } = city;
 
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero drift-in — same vocabulary as the homepage hero.
+      gsap.fromTo(".city-eyebrow", { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, delay: 0.2, ease: "power2.out" });
+      gsap.fromTo(".city-h-1", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 1.6, delay: 0.4, ease: "power2.out" });
+      gsap.fromTo(".city-h-2", { x: 40, y: 30, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.6, delay: 0.6, ease: "power2.out" });
+      gsap.fromTo(".city-sub", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 1.4, delay: 0.85, ease: "power2.out" });
+
+      // Section reveals on scroll.
+      gsap.utils.toArray(".city-reveal").forEach((el) => {
+        gsap.fromTo(el, { y: 40, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 1.2, ease: "power2.out",
+          scrollTrigger: { trigger: el, start: "top 85%", onEnter: () => {} },
+        });
+      });
+    }, rootRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-matt-black text-cream font-body">
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <header className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
-        <img
-          src={netlifyImg(hero, { w: 2000, q: 78 })}
-          alt={`ROGETjames laser cut work in ${name}`}
-          className="absolute inset-0 h-full w-full object-cover object-center"
-          fetchpriority="high"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-matt-black" />
-        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-16 md:px-16 md:pb-24 max-w-5xl">
-          <p className="font-detail text-[11px] uppercase tracking-[0.35em] text-clay mb-5">
-            {name}, {region} · Australia-wide studio
-          </p>
-          <h1 className="font-drama text-4xl leading-[1.05] md:text-6xl md:leading-[1.03] text-cream max-w-3xl">
-            {heading}
-          </h1>
+    <div ref={rootRef} className="min-h-screen bg-matt-black text-cream font-body">
+
+      {/* ── Slim header ─────────────────────────────────── */}
+      <header className="fixed top-0 inset-x-0 z-40">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
+          <Wordmark className="text-lg md:text-xl" />
+          <nav className="flex items-center gap-6 md:gap-9 font-detail text-[11px] uppercase tracking-[0.22em] text-cream/70">
+            <a href="https://rogetjames.com/#collection" className="hover:text-cream transition-colors hidden sm:inline">Collection</a>
+            <a href="https://rogetjames.com/#bespoke" className="hover:text-cream transition-colors hidden sm:inline">Bespoke</a>
+            <a href="https://rogetjames.com/#contact" className="hover:text-clay transition-colors">Contact</a>
+          </nav>
         </div>
       </header>
 
-      {/* ── Intro ────────────────────────────────────────── */}
-      <section className="px-6 py-16 md:px-16 md:py-24 max-w-3xl">
-        {intro.map((para, i) => (
-          <p
-            key={i}
-            className={`font-body text-cream/80 leading-relaxed ${i === 0 ? "text-lg md:text-xl text-cream" : "text-base md:text-lg mt-6"}`}
-          >
-            {para}
-          </p>
-        ))}
+      {/* ── Hero — object-contain, like the main site ───── */}
+      <section className="relative h-dvh min-h-[560px] w-full overflow-hidden flex items-end bg-charcoal">
+        <img
+          src={netlifyImg(hero, { w: 1600, q: 82 })}
+          alt={`ROGETjames laser cut work in ${name}`}
+          className="absolute inset-0 w-full h-full object-contain"
+          fetchpriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-matt-black pointer-events-none" />
+
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-16 md:pb-24">
+          <div className="max-w-4xl">
+            <p className="city-eyebrow font-detail text-xs uppercase tracking-[0.3em] text-clay mb-5" style={{ opacity: 0 }}>
+              {name}, {region} · Australia-wide studio
+            </p>
+            <h1 className="flex flex-col">
+              <span
+                className="city-h-1 font-drama italic text-6xl md:text-8xl lg:text-[9rem] leading-[0.9]"
+                style={{ color: "rgba(237,232,223,0.2)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
+              >
+                {name}.
+              </span>
+              <span
+                className="city-h-2 font-heading font-bold text-cream text-2xl md:text-4xl leading-tight mt-3 md:mt-4 max-w-2xl"
+                style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)", opacity: 0 }}
+              >
+                {displayLine}
+              </span>
+            </h1>
+            <p
+              className="city-sub font-body text-white text-base md:text-lg max-w-xl mt-6 md:mt-8 leading-relaxed"
+              style={{ opacity: 0, textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.8)" }}
+            >
+              {intro[0]}
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* ── Projects ─────────────────────────────────────── */}
+      {/* ── Intro ────────────────────────────────────────── */}
+      <section className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-20 md:py-28">
+        <p className="font-detail text-xs uppercase tracking-[0.3em] text-clay mb-8">Made for {name}</p>
+        <div className="max-w-3xl space-y-6">
+          {intro.slice(1).map((para, i) => (
+            <p key={i} className="font-body text-lg md:text-xl text-cream/75 leading-relaxed">{para}</p>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Selected work ───────────────────────────────── */}
       {projects.length > 0 && (
-        <section className="px-6 pb-8 md:px-16">
-          <h2 className="font-detail text-[11px] uppercase tracking-[0.3em] text-clay mb-8">
-            Selected work in {name}
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="max-w-7xl mx-auto px-6 md:px-12 pb-8">
+          <p className="city-reveal font-detail text-xs uppercase tracking-[0.3em] text-clay mb-10">Selected work in {name}</p>
+          <div className="grid grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((p, i) => (
-              <figure key={i} className="group overflow-hidden rounded-xl bg-graphite">
-                <div className="aspect-[4/3] overflow-hidden">
+              <figure key={i} className="city-reveal group">
+                <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-charcoal">
                   <img
-                    src={netlifyImg(p.src, { w: 900, q: 76 })}
+                    src={netlifyImg(p.src, { w: 900, q: 78 })}
                     alt={p.title}
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.04]"
                   />
                 </div>
-                <figcaption className="px-4 py-4">
-                  <p className="font-heading text-sm text-cream">{p.title}</p>
-                  {p.detail && (
-                    <p className="font-detail text-xs text-cream/50 mt-1">{p.detail}</p>
-                  )}
+                <figcaption className="pt-4">
+                  <p className="font-heading font-semibold text-sm text-cream tracking-tight">{p.title}</p>
+                  {p.detail && <p className="font-detail text-xs text-cream/45 uppercase tracking-[0.12em] mt-1.5">{p.detail}</p>}
                 </figcaption>
               </figure>
             ))}
@@ -88,66 +146,75 @@ export default function CityPage({ city }) {
 
       {/* ── Services ─────────────────────────────────────── */}
       {services.length > 0 && (
-        <section className="px-6 py-16 md:px-16 md:py-24 max-w-4xl">
-          <h2 className="font-detail text-[11px] uppercase tracking-[0.3em] text-clay mb-6">
-            What we make for {name} spaces
-          </h2>
-          <ul className="flex flex-wrap gap-x-8 gap-y-3">
+        <section className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-20 md:py-28">
+          <p className="font-detail text-xs uppercase tracking-[0.3em] text-clay mb-8">What we make for {name} spaces</p>
+          <div className="flex flex-wrap gap-x-10 gap-y-4 max-w-4xl">
             {services.map((s, i) => (
-              <li key={i} className="font-drama text-2xl md:text-3xl text-cream/85">
-                {s}
-              </li>
+              <span key={i} className="font-drama italic text-3xl md:text-4xl text-cream/85">{s}</span>
             ))}
-          </ul>
+          </div>
         </section>
       )}
 
-      {/* ── Suburbs served ───────────────────────────────── */}
+      {/* ── Suburbs served ──────────────────────────────── */}
       {suburbs.length > 0 && (
-        <section className="px-6 pb-16 md:px-16 md:pb-24 max-w-4xl">
-          <h2 className="font-detail text-[11px] uppercase tracking-[0.3em] text-clay mb-5">
-            {name} & surrounds
-          </h2>
-          <p className="font-body text-cream/60 leading-relaxed">
-            {suburbs.join(" · ")}
-          </p>
+        <section className="city-reveal max-w-7xl mx-auto px-6 md:px-12 pb-24">
+          <p className="font-detail text-xs uppercase tracking-[0.3em] text-clay mb-6">{name} & surrounds</p>
+          <p className="font-body text-cream/55 leading-loose max-w-4xl text-lg">{suburbs.join("  ·  ")}</p>
         </section>
       )}
 
-      {/* ── CTA back to the studio ───────────────────────── */}
-      <section className="border-t border-cream/[0.08] px-6 py-20 md:px-16 md:py-28 text-center">
-        <p className="font-drama text-3xl md:text-5xl text-cream mb-8 max-w-2xl mx-auto leading-tight">
+      {/* ── CTA ──────────────────────────────────────────── */}
+      <section className="city-reveal border-t border-cream/[0.07] max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 text-center">
+        <p className="font-drama text-4xl md:text-6xl text-cream leading-[1.05] max-w-3xl mx-auto">
           Planning a piece for a {name} home or project?
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
           <a
             href="https://rogetjames.com/#contact"
-            className="font-detail text-xs uppercase tracking-[0.2em] text-matt-black bg-cream rounded-full px-8 py-4 hover:bg-clay hover:text-cream transition-colors duration-300"
+            className="font-detail text-xs uppercase tracking-[0.2em] text-cream rounded-full px-9 py-4 transition-colors duration-300"
+            style={{ backgroundColor: "#9E7134" }}
           >
             Start a conversation
           </a>
           <a
             href="https://rogetjames.com/"
-            className="font-detail text-xs uppercase tracking-[0.2em] text-cream/70 border border-cream/20 rounded-full px-8 py-4 hover:border-clay hover:text-cream transition-colors duration-300"
+            className="font-detail text-xs uppercase tracking-[0.2em] text-cream/70 border border-cream/15 rounded-full px-9 py-4 hover:border-clay hover:text-cream transition-colors duration-300"
           >
             See the full collection
           </a>
         </div>
       </section>
 
-      {/* ── Footer / identity ────────────────────────────── */}
-      <footer className="border-t border-cream/[0.08] px-6 py-12 md:px-16">
-        <p className="font-heading text-sm text-cream tracking-wide">ROGETjames</p>
-        <p className="font-detail text-xs text-cream/50 mt-2">
-          Bespoke laser cut wall art, sculpture & architectural features · James Roget · Est. 2008
-        </p>
-        <p className="font-detail text-xs text-cream/50 mt-3">
-          <a href="tel:+61488878073" className="hover:text-clay">+61 488 878 073</a>
-          {"  ·  "}
-          <a href="mailto:james@rogetjames.com" className="hover:text-clay">james@rogetjames.com</a>
-          {"  ·  "}
-          <a href="https://rogetjames.com/" className="hover:text-clay">rogetjames.com</a>
-        </p>
+      {/* ── Footer — mirrors the main site footer ───────── */}
+      <footer className="bg-charcoal rounded-t-[3rem] md:rounded-t-[4rem] pt-16 md:pt-24 pb-8">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="flex flex-col items-center text-center mb-14">
+            <Wordmark className="text-2xl" />
+            <p className="text-cream/60 text-sm mt-4 max-w-md leading-relaxed">
+              Original bespoke laser-cut wall art, sculpture & architectural features, crafted in Australia and delivered to {name} & Australia-wide.
+            </p>
+            <p className="font-detail text-xs text-cream/55 uppercase tracking-[0.15em] mt-6">
+              <a href="tel:+61488878073" className="hover:text-clay transition-colors">+61 488 878 073</a>
+              <span className="mx-3 text-cream/25">/</span>
+              <a href="mailto:james@rogetjames.com" className="hover:text-clay transition-colors">james@rogetjames.com</a>
+            </p>
+            <div className="flex gap-3 mt-8">
+              <a href="https://instagram.com/rogetjames/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                 className="w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors">
+                <Instagram size={14} className="text-cream/50" />
+              </a>
+              <a href="mailto:james@rogetjames.com" aria-label="Email"
+                 className="w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors">
+                <Mail size={14} className="text-cream/50" />
+              </a>
+            </div>
+          </div>
+          <div className="border-t border-cream/5 pt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
+            <p className="text-cream/55 text-sm font-detail">All images are the designs and works of ROGETjames.</p>
+            <p className="text-cream/55 text-sm font-detail">&copy; {new Date().getFullYear()} ROGETjames. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </div>
   );

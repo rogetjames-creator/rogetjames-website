@@ -9,13 +9,14 @@ import "./index.css";
 const MELBOURNE = {
   name: "Melbourne",
   region: "VIC",
-  heading: "Bespoke Laser Cut Wall Art & Architectural Features in Melbourne",
+  // Shown beside the big italic "Melbourne." in the hero.
+  displayLine: "Laser cut wall art, sculpture & architectural features.",
   intro: [
     "ROGETjames designs and makes original laser cut wall art, sculpture, screens and architectural features for Melbourne homes, architects and commercial projects.",
     "Over years of commissions across Victoria, our Corten steel and powdercoated aluminium pieces have been made to suit Melbourne's mix of heritage terraces, contemporary builds and landmark public spaces — each cut to order for its exact wall, courtyard or facade.",
     "Every piece is drawn, cut and finished to the site. We work directly with Melbourne designers and homeowners from concept through to installation, and deliver Australia-wide from the studio.",
   ],
-  hero: "/images/hero/hero-cottesloe-patio.jpg",
+  hero: "/images/hero/hero-marakesh-wide.jpg",
   projects: [
     { src: "/images/hero/hero-gren-edge-1.jpg",        title: "GREN Edge — Wall Feature", detail: "Placeholder — replace with real Melbourne project" },
     { src: "/images/hero/hero-creeping-fig-grande.jpg", title: "Creeping Fig — Screen",    detail: "Placeholder — replace with real Melbourne project" },
