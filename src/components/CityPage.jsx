@@ -125,14 +125,14 @@ export default function CityPage({ city }) {
         </div>
       </section>
 
-      {/* ── Intro ────────────────────────────────────────── */}
+      {/* ── Intro — centered, like the About section ─────── */}
       <section className="bg-jet py-20 md:py-32">
-        <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12">
+        <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
           <Eyebrow>Made for {name}</Eyebrow>
           <SectionTitle>The studio, in {name}</SectionTitle>
-          <div className="max-w-3xl space-y-6 mt-10">
+          <div className="space-y-6 mt-8">
             {intro.slice(1).map((para, i) => (
-              <p key={i} className="font-body text-base md:text-lg text-cream/70 leading-relaxed">{para}</p>
+              <p key={i} className="font-body text-base text-cream/70 leading-relaxed">{para}</p>
             ))}
           </div>
         </div>
