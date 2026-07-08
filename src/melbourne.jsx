@@ -9,10 +9,11 @@ import "./index.css";
 const MELBOURNE = {
   name: "Melbourne",
   region: "VIC",
-  // Shown beside the big italic "Melbourne." in the hero.
-  displayLine: "Laser cut wall art, sculpture & architectural features.",
+  // Optional bold line under the big italic "Melbourne." — left empty so the
+  // hero reads: "Melbourne." + the flowing subhead below.
+  displayLine: "",
   intro: [
-    "ROGETjames designs and makes original laser cut wall art, sculpture, screens and architectural features for Melbourne homes, architects and commercial projects.",
+    "Original laser-cut wall art, sculpture & architectural features — curated catalogues and bespoke works, crafted in Melbourne for Architects, Designers and discerning clients.",
     "Over years of commissions across Victoria, our Corten steel and powdercoated aluminium pieces have been made to suit Melbourne's mix of heritage terraces, contemporary builds and landmark public spaces — each cut to order for its exact wall, courtyard or facade.",
     "Every piece is drawn, cut and finished to the site. We work directly with Melbourne designers and homeowners from concept through to installation, and deliver Australia-wide from the studio.",
   ],
