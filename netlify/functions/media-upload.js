@@ -36,6 +36,19 @@ const CHUNK_STORE = "upload-chunks";
 // real ceiling is time/memory — 25MB is a safe, generous limit for a reel.
 const MAX_REEL_BYTES = 25 * 1024 * 1024;
 
+const slugify = (s) => (s || "").toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+
+// Reels are data-driven: this manifest lists every uploaded reel and which
+// portals it appears in, so new reels can be added from the loader without any
+// code change. The reel portals read it and merge these on top of the built-ins.
+async function getReelsManifest() {
+  try {
+    const file = await gh(`/repos/${OWNER}/${REPO}/contents/public/reels-manifest.json?ref=${BRANCH}`);
+    const parsed = JSON.parse(Buffer.from(file.content, "base64").toString("utf8"));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+
 const isValidKey = (k) => typeof k === "string" && /^[a-z0-9-]{2,40}$/.test(k);
 
 // Old picker keys → real catalogue category ids (what the gallery matches on).
@@ -283,9 +296,15 @@ export default async function handler(req) {
   // untouched) and committed to the reel's file. Bypasses the 6MB request cap.
   if (body.action === "reel-chunk") {
     if (!process.env.GITHUB_TOKEN) return json({ error: "Upload storage not configured — GITHUB_TOKEN missing on server." }, 500);
-    const { uploadId, index, total, slot } = body;
-    const path = REEL_SLOTS[slot];
-    if (!path) return json({ error: "Unknown reel." }, 400);
+    const { uploadId, index, total } = body;
+    // A reel is identified by a free-text name (any name, not a fixed list). Its
+    // id is a slug of that name; re-using a name updates that reel.
+    const id = REEL_SLOTS[body.slot] ? body.slot : slugify(body.title || body.slot);
+    if (!id) return json({ error: "Give the reel a name." }, 400);
+    const title = (body.title || body.slot || id).toString().slice(0, 60);
+    const targetsIn = Array.isArray(body.targets) ? body.targets : ["wallart", "reels"];
+    const targets = targetsIn.filter((t) => t === "wallart" || t === "reels");
+    if (!targets.length) return json({ error: "Pick at least one place for the reel (Wall Art or Reels)." }, 400);
     if (typeof uploadId !== "string" || !/^[a-z0-9_]{6,64}$/.test(uploadId)) return json({ error: "Bad upload id." }, 400);
     if (!Number.isInteger(index) || !Number.isInteger(total) || total < 1 || total > 40 || index < 0 || index >= total) return json({ error: "Bad chunk." }, 400);
     const buf = Buffer.from(typeof body.chunk === "string" ? body.chunk : "", "base64");
@@ -294,7 +313,7 @@ export default async function handler(req) {
     await store.set(`${uploadId}/${index}`, buf);
     if (index < total - 1) return json({ ok: true, received: index });
 
-    // Last chunk — reassemble in order, commit, then clean up.
+    // Last chunk — reassemble in order, commit the video + manifest, clean up.
     const parts = [];
     let totalBytes = 0;
     for (let i = 0; i < total; i++) {
@@ -305,14 +324,24 @@ export default async function handler(req) {
       if (totalBytes > MAX_REEL_BYTES) return json({ error: "Video exceeds the 25MB limit." }, 400);
       parts.push(b);
     }
+    const videoPath = REEL_SLOTS[id] ? REEL_SLOTS[id] : `public/videos/reels/${id}.mp4`;
     try {
       const manifest = await getManifest();
-      await commitBatch({ addFiles: [{ path, base64: Buffer.concat(parts).toString("base64") }], manifest, message: `Update reel video: ${slot}` });
+      const addFiles = [{ path: videoPath, base64: Buffer.concat(parts).toString("base64") }];
+      // Built-in reels already render themselves; only newly-named reels need a
+      // manifest entry so the portals know to show them.
+      if (!REEL_SLOTS[id]) {
+        const reels = await getReelsManifest();
+        const entry = { id, title, detail: title, video: `/videos/reels/${id}.mp4`, poster: "", targets, createdTime: new Date().toISOString() };
+        const next = [...reels.filter((r) => r && r.id !== id), entry];
+        addFiles.push({ path: "public/reels-manifest.json", base64: Buffer.from(JSON.stringify(next, null, 2), "utf8").toString("base64") });
+      }
+      await commitBatch({ addFiles, manifest, message: `Reel upload: ${id}` });
     } catch (e) {
       return json({ error: "Reel commit failed: " + e.message }, 500);
     }
     for (let i = 0; i < total; i++) await store.delete(`${uploadId}/${i}`).catch(() => {});
-    return json({ ok: true, slot });
+    return json({ ok: true, id });
   }
 
   // Upload — new photos are committed straight to git.

@@ -60,12 +60,14 @@ export default function MediaPage() {
   const [editDests, setEditDests] = useState([]);
   const [savingPlace, setSavingPlace] = useState(false);
 
-  // Reels — replace a reel's video file, keeping its sound (no compression).
-  const [reelSlot, setReelSlot] = useState("branches");
-  const [reelFile, setReelFile] = useState(null);    // { name, dataUrl, mb }
+  // Reels — name it anything and choose which portals it shows in. Sound kept.
+  const [reelTitle, setReelTitle] = useState("");
+  const [reelTargets, setReelTargets] = useState(["wallart", "reels"]);
+  const [reelFile, setReelFile] = useState(null);    // { name, file, mb }
   const [reelPhase, setReelPhase] = useState("idle"); // idle | sending | done
   const [reelNote, setReelNote] = useState("");
   const [reelProgress, setReelProgress] = useState(0);
+  const toggleReelTarget = (t) => setReelTargets(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
 
   const call = (payload) =>
     fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -166,6 +168,9 @@ export default function MediaPage() {
 
   const sendReel = async () => {
     if (!reelFile?.file) return;
+    const title = reelTitle.trim();
+    if (!title) { setReelNote("Give the reel a name first."); return; }
+    if (!reelTargets.length) { setReelNote("Tick at least one place for it to show."); return; }
     setReelPhase("sending"); setReelNote(""); setReelProgress(0);
     const file = reelFile.file;
     try {
@@ -174,7 +179,7 @@ export default function MediaPage() {
       const uploadId = `up_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       for (let i = 0; i < total; i++) {
         const chunk = await blobToBase64(file.slice(i * CHUNK, (i + 1) * CHUNK));
-        const res = await call({ adminSecret: secret, action: "reel-chunk", uploadId, index: i, total, slot: reelSlot, chunk });
+        const res = await call({ adminSecret: secret, action: "reel-chunk", uploadId, index: i, total, title, targets: reelTargets, chunk });
         let json; try { json = await res.json(); } catch { json = { error: `Server error (status ${res.status}).` }; }
         if (!res.ok || json.error) { setReelNote(json.error || `Upload failed on part ${i + 1} of ${total}.`); setReelPhase("idle"); return; }
         setReelProgress(Math.round(((i + 1) / total) * 100));
@@ -185,12 +190,11 @@ export default function MediaPage() {
     }
   };
 
-  const REEL_OPTIONS = [
-    { key: "branches",   label: "Branches" },
-    { key: "rue",        label: "Rue" },
-    { key: "banksia",    label: "Banksia" },
-    { key: "b-editions", label: "B Editions" },
-    { key: "gren-free",  label: "GREN Free" },
+  // Existing reels — click a name to reuse it (that reel gets replaced).
+  const EXISTING_REELS = ["Branches", "Rue", "Banksia", "B Editions", "GREN Free", "Obliationes"];
+  const REEL_TARGETS = [
+    { key: "wallart", label: "Wall Art portal" },
+    { key: "reels",   label: "Discover · Reels" },
   ];
 
   const openEditor = (im) => { setNote(""); setEditing(im); setEditDests(Array.isArray(im.destinations) ? im.destinations : []); };
@@ -336,28 +340,45 @@ export default function MediaPage() {
         <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
           <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Reels — video with sound</p>
           <p className="font-detail text-[11px] text-cream/50 mb-4">
-            Any clip up to 25MB — large ones upload in parts. Nothing is re-encoded, so the picture quality and the sound are exactly as-shot. Pick which reel this replaces; it updates the Wall Art and Discover reels together.
+            Any clip up to 25MB — large ones upload in parts. Nothing is re-encoded, so picture quality and sound are exactly as-shot. Name it anything and tick where it should show. A new name adds a new reel; an existing name replaces it.
           </p>
 
           {reelPhase === "done" ? (
             <div className="bg-green-600/15 border border-green-500/40 rounded-xl p-5 text-center">
-              <p className="font-heading text-cream text-base mb-1">✓ Reel updated</p>
-              <p className="font-detail text-[11px] text-cream/70 mb-4">Live on the site within ~2 minutes (hard-refresh to hear it sooner).</p>
-              <button onClick={() => { setReelPhase("idle"); setReelNote(""); }}
+              <p className="font-heading text-cream text-base mb-1">✓ Reel saved</p>
+              <p className="font-detail text-[11px] text-cream/70 mb-4">Live on the site within ~2 minutes (hard-refresh to see/hear it sooner).</p>
+              <button onClick={() => { setReelPhase("idle"); setReelNote(""); setReelTitle(""); }}
                 className="w-full py-3 rounded-xl bg-clay text-cream font-heading font-semibold text-sm hover:bg-clay-light transition-all">
-                Update another reel
+                Add another reel
               </button>
             </div>
           ) : (
             <>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {REEL_OPTIONS.map(o => (
-                  <button key={o.key} type="button" onClick={() => setReelSlot(o.key)}
-                    className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${reelSlot === o.key ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                    {reelSlot === o.key ? "✓ " : ""}{o.label}
+              <input type="text" value={reelTitle} onChange={e => setReelTitle(e.target.value)}
+                placeholder="Reel name (e.g. Obliationes, Banksia)"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-2" />
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {EXISTING_REELS.map(name => (
+                  <button key={name} type="button" onClick={() => setReelTitle(name)}
+                    className="px-2.5 py-1 rounded-lg font-detail text-[10px] border border-white/15 text-cream/50 hover:border-clay/50 hover:text-cream transition-all">
+                    {name}
                   </button>
                 ))}
               </div>
+
+              <p className="font-detail text-[10px] text-cream/50 uppercase tracking-[0.15em] mb-2">Show it in</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {REEL_TARGETS.map(t => {
+                  const on = reelTargets.includes(t.key);
+                  return (
+                    <button key={t.key} type="button" onClick={() => toggleReelTarget(t.key)}
+                      className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                      {on ? "✓ " : ""}{t.label}
+                    </button>
+                  );
+                })}
+              </div>
+
               <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${reelPhase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
                 {reelFile ? `Chosen: ${reelFile.name} (${reelFile.mb.toFixed(1)}MB)` : "+ Choose a video (full quality, keeps sound)"}
                 <input type="file" accept="video/*" onChange={onPickReel} className="hidden" />
@@ -366,7 +387,7 @@ export default function MediaPage() {
                 className="w-full mt-3 py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                 {reelPhase === "sending"
                   ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending… {reelProgress}%</>)
-                  : reelFile ? `Replace “${REEL_OPTIONS.find(o => o.key === reelSlot)?.label}” reel →` : "Choose a video first"}
+                  : reelFile ? `Save${reelTitle.trim() ? ` “${reelTitle.trim()}”` : ""} reel →` : "Choose a video first"}
               </button>
               {reelNote && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{reelNote}</p>}
             </>
