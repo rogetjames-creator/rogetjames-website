@@ -503,6 +503,16 @@ const OTHER_CATEGORIES = [
   },
 ];
 
+// Self-maintaining wall-art category covers for the private Feature Wall page.
+// One representative image per wall-art category (first real, non-placeholder
+// piece). Add a category to the catalogue and it appears here automatically.
+export const WALL_ART_COVERS = WALL_ART_SERIES
+  .map((s) => {
+    const real = s.items.find((it) => it.img && !it.img.includes("placeholder"));
+    return real ? { id: s.id, label: s.label, img: real.img } : null;
+  })
+  .filter(Boolean);
+
 // Self-maintaining media destinations: every catalogue category is
 // automatically an upload target (used by /media). Add a category to the
 // catalogue and it appears in the uploader with no other change. Each category
