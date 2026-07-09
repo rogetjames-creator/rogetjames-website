@@ -73,12 +73,12 @@ const PORTALS = [
     slides: [],
     videos: [
       { src: "/videos/reels/gren-free.mp4",   title: "GREN Free",                detail: "GREN Free — Branches design.", poster: "/images/reels/gren-free-thumb.jpg" },
-      { src: "/videos/reels/obliationes.mp4", title: "Obliationes",              detail: "Obliationes — a ROGETjames reel.", poster: "/images/reels/obliationes-thumb.jpg" },
       { src: "/videos/reels/branches.mp4",    title: "Branches",                 detail: "A close-up reel of the Branches laser-cut design — birds perched on delicate steel branches.", poster: "/images/reels/branches-thumb.jpg" },
       { src: "/videos/reels/rue.mp4",         title: "Rue",                      detail: "Rue — a ROGETjames reel.", poster: "/images/reels/rue-thumb.jpg" },
       { src: "/videos/reels/banksia.mp4",     title: "Banksia",                  detail: "Banksia — a ROGETjames reel.", poster: "/images/reels/banksia-thumb.jpg" },
       { src: "/videos/reels/b-editions.mp4",  title: "B Editions",               detail: "B Editions — a curated collection reel.", poster: "/images/reels/b-editions-thumb.jpg" },
       { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "Waroona — a ROGETjames reel.", poster: "/images/reels/waroona-thumb.jpg" },
+      { src: "/videos/reels/obliationes.mp4", title: "Obliationes",              detail: "Obliationes — a ROGETjames reel.", poster: "/images/reels/obliationes-thumb.jpg" },
     ],
     popupType: "commissions-gallery",
   },
