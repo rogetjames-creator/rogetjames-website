@@ -144,18 +144,31 @@ export default function MediaPage() {
     try { await call({ adminSecret: secret, action: "delete", id }); await refresh(); } catch { /* ignore */ }
   };
 
-  // Read a video file as-is (no canvas, no re-encode) so its audio is preserved.
-  const onPickReel = (e) => {
+  const fileToDataUrl = (blob) => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onerror = () => rej(new Error("read"));
+    r.onload = () => res(r.result);
+    r.readAsDataURL(blob);
+  });
+
+  // Upload the video untouched — no re-encoding, so both the picture quality and
+  // the audio are exactly as-shot. Oversized clips are compressed by me at full
+  // quality rather than degraded in the browser.
+  const onPickReel = async (e) => {
     const file = (e.target.files || [])[0];
     e.target.value = "";
     if (!file) return;
-    setReelNote("");
+    setReelNote(""); setReelFile(null);
     const mb = file.size / 1048576;
-    if (mb > 4) { setReelNote(`That video is ${mb.toFixed(1)}MB — keep it under 4MB (trim length or lower resolution) and try again.`); return; }
-    const reader = new FileReader();
-    reader.onerror = () => setReelNote("Couldn't read that video — try again.");
-    reader.onload = () => setReelFile({ name: file.name, dataUrl: reader.result, mb });
-    reader.readAsDataURL(file);
+    if (mb > 3.9) {
+      setReelNote(`That clip is ${mb.toFixed(1)}MB — too big to send at full quality through here. Drop it to me in chat and I'll compress it properly (sound and quality kept).`);
+      return;
+    }
+    try {
+      setReelFile({ name: file.name, dataUrl: await fileToDataUrl(file), mb });
+    } catch {
+      setReelNote("Couldn't read that video — try again.");
+    }
   };
 
   const sendReel = async () => {
@@ -322,7 +335,7 @@ export default function MediaPage() {
         <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
           <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Reels — video with sound</p>
           <p className="font-detail text-[11px] text-cream/50 mb-4">
-            Uploads the video exactly as-is — the music is kept. Pick which reel this replaces; it updates the Wall Art and Discover reels together.
+            Uploaded untouched — full picture quality and the sound both kept. Pick which reel this replaces; it updates the Wall Art and Discover reels together.
           </p>
 
           {reelPhase === "done" ? (
@@ -345,7 +358,7 @@ export default function MediaPage() {
                 ))}
               </div>
               <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${reelPhase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
-                {reelFile ? `Chosen: ${reelFile.name} (${reelFile.mb.toFixed(1)}MB)` : "+ Choose a video (mp4, keeps sound)"}
+                {reelFile ? `Chosen: ${reelFile.name} (${reelFile.mb.toFixed(1)}MB)` : "+ Choose a video (full quality, keeps sound)"}
                 <input type="file" accept="video/*" onChange={onPickReel} className="hidden" />
               </label>
               <button onClick={sendReel} disabled={!reelFile || reelPhase === "sending"}
