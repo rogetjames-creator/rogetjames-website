@@ -60,6 +60,12 @@ export default function MediaPage() {
   const [editDests, setEditDests] = useState([]);
   const [savingPlace, setSavingPlace] = useState(false);
 
+  // Reels — replace a reel's video file, keeping its sound (no compression).
+  const [reelSlot, setReelSlot] = useState("branches");
+  const [reelFile, setReelFile] = useState(null);    // { name, dataUrl, mb }
+  const [reelPhase, setReelPhase] = useState("idle"); // idle | sending | done
+  const [reelNote, setReelNote] = useState("");
+
   const call = (payload) =>
     fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
@@ -137,6 +143,41 @@ export default function MediaPage() {
   const remove = async (id) => {
     try { await call({ adminSecret: secret, action: "delete", id }); await refresh(); } catch { /* ignore */ }
   };
+
+  // Read a video file as-is (no canvas, no re-encode) so its audio is preserved.
+  const onPickReel = (e) => {
+    const file = (e.target.files || [])[0];
+    e.target.value = "";
+    if (!file) return;
+    setReelNote("");
+    const mb = file.size / 1048576;
+    if (mb > 4) { setReelNote(`That video is ${mb.toFixed(1)}MB — keep it under 4MB (trim length or lower resolution) and try again.`); return; }
+    const reader = new FileReader();
+    reader.onerror = () => setReelNote("Couldn't read that video — try again.");
+    reader.onload = () => setReelFile({ name: file.name, dataUrl: reader.result, mb });
+    reader.readAsDataURL(file);
+  };
+
+  const sendReel = async () => {
+    if (!reelFile) return;
+    setReelPhase("sending"); setReelNote("");
+    try {
+      const res = await call({ adminSecret: secret, action: "reel", reel: { slot: reelSlot, dataUrl: reelFile.dataUrl } });
+      let json; try { json = await res.json(); } catch { json = { error: `Server error (status ${res.status}).` }; }
+      if (!res.ok || json.error) { setReelNote(json.error || "Upload failed."); setReelPhase("idle"); return; }
+      setReelPhase("done"); setReelFile(null);
+    } catch (e) {
+      setReelNote("Upload failed — " + (e?.message || "check connection.")); setReelPhase("idle");
+    }
+  };
+
+  const REEL_OPTIONS = [
+    { key: "branches",   label: "Branches" },
+    { key: "rue",        label: "Rue" },
+    { key: "banksia",    label: "Banksia" },
+    { key: "b-editions", label: "B Editions" },
+    { key: "gren-free",  label: "GREN Free" },
+  ];
 
   const openEditor = (im) => { setNote(""); setEditing(im); setEditDests(Array.isArray(im.destinations) ? im.destinations : []); };
   const toggleEditDest = (key) => setEditDests(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
@@ -276,6 +317,47 @@ export default function MediaPage() {
             {note && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{note}</p>}
           </div>
         )}
+
+        {/* ── REELS (video with sound) ───────────── */}
+        <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
+          <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Reels — video with sound</p>
+          <p className="font-detail text-[11px] text-cream/50 mb-4">
+            Uploads the video exactly as-is — the music is kept. Pick which reel this replaces; it updates the Wall Art and Discover reels together.
+          </p>
+
+          {reelPhase === "done" ? (
+            <div className="bg-green-600/15 border border-green-500/40 rounded-xl p-5 text-center">
+              <p className="font-heading text-cream text-base mb-1">✓ Reel updated</p>
+              <p className="font-detail text-[11px] text-cream/70 mb-4">Live on the site within ~2 minutes (hard-refresh to hear it sooner).</p>
+              <button onClick={() => { setReelPhase("idle"); setReelNote(""); }}
+                className="w-full py-3 rounded-xl bg-clay text-cream font-heading font-semibold text-sm hover:bg-clay-light transition-all">
+                Update another reel
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {REEL_OPTIONS.map(o => (
+                  <button key={o.key} type="button" onClick={() => setReelSlot(o.key)}
+                    className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${reelSlot === o.key ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                    {reelSlot === o.key ? "✓ " : ""}{o.label}
+                  </button>
+                ))}
+              </div>
+              <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${reelPhase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
+                {reelFile ? `Chosen: ${reelFile.name} (${reelFile.mb.toFixed(1)}MB)` : "+ Choose a video (mp4, keeps sound)"}
+                <input type="file" accept="video/*" onChange={onPickReel} className="hidden" />
+              </label>
+              <button onClick={sendReel} disabled={!reelFile || reelPhase === "sending"}
+                className="w-full mt-3 py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                {reelPhase === "sending"
+                  ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending…</>)
+                  : reelFile ? `Replace “${REEL_OPTIONS.find(o => o.key === reelSlot)?.label}” reel →` : "Choose a video first"}
+              </button>
+              {reelNote && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{reelNote}</p>}
+            </>
+          )}
+        </div>
 
         {/* ── LIVE LIBRARY ───────────────────────── */}
         <p className="font-detail text-[10px] text-cream/45 uppercase tracking-[0.25em] mb-4">Currently on the site</p>

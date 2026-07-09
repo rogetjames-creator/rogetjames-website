@@ -14,6 +14,20 @@ const OWNER = "rogetjames-creator";
 const REPO = "rogetjames-website";
 const BRANCH = "main";
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB per image
+// Netlify caps a function request body at ~6 MB. A base64 video inflates ~33%,
+// so keep the raw video under ~4 MB to stay safely inside that limit.
+const MAX_VIDEO_BYTES = 4 * 1024 * 1024;
+
+// Reel video slots — each maps to the real file the reel portals already point
+// at, so replacing it here restores/updates that reel everywhere at once. The
+// video is committed byte-for-byte (no re-encoding), so its audio is preserved.
+const REEL_SLOTS = {
+  "branches":   "public/videos/reels/branches.mp4",
+  "rue":        "public/videos/reels/rue.mp4",
+  "banksia":    "public/videos/reels/banksia.mp4",
+  "b-editions": "public/videos/reels/b-editions.mp4",
+  "gren-free":  "public/videos/reels/gren-free.mp4",
+};
 
 const OLD_STORE = "media-library";
 const UC_STORE = "up-close-images";
@@ -236,6 +250,28 @@ export default async function handler(req) {
     }
     await oldStore.delete(body.id).catch(() => {});
     return json({ ok: true });
+  }
+
+  // Reel video — commit a reel's video byte-for-byte (audio intact, no
+  // re-encoding) to the file the reel portals already reference.
+  if (body.action === "reel" && body.reel) {
+    if (!process.env.GITHUB_TOKEN) return json({ error: "Upload storage not configured — GITHUB_TOKEN missing on server." }, 500);
+    const path = REEL_SLOTS[body.reel.slot];
+    if (!path) return json({ error: "Unknown reel." }, 400);
+    const m = /^data:(video\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(body.reel.dataUrl || "");
+    if (!m) return json({ error: "That file isn't a video." }, 400);
+    const base64 = m[2];
+    const buf = Buffer.from(base64, "base64");
+    if (buf.length > MAX_VIDEO_BYTES) {
+      return json({ error: `Video is ${(buf.length / 1048576).toFixed(1)}MB — keep it under 4MB (trim length or lower the resolution).` }, 400);
+    }
+    try {
+      const manifest = await getManifest();
+      await commitBatch({ addFiles: [{ path, base64 }], manifest, message: `Update reel video: ${body.reel.slot}` });
+      return json({ ok: true, slot: body.reel.slot });
+    } catch (e) {
+      return json({ error: "Reel upload failed: " + e.message }, 500);
+    }
   }
 
   // Upload — new photos are committed straight to git.
