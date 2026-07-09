@@ -72,6 +72,7 @@ const PORTALS = [
     sublabel: "Behind the Work",
     slides: [],
     videos: [
+      { src: "/videos/reels/gren-free.mp4",   title: "GREN Free",                detail: "GREN Free — Branches design.", poster: "/images/reels/gren-free-thumb.jpg" },
       { src: "/videos/reels/branches.mp4",    title: "Branches",                 detail: "A close-up reel of the Branches laser-cut design — birds perched on delicate steel branches.", poster: "/images/reels/branches-thumb.jpg" },
       { src: "/videos/reels/rue.mp4",         title: "Rue",                      detail: "Rue — a ROGETjames reel.", poster: "/images/reels/rue-thumb.jpg" },
       { src: "/videos/reels/banksia.mp4",     title: "Banksia",                  detail: "Banksia — a ROGETjames reel.", poster: "/images/reels/banksia-thumb.jpg" },
