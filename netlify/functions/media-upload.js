@@ -31,6 +31,10 @@ const REEL_SLOTS = {
 
 const OLD_STORE = "media-library";
 const UC_STORE = "up-close-images";
+const CHUNK_STORE = "upload-chunks";
+// Large videos are uploaded in ~3MB parts and reassembled here, so the only
+// real ceiling is time/memory — 25MB is a safe, generous limit for a reel.
+const MAX_REEL_BYTES = 25 * 1024 * 1024;
 
 const isValidKey = (k) => typeof k === "string" && /^[a-z0-9-]{2,40}$/.test(k);
 
@@ -272,6 +276,43 @@ export default async function handler(req) {
     } catch (e) {
       return json({ error: "Reel upload failed: " + e.message }, 500);
     }
+  }
+
+  // Reel video, uploaded in parts — each ~3MB chunk is stashed, and on the last
+  // one they're stitched back together byte-for-byte (so quality and audio are
+  // untouched) and committed to the reel's file. Bypasses the 6MB request cap.
+  if (body.action === "reel-chunk") {
+    if (!process.env.GITHUB_TOKEN) return json({ error: "Upload storage not configured — GITHUB_TOKEN missing on server." }, 500);
+    const { uploadId, index, total, slot } = body;
+    const path = REEL_SLOTS[slot];
+    if (!path) return json({ error: "Unknown reel." }, 400);
+    if (typeof uploadId !== "string" || !/^[a-z0-9_]{6,64}$/.test(uploadId)) return json({ error: "Bad upload id." }, 400);
+    if (!Number.isInteger(index) || !Number.isInteger(total) || total < 1 || total > 40 || index < 0 || index >= total) return json({ error: "Bad chunk." }, 400);
+    const buf = Buffer.from(typeof body.chunk === "string" ? body.chunk : "", "base64");
+    if (!buf.length) return json({ error: "Empty chunk." }, 400);
+    const store = getStore({ name: CHUNK_STORE, consistency: "strong" });
+    await store.set(`${uploadId}/${index}`, buf);
+    if (index < total - 1) return json({ ok: true, received: index });
+
+    // Last chunk — reassemble in order, commit, then clean up.
+    const parts = [];
+    let totalBytes = 0;
+    for (let i = 0; i < total; i++) {
+      const ab = await store.get(`${uploadId}/${i}`, { type: "arrayBuffer" }).catch(() => null);
+      if (!ab) return json({ error: `Lost part ${i + 1} of ${total} — please try again.` }, 400);
+      const b = Buffer.from(ab);
+      totalBytes += b.length;
+      if (totalBytes > MAX_REEL_BYTES) return json({ error: "Video exceeds the 25MB limit." }, 400);
+      parts.push(b);
+    }
+    try {
+      const manifest = await getManifest();
+      await commitBatch({ addFiles: [{ path, base64: Buffer.concat(parts).toString("base64") }], manifest, message: `Update reel video: ${slot}` });
+    } catch (e) {
+      return json({ error: "Reel commit failed: " + e.message }, 500);
+    }
+    for (let i = 0; i < total; i++) await store.delete(`${uploadId}/${i}`).catch(() => {});
+    return json({ ok: true, slot });
   }
 
   // Upload — new photos are committed straight to git.

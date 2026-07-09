@@ -65,6 +65,7 @@ export default function MediaPage() {
   const [reelFile, setReelFile] = useState(null);    // { name, dataUrl, mb }
   const [reelPhase, setReelPhase] = useState("idle"); // idle | sending | done
   const [reelNote, setReelNote] = useState("");
+  const [reelProgress, setReelProgress] = useState(0);
 
   const call = (payload) =>
     fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -144,43 +145,43 @@ export default function MediaPage() {
     try { await call({ adminSecret: secret, action: "delete", id }); await refresh(); } catch { /* ignore */ }
   };
 
-  const fileToDataUrl = (blob) => new Promise((res, rej) => {
+  const blobToBase64 = (blob) => new Promise((res, rej) => {
     const r = new FileReader();
     r.onerror = () => rej(new Error("read"));
-    r.onload = () => res(r.result);
+    r.onload = () => res(String(r.result).split(",")[1] || "");
     r.readAsDataURL(blob);
   });
 
-  // Upload the video untouched — no re-encoding, so both the picture quality and
-  // the audio are exactly as-shot. Oversized clips are compressed by me at full
-  // quality rather than degraded in the browser.
-  const onPickReel = async (e) => {
+  // Stage the video untouched — no re-encoding, so picture quality and audio are
+  // exactly as-shot. Big files are sent in parts at send-time (see sendReel).
+  const onPickReel = (e) => {
     const file = (e.target.files || [])[0];
     e.target.value = "";
     if (!file) return;
-    setReelNote(""); setReelFile(null);
+    setReelNote("");
     const mb = file.size / 1048576;
-    if (mb > 3.9) {
-      setReelNote(`That clip is ${mb.toFixed(1)}MB — too big to send at full quality through here. Drop it to me in chat and I'll compress it properly (sound and quality kept).`);
-      return;
-    }
-    try {
-      setReelFile({ name: file.name, dataUrl: await fileToDataUrl(file), mb });
-    } catch {
-      setReelNote("Couldn't read that video — try again.");
-    }
+    if (mb > 25) { setReelNote(`That clip is ${mb.toFixed(1)}MB — keep it under 25MB.`); setReelFile(null); return; }
+    setReelFile({ name: file.name, file, mb });
   };
 
   const sendReel = async () => {
-    if (!reelFile) return;
-    setReelPhase("sending"); setReelNote("");
+    if (!reelFile?.file) return;
+    setReelPhase("sending"); setReelNote(""); setReelProgress(0);
+    const file = reelFile.file;
     try {
-      const res = await call({ adminSecret: secret, action: "reel", reel: { slot: reelSlot, dataUrl: reelFile.dataUrl } });
-      let json; try { json = await res.json(); } catch { json = { error: `Server error (status ${res.status}).` }; }
-      if (!res.ok || json.error) { setReelNote(json.error || "Upload failed."); setReelPhase("idle"); return; }
-      setReelPhase("done"); setReelFile(null);
+      const CHUNK = 3 * 1048576;                 // ~3MB → ~4MB base64, under the 6MB cap
+      const total = Math.ceil(file.size / CHUNK);
+      const uploadId = `up_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      for (let i = 0; i < total; i++) {
+        const chunk = await blobToBase64(file.slice(i * CHUNK, (i + 1) * CHUNK));
+        const res = await call({ adminSecret: secret, action: "reel-chunk", uploadId, index: i, total, slot: reelSlot, chunk });
+        let json; try { json = await res.json(); } catch { json = { error: `Server error (status ${res.status}).` }; }
+        if (!res.ok || json.error) { setReelNote(json.error || `Upload failed on part ${i + 1} of ${total}.`); setReelPhase("idle"); return; }
+        setReelProgress(Math.round(((i + 1) / total) * 100));
+      }
+      setReelPhase("done"); setReelFile(null); setReelProgress(0);
     } catch (e) {
-      setReelNote("Upload failed — " + (e?.message || "check connection.")); setReelPhase("idle");
+      setReelNote("Upload failed — " + (e?.message || "check connection and try again.")); setReelPhase("idle");
     }
   };
 
@@ -335,7 +336,7 @@ export default function MediaPage() {
         <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
           <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Reels — video with sound</p>
           <p className="font-detail text-[11px] text-cream/50 mb-4">
-            Uploaded untouched — full picture quality and the sound both kept. Pick which reel this replaces; it updates the Wall Art and Discover reels together.
+            Any clip up to 25MB — large ones upload in parts. Nothing is re-encoded, so the picture quality and the sound are exactly as-shot. Pick which reel this replaces; it updates the Wall Art and Discover reels together.
           </p>
 
           {reelPhase === "done" ? (
@@ -364,7 +365,7 @@ export default function MediaPage() {
               <button onClick={sendReel} disabled={!reelFile || reelPhase === "sending"}
                 className="w-full mt-3 py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                 {reelPhase === "sending"
-                  ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending…</>)
+                  ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending… {reelProgress}%</>)
                   : reelFile ? `Replace “${REEL_OPTIONS.find(o => o.key === reelSlot)?.label}” reel →` : "Choose a video first"}
               </button>
               {reelNote && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{reelNote}</p>}
