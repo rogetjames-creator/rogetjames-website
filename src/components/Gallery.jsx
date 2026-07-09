@@ -50,6 +50,13 @@ const STATE_NAMES = {
 
 const REELS = [
   {
+    id: "gren-free",
+    title: "GREN Free",
+    thumb: "/images/reels/gren-free-thumb.jpg",
+    video: "/videos/reels/gren-free.mp4",
+    detail: "GREN Free — Branches design.",
+  },
+  {
     id: "branches",
     title: "Branches",
     thumb: "/images/reels/branches-thumb.jpg",
