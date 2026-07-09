@@ -585,6 +585,21 @@ export default function DiscoverPortals() {
     return null;
   };
 
+  // Uploaded reels (media loader) merge into the Reels portal, so new reels
+  // appear without a code change. Falls back to the built-ins if absent.
+  const [xReels, setXReels] = useState([]);
+  useEffect(() => {
+    let ok = true;
+    fetch("/reels-manifest.json", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => { if (ok && Array.isArray(d)) setXReels(d); })
+      .catch(() => {});
+    return () => { ok = false; };
+  }, []);
+  const reelExtra = xReels
+    .filter((x) => x && x.id && x.video && (!Array.isArray(x.targets) || x.targets.includes("reels")))
+    .map((x) => ({ src: x.video, title: x.title || x.id, detail: x.detail || "", poster: x.poster || "" }));
+
   return (
     <section id="discover-portals" className="bg-graphite overflow-x-hidden">
       <div ref={headerRef} className="px-8 pt-20 pb-10 text-center">
@@ -594,15 +609,20 @@ export default function DiscoverPortals() {
       <div className="w-full h-px bg-white/10" />
       <div className={`bg-matt-black py-[55px] ${isMobile ? "px-2" : "px-8"}`}>
         <div className={`flex justify-center ${isMobile ? "items-start gap-3" : "items-end gap-10 md:gap-20"}`}>
-          {PORTALS.map(portal => (
-            <MiniPortal
-              key={portal.id}
-              portal={portal}
-              size={isMobile ? Math.round((portal.size ?? 166) * 0.4) : (portal.size ?? 166)}
-              onOpen={getOnOpen(portal)}
-              hoverLabel="View"
-            />
-          ))}
+          {PORTALS.map(portal => {
+            const p = (portal.id === "reels" && reelExtra.length)
+              ? { ...portal, videos: [...portal.videos, ...reelExtra.filter(e => !portal.videos.some(v => v.src === e.src))] }
+              : portal;
+            return (
+              <MiniPortal
+                key={portal.id}
+                portal={p}
+                size={isMobile ? Math.round((portal.size ?? 166) * 0.4) : (portal.size ?? 166)}
+                onOpen={getOnOpen(portal)}
+                hoverLabel="View"
+              />
+            );
+          })}
         </div>
       </div>
       <div className="w-full h-px bg-white/10" />

@@ -142,6 +142,23 @@ function ReelsPortal({ onOpen }) {
   const videoRef = useRef(null);
   const transitioningRef = useRef(false);
 
+  // Uploaded reels (from the media loader) merge on top of the built-ins, so new
+  // reels appear here without any code change. Falls back to built-ins if absent.
+  const [xReels, setXReels] = useState([]);
+  useEffect(() => {
+    let ok = true;
+    fetch("/reels-manifest.json", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => { if (ok && Array.isArray(d)) setXReels(d); })
+      .catch(() => {});
+    return () => { ok = false; };
+  }, []);
+  const extraReels = xReels
+    .filter((x) => x && x.id && x.video && (!Array.isArray(x.targets) || x.targets.includes("wallart")))
+    .map((x) => ({ id: x.id, title: x.title || x.id, thumb: x.poster || "", video: x.video, detail: x.detail || "" }));
+  const portalReels = [...PORTAL_REELS, ...extraReels.filter((x) => !PORTAL_REELS.some((b) => b.id === x.id))];
+  const allReels = [...REELS, ...extraReels.filter((x) => !REELS.some((b) => b.id === x.id))];
+
   // Scroll trigger — show EDITIONS intro on first enter
   useEffect(() => {
     const el = portalRef.current;
@@ -170,7 +187,7 @@ function ReelsPortal({ onOpen }) {
     transitioningRef.current = true;
     setEditionsVisible(true);
     setTimeout(() => {
-      setCurReel(i => (i + 1) % PORTAL_REELS.length);
+      setCurReel(i => (i + 1) % portalReels.length);
       setTimeout(() => {
         setEditionsVisible(false);
         transitioningRef.current = false;
@@ -212,7 +229,7 @@ function ReelsPortal({ onOpen }) {
           <video
             ref={videoRef}
             key={curReel}
-            src={PORTAL_REELS[curReel].video}
+            src={(portalReels[curReel] || portalReels[0]).video}
             autoPlay muted playsInline preload="auto"
             onEnded={handleVideoEnd}
             className="absolute inset-0 w-full h-full object-cover"
@@ -253,7 +270,7 @@ function ReelsPortal({ onOpen }) {
       {/* Reels gallery modal */}
       {galleryOpen && (
         <CommissionsGalleryPopup
-          videos={REELS.map(r => ({ src: r.video, title: r.title, detail: r.detail, poster: r.thumb }))}
+          videos={allReels.map(r => ({ src: r.video, title: r.title, detail: r.detail, poster: r.thumb }))}
           onClose={() => setGalleryOpen(false)}
         />
       )}
