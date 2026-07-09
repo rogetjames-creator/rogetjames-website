@@ -57,13 +57,6 @@ const REELS = [
     detail: "GREN Free — Branches design.",
   },
   {
-    id: "obliationes",
-    title: "Obliationes",
-    thumb: "/images/reels/obliationes-thumb.jpg",
-    video: "/videos/reels/obliationes.mp4",
-    detail: "Obliationes — a ROGETjames reel.",
-  },
-  {
     id: "branches",
     title: "Branches",
     thumb: "/images/reels/branches-thumb.jpg",
@@ -90,6 +83,13 @@ const REELS = [
     thumb: "/images/reels/b-editions-thumb.jpg",
     video: "/videos/reels/b-editions.mp4",
     detail: "B Editions — a curated collection reel.",
+  },
+  {
+    id: "obliationes",
+    title: "Obliationes",
+    thumb: "/images/reels/obliationes-thumb.jpg",
+    video: "/videos/reels/obliationes.mp4",
+    detail: "Obliationes — a ROGETjames reel.",
   },
   {
     id: "waroona",
@@ -1088,13 +1088,17 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
     : MATERIAL_OPTIONS;
   const [selectedMaterial, setSelectedMaterial] = useState(() => availableMats[0]?.id ?? "aluminium");
   const [added, setAdded] = useState(false);
+  // Admin (owner) can freely switch which region's prices to view — defaults to
+  // WA. A normal visitor's region is fixed by their postcode.
+  const [adminWA, setAdminWA] = useState(true);
 
   const isAdmin = postcodeInfo?.isAdmin === true;
   const isWAUser = postcodeInfo?.isWA === true && !isAdmin;
+  const effWA = isAdmin ? adminWA : (postcodeInfo?.isWA === true);
 
   const tier = sizeTiers.find(t => t.id === selectedSize);
-  const price = priceFor(tier, selectedMaterial, postcodeInfo?.isWA === true);
-  const showPOA = isWAUser && !price;
+  const price = priceFor(tier, selectedMaterial, effWA);
+  const showPOA = !price && (isWAUser || isAdmin);
   const showPrice = TEMP_SHOW_ALL_PRICES || !showPOA;
   const matLabel = MATERIAL_OPTIONS.find(m => m.id === selectedMaterial)?.label;
   const canAdd = selectedSize && selectedMaterial && !added;
@@ -1138,6 +1142,18 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
               </p>
             )}
           </div>
+
+          {isAdmin && (
+            <div>
+              <p className="font-detail text-[10px] text-clay/80 uppercase tracking-[0.18em] mb-2">Region · admin (only you see this)</p>
+              <div className="flex gap-2">
+                <button onClick={() => setAdminWA(true)}
+                  className={`flex-1 py-2 rounded-xl border text-center font-detail text-[11px] transition-all ${adminWA ? "border-[#9e7134] text-[#9e7134]" : "border-white/15 text-cream/75 hover:border-white/35"}`}>WA</button>
+                <button onClick={() => setAdminWA(false)}
+                  className={`flex-1 py-2 rounded-xl border text-center font-detail text-[11px] transition-all ${!adminWA ? "border-[#9e7134] text-[#9e7134]" : "border-white/15 text-cream/75 hover:border-white/35"}`}>Interstate</button>
+              </div>
+            </div>
+          )}
 
           <div>
             <p className="font-detail text-[10px] text-cream/80 uppercase tracking-[0.18em] mb-2">Material</p>
@@ -2438,6 +2454,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
   const [postcodeInput, setPostcodeInput] = useState("");
   const [postcodeStep, setPostcodeStep] = useState(false);
+  const [adminWA, setAdminWA] = useState(true); // owner-only region choice, defaults WA
   const [selectedMat, setSelectedMat] = useState("aluminium");
   const [selectedSize, setSelectedSize] = useState(null);
   const slideRef = useRef(null);
@@ -3099,6 +3116,18 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                         )
                       ) : (
                         <div className="flex flex-col gap-2">
+                          {/* Admin-only region choice (only you see this) */}
+                          {postcodeInfo.isAdmin && (
+                            <div className="flex gap-2 mb-1">
+                              {[["wa", true, "WA"], ["int", false, "Interstate"]].map(([k, val, label]) => (
+                                <button key={k} onClick={() => setAdminWA(val)}
+                                  className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
+                                  style={{ background: "transparent", border: `1px solid ${adminWA === val ? "#9e7134" : "rgba(242,240,233,0.15)"}`, color: adminWA === val ? "#9e7134" : "rgba(242,240,233,0.75)" }}>
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                           {/* Material selector */}
                           <div className="flex gap-2">
                             {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
@@ -3111,7 +3140,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           </div>
                           {/* Price list */}
                           {sizes.length > 0 ? sizes.map(t => {
-                            const p = priceFor(t, selectedMat, postcodeInfo.isWA);
+                            const p = priceFor(t, selectedMat, postcodeInfo.isAdmin ? adminWA : postcodeInfo.isWA);
                             const sizeLabel = t.label !== "Standard" ? t.label : t.dims;
                             const isSelected = selectedSize?.id === t.id;
                             return (
