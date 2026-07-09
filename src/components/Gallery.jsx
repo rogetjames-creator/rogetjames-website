@@ -2554,16 +2554,34 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     return base.map(s => ({ ...s, items: s.items.filter(it => it.cat === sculptureCat) })).filter(s => s.items.length > 0);
   })();
 
+  // Every close-up / detail shot across all series, plus the combined Up Close
+  // list — gathered so they sit together at the END of the All grid instead of
+  // being scattered through the shuffle.
+  const closeupItems = (() => {
+    const map = new Map();
+    for (const s of filteredSeries) {
+      for (const src of upCloseForSeries(s.id)) {
+        if (src && !map.has(src)) map.set(src, { img: src, name: `${s.label} — Up Close`, _closeup: true });
+      }
+    }
+    for (const u of upCloseImages) {
+      if (u?.src && !map.has(u.src)) map.set(u.src, { img: u.src, name: u.name || "Up Close", _closeup: true });
+    }
+    return [...map.values()];
+  })();
+  const closeupSrcs = new Set(closeupItems.map(c => c.img));
+
   const filteredAllItems = (() => {
     const seen = new Set();
     const arr = filteredSeries.flatMap(s => s.items.flatMap(it => {
       const imgs = it.singleInAll ? [it.img] : (it.slides && it.slides.length > 1 ? it.slides : [it.img]);
       return imgs
-        .filter(img => { if (seen.has(img)) return false; seen.add(img); return true; })
+        .filter(img => { if (seen.has(img) || closeupSrcs.has(img)) return false; seen.add(img); return true; })
         .map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _seriesLabel: s.label, _slideIdx: sIdx }));
     }));
     arr.forEach((_, i) => { if (i > 0) { const j = ((i * 2654435769) >>> 0) % (i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } });
-    return arr;
+    // Close-up images last, as a block.
+    return [...arr, ...closeupItems];
   })();
 
   const isAll = tab === "all";
@@ -2925,20 +2943,22 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
               const delay = (((i * 0.618) % 1) * 2.2).toFixed(2);
               return (
-                <div key={i} onClick={() => { const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
+                <div key={i} onClick={() => { if (it._closeup) { setDetailZoom(it.img); return; } const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: `fadeIn 0.6s ease forwards`, animationDelay: `${delay}s` }}>
                   <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-end p-1.5">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                   </div>
-                  {/* Details pill */}
-                  <button
-                    onClick={(e) => { e.stopPropagation(); jumpToItem(it._seriesId, iIdx, it._slideIdx ?? 0, true); }}
-                    className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/80 text-[8px] font-detail tracking-widest uppercase opacity-0 group-hover:opacity-100 hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
-                  >
-                    details
-                  </button>
+                  {/* Details pill — series pieces only (close-ups just expand) */}
+                  {!it._closeup && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); jumpToItem(it._seriesId, iIdx, it._slideIdx ?? 0, true); }}
+                      className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/80 text-[8px] font-detail tracking-widest uppercase opacity-0 group-hover:opacity-100 hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
+                    >
+                      details
+                    </button>
+                  )}
                   {/* Expand image */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setDetailZoom(it.img); }}
