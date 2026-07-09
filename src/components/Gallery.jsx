@@ -57,6 +57,13 @@ const REELS = [
     detail: "GREN Free — Branches design.",
   },
   {
+    id: "obliationes",
+    title: "Obliationes",
+    thumb: "/images/reels/obliationes-thumb.jpg",
+    video: "/videos/reels/obliationes.mp4",
+    detail: "Obliationes — a ROGETjames reel.",
+  },
+  {
     id: "branches",
     title: "Branches",
     thumb: "/images/reels/branches-thumb.jpg",
