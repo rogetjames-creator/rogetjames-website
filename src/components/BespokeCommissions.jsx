@@ -945,7 +945,6 @@ const PROJECTS_ROWS = [
       { name: "Homebase Feature",       img: "/images/hero/hero-homebase-sculpture.jpg" },
       { name: "Homebase Landscape Design", img: "/images/hero/hero-homebase-dusk.jpg" },
       { name: "HOMEBASE Totems",        img: "/images/hero/hero-homebase-totems.jpg" },
-      { name: "HOMEBASE Signage Totems",img: `${CDN}/4605043d-cb34-4ade-9339-8d8bd07645a4_rw_1200.jpg` },
       { name: "HOMEBASE Fire Pit",      img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
       { name: "EVO Planters",           img: `${CDN}/181378db-3310-4b32-8704-00836f3e0cc8_rw_1200.jpg` },
       { name: "EVO Planters",           img: `${CDN}/3826640c-6476-446d-b49c-ba7d1e312544_rw_1200.jpg` },
