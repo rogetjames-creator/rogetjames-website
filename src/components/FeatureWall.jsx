@@ -88,10 +88,10 @@ function Gallery() {
   // here or on the public gallery carries over either way.
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
   const handleSetPostcode = useCallback((info) => { savePostcode(info); setPostcodeInfo(info); }, []);
-  // Persisted rail order — whichever category is opened moves to (and stays
-  // at) the FRONT of this list, so it's always visible in the 4-wide window
-  // instead of needing a scroll to find it again.
-  const [railOrder, setRailOrder] = useState(() => CATS.map((_, i) => i));
+  // Categories stay in one fixed (catalogue) order — the rail scrolls to
+  // bring the active one into view instead of reshuffling the row, so
+  // clicking Next repeatedly moves rightward and actually reaches the end.
+  const cardRefs = useRef([]);
 
   const go = useCallback((i) => {
     if (busy.current) return;
@@ -102,7 +102,6 @@ function Gallery() {
     setPieceIdx(0);
     setExpanded(false);
     setDetailItem(null);
-    setRailOrder((prev) => [n, ...prev.filter((x) => x !== n)]);
     setTimeout(() => { busy.current = false; setFlash(-1); }, 1100);
   }, [cur]);
 
@@ -118,6 +117,10 @@ function Gallery() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [cur, go]);
+
+  useEffect(() => {
+    cardRefs.current[cur]?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+  }, [cur]);
 
   const c = CATS[cur];
   const pieces = c.pieces;
@@ -160,10 +163,9 @@ function Gallery() {
       </div>
 
       <div className="fw-rail">
-        {railOrder.map((i) => {
-          const cat = CATS[i];
+        {CATS.map((cat, i) => {
           return (
-            <div key={cat.id} className={`fw-card ${i === cur ? "on" : ""} ${i === flash ? "flash" : ""}`}
+            <div key={cat.id} ref={(el) => (cardRefs.current[i] = el)} className={`fw-card ${i === cur ? "on" : ""} ${i === flash ? "flash" : ""}`}
               onClick={() => { if (i !== cur) { setFlash(i); go(i); } }}>
               <img src={cat.img} alt={cat.label} />
               <div className="fw-cap"><b>{cat.label}</b></div>
