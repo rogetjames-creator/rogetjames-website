@@ -10,6 +10,9 @@ import { loadPostcode, savePostcode } from "../utils/postcode";
 // admin password as /stats and /media. NOT linked anywhere public.
 
 const CATS = WALL_ART_COVERS;
+// Matches the slug format the live site's ?piece= deep link expects
+// (Gallery.jsx opens that piece's own series in the real catalogue).
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
@@ -43,8 +46,7 @@ const CSS = `
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.55)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
-.fw-dot{width:46px;height:46px;border-radius:50%;background:#9E7134;display:grid;place-items:center;color:#F2F0E9;box-shadow:0 6px 24px rgba(158,113,52,.4)}
-.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:.35s}
+.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:.35s;color:inherit;text-decoration:none;display:inline-block}
 .fw-pill:hover{background:#F2F0E9;color:#1A1A1A;border-color:#F2F0E9}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
@@ -55,7 +57,7 @@ const CSS = `
 .fw-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.7,0,.2,1)}
 .fw-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 14px 16px;background:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0))}
 .fw-cap b{font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;line-height:1.15}
-.fw-card.on{transform:translateY(-22px) scale(1.04);opacity:1;box-shadow:0 34px 70px rgba(0,0,0,.6);outline:1px solid rgba(242,240,233,.25);outline-offset:-1px}
+.fw-card.on{opacity:1;outline:1px solid rgba(242,240,233,.25);outline-offset:-1px}
 .fw-card:hover img{transform:scale(1.08)}
 .fw-card.flash img{animation:fwFlash 1.1s cubic-bezier(.7,0,.2,1)}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
@@ -146,8 +148,14 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{c.label}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <div className="fw-dot">&#8599;</div>
-          <div className="fw-pill">View the {c.label.toLowerCase()} collection</div>
+          <a
+            className="fw-pill"
+            href={`/?piece=${slug(activePiece.priceKey || activePiece.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View the {c.label.toLowerCase()} collection
+          </a>
         </div>
       </div>
 
