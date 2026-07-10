@@ -3,16 +3,17 @@ import { WALL_ART_COVERS } from "./Gallery";
 
 // Private, password-gated "Feature Wall" preview of the wall-art gallery in the
 // Globe Express style: a full-bleed featured piece with a rail of category
-// cards that expand into the hero. Reachable only at /feature-wall behind the
-// same admin password as /stats and /media. NOT linked anywhere public.
+// cards that expand into the hero, and a smaller rail underneath of that
+// category's own pieces. Reachable only at /feature-wall behind the same
+// admin password as /stats and /media. NOT linked anywhere public.
 
 const CATS = WALL_ART_COVERS;
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-.fw-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.12);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity,transform}
+.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(1.06);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity,transform}
 .fw-bg.on{opacity:1;transform:scale(1);animation:fwDrift 9s linear forwards}
-@keyframes fwDrift{from{transform:scale(1.06)}to{transform:scale(1.14)}}
+@keyframes fwDrift{from{transform:scale(1.03)}to{transform:scale(1.07)}}
 .fw-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,12,12,.82),rgba(12,12,12,.45) 34%,rgba(12,12,12,.05) 60%,rgba(12,12,12,.25) 100%),linear-gradient(0deg,rgba(12,12,12,.55),rgba(12,12,12,0) 45%)}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;padding:28px 46px}
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
@@ -29,7 +30,7 @@ const CSS = `
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
-.fw-rail{position:absolute;right:44px;bottom:118px;z-index:5;display:flex;gap:16px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
+.fw-rail{position:absolute;right:44px;bottom:270px;z-index:5;display:flex;gap:16px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
 .fw-rail::-webkit-scrollbar{display:none}
 .fw-card{position:relative;width:176px;height:238px;border-radius:20px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 24px 50px rgba(0,0,0,.5);transform:translateY(0) scale(.9);opacity:.82;transition:transform .7s cubic-bezier(.7,0,.2,1),opacity .5s,box-shadow .5s}
 .fw-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.7,0,.2,1)}
@@ -39,6 +40,13 @@ const CSS = `
 .fw-card:hover img{transform:scale(1.08)}
 .fw-card.flash img{animation:fwFlash 1.1s cubic-bezier(.7,0,.2,1)}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
+.fw-subrail{position:absolute;right:44px;bottom:128px;z-index:5;display:flex;gap:8px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
+.fw-subrail::-webkit-scrollbar{display:none}
+.fw-subcard{position:relative;width:70px;height:90px;border-radius:9px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
+.fw-subcard img{width:100%;height:100%;object-fit:cover}
+.fw-subcard.on{opacity:1;transform:scale(1.06);box-shadow:0 16px 32px rgba(0,0,0,.55);outline-color:#c08c46}
+.fw-subcard:hover{opacity:.9}
+.fw-subcard.flash img{animation:fwFlash .8s cubic-bezier(.7,0,.2,1)}
 .fw-ctrls{position:absolute;left:52px;bottom:44px;z-index:6;display:flex;align-items:center;gap:14px}
 .fw-nav{width:50px;height:50px;border-radius:50%;border:1px solid rgba(242,240,233,.28);background:rgba(20,20,20,.35);backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s;font-size:16px}
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
@@ -46,13 +54,15 @@ const CSS = `
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
 .fw-count{position:absolute;right:52px;bottom:34px;z-index:6;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:70px;line-height:.8;color:rgba(242,240,233,.9)}
 .fw-count sup{font-size:18px;color:rgba(242,240,233,.4);font-style:normal;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.1em}
-@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-ctrls{left:26px}.fw-count{right:26px;font-size:48px}}
+@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-subrail{display:none}.fw-ctrls{left:26px}.fw-count{right:26px;font-size:48px}}
 `;
 
 function Gallery() {
   const [cur, setCur] = useState(0);
+  const [pieceIdx, setPieceIdx] = useState(0);
   const busy = useRef(false);
   const [flash, setFlash] = useState(-1);
+  const [pieceFlash, setPieceFlash] = useState(-1);
 
   const go = useCallback((i) => {
     if (busy.current) return;
@@ -60,22 +70,31 @@ function Gallery() {
     if (n === cur) return;
     busy.current = true;
     setCur(n);
+    setPieceIdx(0);
     setTimeout(() => { busy.current = false; setFlash(-1); }, 1100);
   }, [cur]);
 
+  const goPiece = useCallback((i) => {
+    setPieceIdx(i);
+    setPieceFlash(i);
+    setTimeout(() => setPieceFlash(-1), 1100);
+  }, []);
+
   useEffect(() => {
-    CATS.forEach((c) => { const im = new Image(); im.src = c.img; });
+    CATS.forEach((cat) => cat.pieces.forEach((p) => { const im = new Image(); im.src = p.img; }));
     const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [cur, go]);
 
   const c = CATS[cur];
+  const pieces = c.pieces;
+
   return (
     <div className="fw-wrap">
       <style>{CSS}</style>
-      {CATS.map((cat, i) => (
-        <div key={cat.id} className={`fw-bg ${i === cur ? "on" : ""}`} style={{ backgroundImage: `url("${cat.img}")` }} />
+      {pieces.map((p, i) => (
+        <div key={`${c.id}-${p.name}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
       ))}
       <div className="fw-scrim" />
 
@@ -102,6 +121,17 @@ function Gallery() {
           </div>
         ))}
       </div>
+
+      {pieces.length > 1 && (
+        <div className="fw-subrail" key={c.id}>
+          {pieces.map((p, i) => (
+            <div key={p.name} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
+              onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
+              <img src={p.img} alt={p.name} />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="fw-ctrls">
         <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>

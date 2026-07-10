@@ -505,11 +505,13 @@ const OTHER_CATEGORIES = [
 
 // Self-maintaining wall-art category covers for the private Feature Wall page.
 // One representative image per wall-art category (first real, non-placeholder
-// piece). Add a category to the catalogue and it appears here automatically.
+// piece), plus that category's own pieces for the sub-thumb row. Add a
+// category to the catalogue and it appears here automatically.
 export const WALL_ART_COVERS = WALL_ART_SERIES
   .map((s) => {
-    const real = s.items.find((it) => it.img && !it.img.includes("placeholder"));
-    return real ? { id: s.id, label: s.label, img: real.img } : null;
+    const pieces = s.items.filter((it) => it.img && !it.img.includes("placeholder"));
+    if (!pieces.length) return null;
+    return { id: s.id, label: s.label, img: pieces[0].img, pieces };
   })
   .filter(Boolean);
 
