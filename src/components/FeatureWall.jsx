@@ -48,12 +48,6 @@ const CSS = `
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
-.fw-rail{position:absolute;right:44px;bottom:200px;z-index:5;display:flex;align-items:flex-end;padding:4px}
-.fw-card{position:relative;width:220px;height:300px;border-radius:22px;overflow:hidden;box-shadow:0 24px 50px rgba(0,0,0,.5);opacity:1;outline:1px solid rgba(242,240,233,.25);outline-offset:-1px;transition:box-shadow .5s}
-.fw-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.7,0,.2,1)}
-.fw-cap{position:absolute;left:0;right:0;bottom:0;padding:16px 16px 18px;background:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0))}
-.fw-cap b{font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;line-height:1.15}
-.fw-card.flash img{animation:fwFlash 1.1s cubic-bezier(.7,0,.2,1)}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
 .fw-subrail{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;gap:10px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
@@ -68,14 +62,13 @@ const CSS = `
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
 .fw-prog{width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
-@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-subrail{display:none}}
+@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-subrail{display:none}}
 `;
 
 function Gallery() {
   const [cur, setCur] = useState(0);
   const [pieceIdx, setPieceIdx] = useState(0);
   const busy = useRef(false);
-  const [flash, setFlash] = useState(false);
   const [pieceFlash, setPieceFlash] = useState(-1);
   const [expanded, setExpanded] = useState(false);
   const [detailItem, setDetailItem] = useState(null);
@@ -98,8 +91,7 @@ function Gallery() {
     setPieceIdx(0);
     setExpanded(false);
     setDetailItem(null);
-    setFlash(true);
-    setTimeout(() => { busy.current = false; setFlash(false); }, 1100);
+    setTimeout(() => { busy.current = false; }, 1100);
   }, [cur]);
 
   const goPiece = useCallback((i) => {
@@ -163,13 +155,6 @@ function Gallery() {
           <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
             View the {c.label.toLowerCase()} collection
           </button>
-        </div>
-      </div>
-
-      <div className="fw-rail">
-        <div className={`fw-card ${flash ? "flash" : ""}`}>
-          <img src={c.img} alt={c.label} />
-          <div className="fw-cap"><b>{c.label}</b></div>
         </div>
       </div>
 
