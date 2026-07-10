@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Maximize2, X } from "lucide-react";
 import { WALL_ART_COVERS } from "./Gallery";
 
 // Private, password-gated "Feature Wall" preview of the wall-art gallery in the
@@ -15,10 +16,18 @@ const CSS = `
 .fw-bg.on{opacity:1;transform:scale(1);animation:fwDrift 9s linear forwards}
 @keyframes fwDrift{from{transform:scale(1.03)}to{transform:scale(1.07)}}
 .fw-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,12,12,.82),rgba(12,12,12,.45) 34%,rgba(12,12,12,.05) 60%,rgba(12,12,12,.25) 100%),linear-gradient(0deg,rgba(12,12,12,.55),rgba(12,12,12,0) 45%)}
-.fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;padding:28px 46px}
+.fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
+.fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-tag{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.45)}
+.fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
+.fw-expand{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
+.fw-expand:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+.fw-expand-img{max-width:95vw;max-height:95vh;object-fit:contain}
+.fw-expand-close{position:absolute;top:16px;right:16px;padding:10px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s}
+.fw-expand-close:hover{background:rgba(255,255,255,.2)}
 .fw-lead{position:absolute;left:52px;bottom:340px;z-index:5;max-width:46vw}
 .fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px}
 .fw-kick .bar{width:34px;height:1px;background:#c08c46}
@@ -32,7 +41,7 @@ const CSS = `
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
-.fw-rail{position:absolute;right:44px;bottom:270px;z-index:5;display:flex;gap:16px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
+.fw-rail{position:absolute;right:44px;bottom:160px;z-index:5;display:flex;gap:16px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
 .fw-rail::-webkit-scrollbar{display:none}
 .fw-card{position:relative;width:176px;height:238px;border-radius:20px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 24px 50px rgba(0,0,0,.5);transform:translateY(0) scale(.9);opacity:.82;transition:transform .7s cubic-bezier(.7,0,.2,1),opacity .5s,box-shadow .5s}
 .fw-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.7,0,.2,1)}
@@ -42,7 +51,7 @@ const CSS = `
 .fw-card:hover img{transform:scale(1.08)}
 .fw-card.flash img{animation:fwFlash 1.1s cubic-bezier(.7,0,.2,1)}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
-.fw-subrail{position:absolute;right:44px;bottom:128px;z-index:5;display:flex;gap:8px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
+.fw-subrail{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;gap:8px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
 .fw-subcard{position:relative;width:70px;height:90px;border-radius:9px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
 .fw-subcard img{width:100%;height:100%;object-fit:cover}
@@ -54,9 +63,7 @@ const CSS = `
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
 .fw-prog{margin-left:8px;width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
-.fw-count{position:absolute;right:52px;bottom:34px;z-index:6;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:70px;line-height:.8;color:rgba(242,240,233,.9)}
-.fw-count sup{font-size:18px;color:rgba(242,240,233,.4);font-style:normal;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.1em}
-@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-subrail{display:none}.fw-ctrls{left:26px}.fw-count{right:26px;font-size:48px}}
+@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-subrail{display:none}.fw-ctrls{left:26px}}
 `;
 
 function Gallery() {
@@ -65,6 +72,11 @@ function Gallery() {
   const busy = useRef(false);
   const [flash, setFlash] = useState(-1);
   const [pieceFlash, setPieceFlash] = useState(-1);
+  const [expanded, setExpanded] = useState(false);
+  // Persisted rail order — whichever category is opened moves to the back
+  // of this list and STAYS there (rather than the row resetting to catalogue
+  // order every time), so a second click doesn't undo the first.
+  const [railOrder, setRailOrder] = useState(() => CATS.map((_, i) => i));
 
   const go = useCallback((i) => {
     if (busy.current) return;
@@ -73,6 +85,8 @@ function Gallery() {
     busy.current = true;
     setCur(n);
     setPieceIdx(0);
+    setExpanded(false);
+    setRailOrder((prev) => [...prev.filter((x) => x !== n), n]);
     setTimeout(() => { busy.current = false; setFlash(-1); }, 1100);
   }, [cur]);
 
@@ -91,10 +105,7 @@ function Gallery() {
 
   const c = CATS[cur];
   const pieces = c.pieces;
-  // The category currently on display moves to the back of the rail —
-  // it's already shown large in the hero, so the front stays free for
-  // the other categories.
-  const railOrder = [...CATS.keys()].filter((i) => i !== cur).concat(cur);
+  const activePiece = pieces[pieceIdx] || pieces[0];
 
   return (
     <div className="fw-wrap">
@@ -106,13 +117,19 @@ function Gallery() {
 
       <header className="fw-top">
         <div className="fw-logo">ROGET<i>james</i></div>
-        <div className="fw-tag">Feature Wall · private preview</div>
+        <div className="fw-top-right">
+          <div className="fw-tag">Feature Wall · private preview</div>
+          <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
+          <button className="fw-expand" onClick={() => setExpanded(true)} aria-label="Expand image">
+            <Maximize2 size={12} /> Expand
+          </button>
+        </div>
       </header>
 
       <div className="fw-lead" key={cur}>
         <div className="fw-kick fw-anim"><span className="bar" />Wall Art</div>
         <h1 className="fw-title fw-anim d2">{c.label}</h1>
-        <div className="fw-piece fw-anim d2">On display — <b>{(pieces[pieceIdx] || pieces[0]).name}</b></div>
+        <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
           <div className="fw-dot">&#8599;</div>
           <div className="fw-pill">View the {c.label.toLowerCase()} collection</div>
@@ -149,9 +166,18 @@ function Gallery() {
         <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
       </div>
 
-      <div className="fw-count">
-        {String(cur + 1).padStart(2, "0")}<sup>/ {String(CATS.length).padStart(2, "0")}</sup>
-      </div>
+      {expanded && (
+        <div className="fw-expand-overlay" onClick={() => setExpanded(false)}>
+          <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+          <button
+            className="fw-expand-close"
+            onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+            aria-label="Close expanded view"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
