@@ -50,13 +50,13 @@ Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & arc
 
 ```bash
 npm run dev          # Start dev server (Vite) on port 5173
-npm run build        # Production build: Vite + Playwright prerender
-npm run build:quick  # Vite build only (skips prerender — use for most deploys)
+npm run build        # Production build: Vite + Playwright prerender (used by Netlify)
+npm run build:quick  # Vite build only (skips prerender — for a fast local check)
 npm run lint         # ESLint
 npm run preview      # Serve dist/ locally
 ```
 
-`npm run build` uses Playwright to prerender `dist/index.html` for crawlers — requires Playwright's Chromium and adds ~5s. `netlify.toml` uses `build:quick` for Netlify deploys (prerender runs separately if needed).
+`npm run build` uses Playwright to prerender `dist/index.html` so crawlers (Google, Facebook, etc.) see real page content instead of an empty shell — adds ~5-10s to the build, plus a first-time browser download via the `postinstall` script (`playwright install chromium`). `netlify.toml` runs `npm run build` on every deploy. If this ever needs to be reverted to the faster `build:quick` (e.g. Playwright/Chromium fails to install on Netlify's build image), a failed build does not take the live site down — Netlify keeps serving the last successful deploy.
 
 Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite dev server on 5173. Port 8888 is required to exercise the `/api/*` Netlify Functions locally (chat, contact, vault, stats, media). The Vite config also proxies `/api/chat`, `/api/vault-*`, and `/api/stats-data` to 8888 when running `vite` directly.
 
