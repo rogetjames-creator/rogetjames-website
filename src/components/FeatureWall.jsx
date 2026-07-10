@@ -131,6 +131,11 @@ function Gallery() {
   const pieces = c.pieces;
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
+  // Title always breaks after the first word (e.g. "AUSTRALIAN" / "NATIVES")
+  // rather than wrapping wherever the container width happens to allow.
+  const titleSpace = c.label.indexOf(" ");
+  const titleFirst = titleSpace === -1 ? c.label : c.label.slice(0, titleSpace);
+  const titleRest = titleSpace === -1 ? "" : c.label.slice(titleSpace + 1);
 
   return (
     <div className="fw-wrap">
@@ -152,7 +157,7 @@ function Gallery() {
 
       <div className="fw-lead" key={cur}>
         <div className="fw-kick fw-anim"><span className="bar" />Wall Art</div>
-        <h1 className="fw-title fw-anim d2">{c.label}</h1>
+        <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
           <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
