@@ -43,7 +43,8 @@ const CSS = `
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.55)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
-.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:transparent;color:inherit;font-family:inherit;cursor:pointer;transition:.35s}
+.fw-pill:hover{background:#F2F0E9;color:#1A1A1A;border-color:#F2F0E9}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
@@ -143,7 +144,6 @@ function Gallery() {
         <div className="fw-logo">ROGET<i>james</i></div>
         <div className="fw-top-right">
           <div className="fw-tag">Feature Wall · private preview</div>
-          <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
           <button className="fw-expand" onClick={() => setExpanded(true)} aria-label="Expand image">
             <Maximize2 size={12} /> Expand
           </button>
@@ -155,9 +155,9 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{c.label}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <div className="fw-pill" ref={pillRef}>
+          <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
             View the {c.label.toLowerCase()} collection
-          </div>
+          </button>
         </div>
       </div>
 
@@ -185,6 +185,7 @@ function Gallery() {
           <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}>&#8594;</button>
         </div>
         <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
+        <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
       </div>
 
       {expanded && (
