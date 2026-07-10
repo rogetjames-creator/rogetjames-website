@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { Maximize2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { loadPostcode, savePostcode } from "../utils/postcode";
@@ -61,12 +61,13 @@ const CSS = `
 .fw-subcard.on{opacity:1;transform:scale(1.06);box-shadow:0 16px 32px rgba(0,0,0,.55);outline-color:#c08c46}
 .fw-subcard:hover{opacity:.9}
 .fw-subcard.flash img{animation:fwFlash .8s cubic-bezier(.7,0,.2,1)}
-.fw-ctrls{position:absolute;left:52px;bottom:44px;z-index:6;display:flex;align-items:center;gap:14px}
+.fw-ctrls{position:absolute;left:50%;bottom:44px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateX(-50%);transition:left .3s ease}
+.fw-arrows{display:flex;align-items:center;gap:14px}
 .fw-nav{width:50px;height:50px;border-radius:50%;border:1px solid rgba(242,240,233,.28);background:rgba(20,20,20,.35);backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s;font-size:16px}
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
-.fw-prog{margin-left:8px;width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
+.fw-prog{width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
-@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-subrail{display:none}.fw-ctrls{left:26px}}
+@media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-rail{display:none}.fw-subrail{display:none}}
 `;
 
 function Gallery() {
@@ -81,6 +82,11 @@ function Gallery() {
   // here or on the public gallery carries over either way.
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
   const handleSetPostcode = useCallback((info) => { savePostcode(info); setPostcodeInfo(info); }, []);
+  // The arrows + progress line sit centred under the pill, whose width
+  // changes with the category name (e.g. "Plumes" vs "Australian Natives") —
+  // measure its actual position rather than assume a fixed offset.
+  const pillRef = useRef(null);
+  const [pillCenter, setPillCenter] = useState(null);
 
   const go = useCallback((i) => {
     if (busy.current) return;
@@ -107,6 +113,18 @@ function Gallery() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [cur, go]);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = pillRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setPillCenter(r.left + r.width / 2);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [cur]);
 
   const c = CATS[cur];
   const pieces = c.pieces;
@@ -137,7 +155,7 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{c.label}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <div className="fw-pill">
+          <div className="fw-pill" ref={pillRef}>
             View the {c.label.toLowerCase()} collection
           </div>
         </div>
@@ -161,9 +179,11 @@ function Gallery() {
         </div>
       )}
 
-      <div className="fw-ctrls">
-        <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>
-        <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}>&#8594;</button>
+      <div className="fw-ctrls" style={pillCenter != null ? { left: `${pillCenter}px` } : undefined}>
+        <div className="fw-arrows">
+          <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>
+          <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}>&#8594;</button>
+        </div>
         <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
       </div>
 
