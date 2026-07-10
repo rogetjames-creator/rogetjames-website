@@ -19,10 +19,12 @@ const CSS = `
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-tag{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.45)}
-.fw-lead{position:absolute;left:52px;top:50%;transform:translateY(-50%);z-index:5;max-width:46vw}
+.fw-lead{position:absolute;left:52px;bottom:340px;z-index:5;max-width:46vw}
 .fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px}
 .fw-kick .bar{width:34px;height:1px;background:#c08c46}
-.fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(44px,7vw,104px);text-transform:uppercase;text-shadow:0 8px 40px rgba(0,0,0,.35)}
+.fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(32px,4.6vw,68px);text-transform:uppercase;text-shadow:0 8px 40px rgba(0,0,0,.35)}
+.fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.55)}
+.fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
 .fw-dot{width:46px;height:46px;border-radius:50%;background:#9E7134;display:grid;place-items:center;color:#F2F0E9;box-shadow:0 6px 24px rgba(158,113,52,.4)}
 .fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:.35s}
@@ -89,6 +91,10 @@ function Gallery() {
 
   const c = CATS[cur];
   const pieces = c.pieces;
+  // The category currently on display moves to the back of the rail —
+  // it's already shown large in the hero, so the front stays free for
+  // the other categories.
+  const railOrder = [...CATS.keys()].filter((i) => i !== cur).concat(cur);
 
   return (
     <div className="fw-wrap">
@@ -106,6 +112,7 @@ function Gallery() {
       <div className="fw-lead" key={cur}>
         <div className="fw-kick fw-anim"><span className="bar" />Wall Art</div>
         <h1 className="fw-title fw-anim d2">{c.label}</h1>
+        <div className="fw-piece fw-anim d2">On display — <b>{(pieces[pieceIdx] || pieces[0]).name}</b></div>
         <div className="fw-cta fw-anim d3">
           <div className="fw-dot">&#8599;</div>
           <div className="fw-pill">View the {c.label.toLowerCase()} collection</div>
@@ -113,13 +120,16 @@ function Gallery() {
       </div>
 
       <div className="fw-rail">
-        {CATS.map((cat, i) => (
-          <div key={cat.id} className={`fw-card ${i === cur ? "on" : ""} ${i === flash ? "flash" : ""}`}
-            onClick={() => { if (i !== cur) { setFlash(i); go(i); } }}>
-            <img src={cat.img} alt={cat.label} />
-            <div className="fw-cap"><b>{cat.label}</b></div>
-          </div>
-        ))}
+        {railOrder.map((i) => {
+          const cat = CATS[i];
+          return (
+            <div key={cat.id} className={`fw-card ${i === cur ? "on" : ""} ${i === flash ? "flash" : ""}`}
+              onClick={() => { if (i !== cur) { setFlash(i); go(i); } }}>
+              <img src={cat.img} alt={cat.label} />
+              <div className="fw-cap"><b>{cat.label}</b></div>
+            </div>
+          );
+        })}
       </div>
 
       {pieces.length > 1 && (
