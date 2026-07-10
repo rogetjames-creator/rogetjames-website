@@ -3,16 +3,13 @@ import { Maximize2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
-// Private, password-gated "Feature Wall" preview of the wall-art gallery in the
-// Globe Express style: a full-bleed featured piece with a rail of category
-// cards that expand into the hero, and a smaller rail underneath of that
-// category's own pieces. Reachable only at /feature-wall behind the same
+// Private, password-gated preview of an ALTERNATIVE gallery design, being
+// built as a possible replacement for the current site's gallery template.
+// Kept entirely self-contained — nothing in here links out to or interacts
+// with the live site. Reachable only at /feature-wall behind the same
 // admin password as /stats and /media. NOT linked anywhere public.
 
 const CATS = WALL_ART_COVERS;
-// Matches the slug format the live site's ?piece= deep link expects
-// (Gallery.jsx opens that piece's own series in the real catalogue).
-const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
@@ -46,24 +43,20 @@ const CSS = `
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.55)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
-.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:.35s;color:inherit;text-decoration:none;display:inline-block}
-.fw-pill:hover{background:#F2F0E9;color:#1A1A1A;border-color:#F2F0E9}
+.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
-.fw-rail{position:absolute;right:44px;bottom:160px;z-index:5;display:flex;gap:16px;align-items:flex-end;width:min(760px,60vw);overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
-.fw-rail::-webkit-scrollbar{display:none}
-.fw-card{position:relative;width:176px;height:238px;border-radius:20px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 24px 50px rgba(0,0,0,.5);transform:translateY(0) scale(.9);opacity:.82;transition:transform .7s cubic-bezier(.7,0,.2,1),opacity .5s,box-shadow .5s}
+.fw-rail{position:absolute;right:44px;bottom:200px;z-index:5;display:flex;align-items:flex-end;padding:4px}
+.fw-card{position:relative;width:220px;height:300px;border-radius:22px;overflow:hidden;box-shadow:0 24px 50px rgba(0,0,0,.5);opacity:1;outline:1px solid rgba(242,240,233,.25);outline-offset:-1px;transition:box-shadow .5s}
 .fw-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.7,0,.2,1)}
-.fw-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 14px 16px;background:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0))}
-.fw-cap b{font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;line-height:1.15}
-.fw-card.on{opacity:1;outline:1px solid rgba(242,240,233,.25);outline-offset:-1px}
-.fw-card:hover img{transform:scale(1.08)}
+.fw-cap{position:absolute;left:0;right:0;bottom:0;padding:16px 16px 18px;background:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0))}
+.fw-cap b{font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;line-height:1.15}
 .fw-card.flash img{animation:fwFlash 1.1s cubic-bezier(.7,0,.2,1)}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
-.fw-subrail{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;gap:8px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
+.fw-subrail{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;gap:10px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
-.fw-subcard{position:relative;width:70px;height:90px;border-radius:9px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
+.fw-subcard{position:relative;width:96px;height:124px;border-radius:11px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
 .fw-subcard img{width:100%;height:100%;object-fit:cover}
 .fw-subcard.on{opacity:1;transform:scale(1.06);box-shadow:0 16px 32px rgba(0,0,0,.55);outline-color:#c08c46}
 .fw-subcard:hover{opacity:.9}
@@ -80,7 +73,7 @@ function Gallery() {
   const [cur, setCur] = useState(0);
   const [pieceIdx, setPieceIdx] = useState(0);
   const busy = useRef(false);
-  const [flash, setFlash] = useState(-1);
+  const [flash, setFlash] = useState(false);
   const [pieceFlash, setPieceFlash] = useState(-1);
   const [expanded, setExpanded] = useState(false);
   const [detailItem, setDetailItem] = useState(null);
@@ -88,10 +81,6 @@ function Gallery() {
   // here or on the public gallery carries over either way.
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
   const handleSetPostcode = useCallback((info) => { savePostcode(info); setPostcodeInfo(info); }, []);
-  // Categories stay in one fixed (catalogue) order — the rail scrolls to
-  // bring the active one into view instead of reshuffling the row, so
-  // clicking Next repeatedly moves rightward and actually reaches the end.
-  const cardRefs = useRef([]);
 
   const go = useCallback((i) => {
     if (busy.current) return;
@@ -102,7 +91,8 @@ function Gallery() {
     setPieceIdx(0);
     setExpanded(false);
     setDetailItem(null);
-    setTimeout(() => { busy.current = false; setFlash(-1); }, 1100);
+    setFlash(true);
+    setTimeout(() => { busy.current = false; setFlash(false); }, 1100);
   }, [cur]);
 
   const goPiece = useCallback((i) => {
@@ -117,10 +107,6 @@ function Gallery() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [cur, go]);
-
-  useEffect(() => {
-    cardRefs.current[cur]?.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
-  }, [cur]);
 
   const c = CATS[cur];
   const pieces = c.pieces;
@@ -151,27 +137,17 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{c.label}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <a
-            className="fw-pill"
-            href={`/?piece=${slug(activePiece.priceKey || activePiece.name)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <div className="fw-pill">
             View the {c.label.toLowerCase()} collection
-          </a>
+          </div>
         </div>
       </div>
 
       <div className="fw-rail">
-        {CATS.map((cat, i) => {
-          return (
-            <div key={cat.id} ref={(el) => (cardRefs.current[i] = el)} className={`fw-card ${i === cur ? "on" : ""} ${i === flash ? "flash" : ""}`}
-              onClick={() => { if (i !== cur) { setFlash(i); go(i); } }}>
-              <img src={cat.img} alt={cat.label} />
-              <div className="fw-cap"><b>{cat.label}</b></div>
-            </div>
-          );
-        })}
+        <div className={`fw-card ${flash ? "flash" : ""}`}>
+          <img src={c.img} alt={c.label} />
+          <div className="fw-cap"><b>{c.label}</b></div>
+        </div>
       </div>
 
       {pieces.length > 1 && (
