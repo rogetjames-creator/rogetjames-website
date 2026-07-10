@@ -110,13 +110,20 @@ export default function Hero() {
 
     resetDrift();
 
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) runDrift(); else resetDrift(); },
-      { threshold: 0.3 }
-    );
-    observer.observe(section);
-
     const ctx = gsap.context(() => {
+      // Logo tracks the same "top top" → "bottom top" span as the hero content
+      // fade below, so it is fully gone by the moment the hero section ends —
+      // not lingering (it's position: fixed) partway down the next section.
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "bottom top",
+        onEnter: runDrift,
+        onEnterBack: runDrift,
+        onLeave: resetDrift,
+        onLeaveBack: resetDrift,
+      });
+
       ScrollTrigger.matchMedia({
         "(min-width: 768px)": () => {
           gsap.to(".hero-content", {
@@ -127,7 +134,7 @@ export default function Hero() {
       });
     }, sectionRef);
 
-    return () => { observer.disconnect(); ctx.revert(); };
+    return () => ctx.revert();
   }, []);
 
   return (
