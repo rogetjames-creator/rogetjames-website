@@ -6,15 +6,13 @@ import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-rea
 import CatPageViewer from "./CatPageViewer";
 import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
 import { SculptureGalleryModal, ScreensGalleryModal } from "./BespokeCommissions";
+import { loadPostcode, savePostcode } from "../utils/postcode";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // ── Regional Pricing Gate ─────────────────────────────────────────────────
-const PC_KEY = "roj_postcode";
 const ADMIN_CODE = "1966";
 const TEMP_SHOW_ALL_PRICES = false;
-const loadPostcode = () => { try { const s = localStorage.getItem(PC_KEY); return s ? JSON.parse(s) : null; } catch { return null; } };
-const savePostcode = (info) => localStorage.setItem(PC_KEY, JSON.stringify(info));
 const checkWA = (pc) => { const n = parseInt(pc, 10); return n >= 6000 && n <= 6999; };
 const trackEvent = (payload) => {
   fetch("/api/track-event", {
@@ -1234,7 +1232,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
   );
 }
 
-function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPostcode }) {
+export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPostcode }) {
   const overlayRef = useRef(null);
   const cardRef = useRef(null);
   const imgRef = useRef(null);

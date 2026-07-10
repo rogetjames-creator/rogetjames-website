@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Maximize2, X } from "lucide-react";
-import { WALL_ART_COVERS } from "./Gallery";
+import { Maximize2, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { WALL_ART_COVERS, DetailCard } from "./Gallery";
+import { loadPostcode, savePostcode } from "../utils/postcode";
 
 // Private, password-gated "Feature Wall" preview of the wall-art gallery in the
 // Globe Express style: a full-bleed featured piece with a rail of category
@@ -25,9 +26,16 @@ const CSS = `
 .fw-expand{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
 .fw-expand:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
-.fw-expand-img{max-width:95vw;max-height:95vh;object-fit:contain}
+.fw-expand-imgwrap{position:relative;display:inline-flex;cursor:default}
+.fw-expand-img{max-width:95vw;max-height:95vh;object-fit:contain;display:block}
+.fw-expand-details{position:absolute;bottom:16px;right:16px;padding:9px 18px;border-radius:20px;background:rgba(0,0,0,.6);border:1px solid rgba(242,240,233,.25);color:rgba(242,240,233,.9);font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit}
+.fw-expand-details:hover{background:#9E7134;border-color:#9E7134;color:#F2F0E9}
 .fw-expand-close{position:absolute;top:16px;right:16px;padding:10px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s}
 .fw-expand-close:hover{background:rgba(255,255,255,.2)}
+.fw-expand-nav{position:absolute;top:50%;transform:translateY(-50%);padding:12px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s;z-index:1}
+.fw-expand-nav:hover{background:rgba(255,255,255,.2)}
+.fw-expand-nav.prev{left:16px}
+.fw-expand-nav.next{right:16px}
 .fw-lead{position:absolute;left:52px;bottom:340px;z-index:5;max-width:46vw}
 .fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px}
 .fw-kick .bar{width:34px;height:1px;background:#c08c46}
@@ -41,7 +49,7 @@ const CSS = `
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
-.fw-rail{position:absolute;right:44px;bottom:160px;z-index:5;display:flex;gap:16px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
+.fw-rail{position:absolute;right:44px;bottom:160px;z-index:5;display:flex;gap:16px;align-items:flex-end;width:min(760px,60vw);overflow-x:auto;scrollbar-width:none;padding:30px 4px 4px}
 .fw-rail::-webkit-scrollbar{display:none}
 .fw-card{position:relative;width:176px;height:238px;border-radius:20px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 24px 50px rgba(0,0,0,.5);transform:translateY(0) scale(.9);opacity:.82;transition:transform .7s cubic-bezier(.7,0,.2,1),opacity .5s,box-shadow .5s}
 .fw-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.7,0,.2,1)}
@@ -73,9 +81,14 @@ function Gallery() {
   const [flash, setFlash] = useState(-1);
   const [pieceFlash, setPieceFlash] = useState(-1);
   const [expanded, setExpanded] = useState(false);
-  // Persisted rail order — whichever category is opened moves to the back
-  // of this list and STAYS there (rather than the row resetting to catalogue
-  // order every time), so a second click doesn't undo the first.
+  const [detailItem, setDetailItem] = useState(null);
+  // Shared with the live site — same localStorage key, so a postcode entered
+  // here or on the public gallery carries over either way.
+  const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
+  const handleSetPostcode = useCallback((info) => { savePostcode(info); setPostcodeInfo(info); }, []);
+  // Persisted rail order — whichever category is opened moves to (and stays
+  // at) the FRONT of this list, so it's always visible in the 4-wide window
+  // instead of needing a scroll to find it again.
   const [railOrder, setRailOrder] = useState(() => CATS.map((_, i) => i));
 
   const go = useCallback((i) => {
@@ -86,7 +99,8 @@ function Gallery() {
     setCur(n);
     setPieceIdx(0);
     setExpanded(false);
-    setRailOrder((prev) => [...prev.filter((x) => x !== n), n]);
+    setDetailItem(null);
+    setRailOrder((prev) => [n, ...prev.filter((x) => x !== n)]);
     setTimeout(() => { busy.current = false; setFlash(-1); }, 1100);
   }, [cur]);
 
@@ -105,6 +119,7 @@ function Gallery() {
 
   const c = CATS[cur];
   const pieces = c.pieces;
+  const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
 
   return (
@@ -168,7 +183,33 @@ function Gallery() {
 
       {expanded && (
         <div className="fw-expand-overlay" onClick={() => setExpanded(false)}>
-          <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+          {pieces.length > 1 && (
+            <button
+              className="fw-expand-nav prev"
+              onClick={(e) => { e.stopPropagation(); expandNav(-1); }}
+              aria-label="Previous image"
+            >
+              <ChevronLeft size={22} />
+            </button>
+          )}
+          <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
+            <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+            <button
+              className="fw-expand-details"
+              onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
+            >
+              Details
+            </button>
+          </div>
+          {pieces.length > 1 && (
+            <button
+              className="fw-expand-nav next"
+              onClick={(e) => { e.stopPropagation(); expandNav(1); }}
+              aria-label="Next image"
+            >
+              <ChevronRight size={22} />
+            </button>
+          )}
           <button
             className="fw-expand-close"
             onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
@@ -177,6 +218,16 @@ function Gallery() {
             <X size={20} />
           </button>
         </div>
+      )}
+
+      {detailItem && (
+        <DetailCard
+          item={detailItem}
+          seriesLabel={c.label}
+          onClose={() => setDetailItem(null)}
+          postcodeInfo={postcodeInfo}
+          onSetPostcode={handleSetPostcode}
+        />
       )}
     </div>
   );
