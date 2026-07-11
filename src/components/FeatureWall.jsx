@@ -115,7 +115,9 @@ function Gallery() {
   }, []);
 
   useEffect(() => {
-    CATS.forEach((cat) => cat.pieces.forEach((p) => { const im = new Image(); im.src = p.img; }));
+    CATS.forEach((cat) => cat.pieces.forEach((p) => {
+      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
+    }));
     const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -183,7 +185,12 @@ function Gallery() {
   }, [cur]);
 
   const c = CATS[cur];
-  const pieces = c.pieces;
+  // A design can have several photos of the same piece (Gallery.jsx "slides") —
+  // show every one as its own thumb, sharing the piece's name, instead of
+  // collapsing each design down to a single cover shot.
+  const pieces = c.pieces.flatMap((p) =>
+    p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
+  );
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
   // Title always breaks after the first word (e.g. "AUSTRALIAN" / "NATIVES")
@@ -196,7 +203,7 @@ function Gallery() {
     <div className="fw-wrap">
       <style>{CSS}</style>
       {pieces.map((p, i) => (
-        <div key={`${c.id}-${p.name}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
+        <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
       ))}
       <div className="fw-scrim" />
 
