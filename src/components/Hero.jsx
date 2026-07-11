@@ -110,24 +110,18 @@ export default function Hero() {
 
     resetDrift();
 
-    const ctx = gsap.context(() => {
-      // Logo tracks the same "top top" → "bottom top" span as the hero content
-      // fade below, so it is fully gone by the moment the hero section ends —
-      // not lingering (it's position: fixed) partway down the next section.
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: "bottom top",
-        onEnterBack: runDrift,
-        onLeave: resetDrift,
-        onLeaveBack: resetDrift,
-      });
-      // Hero is the first section — already on screen at page load with zero
-      // scrolling, so a ScrollTrigger onEnter never fires on its own. Play the
-      // intro directly on mount (the trigger above only handles reset when you
-      // scroll away and replay when you scroll back up).
-      runDrift();
+    // Fire the intro as soon as the hero is on screen (it already is at page
+    // load, so this runs immediately) and reset it when scrolled away. An
+    // IntersectionObserver invokes its callback right away for an already-
+    // visible target — that is what makes the drift-in play on a normal first
+    // load, which a ScrollTrigger onEnter does not do.
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) runDrift(); else resetDrift(); },
+      { threshold: 0.3 }
+    );
+    observer.observe(section);
 
+    const ctx = gsap.context(() => {
       ScrollTrigger.matchMedia({
         "(min-width: 768px)": () => {
           gsap.to(".hero-content", {
@@ -138,7 +132,7 @@ export default function Hero() {
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => { observer.disconnect(); ctx.revert(); };
   }, []);
 
   return (
