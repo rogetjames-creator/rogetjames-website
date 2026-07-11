@@ -33,7 +33,7 @@ const CSS = `
 .fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
 .fw-expand-imgwrap{position:relative;display:inline-flex;cursor:default}
 .fw-expand-img{max-width:95vw;max-height:95vh;object-fit:contain;display:block}
-.fw-expand-details{position:absolute;bottom:16px;right:16px;padding:9px 18px;border-radius:20px;background:rgba(0,0,0,.6);border:1px solid rgba(242,240,233,.25);color:rgba(242,240,233,.9);font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit}
+.fw-expand-details{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:20px;background:rgba(0,0,0,.6);border:1px solid rgba(242,240,233,.25);color:rgba(242,240,233,.9);font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-expand-details:hover{background:#9E7134;border-color:#9E7134;color:#F2F0E9}
 .fw-expand-close{position:absolute;top:16px;right:16px;padding:10px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s}
 .fw-expand-close:hover{background:rgba(255,255,255,.2)}
