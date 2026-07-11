@@ -15,9 +15,15 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
   const [error, setError] = useState(null);
 
   const MAX_FILES = 6;
+  const MAX_FILE_MB = 15;
 
   const handleFileChange = (e) => {
-    const incoming = Array.from(e.target.files).map((f) => ({ file: f, url: URL.createObjectURL(f) }));
+    const files = Array.from(e.target.files);
+    const tooBig = files.filter((f) => f.size > MAX_FILE_MB * 1024 * 1024);
+    const incoming = files
+      .filter((f) => f.size <= MAX_FILE_MB * 1024 * 1024)
+      .map((f) => ({ file: f, url: URL.createObjectURL(f) }));
+    setError(tooBig.length ? `${tooBig.length > 1 ? "Some images are" : "One image is"} over ${MAX_FILE_MB}MB and ${tooBig.length > 1 ? "were" : "was"} skipped.` : null);
     setUploadedFiles((prev) => [...prev, ...incoming].slice(0, MAX_FILES));
     e.target.value = "";
   };
@@ -358,7 +364,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                       <span className="font-detail text-xs uppercase tracking-wider">
                         {uploadedFiles.length === 0 ? "Upload photos" : "Add another"}
                       </span>
-                      <span className="text-sm text-cream/70">Up to {MAX_FILES} images — your space, a sketch, or inspiration</span>
+                      <span className="text-sm text-cream/70">Up to {MAX_FILES} images, max {MAX_FILE_MB}MB each — your space, a sketch, or inspiration</span>
                       <input
                         type="file"
                         accept="image/*"
