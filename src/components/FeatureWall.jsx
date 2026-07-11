@@ -5,9 +5,9 @@ import { loadPostcode, savePostcode } from "../utils/postcode";
 
 // Private, password-gated preview of an ALTERNATIVE gallery design, being
 // built as a possible replacement for the current site's gallery template.
-// Kept entirely self-contained — nothing in here links out to or interacts
-// with the live site. Reachable only at /feature-wall behind the same
-// admin password as /stats and /media. NOT linked anywhere public.
+// Reachable only at /feature-wall behind the same admin password as /stats
+// and /media. NOT linked anywhere public. Reads the same live Up Close /
+// media data as Gallery.jsx (see below) so uploads show up here too.
 
 // Kept in sync by hand with the same curated shots in Gallery.jsx
 // (SEED_UPCLOSE / UP_CLOSE_IMAGES) — small, rarely-changed lists, duplicated
@@ -105,48 +105,77 @@ function Gallery() {
   const subrailRef = useRef(null);
   const hoverDirRef = useRef(0);
 
-  // Close-up shots, read from the same static manifest the live gallery
-  // uses — a committed JSON file, no live function call needed.
+  // Same three Up Close / media sources Gallery.jsx reads: the dedicated
+  // Up Close uploader (Blobs), the older media-library uploader (Blobs),
+  // and the git-committed manifest (fast static file). A category's close-up
+  // tile is anything tagged with that category's own id — matching
+  // Gallery.jsx's upCloseForSeries exactly, not a separate "up-close" tag.
+  const [uploadedUpClose, setUploadedUpClose] = useState([]);
   const [mediaImages, setMediaImages] = useState([]);
   useEffect(() => {
     let alive = true;
-    fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : []))
-      .then((manifest) => {
-        if (!alive || !Array.isArray(manifest)) return;
-        setMediaImages(manifest.map((e) => ({ src: `/${e.path}`, destinations: e.destinations || [] })));
+    fetch("/api/up-close-list")
+      .then((r) => r.json())
+      .then((d) => {
+        if (alive && Array.isArray(d.images)) {
+          setUploadedUpClose(d.images.map((i) => ({ src: i.src, name: i.name, destinations: i.destinations || [], createdTime: i.createdTime || "" })));
+        }
       })
       .catch(() => {});
+    Promise.all([
+      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
+    ]).then(([manifest, legacy]) => {
+      if (!alive) return;
+      const fromManifest = Array.isArray(manifest)
+        ? manifest.map((e) => ({ src: `/${e.path}`, destinations: e.destinations || [], createdTime: e.createdTime || "" }))
+        : [];
+      const fromLegacy = Array.isArray(legacy.images)
+        ? legacy.images.map((i) => ({ src: i.src, destinations: i.destinations || [], createdTime: i.createdTime || "" }))
+        : [];
+      setMediaImages([...fromManifest, ...fromLegacy]);
+    });
     return () => { alive = false; };
   }, []);
+
+  const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
+  const upCloseForSeries = useCallback((id) => {
+    const seed = SEED_UPCLOSE[id] || [];
+    const uploads = [
+      ...mediaImages.filter((m) => m.destinations.includes(id)).map((m) => ({ src: m.src, createdTime: m.createdTime || "" })),
+      ...uploadedUpClose.filter((u) => (u.destinations || []).includes(id)).map((u) => ({ src: u.src, createdTime: u.createdTime || "" })),
+    ].sort(byUploadTime);
+    const out = [...seed];
+    for (const u of uploads) if (!out.includes(u.src)) out.push(u.src);
+    return out;
+  }, [mediaImages, uploadedUpClose]);
 
   // Every collection gets its seeded + uploaded close-up shots appended as
   // its own "— Up Close" piece, and every close-up also collects into its
   // own "Up Close" category — mirroring the live gallery's Up Close pill.
   const CATS = useMemo(() => {
     const withUpClose = WALL_ART_COVERS.map((cat) => {
-      const seed = SEED_UPCLOSE[cat.id] || [];
-      const uploaded = mediaImages
-        .filter((m) => m.destinations.includes("up-close") && m.destinations.includes(cat.id))
-        .map((m) => m.src);
-      const imgs = [...seed, ...uploaded];
+      const imgs = upCloseForSeries(cat.id);
       if (!imgs.length) return cat;
       const upClosePiece = { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true };
       return { ...cat, pieces: [...cat.pieces, upClosePiece] };
     });
 
     const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
-    const allUpClose = [
-      ...UP_CLOSE_IMAGES.map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true })),
-      ...mediaImages
-        .filter((m) => m.destinations.includes("up-close") && !seedSrcs.has(m.src))
-        .map((m) => ({ name: "Up Close", img: m.src, _upclose: true })),
-    ];
+    const mediaUpClose = mediaImages.filter((m) => m.destinations.length > 0);
+    const uploads = [
+      ...uploadedUpClose.map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
+      ...mediaUpClose.map((m) => ({ src: m.src, name: "", createdTime: m.createdTime || "" })),
+    ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime);
+    const seen = new Set();
+    const ordered = uploads.filter((u) => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
+    const allUpClose = [...UP_CLOSE_IMAGES, ...ordered].map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true }));
+
     if (allUpClose.length) {
       withUpClose.push({ id: "up-close", label: "UP CLOSE", img: allUpClose[0].img, pieces: allUpClose });
     }
     return withUpClose;
-  }, [mediaImages]);
+  }, [mediaImages, uploadedUpClose, upCloseForSeries]);
 
   const go = useCallback((i) => {
     if (busy.current) return;
