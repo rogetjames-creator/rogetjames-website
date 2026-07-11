@@ -263,7 +263,7 @@ function Gallery() {
 
       <header className="fw-top">
         <div className="fw-logo">ROGET<i>james</i></div>
-        <a className="fw-catalogue-link" href="/?catalogue=wallart" target="_blank" rel="noopener noreferrer">
+        <a className="fw-catalogue-link" href="/?view=wallart" target="_blank" rel="noopener noreferrer">
           Wall Art Catalogue
         </a>
         <div className="fw-top-right">
