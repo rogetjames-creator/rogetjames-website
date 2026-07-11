@@ -504,6 +504,7 @@ function ScreensFeatureSlideshow() {
   const [animating, setAnimating] = useState(false);
   const [storyOpen, setStoryOpen] = useState(false);
   const timerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
 
   const _goTo = (idx) => {
     if (animating || idx === cur) return;
@@ -522,10 +523,16 @@ function ScreensFeatureSlideshow() {
     return () => clearInterval(timerRef.current);
   }, []);
 
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   const slide = SCREENS_SLIDESHOW_SLIDES[cur];
 
   return (
-    <div style={{ gridColumn: "1 / -1", margin: "8px 0 24px 0", position: "relative", height: "480px", borderRadius: "12px", overflow: "hidden", background: "#111" }}>
+    <div style={{ gridColumn: "1 / -1", margin: "8px 0 24px 0", position: "relative", height: isMobile ? "420px" : "480px", borderRadius: "12px", overflow: "hidden", background: "#111" }}>
       {/* Slide image */}
       {SCREENS_SLIDESHOW_SLIDES.map((s, i) => (
         <img
