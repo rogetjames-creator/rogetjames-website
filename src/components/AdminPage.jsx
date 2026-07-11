@@ -82,6 +82,7 @@ export default function AdminPage() {
     { href: "/vault?admin=1", title: "Client Vault", desc: "Send a private locked page to a client." },
     { href: "/feature-wall", title: "Feature Wall preview", desc: "Private preview of the new wall-art gallery style." },
     { href: "/feature-sculpture", title: "Feature Sculpture preview", desc: "Same gallery style, for Sculpture." },
+    { href: "/feature-screens", title: "Feature Screens preview", desc: "Same gallery style, for Screens — no design Info/Prices panel." },
     { href: "/melbourne", title: "Melbourne page preview", desc: "Private preview of the Melbourne city page — placeholder content, not yet public." },
   ];
 

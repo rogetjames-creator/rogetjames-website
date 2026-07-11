@@ -1936,6 +1936,33 @@ const SCREEN_DESIGNS_SECTIONED = (() => {
   });
 })();
 
+// Self-maintaining section covers for the private Feature Screens page
+// (same model as Gallery.jsx's WALL_ART_COVERS/SCULPTURE_COVERS). Each design
+// becomes one piece — its several photos (SCREEN_DESIGNS items) collected as
+// slides under the design's own name, rather than shown as separate pieces.
+const SCREEN_SECTION_LABELS = {
+  icons: "The Icons",
+  architectural: "The Architectural",
+  organics: "The Organics",
+  classics: "The Classics",
+  indies: "The Indies",
+  mirrors: "The Mirrors",
+};
+export const SCREEN_COVERS = Object.entries(SCREEN_SECTION_LABELS)
+  .map(([id, label]) => {
+    const designs = SCREEN_DESIGNS_SECTIONED.filter((d) => d._section === id);
+    const pieces = designs
+      .map((d) => {
+        const imgs = d.items.map((it) => it.img).filter(Boolean);
+        if (!imgs.length) return null;
+        return imgs.length > 1 ? { name: d.name, img: imgs[0], slides: imgs } : { name: d.name, img: imgs[0] };
+      })
+      .filter(Boolean);
+    if (!pieces.length) return null;
+    return { id, label, img: pieces[0].img, pieces };
+  })
+  .filter(Boolean);
+
 const SCREEN_TABS = [
   { id: "all",           label: "ALL" },
   { id: "icons",         label: "ICONS" },
