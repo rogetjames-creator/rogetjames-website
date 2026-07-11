@@ -519,8 +519,8 @@ export const WALL_ART_COVERS = WALL_ART_SERIES
 // CardDeckOverlay). Group those into cover cards instead.
 const SCULPTURE_SUBCATS = [
   { id: "classics", label: "The Classics" },
-  { id: "bonbons",  label: "Bon Bons & Genie Bottles" },
   { id: "leafs",    label: "Leaf Sculptures" },
+  { id: "bonbons",  label: "Bon Bons & Genie Bottles" },
 ];
 export const SCULPTURE_COVERS = SCULPTURE_SUBCATS
   .map(({ id, label }) => {
