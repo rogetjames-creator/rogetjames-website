@@ -513,6 +513,24 @@ export const WALL_ART_COVERS = WALL_ART_SERIES
   })
   .filter(Boolean);
 
+// Same idea as WALL_ART_COVERS, but for the Sculpture page: the single
+// "sculpture" series has no sub-series of its own, just a flat item list
+// tagged by `cat` (classics/bonbons/leafs — same ids as SCULPTURE_CATS in
+// CardDeckOverlay). Group those into cover cards instead.
+const SCULPTURE_SUBCATS = [
+  { id: "classics", label: "The Classics" },
+  { id: "bonbons",  label: "Bon Bons & Genie Bottles" },
+  { id: "leafs",    label: "Leaf Sculptures" },
+];
+export const SCULPTURE_COVERS = SCULPTURE_SUBCATS
+  .map(({ id, label }) => {
+    const allItems = OTHER_CATEGORIES.find((s) => s.id === "sculpture")?.items || [];
+    const pieces = allItems.filter((it) => it.cat === id && it.img && !it.img.includes("placeholder"));
+    if (!pieces.length) return null;
+    return { id, label, img: pieces[0].img, pieces };
+  })
+  .filter(Boolean);
+
 // Self-maintaining media destinations: every catalogue category is
 // automatically an upload target (used by /media). Add a category to the
 // catalogue and it appears in the uploader with no other change. Each category

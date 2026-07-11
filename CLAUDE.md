@@ -64,7 +64,7 @@ Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite
 
 **Stack:** React 19, Vite 7 (multi-page), Tailwind CSS v4, GSAP 3 + ScrollTrigger, Lenis smooth scroll, Lottie React, Lucide React icons. `react-pageflip` (catalogue flipbook), `react-pdf` (PDF viewing), `@netlify/blobs` (server-side storage in functions).
 
-**Multi-page build** — `vite.config.js` defines five HTML entry points, each its own React root:
+**Multi-page build** — `vite.config.js` defines eight HTML entry points, each its own React root:
 
 | URL (via `netlify.toml` rewrite) | HTML | Entry | Root component | Purpose |
 |---|---|---|---|---|
@@ -73,8 +73,13 @@ Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite
 | `/stats` | `stats.html` | `src/stats.jsx` | `StatsPage.jsx` | Analytics dashboard (admin) |
 | `/media` | `media.html` | `src/media.jsx` | `MediaPage.jsx` | Photo upload tool (admin) |
 | `/admin` | `admin.html` | `src/admin.jsx` | `AdminPage.jsx` | Hub linking to the admin pages |
+| `/melbourne` | `melbourne.html` | `src/melbourne.jsx` | `MelbournePreview.jsx` | Private preview, Melbourne city SEO page |
+| `/feature-wall` | `feature-wall.html` | `src/feature-wall.jsx` | `FeatureWall.jsx` | Private preview — alternative Wall Art gallery (see below) |
+| `/feature-sculpture` | `feature-sculpture.html` | `src/feature-sculpture.jsx` | `SculptureWall.jsx` | Same model as Feature Wall, retargeted at Sculpture |
 
-`vite.config.js` also runs a `critical-css` plugin (Critters) at build end that inlines above-the-fold CSS into each of the five HTML files.
+`vite.config.js` also runs a `critical-css` plugin (Critters) at build end that inlines above-the-fold CSS into each of the eight HTML files.
+
+**Feature Wall / Feature Sculpture (private previews)** — `/feature-wall` and `/feature-sculpture` are password-gated (same admin password as `/stats`/`/media`) previews of an alternative gallery template, linked only from `/admin`. James plans to eventually say "go" to promote Feature Wall to the official live Wall Art gallery — treat every request on these pages as pre-launch QA, not just cosmetic tweaks. Both read the same live Up Close/media data as `Gallery.jsx` (`/api/up-close-list`, `/api/media-list`, `media-manifest.json`) and reuse `Gallery.jsx`'s `DetailCard` directly, so pricing/postcode-gating and Up Close images always match the live site by construction. `WALL_ART_COVERS` and `SCULPTURE_COVERS` (both exported from `Gallery.jsx`) are the self-maintaining per-category data sources for each page — add a wall-art series or a sculpture `cat` tag and it appears automatically, no other change needed.
 
 **Page order (main site)** — `App.jsx` composes: Navbar → Hero → StudioBio → Gallery → About → CommissionsSection → Process → Services → Contact → DiscoverPortals → Footer → ScrollArrows → ChatWidget. Gallery, CommissionsSection, and DiscoverPortals are lazy-loaded (`lazy` + `Suspense`). `CommissionsSection` (the **Bespoke section**) is exported from `BespokePortals.jsx`, which composes portal tiles over `BespokeCommissions.jsx` and `DiscoverPortals.jsx` modals.
 

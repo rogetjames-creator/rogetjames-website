@@ -151,6 +151,11 @@
   status = 200
 
 [[redirects]]
+  from = "/feature-sculpture"
+  to = "/feature-sculpture.html"
+  status = 200
+
+[[redirects]]
   from = "/api/track-event"
   to = "/.netlify/functions/track-event"
   status = 200
