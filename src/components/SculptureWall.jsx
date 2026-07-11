@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
 import { loadPostcode, savePostcode } from "../utils/postcode";
@@ -91,6 +91,8 @@ function Gallery() {
   // here or on the public gallery carries over either way.
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
   const handleSetPostcode = useCallback((info) => { savePostcode(info); setPostcodeInfo(info); }, []);
+  const pillRef = useRef(null);
+  const [pillCenter, setPillCenter] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuWrapRef = useRef(null);
   const subrailRef = useRef(null);
@@ -152,10 +154,14 @@ function Gallery() {
       return { ...cat, pieces: [...cat.pieces, upClosePiece] };
     });
 
+    // Scoped to "sculpture" specifically — mediaImages/uploadedUpClose are
+    // shared stores across the whole site, so an unfiltered "any tag" match
+    // (fine on the wall-art page, where every upload IS wall art) would pull
+    // wall-art close-ups in here too.
     const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
-    const mediaUpClose = mediaImages.filter((m) => m.destinations.length > 0);
+    const mediaUpClose = mediaImages.filter((m) => m.destinations.includes("sculpture"));
     const uploads = [
-      ...uploadedUpClose.map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
+      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("sculpture")).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
       ...mediaUpClose.map((m) => ({ src: m.src, name: "", createdTime: m.createdTime || "" })),
     ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime);
     const seen = new Set();
@@ -245,6 +251,17 @@ function Gallery() {
     };
   }, [cur]);
 
+  // Measured once, on first mount, and never again — the arrows/label/
+  // progress line lock to that position permanently instead of re-centring
+  // under the pill (and shifting) every time the category changes.
+  useLayoutEffect(() => {
+    const el = pillRef.current;
+    if (!el || pillCenter != null) return;
+    const r = el.getBoundingClientRect();
+    setPillCenter(r.left + r.width / 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const c = CATS[cur];
   // A design can have several photos of the same piece (Gallery.jsx "slides") —
   // show every one as its own thumb, sharing the piece's name, instead of
@@ -299,7 +316,7 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <button className="fw-pill" onClick={() => setExpanded(true)}>
+          <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
             View the {c.label.toLowerCase()} collection
           </button>
         </div>
@@ -324,7 +341,7 @@ function Gallery() {
         )}
       </div>
 
-      <div className="fw-ctrls">
+      <div className="fw-ctrls" style={pillCenter != null ? { left: `${pillCenter}px` } : undefined}>
         <div className="fw-ctrls-label">Collections</div>
         <div className="fw-arrows">
           <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>
