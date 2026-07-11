@@ -24,7 +24,6 @@ const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
-.fw-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,12,12,.82),rgba(12,12,12,.45) 34%,rgba(12,12,12,.05) 60%,rgba(12,12,12,.25) 100%),linear-gradient(0deg,rgba(12,12,12,.55),rgba(12,12,12,0) 45%)}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
@@ -53,11 +52,11 @@ const CSS = `
 .fw-expand-nav.prev{left:16px}
 .fw-expand-nav.next{right:16px}
 .fw-lead{position:absolute;left:52px;bottom:340px;z-index:5;max-width:46vw}
-.fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px}
-.fw-kick .bar{width:34px;height:1px;background:#c08c46}
-.fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(32px,4.6vw,68px);text-transform:uppercase;text-shadow:0 8px 40px rgba(0,0,0,.35)}
-.fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.55)}
-.fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em}
+.fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
+.fw-kick .bar{width:34px;height:1px;background:#c08c46;box-shadow:0 1px 4px rgba(0,0,0,.7)}
+.fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(32px,4.6vw,68px);text-transform:uppercase;text-shadow:0 4px 24px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.8)}
+.fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
+.fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
 .fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:transparent;color:inherit;font-family:inherit;cursor:pointer;transition:.35s}
 .fw-pill:hover{background:#F2F0E9;color:#1A1A1A;border-color:#F2F0E9}
@@ -259,7 +258,6 @@ function Gallery() {
       {pieces.map((p, i) => (
         <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
       ))}
-      <div className="fw-scrim" />
 
       <header className="fw-top">
         <div className="fw-logo">ROGET<i>james</i></div>
