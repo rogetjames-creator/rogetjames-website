@@ -127,6 +127,7 @@ export function CommissionsSection() {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
+  const [initialScreensCat, setInitialScreensCat] = useState(false);
 
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
@@ -143,6 +144,25 @@ export function CommissionsSection() {
     };
     window.addEventListener("open-bespoke-category", handler);
     return () => window.removeEventListener("open-bespoke-category", handler);
+  }, []);
+
+  // Deep link straight to the Screens Catalogue flipbook — ?bespoke=screenscat.
+  // A distinct param name (not ?view=, which Gallery.jsx's own wall-art/
+  // sculpture deep-link handler reads and unconditionally strips from the
+  // URL — even for values it doesn't recognise — racing this handler out).
+  // Bespoke galleries are owner-preview-only (IS_DEV), so this only actually
+  // opens anything for James (or in dev); the public still sees "Under
+  // Construction" the same as always, deep link or not.
+  useEffect(() => {
+    if (!IS_DEV) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("bespoke") !== "screenscat") return;
+    window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+    const timer = setTimeout(() => {
+      setScreensOpen(true);
+      setInitialScreensCat(true);
+    }, 600);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -174,7 +194,7 @@ export function CommissionsSection() {
       <div className="w-full h-px bg-white/10" />
 
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
-      {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
+      {screensOpen   && <ScreensGalleryModal   onClose={() => { setScreensOpen(false); setInitialScreensCat(false); }} initialShowCat={initialScreensCat} />}
       {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
       {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
       {reelsOpen     && <CommissionsGalleryPopup videos={COMMISSIONS_PORTAL.videos} onClose={() => setReelsOpen(false)} />}

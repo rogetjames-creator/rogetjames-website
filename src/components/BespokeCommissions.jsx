@@ -2084,7 +2084,7 @@ const SCREEN_SEARCH_SUGGESTIONS = [
   { label: "By Design",  items: SCREEN_DESIGNS.map(d => d.name.toLowerCase()) },
 ];
 
-export function ScreensGalleryModal({ onClose }) {
+export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   const [tab, setTab] = useState("all");
   const [activeDesign, setActiveDesign] = useState(null); // null = show all, string = filtered to one design
   const [designPillsOpen, setDesignPillsOpen] = useState(false);
@@ -2092,7 +2092,7 @@ export function ScreensGalleryModal({ onClose }) {
   const [slideIdx, setSlideIdx] = useState(0);
   const [animDir, setAnimDir] = useState(null);
   const [jumpByDesign, setJumpByDesign] = useState(true); // true = arrows hop design-to-design; false = image-by-image
-  const [showCat, setShowCat] = useState(false);
+  const [showCat, setShowCat] = useState(initialShowCat);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
