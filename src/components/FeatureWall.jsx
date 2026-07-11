@@ -13,9 +13,8 @@ const CATS = WALL_ART_COVERS;
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-.fw-bg{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(1.06);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity,transform}
-.fw-bg.on{opacity:1;transform:scale(1);animation:fwDrift 9s linear forwards}
-@keyframes fwDrift{from{transform:scale(1.03)}to{transform:scale(1.07)}}
+.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
+.fw-bg.on{opacity:1}
 .fw-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,12,12,.82),rgba(12,12,12,.45) 34%,rgba(12,12,12,.05) 60%,rgba(12,12,12,.25) 100%),linear-gradient(0deg,rgba(12,12,12,.55),rgba(12,12,12,0) 45%)}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
