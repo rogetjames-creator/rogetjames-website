@@ -5,7 +5,7 @@ import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
 import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
-import { SculptureGalleryModal, ScreensGalleryModal } from "./BespokeCommissions";
+import { ScreensGalleryModal } from "./BespokeCommissions";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -3382,7 +3382,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     </div>
   );
 }
-function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection, setSculpOpen, setScreensOpen }) {
+function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection, setScreensOpen }) {
   const [hovered, setHovered] = useState(false);
   const browseColor = hovered
     ? "rgba(242,240,233,0.95)"
@@ -3408,7 +3408,7 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
   );
 
   const pills = [
-    { id: "sculpture", label: "Sculpture", onOpen: () => setSculpOpen(true) },
+    { id: "sculpture", label: "Sculpture", onOpen: () => { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); } },
     { id: "wall-art",  label: "Wall Art",  onOpen: () => { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); } },
     { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
   ];
@@ -3474,7 +3474,6 @@ export default function Gallery() {
   const [catFlipTab, setCatFlipTab] = useState("wall-art");
   const [cardDeckOpen, setCardDeckOpen] = useState(false);
   const [initialPiece, setInitialPiece] = useState(null);
-  const [sculpOpen, setSculpOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("wall-art");
   const [categoryClicked, setCategoryClicked] = useState(false);
@@ -3600,7 +3599,7 @@ export default function Gallery() {
     const handler = (e) => {
       const cat = e.detail;
       if (cat === "wall-art") { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); }
-      else if (cat === "sculpture") { setSculpOpen(true); }
+      else if (cat === "sculpture") { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); }
       else if (cat === "screens") { setScreensOpen(true); }
     };
     window.addEventListener("open-collection-category", handler);
@@ -3621,7 +3620,7 @@ export default function Gallery() {
           {/* Browse Collection + Wall Art / Sculpture */}
           <div ref={wallArtLabelRef} className="flex flex-col items-center gap-3 mt-6">
             {/* Browse Collection label — lights up on hover of either option */}
-            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} setSculpOpen={setSculpOpen} setScreensOpen={setScreensOpen} />
+            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} setScreensOpen={setScreensOpen} />
           </div>
         </div>
 
@@ -3669,7 +3668,7 @@ export default function Gallery() {
               Negative margin pulls Wall Art up to float in the strip centre. */}
           <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
             <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); }} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 
@@ -3696,7 +3695,7 @@ export default function Gallery() {
           {/* All three portals in one column — equal gap guaranteed. */}
           <div className="flex flex-col items-center gap-10 py-8">
             <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => setSculpOpen(true)} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); }} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 
@@ -3712,7 +3711,6 @@ export default function Gallery() {
           onClose={() => { setCatFlipOpen(false); setCardDeckOpen(false); }}
         />
       )}
-      {sculpOpen   && <SculptureGalleryModal onClose={() => setSculpOpen(false)} />}
       {screensOpen && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
     </>
   );
