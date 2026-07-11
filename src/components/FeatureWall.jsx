@@ -20,6 +20,8 @@ const CSS = `
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
+.fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
 .fw-menu-wrap{position:relative}
 .fw-menu-btn{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
@@ -209,6 +211,9 @@ function Gallery() {
 
       <header className="fw-top">
         <div className="fw-logo">ROGET<i>james</i></div>
+        <a className="fw-catalogue-link" href="/?catalogue=wallart" target="_blank" rel="noopener noreferrer">
+          Wall Art Catalogue
+        </a>
         <div className="fw-top-right">
           <div className="fw-menu-wrap" ref={menuWrapRef}>
             <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen((v) => !v)}>
