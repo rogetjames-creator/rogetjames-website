@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { loadPostcode, savePostcode } from "../utils/postcode";
@@ -9,7 +9,16 @@ import { loadPostcode, savePostcode } from "../utils/postcode";
 // with the live site. Reachable only at /feature-wall behind the same
 // admin password as /stats and /media. NOT linked anywhere public.
 
-const CATS = WALL_ART_COVERS;
+// Kept in sync by hand with the same curated shots in Gallery.jsx
+// (SEED_UPCLOSE / UP_CLOSE_IMAGES) — small, rarely-changed lists, duplicated
+// here rather than exported so this file stays self-contained.
+const SEED_UPCLOSE = {
+  plume: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"],
+};
+const UP_CLOSE_IMAGES = [
+  { src: "/images/details/plume-deco-rust-1.jpg", name: "Plume Deco — Corten detail" },
+  { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
+];
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
@@ -97,6 +106,49 @@ function Gallery() {
   const subrailRef = useRef(null);
   const hoverDirRef = useRef(0);
 
+  // Close-up shots, read from the same static manifest the live gallery
+  // uses — a committed JSON file, no live function call needed.
+  const [mediaImages, setMediaImages] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((manifest) => {
+        if (!alive || !Array.isArray(manifest)) return;
+        setMediaImages(manifest.map((e) => ({ src: `/${e.path}`, destinations: e.destinations || [] })));
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  // Every collection gets its seeded + uploaded close-up shots appended as
+  // its own "— Up Close" piece, and every close-up also collects into its
+  // own "Up Close" category — mirroring the live gallery's Up Close pill.
+  const CATS = useMemo(() => {
+    const withUpClose = WALL_ART_COVERS.map((cat) => {
+      const seed = SEED_UPCLOSE[cat.id] || [];
+      const uploaded = mediaImages
+        .filter((m) => m.destinations.includes("up-close") && m.destinations.includes(cat.id))
+        .map((m) => m.src);
+      const imgs = [...seed, ...uploaded];
+      if (!imgs.length) return cat;
+      const upClosePiece = { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true };
+      return { ...cat, pieces: [...cat.pieces, upClosePiece] };
+    });
+
+    const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
+    const allUpClose = [
+      ...UP_CLOSE_IMAGES.map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true })),
+      ...mediaImages
+        .filter((m) => m.destinations.includes("up-close") && !seedSrcs.has(m.src))
+        .map((m) => ({ name: "Up Close", img: m.src, _upclose: true })),
+    ];
+    if (allUpClose.length) {
+      withUpClose.push({ id: "up-close", label: "UP CLOSE", img: allUpClose[0].img, pieces: allUpClose });
+    }
+    return withUpClose;
+  }, [mediaImages]);
+
   const go = useCallback((i) => {
     if (busy.current) return;
     const n = (i + CATS.length) % CATS.length;
@@ -108,7 +160,7 @@ function Gallery() {
     setDetailItem(null);
     setMenuOpen(false);
     setTimeout(() => { busy.current = false; }, 1100);
-  }, [cur]);
+  }, [cur, CATS]);
 
   const goPiece = useCallback((i) => {
     setPieceIdx(i);
@@ -123,7 +175,7 @@ function Gallery() {
     const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [cur, go]);
+  }, [cur, go, CATS]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -289,12 +341,14 @@ function Gallery() {
           )}
           <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
             <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
-            <button
-              className="fw-expand-details"
-              onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
-            >
-              Info · Prices
-            </button>
+            {!activePiece._upclose && (
+              <button
+                className="fw-expand-details"
+                onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
+              >
+                Info · Prices
+              </button>
+            )}
           </div>
           {pieces.length > 1 && (
             <button
