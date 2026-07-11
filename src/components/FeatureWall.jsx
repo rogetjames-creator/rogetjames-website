@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
-import { Maximize2, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Maximize2, X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
@@ -25,6 +25,15 @@ const CSS = `
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
 .fw-expand{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
 .fw-expand:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-menu-wrap{position:relative}
+.fw-menu-btn{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
+.fw-menu-btn:hover,.fw-menu-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-menu-btn svg{transition:transform .25s}
+.fw-menu-btn.open svg{transform:rotate(180deg)}
+.fw-menu-panel{position:absolute;top:calc(100% + 10px);right:0;z-index:20;width:230px;max-height:360px;overflow-y:auto;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+.fw-menu-item{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:.2s}
+.fw-menu-item:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
+.fw-menu-item.active{color:#c08c46;background:rgba(158,113,52,.12)}
 .fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
 .fw-expand-imgwrap{position:relative;display:inline-flex;cursor:default}
 .fw-expand-img{max-width:95vw;max-height:95vh;object-fit:contain;display:block}
@@ -81,6 +90,10 @@ function Gallery() {
   // measure its actual position rather than assume a fixed offset.
   const pillRef = useRef(null);
   const [pillCenter, setPillCenter] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuWrapRef = useRef(null);
+  const subrailRef = useRef(null);
+  const hoverDirRef = useRef(0);
 
   const go = useCallback((i) => {
     if (busy.current) return;
@@ -91,6 +104,7 @@ function Gallery() {
     setPieceIdx(0);
     setExpanded(false);
     setDetailItem(null);
+    setMenuOpen(false);
     setTimeout(() => { busy.current = false; }, 1100);
   }, [cur]);
 
@@ -106,6 +120,55 @@ function Gallery() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [cur, go]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDocClick = (e) => { if (!menuWrapRef.current?.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [menuOpen]);
+
+  // Piece thumbnails: hovering near either edge auto-scrolls that way, and
+  // the row is rendered twice back-to-back so reaching the end loops
+  // seamlessly back to the start instead of dead-ending.
+  useEffect(() => {
+    const el = subrailRef.current;
+    if (!el) return;
+    const ZONE = 70;
+    const MAX_SPEED = 7;
+
+    const onMove = (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      if (x < ZONE) hoverDirRef.current = -((ZONE - x) / ZONE);
+      else if (x > rect.width - ZONE) hoverDirRef.current = (x - (rect.width - ZONE)) / ZONE;
+      else hoverDirRef.current = 0;
+    };
+    const onLeave = () => { hoverDirRef.current = 0; };
+    el.addEventListener("mousemove", onMove);
+    el.addEventListener("mouseleave", onLeave);
+
+    let raf;
+    const tick = () => {
+      const node = subrailRef.current;
+      if (node) {
+        if (hoverDirRef.current !== 0) node.scrollLeft += hoverDirRef.current * MAX_SPEED;
+        const half = node.scrollWidth / 2;
+        if (half > 0) {
+          if (node.scrollLeft >= half) node.scrollLeft -= half;
+          else if (node.scrollLeft < 0) node.scrollLeft += half;
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      el.removeEventListener("mousemove", onMove);
+      el.removeEventListener("mouseleave", onLeave);
+      cancelAnimationFrame(raf);
+    };
+  }, [cur]);
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -141,6 +204,24 @@ function Gallery() {
         <div className="fw-logo">ROGET<i>james</i></div>
         <div className="fw-top-right">
           <div className="fw-tag">Feature Wall · private preview</div>
+          <div className="fw-menu-wrap" ref={menuWrapRef}>
+            <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen((v) => !v)}>
+              Collection Menu <ChevronDown size={12} />
+            </button>
+            {menuOpen && (
+              <div className="fw-menu-panel">
+                {CATS.map((cat, i) => (
+                  <button
+                    key={cat.id}
+                    className={`fw-menu-item ${i === cur ? "active" : ""}`}
+                    onClick={() => go(i)}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button className="fw-expand" onClick={() => setExpanded(true)} aria-label="Expand image">
             <Maximize2 size={12} /> Expand
           </button>
@@ -159,13 +240,16 @@ function Gallery() {
       </div>
 
       {pieces.length > 1 && (
-        <div className="fw-subrail" key={c.id}>
-          {pieces.map((p, i) => (
-            <div key={p.name} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
-              onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-              <img src={p.img} alt={p.name} />
-            </div>
-          ))}
+        <div className="fw-subrail" ref={subrailRef} key={c.id}>
+          {[...pieces, ...pieces].map((p, j) => {
+            const i = j % pieces.length;
+            return (
+              <div key={`${p.name}-${j}`} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
+                onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
+                <img src={p.img} alt={p.name} />
+              </div>
+            );
+          })}
         </div>
       )}
 
