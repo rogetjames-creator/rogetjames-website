@@ -525,7 +525,7 @@ function ScreensFeatureSlideshow() {
   const slide = SCREENS_SLIDESHOW_SLIDES[cur];
 
   return (
-    <div style={{ gridColumn: "1 / -1", margin: "8px 0 24px 0", position: "relative", height: "420px", borderRadius: "12px", overflow: "hidden", background: "#111" }}>
+    <div style={{ gridColumn: "1 / -1", margin: "8px 0 24px 0", position: "relative", height: "480px", borderRadius: "12px", overflow: "hidden", background: "#111" }}>
       {/* Slide image */}
       {SCREENS_SLIDESHOW_SLIDES.map((s, i) => (
         <img
