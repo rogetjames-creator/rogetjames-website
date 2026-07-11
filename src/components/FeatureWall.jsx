@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
-import { Maximize2, X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
@@ -22,8 +22,6 @@ const CSS = `
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
-.fw-expand{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
-.fw-expand:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-menu-wrap{position:relative}
 .fw-menu-btn{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
 .fw-menu-btn:hover,.fw-menu-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
@@ -57,7 +55,10 @@ const CSS = `
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
-.fw-subrail{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;gap:10px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
+.fw-bottomrow{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;align-items:center;gap:16px}
+.fw-infopill{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;flex:0 0 auto;white-space:nowrap}
+.fw-infopill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-subrail{display:flex;gap:10px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
 .fw-subcard{position:relative;width:96px;height:124px;border-radius:11px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
 .fw-subcard img{width:100%;height:100%;object-fit:cover}
@@ -220,9 +221,6 @@ function Gallery() {
               </div>
             )}
           </div>
-          <button className="fw-expand" onClick={() => setExpanded(true)} aria-label="Expand image">
-            <Maximize2 size={12} /> Expand
-          </button>
         </div>
       </header>
 
@@ -237,19 +235,24 @@ function Gallery() {
         </div>
       </div>
 
-      {pieces.length > 1 && (
-        <div className="fw-subrail" ref={subrailRef} key={c.id}>
-          {[...pieces, ...pieces].map((p, j) => {
-            const i = j % pieces.length;
-            return (
-              <div key={`${p.name}-${j}`} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
-                onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={p.name} />
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <div className="fw-bottomrow">
+        <button className="fw-infopill" onClick={() => setExpanded(true)}>
+          Design Info & Prices
+        </button>
+        {pieces.length > 1 && (
+          <div className="fw-subrail" ref={subrailRef} key={c.id}>
+            {[...pieces, ...pieces].map((p, j) => {
+              const i = j % pieces.length;
+              return (
+                <div key={`${p.name}-${j}`} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
+                  onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
+                  <img src={p.img} alt={p.name} />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       <div className="fw-ctrls" style={pillCenter != null ? { left: `${pillCenter}px` } : undefined}>
         <div className="fw-arrows">
@@ -277,7 +280,7 @@ function Gallery() {
               className="fw-expand-details"
               onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
             >
-              Details
+              Info & Prices
             </button>
           </div>
           {pieces.length > 1 && (
