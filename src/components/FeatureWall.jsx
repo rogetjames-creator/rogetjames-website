@@ -13,7 +13,7 @@ const CATS = WALL_ART_COVERS;
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(1.06);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity,transform}
+.fw-bg{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(1.06);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity,transform}
 .fw-bg.on{opacity:1;transform:scale(1);animation:fwDrift 9s linear forwards}
 @keyframes fwDrift{from{transform:scale(1.03)}to{transform:scale(1.07)}}
 .fw-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,12,12,.82),rgba(12,12,12,.45) 34%,rgba(12,12,12,.05) 60%,rgba(12,12,12,.25) 100%),linear-gradient(0deg,rgba(12,12,12,.55),rgba(12,12,12,0) 45%)}
@@ -66,6 +66,7 @@ const CSS = `
 .fw-subcard:hover{opacity:.9}
 .fw-subcard.flash img{animation:fwFlash .8s cubic-bezier(.7,0,.2,1)}
 .fw-ctrls{position:absolute;left:50%;bottom:44px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateX(-50%);transition:left .3s ease}
+.fw-ctrls-label{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.45)}
 .fw-arrows{display:flex;align-items:center;gap:14px}
 .fw-nav{width:50px;height:50px;border-radius:50%;border:1px solid rgba(242,240,233,.28);background:rgba(20,20,20,.35);backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s;font-size:16px}
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
@@ -262,6 +263,7 @@ function Gallery() {
       </div>
 
       <div className="fw-ctrls" style={pillCenter != null ? { left: `${pillCenter}px` } : undefined}>
+        <div className="fw-ctrls-label">Collections</div>
         <div className="fw-arrows">
           <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>
           <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}>&#8594;</button>
