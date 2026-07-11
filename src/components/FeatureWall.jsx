@@ -237,7 +237,7 @@ function Gallery() {
 
       <div className="fw-bottomrow">
         <button className="fw-infopill" onClick={() => setExpanded(true)}>
-          Design Info & Prices
+          Design · Info · Prices
         </button>
         {pieces.length > 1 && (
           <div className="fw-subrail" ref={subrailRef} key={c.id}>
@@ -280,7 +280,7 @@ function Gallery() {
               className="fw-expand-details"
               onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
             >
-              Info & Prices
+              Info · Prices
             </button>
           </div>
           {pieces.length > 1 && (
