@@ -114,7 +114,7 @@ export default function Hero() {
       // Logo tracks the same "top top" → "bottom top" span as the hero content
       // fade below, so it is fully gone by the moment the hero section ends —
       // not lingering (it's position: fixed) partway down the next section.
-      ScrollTrigger.create({
+      const heroTrigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: "bottom top",
@@ -123,6 +123,10 @@ export default function Hero() {
         onLeave: resetDrift,
         onLeaveBack: resetDrift,
       });
+      // Hero is the first section — already "entered" at page load with zero
+      // scrolling, so onEnter above never actually fires on its own. Fire the
+      // intro once manually if we're already inside the trigger's span.
+      if (heroTrigger.isActive) runDrift();
 
       ScrollTrigger.matchMedia({
         "(min-width: 768px)": () => {
