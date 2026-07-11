@@ -213,8 +213,8 @@ function Gallery() {
   }, [menuOpen]);
 
   // Piece thumbnails: hovering near either edge auto-scrolls that way, and
-  // the row is rendered twice back-to-back so reaching the end loops
-  // seamlessly back to the start instead of dead-ending.
+  // stops naturally at the start/end — no looping or wrap-around, and the
+  // row renders once (not doubled), so nothing is ever shown twice at once.
   useEffect(() => {
     const el = subrailRef.current;
     if (!el) return;
@@ -235,13 +235,8 @@ function Gallery() {
     let raf;
     const tick = () => {
       const node = subrailRef.current;
-      if (node) {
-        if (hoverDirRef.current !== 0) node.scrollLeft += hoverDirRef.current * MAX_SPEED;
-        const half = node.scrollWidth / 2;
-        if (half > 0) {
-          if (node.scrollLeft >= half) node.scrollLeft -= half;
-          else if (node.scrollLeft < 0) node.scrollLeft += half;
-        }
+      if (node && hoverDirRef.current !== 0) {
+        node.scrollLeft = Math.max(0, Math.min(node.scrollWidth - node.clientWidth, node.scrollLeft + hoverDirRef.current * MAX_SPEED));
       }
       raf = requestAnimationFrame(tick);
     };
@@ -332,15 +327,12 @@ function Gallery() {
         </button>
         {pieces.length > 1 && (
           <div className="fw-subrail" ref={subrailRef} key={c.id}>
-            {[...pieces, ...pieces].map((p, j) => {
-              const i = j % pieces.length;
-              return (
-                <div key={`${p.name}-${j}`} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
-                  onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                  <img src={p.img} alt={p.name} />
-                </div>
-              );
-            })}
+            {pieces.map((p, i) => (
+              <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
+                onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
+                <img src={p.img} alt={p.name} />
+              </div>
+            ))}
           </div>
         )}
       </div>
