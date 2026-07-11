@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { SCREEN_COVERS } from "./BespokeCommissions";
 
 // Private, password-gated preview of an ALTERNATIVE gallery design for
@@ -15,7 +15,7 @@ const UP_CLOSE_IMAGES = [];
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
+.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(.75);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
@@ -33,15 +33,6 @@ const CSS = `
 .fw-menu-item{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:.2s}
 .fw-menu-item:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
 .fw-menu-item.active{color:#c08c46;background:rgba(158,113,52,.12)}
-.fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
-.fw-expand-imgwrap{position:relative;display:inline-flex;cursor:default}
-.fw-expand-img{max-width:88vw;max-height:88vh;object-fit:contain;display:block;border-radius:20px}
-.fw-expand-close{position:absolute;top:16px;right:16px;padding:10px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s}
-.fw-expand-close:hover{background:rgba(255,255,255,.2)}
-.fw-expand-nav{position:absolute;top:50%;transform:translateY(-50%);padding:12px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s;z-index:1}
-.fw-expand-nav:hover{background:rgba(255,255,255,.2)}
-.fw-expand-nav.prev{left:16px}
-.fw-expand-nav.next{right:16px}
 .fw-lead{position:absolute;left:52px;bottom:340px;z-index:5;max-width:46vw}
 .fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-kick .bar{width:34px;height:1px;background:#c08c46;box-shadow:0 1px 4px rgba(0,0,0,.7)}
@@ -49,15 +40,12 @@ const CSS = `
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
-.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:transparent;color:inherit;font-family:inherit;cursor:pointer;transition:.35s}
-.fw-pill:hover{background:#F2F0E9;color:#1A1A1A;border-color:#F2F0E9}
+.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:transparent;color:inherit;font-family:inherit}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
 .fw-bottomrow{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;align-items:center;gap:16px}
-.fw-infopill{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;flex:0 0 auto;white-space:nowrap}
-.fw-infopill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-subrail{display:flex;gap:10px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
 .fw-subcard{position:relative;width:96px;height:124px;border-radius:11px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
@@ -80,7 +68,6 @@ function Gallery() {
   const [pieceIdx, setPieceIdx] = useState(0);
   const busy = useRef(false);
   const [pieceFlash, setPieceFlash] = useState(-1);
-  const [expanded, setExpanded] = useState(false);
   const pillRef = useRef(null);
   const [pillCenter, setPillCenter] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -170,7 +157,6 @@ function Gallery() {
     busy.current = true;
     setCur(n);
     setPieceIdx(0);
-    setExpanded(false);
     setMenuOpen(false);
     setTimeout(() => { busy.current = false; }, 1100);
   }, [cur, CATS]);
@@ -252,7 +238,6 @@ function Gallery() {
   const pieces = c.pieces.flatMap((p) =>
     p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
   );
-  const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
   // Title breaks right before " & " if the label has one, otherwise after
   // the first word — never wherever the container width happens to allow.
@@ -299,16 +284,13 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
+          <div className="fw-pill" ref={pillRef}>
             View the {c.label.toLowerCase()} collection
-          </button>
+          </div>
         </div>
       </div>
 
       <div className="fw-bottomrow">
-        <button className="fw-infopill" onClick={() => setExpanded(true)}>
-          Expand
-        </button>
         {pieces.length > 1 && (
           <div className="fw-subrail" ref={subrailRef} key={c.id}>
             {pieces.map((p, i) => (
@@ -331,38 +313,6 @@ function Gallery() {
         <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
       </div>
 
-      {expanded && (
-        <div className="fw-expand-overlay" onClick={() => setExpanded(false)}>
-          {pieces.length > 1 && (
-            <button
-              className="fw-expand-nav prev"
-              onClick={(e) => { e.stopPropagation(); expandNav(-1); }}
-              aria-label="Previous image"
-            >
-              <ChevronLeft size={22} />
-            </button>
-          )}
-          <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
-            <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
-          </div>
-          {pieces.length > 1 && (
-            <button
-              className="fw-expand-nav next"
-              onClick={(e) => { e.stopPropagation(); expandNav(1); }}
-              aria-label="Next image"
-            >
-              <ChevronRight size={22} />
-            </button>
-          )}
-          <button
-            className="fw-expand-close"
-            onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
-            aria-label="Close expanded view"
-          >
-            <X size={20} />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
