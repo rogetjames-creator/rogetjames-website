@@ -254,17 +254,16 @@ function Gallery() {
     };
   }, [cur]);
 
+  // Measured once, on first mount, and never again — the arrows/label/
+  // progress line lock to that position permanently instead of re-centring
+  // under the pill (and shifting) every time the category changes.
   useLayoutEffect(() => {
-    const measure = () => {
-      const el = pillRef.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      setPillCenter(r.left + r.width / 2);
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [cur]);
+    const el = pillRef.current;
+    if (!el || pillCenter != null) return;
+    const r = el.getBoundingClientRect();
+    setPillCenter(r.left + r.width / 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const c = CATS[cur];
   // A design can have several photos of the same piece (Gallery.jsx "slides") —
