@@ -274,9 +274,10 @@ function Gallery() {
   );
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
-  // Title always breaks after the first word (e.g. "AUSTRALIAN" / "NATIVES")
-  // rather than wrapping wherever the container width happens to allow.
-  const titleSpace = c.label.indexOf(" ");
+  // Title breaks right before " & " if the label has one (e.g. "BON BONS" /
+  // "& GENIE BOTTLES"), otherwise after the first word (e.g. "AUSTRALIAN" /
+  // "NATIVES") — never wherever the container width happens to allow.
+  const titleSpace = c.label.includes(" & ") ? c.label.indexOf(" & ") : c.label.indexOf(" ");
   const titleFirst = titleSpace === -1 ? c.label : c.label.slice(0, titleSpace);
   const titleRest = titleSpace === -1 ? "" : c.label.slice(titleSpace + 1);
 
