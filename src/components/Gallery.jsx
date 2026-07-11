@@ -2591,8 +2591,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
         if (src && !map.has(src)) map.set(src, { img: src, name: `${s.label} — Up Close`, _closeup: true });
       }
     }
-    for (const u of upCloseImages) {
-      if (u?.src && !map.has(u.src)) map.set(u.src, { img: u.src, name: u.name || "Up Close", _closeup: true });
+    if (categoryFilter !== "sculpture") {
+      for (const u of upCloseImages) {
+        if (u?.src && !map.has(u.src)) map.set(u.src, { img: u.src, name: u.name || "Up Close", _closeup: true });
+      }
     }
     return [...map.values()];
   })();
