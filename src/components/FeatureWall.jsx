@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, ChevronDown, Search } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ChevronDown, Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
 import CatPageViewer from "./CatPageViewer";
@@ -65,12 +65,11 @@ function orderAustralianNatives(flat) {
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#000;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
+.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity .5s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
-.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:opacity .25s}
-.fw-logo::before{content:"\\2190";font-size:15px;font-weight:400;opacity:.6}
-.fw-logo:hover{opacity:.7}
+.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
+.fw-logo:hover{color:#c08c46}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
@@ -108,8 +107,8 @@ const CSS = `
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
 .fw-deliver{margin-top:16px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.5);text-shadow:0 2px 8px rgba(0,0,0,.8)}
-.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:transparent;color:inherit;font-family:inherit;cursor:pointer;transition:.35s}
-.fw-pill:hover{background:#F2F0E9;color:#1A1A1A;border-color:#F2F0E9}
+.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(242,240,233,.04);color:inherit;font-family:inherit;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.35s}
+.fw-pill:hover{background:rgba(242,240,233,.14);border-color:rgba(242,240,233,.6);color:#F2F0E9;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1)}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
@@ -127,8 +126,9 @@ const CSS = `
 .fw-ctrls{position:absolute;left:50%;bottom:44px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateX(-50%);transition:left .3s ease}
 .fw-ctrls-label{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.45)}
 .fw-arrows{display:flex;align-items:center;gap:14px}
-.fw-nav{width:50px;height:50px;border-radius:50%;border:1px solid rgba(242,240,233,.28);background:rgba(20,20,20,.35);backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s;font-size:16px}
+.fw-nav{width:52px;height:52px;border-radius:50%;border:1.5px solid rgba(242,240,233,.4);background:rgba(20,20,20,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s}
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
+.fw-nav:active{transform:scale(.92);background:#9E7134;border-color:#9E7134;color:#F2F0E9}
 .fw-prog{width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
 @media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-subrail{display:none}}
@@ -137,6 +137,8 @@ const CSS = `
 .fw-top-actions{display:flex;align-items:center;gap:10px}
 .fw-icon-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.85);cursor:pointer;backdrop-filter:blur(4px);transition:.25s}
 .fw-icon-btn:hover,.fw-icon-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-exit{text-decoration:none;border-color:rgba(242,240,233,.42);color:#F2F0E9}
+.fw-exit:hover{background:rgba(158,113,52,.32);border-color:#c08c46;color:#F2F0E9}
 .fw-hamburger{display:none}
 .fw-search-wrap{position:relative}
 .fw-search-panel{position:absolute;top:calc(100% + 10px);right:0;z-index:25;width:min(270px,calc(100vw - 32px));max-height:380px;display:flex;flex-direction:column;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:10px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px)}
@@ -166,7 +168,12 @@ const CSS = `
   .fw-hamburger{display:flex}
   .fw-lead{position:static;max-width:100%;left:auto;bottom:auto;padding:24px 20px 0}
   .fw-bottomrow{position:static;right:auto;bottom:auto;justify-content:center;padding:18px 20px 0}
-  .fw-ctrls{position:static !important;left:auto !important;transform:none !important;width:100%;padding:18px 20px 36px}
+  .fw-ctrls{position:static !important;left:auto !important;transform:none !important;width:100%;padding:18px 20px 36px;gap:16px}
+  .fw-arrows{gap:22px}
+  .fw-nav{width:64px;height:64px;border-width:1.5px;border-color:rgba(242,240,233,.5)}
+  .fw-nav svg{width:26px;height:26px}
+  .fw-prog{width:160px}
+  .fw-ctrls-label{font-size:11px}
 }
 `;
 
@@ -307,7 +314,7 @@ function Gallery() {
     setMenuOpen(false);
     setMobileMenuOpen(false);
     setSearchOpen(false);
-    setTimeout(() => { busy.current = false; }, 1100);
+    setTimeout(() => { busy.current = false; }, 480);
   }, [cur, CATS]);
 
   // Jumps straight to a specific piece from a search result — same category
@@ -541,6 +548,9 @@ function Gallery() {
               }
             </svg>
           </button>
+          <a className="fw-icon-btn fw-exit" href="/" aria-label="Close gallery — back to main site" title="Back to ROGETjames">
+            <X size={17} />
+          </a>
         </div>
       </header>
 
@@ -550,14 +560,12 @@ function Gallery() {
             <X size={18} />
           </button>
           <div className="fw-mobile-menu-list" onClick={(e) => e.stopPropagation()}>
-            <a
+            <button
               className="fw-mobile-menu-item"
-              href="/?view=wallartcat"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={() => { setMobileMenuOpen(false); setCatOpen(true); }}
             >
               Wall Art Catalogue
-            </a>
+            </button>
             <div className="fw-mobile-menu-divider" />
             {CATS.map((cat, i) => (
               <button
@@ -604,8 +612,8 @@ function Gallery() {
       <div className="fw-ctrls" style={pillCenter != null ? { left: `${pillCenter}px` } : undefined}>
         <div className="fw-ctrls-label">Collections</div>
         <div className="fw-arrows">
-          <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>
-          <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}>&#8594;</button>
+          <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}><ArrowLeft size={20} strokeWidth={2} /></button>
+          <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}><ArrowRight size={20} strokeWidth={2} /></button>
         </div>
         <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
         <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
