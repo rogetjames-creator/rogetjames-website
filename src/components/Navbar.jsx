@@ -199,8 +199,8 @@ export default function Navbar({ quoteCount = 0 }) {
               </button>
               {collectionOpen && (
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
-                  {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
-                    <button key={tab} onClick={() => { setCollectionOpen(false); window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
+                  {[{ label: "Wall Art", tab: "wall-art", href: "/feature-wall" }, { label: "Sculpture", tab: "sculpture", href: "/feature-sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
+                    <button key={tab} onClick={() => { setCollectionOpen(false); if (href) { window.location.href = href; return; } window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                       className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
                       {label}
                     </button>
@@ -304,8 +304,8 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Collection</span>
             <div className="flex gap-5">
-              {[{ label: "Wall Art", tab: "wall-art" }, { label: "Sculpture", tab: "sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab }) => (
-                <button key={tab} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
+              {[{ label: "Wall Art", tab: "wall-art", href: "/feature-wall" }, { label: "Sculpture", tab: "sculpture", href: "/feature-sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
+                <button key={tab} onClick={() => { closeMenu(); if (href) { window.location.href = href; return; } window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                   className="text-cream text-lg font-heading font-medium lift-hover">
                   {label}
                 </button>

@@ -4,8 +4,8 @@ const NAV_COLS = [
   {
     title: "Collection",
     links: [
-      { label: "Wall Art", href: "#collection" },
-      { label: "Sculpture", href: "#collection" },
+      { label: "Wall Art", href: "/feature-wall" },
+      { label: "Sculpture", href: "/feature-sculpture" },
       { label: "Screens", href: "#collection" },
     ],
   },
@@ -50,6 +50,12 @@ function scrollTo(href) {
 const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["sculpture", "projects", "commissions", "concepts"] : [];
 
 function handleLink(link) {
+  // Real path (e.g. the Wall Art / Sculpture galleries at /feature-wall) —
+  // navigate to it rather than treating href as an in-page scroll anchor.
+  if (link.href && link.href.startsWith("/")) {
+    window.location.href = link.href;
+    return;
+  }
   const isLockedBespoke = link.event === "open-bespoke-category" && LOCKED_BESPOKE_CATS.includes(link.detail);
   if (link.event && !isLockedBespoke) {
     window.dispatchEvent(new CustomEvent(link.event, { detail: link.detail }));

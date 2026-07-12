@@ -3382,7 +3382,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     </div>
   );
 }
-function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCategoryClicked, selectedCategory, categoryClicked, inSection, setScreensOpen }) {
+function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, setScreensOpen }) {
   const [hovered, setHovered] = useState(false);
   const browseColor = hovered
     ? "rgba(242,240,233,0.95)"
@@ -3408,8 +3408,8 @@ function BrowseCollectionLabel({ setCardDeckOpen, setSelectedCategory, setCatego
   );
 
   const pills = [
-    { id: "sculpture", label: "Sculpture", onOpen: () => { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); } },
-    { id: "wall-art",  label: "Wall Art",  onOpen: () => { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); } },
+    { id: "sculpture", label: "Sculpture", onOpen: () => { window.location.assign("/feature-sculpture"); } },
+    { id: "wall-art",  label: "Wall Art",  onOpen: () => { window.location.assign("/feature-wall"); } },
     { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
   ];
 
@@ -3576,11 +3576,9 @@ export default function Gallery() {
         return;
       }
       if (view === "wallart") {
-        setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true);
-        sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+        window.location.assign("/feature-wall");
       } else if (view === "sculpture") {
-        setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true);
-        sectionRef.current?.scrollIntoView({ behavior: "smooth" });
+        window.location.assign("/feature-sculpture");
       } else if (view === "wallartcat") {
         setCatFlipTab("wall-art"); setCatFlipOpen(true);
         sectionRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -3598,8 +3596,8 @@ export default function Gallery() {
   useEffect(() => {
     const handler = (e) => {
       const cat = e.detail;
-      if (cat === "wall-art") { setSelectedCategory("wall-art"); setCategoryClicked(true); setCardDeckOpen(true); }
-      else if (cat === "sculpture") { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); }
+      if (cat === "wall-art") { window.location.assign("/feature-wall"); }
+      else if (cat === "sculpture") { window.location.assign("/feature-sculpture"); }
       else if (cat === "screens") { setScreensOpen(true); }
     };
     window.addEventListener("open-collection-category", handler);
@@ -3620,7 +3618,7 @@ export default function Gallery() {
           {/* Browse Collection + Wall Art / Sculpture */}
           <div ref={wallArtLabelRef} className="flex flex-col items-center gap-3 mt-6">
             {/* Browse Collection label — lights up on hover of either option */}
-            <BrowseCollectionLabel setCardDeckOpen={setCardDeckOpen} setSelectedCategory={setSelectedCategory} setCategoryClicked={setCategoryClicked} selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} setScreensOpen={setScreensOpen} />
+            <BrowseCollectionLabel selectedCategory={selectedCategory} categoryClicked={categoryClicked} inSection={inSection} setScreensOpen={setScreensOpen} />
           </div>
         </div>
 
@@ -3639,7 +3637,7 @@ export default function Gallery() {
             <div className="flex-1 overflow-hidden" aria-hidden="true">
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
-                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => setCardDeckOpen(true)}>
+                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/feature-wall"); }}>
                     <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
@@ -3653,7 +3651,7 @@ export default function Gallery() {
             <div className="flex-1 overflow-hidden" aria-hidden="true">
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
-                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => setCardDeckOpen(true)}>
+                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/feature-wall"); }}>
                     <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
@@ -3667,8 +3665,8 @@ export default function Gallery() {
           {/* All three portals in one column — equal gap guaranteed.
               Negative margin pulls Wall Art up to float in the strip centre. */}
           <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
-            <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); }} />
+            <ReelsPortal onOpen={() => { window.location.assign("/feature-wall"); }} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/feature-sculpture"); }} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 
@@ -3683,7 +3681,7 @@ export default function Gallery() {
           <div className="relative h-28 overflow-hidden" aria-hidden="true">
             <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
-                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => setCardDeckOpen(true)}>
+                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/feature-wall"); }}>
                   <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
@@ -3694,8 +3692,8 @@ export default function Gallery() {
 
           {/* All three portals in one column — equal gap guaranteed. */}
           <div className="flex flex-col items-center gap-10 py-8">
-            <ReelsPortal onOpen={() => { setSelectedCategory("wall-art"); setCardDeckOpen(true); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { setSelectedCategory("sculpture"); setCategoryClicked(true); setCardDeckOpen(true); }} />
+            <ReelsPortal onOpen={() => { window.location.assign("/feature-wall"); }} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/feature-sculpture"); }} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 
