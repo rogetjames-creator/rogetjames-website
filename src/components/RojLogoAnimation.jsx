@@ -18,10 +18,10 @@ const PATHS = [
 // Canonical A→E build order: R-top, O-small, R-bottom, frame, O-large
 const BUILD_ORDER = [0, 2, 1, 4, 3];
 
-const STEP_IN  = 950;   // ms between each path fading in
-const STEP_OUT = 650;   // ms between each path fading out (rewind)
+const STEP_IN  = 320;   // ms between each path fading in — brisk, clearly 1-2-3-4-5
+const STEP_OUT = 300;   // ms between each path fading out (rewind)
 const HOLD     = 15000; // ms to hold full logo before rewinding
-const FADE_DUR = 1600;  // CSS transition duration (ms)
+const FADE_DUR = 480;   // CSS transition duration (ms)
 const PAUSE    = 1000;  // gap between rewind end and next cycle start
 
 function shuffle(arr) {
@@ -33,7 +33,7 @@ function shuffle(arr) {
   return a;
 }
 
-export default function RojLogoAnimation({ visible, onHoldChange }) {
+export default function RojLogoAnimation({ visible, onHoldChange, onFormed }) {
   const [shown, setShown] = useState(new Set());
   const [holding, setHolding] = useState(false);
   const timers = useRef([]);
@@ -73,8 +73,9 @@ export default function RojLogoAnimation({ visible, onHoldChange }) {
       });
     });
 
-    // Hold at full logo — activate drop shadow
-    after(t, () => { if (running.current) setHolding(true); });
+    // Hold at full logo — activate drop shadow. This is the "fully formed"
+    // moment: tell the parent so it knows the build has completed on screen.
+    after(t, () => { if (running.current) { setHolding(true); onFormed?.(); } });
     t += HOLD;
 
     // Rewind — remove drop shadow, reverse order; glass disappears with the rectangle
@@ -105,7 +106,7 @@ export default function RojLogoAnimation({ visible, onHoldChange }) {
     }
     running.current = true;
     cycleCount.current = 0;
-    const t = setTimeout(runCycle, 600);
+    const t = setTimeout(runCycle, 400);
     return () => {
       running.current = false;
       clearTimeout(t);

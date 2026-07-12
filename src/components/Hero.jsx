@@ -49,12 +49,23 @@ export default function Hero() {
   const layerRefs = useRef([null, null]);
   const [slideshowReady, setSlideshowReady] = useState(false);
   // logoActive starts the build once (and never resets) so a scroll during the
-  // ~5s build can't kill it half-formed; logoShown only toggles opacity so
+  // build can't kill it half-formed; logoShown only toggles opacity so
   // scrolling away hides the logo without restarting its animation.
   const [logoActive, setLogoActive] = useState(false);
   const [logoShown, setLogoShown] = useState(false);
   const [logoHolding, setLogoHolding] = useState(false);
+  // Guard so scrolling away NEVER hides the logo until it has finished forming
+  // on screen at least once. Before then, keep it shown so the 1-2-3-4-5 build
+  // always completes in view instead of vanishing at the end of the hero.
+  const logoBuiltRef = useRef(false);
+  const heroInViewRef = useRef(true);
   const lenis = useLenis();
+
+  const handleLogoFormed = () => {
+    logoBuiltRef.current = true;
+    // Formed while already scrolled past the hero → fade it out now.
+    if (!heroInViewRef.current) setLogoShown(false);
+  };
 
   // Reveal the slideshow once the intro text has settled.
   useEffect(() => {
@@ -110,7 +121,9 @@ export default function Hero() {
       DRIFT.forEach(({ el, x, y }) => gsap.set(el, { x, y, opacity: 0 }));
       if (underlineRef.current) gsap.set(underlineRef.current, { scaleX: 0, x: 0, opacity: 1 });
       clearTimeout(logoTimerRef.current);
-      setLogoShown(false);  // hide only — the logo animation keeps running
+      // Only hide the logo once it has fully formed — otherwise a scroll during
+      // the build would cut it off half-made. The animation keeps running.
+      if (logoBuiltRef.current) setLogoShown(false);
     };
 
     resetDrift();
@@ -121,7 +134,10 @@ export default function Hero() {
     // visible target — that is what makes the drift-in play on a normal first
     // load, which a ScrollTrigger onEnter does not do.
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) runDrift(); else resetDrift(); },
+      ([entry]) => {
+        heroInViewRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) runDrift(); else resetDrift();
+      },
       { threshold: 0.3 }
     );
     observer.observe(section);
@@ -169,7 +185,7 @@ export default function Hero() {
           {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
           {createPortal(
             <span style={{ position: "fixed", top: 76, left: "50%", transform: "translateX(-50%)", opacity: logoShown ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 124, height: 124, zIndex: 99 }}>
-              <RojLogoAnimation visible={logoActive} onHoldChange={setLogoHolding} />
+              <RojLogoAnimation visible={logoActive} onHoldChange={setLogoHolding} onFormed={handleLogoFormed} />
             </span>,
             document.body
           )}
