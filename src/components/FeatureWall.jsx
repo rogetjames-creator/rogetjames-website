@@ -40,9 +40,12 @@ const CSS = `
 .fw-menu-item{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:.2s}
 .fw-menu-item:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
 .fw-menu-item.active{color:#c08c46;background:rgba(158,113,52,.12)}
-.fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
-.fw-expand-imgwrap{position:relative;display:inline-flex;cursor:default}
-.fw-expand-img{max-width:88vw;max-height:88vh;object-fit:contain;display:block;border-radius:20px}
+.fw-expand-overlay{position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;cursor:zoom-out;overflow-y:auto;padding:32px 16px}
+.fw-expand-stack{display:flex;flex-direction:column;align-items:center;gap:16px;cursor:default}
+.fw-expand-imgwrap{position:relative;display:inline-flex}
+.fw-expand-img{max-width:88vw;max-height:76vh;object-fit:contain;display:block;border-radius:20px}
+.fw-expand-progress{display:flex;flex-direction:column;align-items:center;gap:9px}
+.fw-expand-progress-text{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.55);font-variant-numeric:tabular-nums}
 .fw-expand-details{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);padding:9px 18px;border-radius:20px;background:rgba(0,0,0,.6);border:1px solid rgba(242,240,233,.25);color:rgba(242,240,233,.9);font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-expand-details:hover{background:#9E7134;border-color:#9E7134;color:#F2F0E9}
 .fw-expand-close{position:absolute;top:16px;right:16px;padding:10px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;border:none;cursor:pointer;transition:.2s}
@@ -100,7 +103,6 @@ const CSS = `
 .fw-search-result-name{display:block}
 .fw-search-result-cat{display:block;color:rgba(242,240,233,.4);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
 .fw-search-empty{padding:14px 8px;text-align:center;color:rgba(242,240,233,.4);font-size:11px;letter-spacing:.06em}
-.fw-kick-count{color:rgba(242,240,233,.45);letter-spacing:.16em}
 .fw-mobile-menu{position:fixed;inset:0;z-index:40;background:rgba(6,5,4,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
 .fw-mobile-menu-list{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:76px 24px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .fw-mobile-menu-item{display:block;width:100%;max-width:320px;text-align:center;padding:14px;border-radius:12px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;cursor:pointer;font-family:inherit;transition:.2s}
@@ -380,11 +382,6 @@ function Gallery() {
   );
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
-  // Real design count for this collection — excludes the synthetic "Up
-  // Close" card appended to categories that have close-up shots. Falls
-  // back to the raw piece count for the "Up Close" category itself, where
-  // every piece is (correctly) flagged _upclose.
-  const designCount = c.pieces.filter((p) => !p._upclose).length || c.pieces.length;
   // Title breaks right before " & " if the label has one (e.g. "BON BONS" /
   // "& GENIE BOTTLES"), otherwise after the first word (e.g. "AUSTRALIAN" /
   // "NATIVES") — never wherever the container width happens to allow.
@@ -512,11 +509,7 @@ function Gallery() {
       )}
 
       <div className="fw-lead" key={cur}>
-        <div className="fw-kick fw-anim">
-          <span className="bar" />
-          <span>Wall Art</span>
-          <span className="fw-kick-count">· {designCount} Design{designCount !== 1 ? "s" : ""}</span>
-        </div>
+        <div className="fw-kick fw-anim"><span className="bar" />Wall Art</div>
         <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
@@ -563,15 +556,25 @@ function Gallery() {
               <ChevronLeft size={22} />
             </button>
           )}
-          <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
-            <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
-            {!activePiece._upclose && (
-              <button
-                className="fw-expand-details"
-                onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
-              >
-                Info · Prices
-              </button>
+          <div className="fw-expand-stack" onClick={(e) => e.stopPropagation()}>
+            <div className="fw-expand-imgwrap">
+              <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+              {!activePiece._upclose && (
+                <button
+                  className="fw-expand-details"
+                  onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
+                >
+                  Info · Prices
+                </button>
+              )}
+            </div>
+            {pieces.length > 1 && (
+              <div className="fw-expand-progress">
+                <div className="fw-expand-progress-text">{c.label} — {pieceIdx + 1} of {pieces.length}</div>
+                <div className="fw-prog" style={{ width: 160 }}>
+                  <i style={{ width: `${((pieceIdx + 1) / pieces.length) * 100}%` }} />
+                </div>
+              </div>
             )}
           </div>
           {pieces.length > 1 && (
