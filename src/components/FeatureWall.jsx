@@ -4,11 +4,9 @@ import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
-// Private, password-gated preview of an ALTERNATIVE gallery design, being
-// built as a possible replacement for the current site's gallery template.
-// Reachable only at /feature-wall behind the same admin password as /stats
-// and /media. NOT linked anywhere public. Reads the same live Up Close /
-// media data as Gallery.jsx (see below) so uploads show up here too.
+// The live public Wall Art gallery at /feature-wall. Linked from the
+// nav/footer/homepage Collection. Reads the same live Up Close / media data
+// as Gallery.jsx (see below) so uploads show up here too.
 
 // Kept in sync by hand with the same curated shots in Gallery.jsx
 // (SEED_UPCLOSE / UP_CLOSE_IMAGES) — small, rarely-changed lists, duplicated

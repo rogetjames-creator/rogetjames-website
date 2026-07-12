@@ -4,12 +4,10 @@ import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
-// Private, password-gated preview of an ALTERNATIVE gallery design for
-// Sculpture — same model as the Feature Wall page (see FeatureWall.jsx),
-// retargeted at the sculpture catalogue. Reachable only at
-// /feature-sculpture behind the same admin password as /stats and /media.
-// NOT linked anywhere public. Reads the same live Up Close / media data as
-// Gallery.jsx so uploads show up here too.
+// The live public Sculpture gallery at /feature-sculpture — same model as the
+// Wall Art page (see FeatureWall.jsx), retargeted at the sculpture catalogue.
+// Linked from the nav/footer/homepage Collection. Reads the same live Up
+// Close / media data as Gallery.jsx so uploads show up here too.
 
 // No curated seed close-ups exist for sculpture yet — kept empty (matching
 // FeatureWall.jsx's pattern) so any future uploads tagged "sculpture" via
@@ -18,7 +16,7 @@ const SEED_UPCLOSE = {};
 const UP_CLOSE_IMAGES = [];
 
 const CSS = `
-.fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+.fw-wrap{position:fixed;inset:0;overflow:hidden;background:#000;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
@@ -67,10 +65,10 @@ const CSS = `
 .fw-infopill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-subrail{display:flex;gap:10px;align-items:flex-end;max-width:60vw;overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
-.fw-subcard{position:relative;width:96px;height:124px;border-radius:11px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.6;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
+.fw-subcard{position:relative;width:96px;height:124px;border-radius:11px;overflow:hidden;cursor:pointer;flex:0 0 auto;box-shadow:0 10px 22px rgba(0,0,0,.45);opacity:.85;transform:scale(.94);transition:transform .5s cubic-bezier(.7,0,.2,1),opacity .4s,box-shadow .4s;outline:1px solid rgba(242,240,233,.14);outline-offset:-1px}
 .fw-subcard img{width:100%;height:100%;object-fit:cover}
 .fw-subcard.on{opacity:1;transform:scale(1.06);box-shadow:0 16px 32px rgba(0,0,0,.55);outline-color:#c08c46}
-.fw-subcard:hover{opacity:.9}
+.fw-subcard:hover{opacity:1}
 .fw-subcard.flash img{animation:fwFlash .8s cubic-bezier(.7,0,.2,1)}
 .fw-ctrls{position:absolute;left:50%;bottom:44px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateX(-50%)}
 .fw-ctrls-label{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.45)}
