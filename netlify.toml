@@ -47,17 +47,17 @@
 
 [[redirects]]
   from = "/sculpture"
-  to = "/#collection"
+  to = "/feature-sculpture"
   status = 301
 
 [[redirects]]
   from = "/sculpture-23-new-releases"
-  to = "/#collection"
+  to = "/feature-sculpture"
   status = 301
 
 [[redirects]]
   from = "/new-designs-23"
-  to = "/#collection"
+  to = "/feature-wall"
   status = 301
 
 [[redirects]]
