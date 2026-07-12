@@ -20,6 +20,24 @@
     </image:image>
   </url>
   <url>
+    <loc>https://rogetjames.com/feature-wall</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/hero/hero-banksia-oldmanis.jpg</image:loc>
+      <image:title>Laser Cut Wall Art by ROGETjames</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://rogetjames.com/feature-sculpture</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/marakesh/marakesh-promo.jpg</image:loc>
+      <image:title>Laser Cut Sculpture by ROGETjames</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://rogetjames.com/#bespoke</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
