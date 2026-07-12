@@ -55,8 +55,9 @@ const CSS = `
 .fw-expand-nav.prev{left:16px}
 .fw-expand-nav.next{right:16px}
 .fw-lead{position:absolute;left:52px;bottom:340px;z-index:5;max-width:46vw}
-.fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:18px;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
+.fw-kick{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#c08c46;margin-bottom:10px;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-kick .bar{width:34px;height:1px;background:#c08c46;box-shadow:0 1px 4px rgba(0,0,0,.7)}
+.fw-collection-count{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,240,233,.5);margin-bottom:18px;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(28px,4vw,58px);text-transform:uppercase;color:rgba(242,240,233,.45) !important;text-shadow:0 2px 10px rgba(0,0,0,.3)}
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
@@ -382,6 +383,11 @@ function Gallery() {
   );
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
+  // Real design count for this collection — excludes the synthetic "Up
+  // Close" card appended to categories that have close-up shots. Falls
+  // back to the raw piece count for the "Up Close" category itself, where
+  // every piece is (correctly) flagged _upclose.
+  const designCount = c.pieces.filter((p) => !p._upclose).length || c.pieces.length;
   // Title breaks right before " & " if the label has one (e.g. "BON BONS" /
   // "& GENIE BOTTLES"), otherwise after the first word (e.g. "AUSTRALIAN" /
   // "NATIVES") — never wherever the container width happens to allow.
@@ -510,6 +516,7 @@ function Gallery() {
 
       <div className="fw-lead" key={cur}>
         <div className="fw-kick fw-anim"><span className="bar" />Wall Art</div>
+        <div className="fw-collection-count fw-anim">{c.label} — {designCount} Design{designCount !== 1 ? "s" : ""}</div>
         <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
