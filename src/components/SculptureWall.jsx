@@ -2,7 +2,15 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } fr
 import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
+import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+
+// Sculpture catalogue page scans (mirrors Gallery.jsx SCULPTURE_CAT_PAGES) —
+// opened in-page by the "Sculpture Catalogue" pill so it never bounces to the
+// homepage.
+const SCULPTURE_CAT_PAGES = [1, 5, 4, 6, 7].map(n =>
+  `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`
+);
 
 // The live public Sculpture gallery at /feature-sculpture — same model as the
 // Wall Art page (see FeatureWall.jsx), retargeted at the sculpture catalogue.
@@ -89,6 +97,7 @@ function Gallery() {
   const [pieceFlash, setPieceFlash] = useState(-1);
   const [expanded, setExpanded] = useState(false);
   const [detailItem, setDetailItem] = useState(null);
+  const [catOpen, setCatOpen] = useState(false);
   // Shared with the live site — same localStorage key, so a postcode entered
   // here or on the public gallery carries over either way.
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
@@ -289,9 +298,9 @@ function Gallery() {
 
       <header className="fw-top">
         <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
-        <a className="fw-catalogue-link" href="/?view=sculpturecat" target="_blank" rel="noopener noreferrer">
+        <button className="fw-catalogue-link" onClick={() => setCatOpen(true)}>
           Sculpture Catalogue
-        </a>
+        </button>
         <div className="fw-top-right">
           <div className="fw-menu-wrap" ref={menuWrapRef}>
             <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen((v) => !v)}>
@@ -401,6 +410,10 @@ function Gallery() {
           postcodeInfo={postcodeInfo}
           onSetPostcode={handleSetPostcode}
         />
+      )}
+
+      {catOpen && (
+        <CatPageViewer pages={SCULPTURE_CAT_PAGES} label="Sculpture Catalogue" onClose={() => setCatOpen(false)} />
       )}
 
       <QuoteBar />

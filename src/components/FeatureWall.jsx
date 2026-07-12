@@ -2,11 +2,19 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } fr
 import { X, ChevronLeft, ChevronRight, ChevronDown, Search } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
+import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
-// The live public Wall Art gallery at /feature-wall. Linked from the
+// The live public Wall Art gallery at /wall-art. Linked from the
 // nav/footer/homepage Collection. Reads the same live Up Close / media data
 // as Gallery.jsx (see below) so uploads show up here too.
+
+// Wall Art catalogue page scans (mirrors Gallery.jsx WALL_ART_CAT_PAGES) —
+// opened in-page by the "Wall Art Catalogue" pill so it never bounces to the
+// homepage.
+const WALL_ART_CAT_PAGES = Array.from({ length: 26 }, (_, i) =>
+  `/images/catalogues/cat1/page-${String(i + 4).padStart(2, "0")}.jpg`
+);
 
 // Kept in sync by hand with the same curated shots in Gallery.jsx
 // (SEED_UPCLOSE / UP_CLOSE_IMAGES) — small, rarely-changed lists, duplicated
@@ -133,6 +141,7 @@ function Gallery() {
   const [pieceFlash, setPieceFlash] = useState(-1);
   const [expanded, setExpanded] = useState(false);
   const [detailItem, setDetailItem] = useState(null);
+  const [catOpen, setCatOpen] = useState(false);
   // Shared with the live site — same localStorage key, so a postcode entered
   // here or on the public gallery carries over either way.
   const [postcodeInfo, setPostcodeInfo] = useState(() => loadPostcode());
@@ -414,9 +423,9 @@ function Gallery() {
 
       <header className="fw-top">
         <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
-        <a className="fw-catalogue-link" href="/?view=wallartcat" target="_blank" rel="noopener noreferrer">
+        <button className="fw-catalogue-link" onClick={() => setCatOpen(true)}>
           Wall Art Catalogue
-        </a>
+        </button>
         <div className="fw-top-actions">
           <div className="fw-search-wrap" ref={searchWrapRef}>
             <button
@@ -620,6 +629,10 @@ function Gallery() {
           postcodeInfo={postcodeInfo}
           onSetPostcode={handleSetPostcode}
         />
+      )}
+
+      {catOpen && (
+        <CatPageViewer pages={WALL_ART_CAT_PAGES} label="Wall Art Catalogue" onClose={() => setCatOpen(false)} />
       )}
 
       <QuoteBar />
