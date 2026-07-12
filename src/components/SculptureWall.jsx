@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
+import { QuoteBar } from "./FeatureQuote";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
 // Private, password-gated preview of an ALTERNATIVE gallery design for
@@ -394,6 +395,8 @@ function Gallery() {
           onSetPostcode={handleSetPostcode}
         />
       )}
+
+      <QuoteBar />
     </div>
   );
 }
