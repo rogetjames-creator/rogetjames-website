@@ -120,7 +120,6 @@ All `/api/*` routes are rewritten to functions in `netlify.toml`. Server-side st
 | `track-event.js` | `/api/track-event` | Log pricing/postcode interest to Blobs (`pricing-interest`); emails James on postcode entry |
 | `stats-data.js` | `/api/stats-data` | Admin dashboard data; also the password check (gated by `VAULT_ADMIN_SECRET`) |
 | `weekly-stats.js` | — (scheduled) | Weekly digest email of pricing interest; `config.schedule = "0 22 * * 0"` |
-| `stats-digest.mjs` | — (scheduled) | **Temporary** one-shot digest; safe to delete after it has run |
 | `media-upload.js` | `/api/media-upload` | Admin upload — commits photos as real files into the repo via `GITHUB_TOKEN` (one commit per batch → one rebuild); also writes to `media-library`/`up-close-images` Blobs |
 | `media-list.js` | `/api/media-list` | Public list of uploaded gallery photos (id, destinations, src) |
 | `media-img.js` | `/api/media-img` | Serve a stored media-library image |
