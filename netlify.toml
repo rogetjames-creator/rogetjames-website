@@ -46,18 +46,13 @@
   status = 301
 
 [[redirects]]
-  from = "/sculpture"
-  to = "/feature-sculpture"
-  status = 301
-
-[[redirects]]
   from = "/sculpture-23-new-releases"
-  to = "/feature-sculpture"
+  to = "/sculpture"
   status = 301
 
 [[redirects]]
   from = "/new-designs-23"
-  to = "/feature-wall"
+  to = "/wall-art"
   status = 301
 
 [[redirects]]
@@ -146,14 +141,25 @@
   status = 200
 
 [[redirects]]
-  from = "/feature-wall"
-  to = "/feature-wall.html"
+  from = "/wall-art"
+  to = "/wall-art.html"
   status = 200
 
 [[redirects]]
-  from = "/feature-sculpture"
-  to = "/feature-sculpture.html"
+  from = "/sculpture"
+  to = "/sculpture.html"
   status = 200
+
+# Old preview URLs (briefly live) → the final public slugs
+[[redirects]]
+  from = "/feature-wall"
+  to = "/wall-art"
+  status = 301
+
+[[redirects]]
+  from = "/feature-sculpture"
+  to = "/sculpture"
+  status = 301
 
 [[redirects]]
   from = "/feature-screens"

@@ -4,8 +4,8 @@ const NAV_COLS = [
   {
     title: "Collection",
     links: [
-      { label: "Wall Art", href: "/feature-wall" },
-      { label: "Sculpture", href: "/feature-sculpture" },
+      { label: "Wall Art", href: "/wall-art" },
+      { label: "Sculpture", href: "/sculpture" },
       { label: "Screens", href: "#collection" },
     ],
   },
@@ -50,7 +50,7 @@ function scrollTo(href) {
 const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["sculpture", "projects", "commissions", "concepts"] : [];
 
 function handleLink(link) {
-  // Real path (e.g. the Wall Art / Sculpture galleries at /feature-wall) —
+  // Real path (e.g. the Wall Art / Sculpture galleries at /wall-art) —
   // navigate to it rather than treating href as an in-page scroll anchor.
   if (link.href && link.href.startsWith("/")) {
     window.location.href = link.href;

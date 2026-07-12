@@ -501,7 +501,7 @@ const OTHER_CATEGORIES = [
   },
 ];
 
-// Self-maintaining wall-art category covers for the private Feature Wall page.
+// Self-maintaining wall-art category covers for the Wall Art gallery page (/wall-art).
 // One representative image per wall-art category (first real, non-placeholder
 // piece), plus that category's own pieces for the sub-thumb row. Add a
 // category to the catalogue and it appears here automatically.
@@ -3408,8 +3408,8 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
   );
 
   const pills = [
-    { id: "sculpture", label: "Sculpture", onOpen: () => { window.location.assign("/feature-sculpture"); } },
-    { id: "wall-art",  label: "Wall Art",  onOpen: () => { window.location.assign("/feature-wall"); } },
+    { id: "sculpture", label: "Sculpture", onOpen: () => { window.location.assign("/sculpture"); } },
+    { id: "wall-art",  label: "Wall Art",  onOpen: () => { window.location.assign("/wall-art"); } },
     { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
   ];
 
@@ -3576,9 +3576,9 @@ export default function Gallery() {
         return;
       }
       if (view === "wallart") {
-        window.location.assign("/feature-wall");
+        window.location.assign("/wall-art");
       } else if (view === "sculpture") {
-        window.location.assign("/feature-sculpture");
+        window.location.assign("/sculpture");
       } else if (view === "wallartcat") {
         setCatFlipTab("wall-art"); setCatFlipOpen(true);
         sectionRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -3596,8 +3596,8 @@ export default function Gallery() {
   useEffect(() => {
     const handler = (e) => {
       const cat = e.detail;
-      if (cat === "wall-art") { window.location.assign("/feature-wall"); }
-      else if (cat === "sculpture") { window.location.assign("/feature-sculpture"); }
+      if (cat === "wall-art") { window.location.assign("/wall-art"); }
+      else if (cat === "sculpture") { window.location.assign("/sculpture"); }
       else if (cat === "screens") { setScreensOpen(true); }
     };
     window.addEventListener("open-collection-category", handler);
@@ -3637,7 +3637,7 @@ export default function Gallery() {
             <div className="flex-1 overflow-hidden" aria-hidden="true">
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
-                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/feature-wall"); }}>
+                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
                     <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
@@ -3651,7 +3651,7 @@ export default function Gallery() {
             <div className="flex-1 overflow-hidden" aria-hidden="true">
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
-                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/feature-wall"); }}>
+                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
                     <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
@@ -3665,8 +3665,8 @@ export default function Gallery() {
           {/* All three portals in one column — equal gap guaranteed.
               Negative margin pulls Wall Art up to float in the strip centre. */}
           <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
-            <ReelsPortal onOpen={() => { window.location.assign("/feature-wall"); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/feature-sculpture"); }} />
+            <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 
@@ -3681,7 +3681,7 @@ export default function Gallery() {
           <div className="relative h-28 overflow-hidden" aria-hidden="true">
             <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
-                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/feature-wall"); }}>
+                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/wall-art"); }}>
                   <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
@@ -3692,8 +3692,8 @@ export default function Gallery() {
 
           {/* All three portals in one column — equal gap guaranteed. */}
           <div className="flex flex-col items-center gap-10 py-8">
-            <ReelsPortal onOpen={() => { window.location.assign("/feature-wall"); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/feature-sculpture"); }} />
+            <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
+            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
             <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
           </div>
 

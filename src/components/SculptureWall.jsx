@@ -20,7 +20,9 @@ const CSS = `
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
-.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
+.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:opacity .25s}
+.fw-logo::before{content:"\\2190";font-size:15px;font-weight:400;opacity:.6}
+.fw-logo:hover{opacity:.7}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
@@ -286,7 +288,7 @@ function Gallery() {
       ))}
 
       <header className="fw-top">
-        <div className="fw-logo">ROGET<i>james</i></div>
+        <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
         <a className="fw-catalogue-link" href="/?view=sculpturecat" target="_blank" rel="noopener noreferrer">
           Sculpture Catalogue
         </a>

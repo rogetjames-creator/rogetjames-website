@@ -80,9 +80,9 @@ export default function AdminPage() {
     { href: "/stats", title: "Stats", desc: "Visitor pricing enquiries, postcodes, Q&Ai chats." },
     { href: "/media", title: "Media upload", desc: "Add images from iCloud for any part of the site." },
     { href: "/vault?admin=1", title: "Client Vault", desc: "Send a private locked page to a client." },
-    { href: "/feature-wall", title: "Feature Wall preview", desc: "Private preview of the new wall-art gallery style." },
-    { href: "/feature-sculpture", title: "Feature Sculpture preview", desc: "Same gallery style, for Sculpture." },
-    { href: "/feature-screens", title: "Feature Screens preview", desc: "Same gallery style, for Screens — no design Info/Prices panel." },
+    { href: "/wall-art", title: "Wall Art gallery", desc: "The live Wall Art gallery." },
+    { href: "/sculpture", title: "Sculpture gallery", desc: "The live Sculpture gallery." },
+    { href: "/feature-screens", title: "Screens preview", desc: "Private preview of the Screens gallery style — not yet live." },
     { href: "/melbourne", title: "Melbourne page preview", desc: "Private preview of the Melbourne city page — placeholder content, not yet public." },
   ];
 
