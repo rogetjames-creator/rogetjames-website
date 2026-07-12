@@ -82,34 +82,9 @@ export default function Services() {
         }
       );
 
-      const serviceCards = gsap.utils.toArray(".service-card", cardsRef.current);
-      gsap.set(".service-underline", { scaleX: 0, transformOrigin: "left center" });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: "top 82%",
-          toggleActions: "play none none none",
-        },
-      });
-
-      // Cards settle in place one by one — no lateral movement, no urgency.
-      serviceCards.forEach((card, i) => {
-        tl.fromTo(card,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 2.2, ease: "sine.inOut" },
-          i * 0.55
-        );
-      });
-
-      // Underline sweeps after each card settles
-      serviceCards.forEach((card, i) => {
-        const ul = card?.querySelector(".service-underline");
-        if (!ul) return;
-        const t = i * 0.55 + 2.0;
-        tl.to(ul, { scaleX: 1, duration: 0.55, ease: "power2.out" }, t);
-        tl.to(ul, { x: 200, opacity: 0, duration: 0.45, ease: "power2.in" }, t + 0.7);
-      });
+      // The Three Paths Forward cards are static — no scroll-in animation.
+      // Their hover states (CSS group-hover) are the only motion. The
+      // underline stays at its resting scaleX(0), so nothing sweeps in.
     }, sectionRef);
 
     return () => ctx.revert();

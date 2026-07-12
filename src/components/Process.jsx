@@ -72,36 +72,9 @@ export default function Process() {
         }
       );
 
-      gsap.set(".process-underline", { scaleX: 0, transformOrigin: "left center" });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: "top 82%",
-          toggleActions: "play none none none",
-        },
-      });
-
-      const procCards = gsap.utils.toArray(".process-card", cardsRef.current);
-
-      procCards.forEach((card, i) => {
-        gsap.set(card, { transformOrigin: "top center" });
-        const cardStart = i * 0.55;
-        const cardEnd = cardStart + 1.8;
-
-        // Slow, deliberate accordion drop — no bounce, settles smoothly into place
-        tl.fromTo(card,
-          { y: -22, opacity: 0, scaleY: 0.88 },
-          { y: 0, opacity: 1, scaleY: 1, duration: 1.8, ease: "power3.out", force3D: true },
-          cardStart
-        );
-
-        const ul = card.querySelector(".process-underline");
-        if (ul) {
-          tl.to(ul, { scaleX: 1, duration: 0.5, ease: "power2.out" }, cardEnd + 0.1);
-          tl.to(ul, { x: 200, opacity: 0, duration: 0.4, ease: "power2.in" }, cardEnd + 0.7);
-        }
-      });
+      // The Protocol cards are static — no scroll-in animation. Their hover
+      // states (CSS group-hover) are the only motion. The underline stays at
+      // its resting scaleX(0), so nothing sweeps in.
     }, sectionRef);
 
     return () => ctx.revert();

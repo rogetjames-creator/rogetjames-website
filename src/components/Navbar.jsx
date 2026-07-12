@@ -201,7 +201,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
                   {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); if (href) { window.location.href = href; return; } window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
                       {label}
                     </button>
                   ))}
@@ -221,7 +221,7 @@ export default function Navbar({ quoteCount = 0 }) {
                     const locked = LOCKED_BESPOKE_CATS.includes(cat);
                     return (
                       <button key={cat} onClick={() => openBespokeCat(cat)}
-                        className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)] flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream/90 hover:text-cream"}`}>
+                        className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)] flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream hover:text-white"}`}>
                         {label}
                         {locked && <Lock size={9} className="text-cream/35" />}
                       </button>
@@ -246,7 +246,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <div className="absolute top-full left-0 mt-1 py-1 min-w-[180px]">
                   {CATALOGUES.map((cat) => (
                     <button key={cat.label} onClick={() => { setOpenCat(cat); setCatOpen(false); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream/90 hover:text-cream transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
                       {cat.label}
                     </button>
                   ))}
