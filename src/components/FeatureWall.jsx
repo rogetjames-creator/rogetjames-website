@@ -27,6 +27,42 @@ const UP_CLOSE_IMAGES = [
   { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
 ];
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Australian Natives thumbnail layout (per James): these three shots are
+// pinned to fixed positions, everything else is randomised, and the Up Close
+// tile is always last.
+const AN_PINS = {
+  "/images/banksia/banksia-card-1.jpg": 0,    // 1st thumb
+  "/images/banksia/banksia-rec-rust.jpg": 2,  // 3rd thumb
+  "/images/banksia/banksia-round.jpg": 3,     // 4th thumb
+};
+function orderAustralianNatives(flat) {
+  const upclose = flat.filter((p) => p._upclose);
+  const rest = flat.filter((p) => !p._upclose);
+  const pinned = new Map();
+  const pool = [];
+  for (const p of rest) {
+    const slot = AN_PINS[p.img];
+    if (slot !== undefined && !pinned.has(slot)) pinned.set(slot, p);
+    else pool.push(p);
+  }
+  const shuffled = shuffle(pool);
+  const out = [];
+  let pi = 0;
+  for (let i = 0; i < rest.length; i++) {
+    out.push(pinned.has(i) ? pinned.get(i) : shuffled[pi++]);
+  }
+  return [...out, ...upclose];
+}
+
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#000;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
@@ -395,9 +431,14 @@ function Gallery() {
   // A design can have several photos of the same piece (Gallery.jsx "slides") —
   // show every one as its own thumb, sharing the piece's name, instead of
   // collapsing each design down to a single cover shot.
-  const pieces = c.pieces.flatMap((p) =>
-    p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
-  );
+  // Stable per collection (reshuffles only when the collection or its media
+  // changes) so thumbs don't jump around on every render.
+  const pieces = useMemo(() => {
+    const flat = c.pieces.flatMap((p) =>
+      p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
+    );
+    return c.id === "australian-natives" ? orderAustralianNatives(flat) : flat;
+  }, [c.id, c.pieces]);
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
   // Real design count for this collection — excludes the synthetic "Up
