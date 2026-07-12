@@ -35,6 +35,16 @@ const CSS = `
 .fw-top-actions{display:flex;align-items:center;gap:10px}
 .fw-exit{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.42);color:#F2F0E9;cursor:pointer;text-decoration:none;backdrop-filter:blur(4px);transition:.25s}
 .fw-exit:hover{background:rgba(158,113,52,.32);border-color:#c08c46;color:#F2F0E9}
+.fw-imgslot{position:absolute;inset:0}
+.fw-icon-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.85);cursor:pointer;backdrop-filter:blur(4px);transition:.25s}
+.fw-icon-btn:hover,.fw-icon-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-hamburger{display:none}
+.fw-mobile-menu{position:fixed;inset:0;z-index:40;background:rgba(6,5,4,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
+.fw-mobile-menu-list{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:76px 24px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.fw-mobile-menu-item{display:block;width:100%;max-width:320px;text-align:center;padding:14px;border-radius:12px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;cursor:pointer;font-family:inherit;transition:.2s}
+.fw-mobile-menu-item:hover,.fw-mobile-menu-item.active{background:rgba(255,255,255,.06);color:#c08c46}
+.fw-mobile-menu-close{position:absolute;top:20px;right:20px;padding:10px;border-radius:50%;background:rgba(255,255,255,.08);color:#F2F0E9;border:none;cursor:pointer}
+.fw-mobile-menu-divider{width:60px;height:1px;background:rgba(242,240,233,.18);margin:10px 0}
 .fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
@@ -91,6 +101,23 @@ const CSS = `
 .fw-prog{width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
 @media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-subrail{display:none}}
+
+@media(max-width:640px){
+  .fw-wrap{position:relative;height:auto;min-height:100dvh;overflow:visible}
+  .fw-imgslot{position:relative;height:42vh;min-height:240px}
+  .fw-top{padding:16px 16px}
+  .fw-logo{font-size:16px}
+  .fw-catalogue-link,.fw-top-right{display:none}
+  .fw-hamburger{display:flex}
+  .fw-lead{position:static;max-width:100%;left:auto;bottom:auto;padding:24px 20px 0}
+  .fw-bottomrow{position:static;right:auto;bottom:auto;justify-content:center;padding:18px 20px 0}
+  .fw-ctrls{position:static !important;left:auto !important;transform:none !important;width:100%;padding:18px 20px 36px;gap:16px}
+  .fw-arrows{gap:22px}
+  .fw-nav{width:64px;height:64px;border-width:1.5px;border-color:rgba(242,240,233,.5)}
+  .fw-nav svg{width:26px;height:26px}
+  .fw-prog{width:160px}
+  .fw-ctrls-label{font-size:11px}
+}
 `;
 
 function Gallery() {
@@ -108,6 +135,7 @@ function Gallery() {
   const pillRef = useRef(null);
   const [pillCenter, setPillCenter] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuWrapRef = useRef(null);
   const subrailRef = useRef(null);
   const hoverDirRef = useRef(0);
@@ -198,6 +226,7 @@ function Gallery() {
     setExpanded(false);
     setDetailItem(null);
     setMenuOpen(false);
+    setMobileMenuOpen(false);
     setTimeout(() => { busy.current = false; }, 480);
   }, [cur, CATS]);
 
@@ -295,9 +324,11 @@ function Gallery() {
   return (
     <div className="fw-wrap">
       <style>{CSS}</style>
-      {pieces.map((p, i) => (
-        <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
-      ))}
+      <div className="fw-imgslot">
+        {pieces.map((p, i) => (
+          <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
+        ))}
+      </div>
 
       <header className="fw-top">
         <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
@@ -325,11 +356,50 @@ function Gallery() {
               )}
             </div>
           </div>
+          <button
+            className="fw-icon-btn fw-hamburger"
+            aria-label="Menu"
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((v) => !v)}
+          >
+            <svg width="18" height="18" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              {mobileMenuOpen
+                ? <><line x1="4" y1="4" x2="18" y2="18" /><line x1="18" y1="4" x2="4" y2="18" /></>
+                : <><line x1="3" y1="7" x2="19" y2="7" /><line x1="3" y1="11" x2="19" y2="11" /><line x1="3" y1="15" x2="19" y2="15" /></>
+              }
+            </svg>
+          </button>
           <a className="fw-exit" href="/" aria-label="Close gallery — back to main site" title="Back to ROGETjames">
             <X size={17} />
           </a>
         </div>
       </header>
+
+      {mobileMenuOpen && (
+        <div className="fw-mobile-menu" onClick={() => setMobileMenuOpen(false)}>
+          <button className="fw-mobile-menu-close" aria-label="Close menu" onClick={() => setMobileMenuOpen(false)}>
+            <X size={18} />
+          </button>
+          <div className="fw-mobile-menu-list" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="fw-mobile-menu-item"
+              onClick={() => { setMobileMenuOpen(false); setCatOpen(true); }}
+            >
+              Sculpture Catalogue
+            </button>
+            <div className="fw-mobile-menu-divider" />
+            {CATS.map((cat, i) => (
+              <button
+                key={cat.id}
+                className={`fw-mobile-menu-item ${i === cur ? "active" : ""}`}
+                onClick={() => go(i)}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="fw-lead" key={cur}>
         <div className="fw-kick fw-anim"><span className="bar" />Sculpture</div>
