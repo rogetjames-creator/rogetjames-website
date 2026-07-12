@@ -195,7 +195,12 @@ function Gallery() {
   }, []);
 
   useEffect(() => {
-    CATS.forEach((cat) => cat.pieces.forEach((p) => {
+    // Warm only the current collection and its immediate neighbours (for a
+    // smooth Next/Prev) rather than eager-loading every collection's images
+    // up front.
+    const n = CATS.length;
+    const near = n ? [cur, (cur + 1) % n, (cur - 1 + n) % n] : [];
+    near.forEach((i) => CATS[i]?.pieces.forEach((p) => {
       (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
     }));
     const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
