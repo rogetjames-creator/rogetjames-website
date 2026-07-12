@@ -407,7 +407,7 @@ function Gallery() {
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
           <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
-            View the {c.label.toLowerCase()} collection
+            View the {c.label.toLowerCase().replace(/^the\s+/, "")} collection
           </button>
         </div>
         <div className="fw-deliver fw-anim d3">Production lead time 3&ndash;6 weeks &middot; Australia-wide delivery</div>
