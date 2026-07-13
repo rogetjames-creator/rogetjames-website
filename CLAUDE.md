@@ -36,6 +36,7 @@ James is design-literate. Engage directly on layout, typography, colour, spacing
 - After every meaningful change — commit and push immediately. Never batch changes to end of session.
 - One feature or fix = one commit + one push. Do not accumulate.
 - This is non-negotiable. Lost work from uncommitted sessions cannot be recovered.
+- If for any reason you are NOT committing straight away — waiting on a decision from James, blocked, mid-way through, or holding a change back — say so to James in one plain sentence the moment it happens. Never sit on uncommitted or unpushed work silently. Committing to the branch and publishing to the live site are separate: keep committing regardless; "publish/go live" is the only thing that waits for James.
 
 ## Project
 
