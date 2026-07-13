@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, ChevronDown, ArrowLeft, ArrowRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
 import CatPageViewer from "./CatPageViewer";
@@ -45,6 +45,18 @@ const CSS = `
 .fw-mobile-menu-item:hover,.fw-mobile-menu-item.active{background:rgba(255,255,255,.06);color:#c08c46}
 .fw-mobile-menu-close{position:absolute;top:20px;right:20px;padding:10px;border-radius:50%;background:rgba(255,255,255,.08);color:#F2F0E9;border:none;cursor:pointer}
 .fw-mobile-menu-divider{width:60px;height:1px;background:rgba(242,240,233,.18);margin:10px 0}
+.fw-search-wrap{position:relative}
+.fw-search-panel{position:absolute;top:calc(100% + 10px);right:0;z-index:25;width:min(270px,calc(100vw - 32px));max-height:380px;display:flex;flex-direction:column;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:10px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+.fw-search-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(242,240,233,.16);border-radius:10px;padding:9px 12px;color:#F2F0E9;font-size:12px;letter-spacing:.03em;font-family:inherit;outline:none;transition:.2s;box-sizing:border-box}
+.fw-search-input:focus{border-color:#9E7134}
+.fw-search-input::placeholder{color:rgba(242,240,233,.4)}
+.fw-search-results{margin-top:8px;overflow-y:auto;max-height:280px;display:flex;flex-direction:column;gap:2px}
+.fw-search-result{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:6px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.8);font-size:11px;letter-spacing:.03em;cursor:pointer;font-family:inherit;transition:.2s}
+.fw-search-result:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
+.fw-search-result img{width:34px;height:34px;border-radius:6px;object-fit:cover;flex:0 0 auto}
+.fw-search-result-name{display:block}
+.fw-search-result-cat{display:block;color:rgba(242,240,233,.4);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.fw-search-empty{padding:14px 8px;text-align:center;color:rgba(242,240,233,.4);font-size:11px;letter-spacing:.06em}
 .fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
@@ -136,7 +148,11 @@ function Gallery() {
   const [pillCenter, setPillCenter] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const menuWrapRef = useRef(null);
+  const searchWrapRef = useRef(null);
+  const searchInputRef = useRef(null);
   const subrailRef = useRef(null);
   const hoverDirRef = useRef(0);
 
@@ -216,6 +232,30 @@ function Gallery() {
     return withUpClose;
   }, [mediaImages, uploadedUpClose, upCloseForSeries]);
 
+  // Flat, searchable index of every named design across all collections —
+  // excludes the synthetic "— Up Close" cards. flatIdx matches the per-category
+  // "pieces" array each render builds below (slides expanded into their own
+  // entries), so a result jumps straight to the right thumbnail.
+  const searchIndex = useMemo(() => {
+    const idx = [];
+    CATS.forEach((cat, catIdx) => {
+      const flat = cat.pieces.flatMap((p) =>
+        p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
+      );
+      flat.forEach((p, flatIdx) => {
+        if (p._upclose) return;
+        idx.push({ name: p.name, catIdx, catLabel: cat.label, img: p.img, flatIdx });
+      });
+    });
+    return idx;
+  }, [CATS]);
+
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return searchIndex.filter((it) => it.name.toLowerCase().includes(q)).slice(0, 20);
+  }, [searchQuery, searchIndex]);
+
   const go = useCallback((i) => {
     if (busy.current) return;
     const n = (i + CATS.length) % CATS.length;
@@ -227,8 +267,32 @@ function Gallery() {
     setDetailItem(null);
     setMenuOpen(false);
     setMobileMenuOpen(false);
+    setSearchOpen(false);
     setTimeout(() => { busy.current = false; }, 480);
   }, [cur, CATS]);
+
+  // Jumps straight to a specific piece from a search result — same category
+  // switch as go(), but lands on the matched piece instead of the first one.
+  const jumpToPiece = useCallback((catIdx, flatIdx) => {
+    setSearchOpen(false);
+    setSearchQuery("");
+    if (catIdx === cur) {
+      setPieceIdx(flatIdx);
+      setPieceFlash(flatIdx);
+      setTimeout(() => setPieceFlash(-1), 1100);
+      return;
+    }
+    if (busy.current) return;
+    busy.current = true;
+    setCur(catIdx);
+    setPieceIdx(flatIdx);
+    setPieceFlash(flatIdx);
+    setExpanded(false);
+    setDetailItem(null);
+    setMenuOpen(false);
+    setMobileMenuOpen(false);
+    setTimeout(() => { busy.current = false; setPieceFlash(-1); }, 1100);
+  }, [cur]);
 
   const goPiece = useCallback((i) => {
     setPieceIdx(i);
@@ -245,7 +309,11 @@ function Gallery() {
     near.forEach((i) => CATS[i]?.pieces.forEach((p) => {
       (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
     }));
-    const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
+    const onKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowRight") go(cur + 1);
+      if (e.key === "ArrowLeft") go(cur - 1);
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [cur, go, CATS]);
@@ -256,6 +324,19 @@ function Gallery() {
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    searchInputRef.current?.focus();
+    const onDocClick = (e) => { if (!searchWrapRef.current?.contains(e.target)) setSearchOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setSearchOpen(false); };
+    document.addEventListener("mousedown", onDocClick);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [searchOpen]);
 
   // Piece thumbnails: hovering near either edge auto-scrolls that way, and
   // stops naturally at the start/end — no looping or wrap-around, and the
@@ -336,9 +417,49 @@ function Gallery() {
           Sculpture Catalogue
         </button>
         <div className="fw-top-actions">
+          <div className="fw-search-wrap" ref={searchWrapRef}>
+            <button
+              className={`fw-icon-btn ${searchOpen ? "open" : ""}`}
+              aria-label="Search designs"
+              aria-expanded={searchOpen}
+              onClick={() => { setMenuOpen(false); setMobileMenuOpen(false); setSearchOpen((v) => !v); }}
+            >
+              <Search size={15} />
+            </button>
+            {searchOpen && (
+              <div className="fw-search-panel">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search designs…"
+                  className="fw-search-input"
+                />
+                {searchQuery.trim() && (
+                  <div className="fw-search-results">
+                    {searchResults.length === 0 && <div className="fw-search-empty">No matches</div>}
+                    {searchResults.map((r) => (
+                      <button
+                        key={`${r.catIdx}-${r.flatIdx}-${r.name}`}
+                        className="fw-search-result"
+                        onClick={() => jumpToPiece(r.catIdx, r.flatIdx)}
+                      >
+                        <img src={r.img} alt="" />
+                        <span>
+                          <span className="fw-search-result-name">{r.name}</span>
+                          <span className="fw-search-result-cat">{r.catLabel}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <div className="fw-top-right">
             <div className="fw-menu-wrap" ref={menuWrapRef}>
-              <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen((v) => !v)}>
+              <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => { setSearchOpen(false); setMenuOpen((v) => !v); }}>
                 Collection Menu <ChevronDown size={12} />
               </button>
               {menuOpen && (
@@ -360,7 +481,7 @@ function Gallery() {
             className="fw-icon-btn fw-hamburger"
             aria-label="Menu"
             aria-expanded={mobileMenuOpen}
-            onClick={() => setMobileMenuOpen((v) => !v)}
+            onClick={() => { setSearchOpen(false); setMobileMenuOpen((v) => !v); }}
           >
             <svg width="18" height="18" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               {mobileMenuOpen
