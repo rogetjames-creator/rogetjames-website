@@ -1,6 +1,8 @@
+import crypto from "node:crypto";
+
 const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "Clients";
 
-export default async function handler(req) {
+export default async function handler(req, context) {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
@@ -16,13 +18,19 @@ export default async function handler(req) {
     return json({ error: "Server configuration missing." }, 500);
   }
 
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for") || "";
+  if (tooManyAttempts(ip)) return json({ error: "Too many attempts. Please try again later." }, 429);
+
   let body;
   try { body = await req.json(); }
   catch { return json({ error: "Invalid request." }, 400); }
 
   const { adminSecret, clientEmail } = body;
   if (!adminSecret || !clientEmail) return json({ error: "Missing required fields." }, 400);
-  if (!safeEqual(adminSecret, adminPass)) return json({ error: "Unauthorized." }, 401);
+  if (!safeEqual(adminSecret, adminPass)) {
+    bumpAttempts(ip);
+    return json({ error: "Unauthorized." }, 401);
+  }
 
   // Reject anything that could break out of the Airtable formula string below.
   const emailOk = typeof clientEmail === "string" && /^[^\s"'(),]{1,120}@[^\s"'(),]{1,120}$/.test(clientEmail);
@@ -81,12 +89,18 @@ export default async function handler(req) {
     return json({ error: err.message || "Failed to send email." }, 500);
   }
 
-  // Mark invite as sent in Airtable
-  await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}/${record.id}`, {
-    method: "PATCH",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ fields: { "Invite Sent": true } }),
-  });
+  // Mark invite as sent in Airtable. The invite email has already gone out, so a
+  // failure here (e.g. a network blip) must not turn a successful send into a
+  // 500 — log it and still report success.
+  try {
+    await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}/${record.id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ fields: { "Invite Sent": true } }),
+    });
+  } catch (e) {
+    console.warn("vault-invite: could not set 'Invite Sent':", e?.message || e);
+  }
 
   return json({ success: true, vaultUrl }, 200);
 }
@@ -152,12 +166,33 @@ function buildEmail(firstName, projectTitle, vaultUrl) {
 </html>`;
 }
 
-// Constant-time string comparison — avoids leaking the admin secret via response timing.
+// Constant-time comparison via fixed-length SHA-256 digests — avoids leaking
+// the admin secret's length or content through response timing.
 function safeEqual(a, b) {
-  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return mismatch === 0;
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const ha = crypto.createHash("sha256").update(a).digest();
+  const hb = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+
+// Per-IP failed-attempt limiter (per warm instance). Only wrong-password tries
+// are counted, so a correct-password admin is never locked out.
+const ATTEMPTS = new Map();
+const ATTEMPT_WINDOW_MS = 600_000; // 10 minutes
+const MAX_ATTEMPTS = 8;
+function tooManyAttempts(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  ATTEMPTS.set(ip, recent);
+  return recent.length >= MAX_ATTEMPTS;
+}
+function bumpAttempts(ip) {
+  if (!ip) return;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  recent.push(now);
+  ATTEMPTS.set(ip, recent);
 }
 
 function json(data, status) {

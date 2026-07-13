@@ -9,6 +9,7 @@
 // Blobs (from before this change) are still listed/deletable here so
 // nothing already uploaded is lost.
 import { getStore } from "@netlify/blobs";
+import crypto from "node:crypto";
 
 const OWNER = "rogetjames-creator";
 const REPO = "rogetjames-website";
@@ -110,11 +111,8 @@ async function getManifest() {
 // Commits any number of new files, removed files, and the updated manifest as
 // ONE git commit — so a whole batch triggers exactly one Netlify rebuild.
 async function commitBatch({ addFiles = [], removePaths = [], manifest, message }) {
-  const ref = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
-  const baseSha = ref.object.sha;
-  const baseCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits/${baseSha}`);
-  const baseTreeSha = baseCommit.tree.sha;
-
+  // Pre-create the blobs once. Blobs are content-addressed, so if a retry has
+  // to rebuild the tree these same shas are reused — no duplication.
   const tree = [];
   for (const f of addFiles) {
     const blob = await gh(`/repos/${OWNER}/${REPO}/git/blobs`, {
@@ -132,29 +130,53 @@ async function commitBatch({ addFiles = [], removePaths = [], manifest, message 
   });
   tree.push({ path: "public/media-manifest.json", mode: "100644", type: "blob", sha: manifestBlob.sha });
 
-  const newTree = await gh(`/repos/${OWNER}/${REPO}/git/trees`, {
-    method: "POST",
-    body: JSON.stringify({ base_tree: baseTreeSha, tree }),
-  });
-  const newCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits`, {
-    method: "POST",
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [baseSha] }),
-  });
-  await gh(`/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`, {
-    method: "PATCH",
-    body: JSON.stringify({ sha: newCommit.sha }),
-  });
+  // Read HEAD, build the tree + commit on it, then move the branch ref. If a
+  // concurrent upload (or Netlify's own commit) moved the branch between our
+  // read and the PATCH, that PATCH is a non-fast-forward (GitHub 422); re-read
+  // the new HEAD and rebuild onto it. Bounded retries so a real error still
+  // surfaces. (Under truly simultaneous manifest edits the manifest is
+  // last-writer-wins, but no commit is lost and the batch never 500s on the race.)
+  let lastErr;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const ref = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
+    const baseSha = ref.object.sha;
+    const baseCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits/${baseSha}`);
+    const newTree = await gh(`/repos/${OWNER}/${REPO}/git/trees`, {
+      method: "POST",
+      body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree }),
+    });
+    const newCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits`, {
+      method: "POST",
+      body: JSON.stringify({ message, tree: newTree.sha, parents: [baseSha] }),
+    });
+    try {
+      await gh(`/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`, {
+        method: "PATCH",
+        body: JSON.stringify({ sha: newCommit.sha }),
+      });
+      return;
+    } catch (e) {
+      lastErr = e; // branch moved under us — re-read HEAD and rebuild
+    }
+  }
+  throw lastErr;
 }
 
-export default async function handler(req) {
+export default async function handler(req, context) {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const adminPass = process.env.VAULT_ADMIN_SECRET;
   if (!adminPass) return json({ error: "Server not configured" }, 500);
 
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for") || "";
+  if (tooManyAttempts(ip)) return json({ error: "Too many attempts. Please try again later." }, 429);
+
   let body;
   try { body = await req.json(); } catch { return json({ error: "Bad request" }, 400); }
-  if (!safeEqual(body.adminSecret, adminPass)) return json({ error: "Unauthorized" }, 401);
+  if (!safeEqual(body.adminSecret, adminPass)) {
+    bumpAttempts(ip);
+    return json({ error: "Unauthorized" }, 401);
+  }
 
   const oldStore = getStore({ name: OLD_STORE, consistency: "strong" });
 
@@ -387,11 +409,33 @@ export default async function handler(req) {
   }
 }
 
+// Constant-time comparison via fixed-length SHA-256 digests — avoids leaking
+// the admin secret's length or content through response timing.
 function safeEqual(a, b) {
-  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return mismatch === 0;
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const ha = crypto.createHash("sha256").update(a).digest();
+  const hb = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+
+// Per-IP failed-attempt limiter (per warm instance). Only wrong-password tries
+// are counted, so a correct-password admin is never locked out of uploading.
+const ATTEMPTS = new Map();
+const ATTEMPT_WINDOW_MS = 600_000; // 10 minutes
+const MAX_ATTEMPTS = 8;
+function tooManyAttempts(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  ATTEMPTS.set(ip, recent);
+  return recent.length >= MAX_ATTEMPTS;
+}
+function bumpAttempts(ip) {
+  if (!ip) return;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  recent.push(now);
+  ATTEMPTS.set(ip, recent);
 }
 
 function json(data, status) {

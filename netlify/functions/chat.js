@@ -354,11 +354,11 @@ Tone and scope:
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
 // Allow only our own site to call this endpoint. A real browser always sends
-// an Origin on POST; we block when it is present and not ours (the common
-// "ran your fetch from my page" abuse) but still allow a missing Origin so we
-// never break an unusual-but-legitimate client.
+// an Origin (or at least a Referer) on POST; we reject when it is missing or
+// not ours — this blocks the common "ran your fetch from my page" abuse as
+// well as origin-less scripted calls.
 function originAllowed(origin) {
-  if (!origin) return true;
+  if (!origin) return false;
   try {
     const h = new URL(origin).hostname;
     return h === "rogetjames.com" || h === "www.rogetjames.com" || h.endsWith(".netlify.app");
@@ -384,6 +384,8 @@ const CONVO_CAP = 20;
 
 // Hard daily cap per device/IP, counted in Netlify Blobs so it holds across
 // function instances. Stops sustained abuse beyond a sensible daily volume.
+// Checking and incrementing are kept separate so a failed Anthropic call never
+// burns the visitor's quota — the count is only bumped after a good reply.
 const DAILY_CAP = 50;
 async function dailyCapReached(ip) {
   if (!ip) return false;
@@ -391,11 +393,20 @@ async function dailyCapReached(ip) {
     const store = getStore({ name: "chat-rate", consistency: "strong" });
     const key = `${ip}_${new Date().toISOString().slice(0, 10)}`;
     const count = (await store.get(key, { type: "json" })) || 0;
-    if (count >= DAILY_CAP) return true;
-    await store.setJSON(key, count + 1);
-    return false;
+    return count >= DAILY_CAP;
   } catch {
     return false; // a storage hiccup must never block a normal visitor
+  }
+}
+async function bumpDailyCount(ip) {
+  if (!ip) return;
+  try {
+    const store = getStore({ name: "chat-rate", consistency: "strong" });
+    const key = `${ip}_${new Date().toISOString().slice(0, 10)}`;
+    const count = (await store.get(key, { type: "json" })) || 0;
+    await store.setJSON(key, count + 1);
+  } catch {
+    /* a storage hiccup must never block a normal visitor */
   }
 }
 
@@ -404,7 +415,7 @@ export default async function handler(req, context) {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  if (!originAllowed(req.headers.get("origin"))) {
+  if (!originAllowed(req.headers.get("origin") || req.headers.get("referer"))) {
     return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: JSON_HEADERS });
   }
 
@@ -439,11 +450,25 @@ export default async function handler(req, context) {
     });
   }
 
+  // Shape guard — every item must be a { role: user|assistant, content: string }
+  // before we forward anything to Anthropic.
+  const validShape = messages.every(
+    (m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string"
+  );
+  if (!validShape) {
+    return new Response(JSON.stringify({ error: "Invalid messages" }), { status: 400, headers: JSON_HEADERS });
+  }
+
   // Per-conversation cap — friendly hand-off to email after a sensible number
   // of turns. Checked before the raw size guard so a normal long chat gets the
   // polite message rather than a generic "too long" error.
   if (messages.filter((m) => m.role === "user").length > CONVO_CAP) {
     return new Response(JSON.stringify({ reply: "We've covered a fair bit here — for anything more detailed, please email james@rogetjames.com." }), { status: 200, headers: JSON_HEADERS });
+  }
+
+  // Hard cap on the number of messages accepted in a single request.
+  if (messages.length > 40) {
+    return new Response(JSON.stringify({ error: "Too many messages." }), { status: 400, headers: JSON_HEADERS });
   }
 
   // Payload backstop so a crafted request can't run up token costs.
@@ -484,7 +509,21 @@ export default async function handler(req, context) {
       });
     }
 
-    return new Response(JSON.stringify({ reply: data.content[0].text }), {
+    // Guard the response shape before reading .text, so a malformed payload
+    // returns a clean error instead of throwing.
+    const block = Array.isArray(data.content) ? data.content[0] : null;
+    const reply = block && block.type === "text" && typeof block.text === "string" ? block.text : null;
+    if (!reply) {
+      return new Response(JSON.stringify({ error: "Empty response" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Count this against the daily cap only now that the call has succeeded.
+    await bumpDailyCount(ip);
+
+    return new Response(JSON.stringify({ reply }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

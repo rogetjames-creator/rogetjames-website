@@ -2,19 +2,26 @@
 // Blobs so photos can be added from the phone/desktop app with no git, no
 // redeploy. Gated by the same admin password as the stats page.
 import { getStore } from "@netlify/blobs";
+import crypto from "node:crypto";
 
 const STORE = "up-close-images";
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB per image
 
-export default async function handler(req) {
+export default async function handler(req, context) {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   const adminPass = process.env.VAULT_ADMIN_SECRET;
   if (!adminPass) return json({ error: "Server not configured" }, 500);
 
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for") || "";
+  if (tooManyAttempts(ip)) return json({ error: "Too many attempts. Please try again later." }, 429);
+
   let body;
   try { body = await req.json(); } catch { return json({ error: "Bad request" }, 400); }
-  if (!safeEqual(body.adminSecret, adminPass)) return json({ error: "Unauthorized" }, 401);
+  if (!safeEqual(body.adminSecret, adminPass)) {
+    bumpAttempts(ip);
+    return json({ error: "Unauthorized" }, 401);
+  }
 
   const store = getStore({ name: STORE, consistency: "strong" });
 
@@ -43,11 +50,33 @@ export default async function handler(req) {
   return json({ ok: true, saved });
 }
 
+// Constant-time comparison via fixed-length SHA-256 digests — avoids leaking
+// the admin secret's length or content through response timing.
 function safeEqual(a, b) {
-  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return mismatch === 0;
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const ha = crypto.createHash("sha256").update(a).digest();
+  const hb = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+
+// Per-IP failed-attempt limiter (per warm instance). Only wrong-password tries
+// are counted, so a correct-password admin is never locked out of uploading.
+const ATTEMPTS = new Map();
+const ATTEMPT_WINDOW_MS = 600_000; // 10 minutes
+const MAX_ATTEMPTS = 8;
+function tooManyAttempts(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  ATTEMPTS.set(ip, recent);
+  return recent.length >= MAX_ATTEMPTS;
+}
+function bumpAttempts(ip) {
+  if (!ip) return;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  recent.push(now);
+  ATTEMPTS.set(ip, recent);
 }
 
 function json(data, status) {

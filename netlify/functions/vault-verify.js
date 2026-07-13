@@ -18,7 +18,7 @@ const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "Clients";
     Invite Sent        — checkbox (auto-set when invite is sent)
 */
 
-export default async function handler(req) {
+export default async function handler(req, context) {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
   }
@@ -26,6 +26,9 @@ export default async function handler(req) {
   const apiKey = process.env.AIRTABLE_API_KEY;
   const baseId = process.env.AIRTABLE_BASE_ID;
   if (!apiKey || !baseId) return json({ error: "Server configuration missing." }, 500);
+
+  const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for") || "";
+  if (tooManyAttempts(ip)) return json({ error: "Too many attempts. Please try again later." }, 429);
 
   let body;
   try { body = await req.json(); }
@@ -38,7 +41,7 @@ export default async function handler(req) {
   // Tokens are UUID-style; emails are normal addresses. Quotes/parens/commas/whitespace are not allowed.
   const tokenOk = typeof token === "string" && /^[A-Za-z0-9._-]{1,100}$/.test(token);
   const emailOk = typeof email === "string" && /^[^\s"'(),]{1,120}@[^\s"'(),]{1,120}$/.test(email);
-  if (!tokenOk || !emailOk) return json({ error: "Invalid token or email." }, 400);
+  if (!tokenOk || !emailOk) { bumpAttempts(ip); return json({ error: "Invalid token or email." }, 400); }
 
   const formula = encodeURIComponent(`AND({Token}="${token}",LOWER({Email})="${email.toLowerCase()}")`);
   const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}?filterByFormula=${formula}`;
@@ -52,6 +55,7 @@ export default async function handler(req) {
   }
 
   if (!res.ok || !data.records?.length) {
+    bumpAttempts(ip);
     return json({ error: "Email not recognised for this link. Please check and try again." }, 404);
   }
 
@@ -96,6 +100,26 @@ function parseLinks(field) {
       return label && url ? { label, url, description: description || null } : null;
     })
     .filter(Boolean);
+}
+
+// Per-IP failed-attempt limiter (per warm instance). Only failed verifications
+// are counted, so a client entering the right email is never locked out.
+const ATTEMPTS = new Map();
+const ATTEMPT_WINDOW_MS = 600_000; // 10 minutes
+const MAX_ATTEMPTS = 8;
+function tooManyAttempts(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  ATTEMPTS.set(ip, recent);
+  return recent.length >= MAX_ATTEMPTS;
+}
+function bumpAttempts(ip) {
+  if (!ip) return;
+  const now = Date.now();
+  const recent = (ATTEMPTS.get(ip) || []).filter((t) => now - t < ATTEMPT_WINDOW_MS);
+  recent.push(now);
+  ATTEMPTS.set(ip, recent);
 }
 
 function json(data, status) {

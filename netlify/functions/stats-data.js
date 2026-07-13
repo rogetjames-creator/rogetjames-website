@@ -2,6 +2,7 @@
 // Netlify Blobs (written by track-event.js) and returns the raw recent events
 // plus rollup counts. Gated by the VAULT_ADMIN_SECRET admin password.
 import { getStore } from "@netlify/blobs";
+import crypto from "node:crypto";
 
 const STORE_NAME = "pricing-interest";
 
@@ -88,12 +89,13 @@ async function tooManyAttempts(ip) {
   }
 }
 
-// Constant-time string comparison — avoids leaking the admin secret via response timing.
+// Constant-time comparison via fixed-length SHA-256 digests — avoids leaking
+// the admin secret's length or content through response timing.
 function safeEqual(a, b) {
-  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return mismatch === 0;
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const ha = crypto.createHash("sha256").update(a).digest();
+  const hb = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(ha, hb);
 }
 
 function json(data, status) {
