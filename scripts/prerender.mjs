@@ -58,8 +58,31 @@ async function prerender() {
 
   await page.goto(`http://localhost:${PORT}/`, { waitUntil: "networkidle" });
 
-  // Wait for GSAP animations to settle and images to start loading
+  // Wait for content/images to be present in the DOM (for crawlers).
   await page.waitForTimeout(2000);
+
+  // Reset the hero entrance-animated elements to their INITIAL hidden state
+  // before snapshotting. GSAP leaves them baked in at opacity:1 (or a random
+  // mid-animation value), but React's first client render has them at
+  // opacity:0 — the mismatch made the visible prerendered text snap to
+  // invisible on hydration and re-animate, i.e. the "glitchy text then the
+  // site appears" flash on every load. Matching the initial state removes it;
+  // the text is still in the DOM (opacity:0) so crawlers/SEO are unaffected,
+  // and the drift-in intro then plays once, cleanly, on the client.
+  await page.evaluate(() => {
+    const sel = [
+      ".hero-line-1", ".hero-line-2", ".hero-sub",
+      ".hero-loc-1", ".hero-loc-2", ".hero-loc-3", ".hero-loc-4",
+      ".hero-eyebrow",
+    ].join(",");
+    document.querySelectorAll(sel).forEach((el) => {
+      el.style.opacity = "0";
+      el.style.transform = "";
+      el.style.translate = "";
+      el.style.rotate = "";
+      el.style.scale = "";
+    });
+  });
 
   // Extract the rendered HTML
   const html = await page.content();
