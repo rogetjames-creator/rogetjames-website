@@ -65,15 +65,8 @@ function orderAustralianNatives(flat) {
 
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#000;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity .5s cubic-bezier(.7,0,.2,1);will-change:opacity;z-index:1}
+.fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity .5s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
-/* Blurred, dimmed copy of the same photo filling the space a contained
-   (square/portrait) image would otherwise leave as hard black bars. Keeps the
-   whole artwork visible (never cropped) while the stage reads as immersive
-   full-bleed instead of letterboxed. Scaled up so the blur's soft edge never
-   reveals the container edge. */
-.fw-bgfill{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .5s cubic-bezier(.7,0,.2,1);will-change:opacity;filter:blur(48px) brightness(.42) saturate(1.1);transform:scale(1.18);z-index:0}
-.fw-bgfill.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
 .fw-logo:hover{color:#c08c46}
@@ -471,9 +464,6 @@ function Gallery() {
     <div className="fw-wrap">
       <style>{CSS}</style>
       <div className="fw-imgslot">
-        {pieces.map((p, i) => (
-          <div key={`fill-${c.id}-${i}`} className={`fw-bgfill ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
-        ))}
         {pieces.map((p, i) => (
           <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
         ))}
