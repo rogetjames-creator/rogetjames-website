@@ -61,7 +61,20 @@ export default function Hero() {
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
   const logoActiveRef = useRef(false);
+  // Once the logo has had its moment it retires for good — it sits over the
+  // hero and gets in the way if it lingers.
+  const logoRetiredRef = useRef(false);
   const lenis = useLenis();
+
+  // Retire the logo 10s after the page loads: fade it out and never bring it
+  // back, even on scroll to the top.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      logoRetiredRef.current = true;
+      setLogoShown(false);
+    }, 10000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Track viewport so the logo can be sized responsively (was a fixed 124px on
   // every screen — roughly twice too large on a phone).
@@ -79,7 +92,7 @@ export default function Hero() {
   useEffect(() => {
     const HIDE_AT = () => Math.max(60, window.innerHeight * 0.1);
     const onScroll = () => {
-      setLogoShown(logoActiveRef.current && window.scrollY < HIDE_AT());
+      setLogoShown(logoActiveRef.current && !logoRetiredRef.current && window.scrollY < HIDE_AT());
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -137,8 +150,9 @@ export default function Hero() {
 
       setLogoActive(true);
       logoActiveRef.current = true;
-      // Only reveal it if we're at the top; the scroll handler owns it after.
-      setLogoShown(window.scrollY < Math.max(60, window.innerHeight * 0.1));
+      // Only reveal it if we're at the top and it hasn't retired; the scroll
+      // handler and the 10s timer own it after.
+      setLogoShown(!logoRetiredRef.current && window.scrollY < Math.max(60, window.innerHeight * 0.1));
     };
 
     const resetDrift = () => {

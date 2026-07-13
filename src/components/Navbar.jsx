@@ -198,7 +198,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${collectionOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {collectionOpen && (
-                <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
+                <div className="absolute top-full left-0 pt-2 pb-1 min-w-[120px]">
                   {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); if (href) { window.location.href = href; return; } window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                       className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
@@ -216,7 +216,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${bespokeOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {bespokeOpen && (
-                <div className="absolute top-full left-0 mt-1 py-1 min-w-[120px]">
+                <div className="absolute top-full left-0 pt-2 pb-1 min-w-[120px]">
                   {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
                     const locked = LOCKED_BESPOKE_CATS.includes(cat);
                     return (
@@ -243,7 +243,7 @@ export default function Navbar({ quoteCount = 0 }) {
                 </svg>
               </button>
               {catOpen && (
-                <div className="absolute top-full left-0 mt-1 py-1 min-w-[180px]">
+                <div className="absolute top-full left-0 pt-2 pb-1 min-w-[180px]">
                   {CATALOGUES.map((cat) => (
                     <button key={cat.label} onClick={() => { setOpenCat(cat); setCatOpen(false); }}
                       className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
