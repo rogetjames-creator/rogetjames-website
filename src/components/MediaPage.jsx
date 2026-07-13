@@ -3,6 +3,10 @@ import { MEDIA_DESTINATIONS } from "./Gallery";
 
 const API = "/api/media-upload";
 
+// The cached admin password ("stats_key") expires after 30 days, so a lost or
+// old device cannot stay signed in indefinitely.
+const STATS_KEY_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
 // Destinations are generated automatically from the live catalogue categories
 // (imported from Gallery). Every category is always selectable; new categories
 // appear on their own. Photos tagged to a category show as that category's
@@ -79,10 +83,10 @@ export default function MediaPage() {
       const json = await res.json();
       if (!res.ok || json.error) {
         setError(json.error || "Failed."); setAuthed(false);
-        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+        try { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); } catch { /* ignore */ }
       } else {
         setAuthed(true); setSecret(adminSecret); setImages(json.images || []);
-        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        try { localStorage.setItem("stats_key", adminSecret); localStorage.setItem("stats_key_t", String(Date.now())); } catch { /* ignore */ }
       }
     } catch { setError("Request failed. Check your connection."); }
     finally { setLoading(false); }
@@ -98,7 +102,16 @@ export default function MediaPage() {
 
   useEffect(() => {
     const urlKey = new URLSearchParams(window.location.search).get("key");
-    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
+    const saved = urlKey || (() => {
+      try {
+        const k = localStorage.getItem("stats_key");
+        const t = Number(localStorage.getItem("stats_key_t"));
+        if (k && t && Date.now() - t < STATS_KEY_MAX_AGE_MS) return k;
+        localStorage.removeItem("stats_key");
+        localStorage.removeItem("stats_key_t");
+        return null;
+      } catch { return null; }
+    })();
     if (urlKey) window.history.replaceState({}, "", "/media");
     if (saved) login(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -429,7 +442,7 @@ export default function MediaPage() {
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center px-6" onClick={() => setEditing(null)}>
           <div className="w-full max-w-md bg-jet border border-white/18 rounded-2xl p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
-              <img src={editing.src} alt="" className="w-14 h-14 rounded-lg object-cover border border-white/10" />
+              <img src={editing.src} alt={editing.name || "Selected photo"} className="w-14 h-14 rounded-lg object-cover border border-white/10" />
               <div>
                 <p className="font-heading text-cream text-sm">Show this photo in…</p>
                 <p className="font-detail text-[11px] text-cream/50">Tick every place it should appear.</p>

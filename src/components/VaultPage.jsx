@@ -25,6 +25,7 @@ function Lightbox({ items, startIndex, onClose }) {
   useEffect(() => {
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" });
     document.body.style.overflow = "hidden";
+    overlayRef.current?.focus();
     return () => { document.body.style.overflow = ""; };
   }, []);
 
@@ -48,7 +49,11 @@ function Lightbox({ items, startIndex, onClose }) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[300] flex items-center justify-center bg-black/97 backdrop-blur-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image viewer"
+      tabIndex={-1}
+      className="fixed inset-0 z-[300] flex items-center justify-center bg-black/97 backdrop-blur-xl outline-none"
       onClick={e => e.target === e.currentTarget && close()}
     >
       <button onClick={close} className="absolute top-5 right-5 w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors z-10">
@@ -117,18 +122,21 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
   // Initial entrance
   useEffect(() => {
     if (!containerRef.current) return;
-    const slides = containerRef.current.querySelectorAll(".hero-slide");
-    slides.forEach((s, i) => gsap.set(s, { opacity: i === 0 ? 1 : 0 }));
+    const ctx = gsap.context(() => {
+      const slides = containerRef.current.querySelectorAll(".hero-slide");
+      slides.forEach((s, i) => gsap.set(s, { opacity: i === 0 ? 1 : 0 }));
 
-    if (titleRef.current) {
-      const children = Array.from(titleRef.current.children);
-      gsap.fromTo(children,
-        { opacity: 0, y: 28 },
-        { opacity: 1, y: 0, duration: 1.1, delay: 0.5, stagger: 0.12, ease: "power3.out" }
-      );
-    }
+      if (titleRef.current) {
+        const children = Array.from(titleRef.current.children);
+        gsap.fromTo(children,
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 1.1, delay: 0.5, stagger: 0.12, ease: "power3.out" }
+        );
+      }
 
-    if (images.length > 1) restartProgress();
+      if (images.length > 1) restartProgress();
+    }, containerRef);
+    return () => ctx.revert();
   }, [images, restartProgress]);
 
   // Auto-advance
@@ -230,8 +238,11 @@ function GallerySlideshow({ images, onOpenLightbox }) {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const slides = containerRef.current.querySelectorAll(".gal-slide");
-    slides.forEach((s, i) => gsap.set(s, { opacity: i === 0 ? 1 : 0, xPercent: 0 }));
+    const ctx = gsap.context(() => {
+      const slides = containerRef.current.querySelectorAll(".gal-slide");
+      slides.forEach((s, i) => gsap.set(s, { opacity: i === 0 ? 1 : 0, xPercent: 0 }));
+    }, containerRef);
+    return () => ctx.revert();
   }, []);
 
   const go = useCallback((next, dir) => {
@@ -328,15 +339,18 @@ function KeyPoints({ points }) {
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    const items = sectionRef.current.querySelectorAll(".kp-item");
-    if (!items.length) return;
-    gsap.fromTo(items,
-      { opacity: 0, y: 28 },
-      {
-        opacity: 1, y: 0, duration: 0.65, stagger: 0.09, ease: "power3.out",
-        scrollTrigger: { trigger: sectionRef.current, start: "top 72%" },
-      }
-    );
+    const ctx = gsap.context(() => {
+      const items = sectionRef.current.querySelectorAll(".kp-item");
+      if (!items.length) return;
+      gsap.fromTo(items,
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1, y: 0, duration: 0.65, stagger: 0.09, ease: "power3.out",
+          scrollTrigger: { trigger: sectionRef.current, start: "top 72%" },
+        }
+      );
+    }, sectionRef);
+    return () => ctx.revert();
   }, [points]);
 
   return (
@@ -365,15 +379,18 @@ function LinksSection({ links }) {
 
   useEffect(() => {
     if (!sectionRef.current) return;
-    const cards = sectionRef.current.querySelectorAll(".link-card");
-    if (!cards.length) return;
-    gsap.fromTo(cards,
-      { opacity: 0, y: 22 },
-      {
-        opacity: 1, y: 0, duration: 0.55, stagger: 0.08, ease: "power3.out",
-        scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
-      }
-    );
+    const ctx = gsap.context(() => {
+      const cards = sectionRef.current.querySelectorAll(".link-card");
+      if (!cards.length) return;
+      gsap.fromTo(cards,
+        { opacity: 0, y: 22 },
+        {
+          opacity: 1, y: 0, duration: 0.55, stagger: 0.08, ease: "power3.out",
+          scrollTrigger: { trigger: sectionRef.current, start: "top 75%" },
+        }
+      );
+    }, sectionRef);
+    return () => ctx.revert();
   }, [links]);
 
   return (
@@ -387,7 +404,7 @@ function LinksSection({ links }) {
               key={i}
               href={link.url}
               target={isExternal ? "_blank" : "_self"}
-              rel={isExternal ? "noreferrer" : undefined}
+              rel={isExternal ? "noopener noreferrer" : undefined}
               className="link-card group flex items-start justify-between p-5 bg-cream/[0.03] border border-cream/[0.07] rounded-2xl hover:border-clay/35 hover:bg-cream/[0.06] transition-all duration-200"
             >
               <div className="pr-3">
@@ -419,7 +436,7 @@ function DocumentsSection({ pdfs }) {
             href={pdf.url}
             download={pdf.name}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="flex items-center gap-4 p-4 bg-cream/[0.03] border border-cream/[0.07] rounded-2xl hover:border-clay/35 hover:bg-cream/[0.06] transition-all duration-200 group"
           >
             <div className="w-10 h-10 rounded-xl bg-clay/10 border border-clay/20 flex items-center justify-center flex-shrink-0">
@@ -461,20 +478,22 @@ function VaultContent({ clientData }) {
     });
 
     // Overview section entrance
-    if (overviewRef.current) {
-      const els = overviewRef.current.querySelectorAll(".reveal");
-      if (els.length) {
-        gsap.fromTo(els,
-          { opacity: 0, y: 22 },
-          {
-            opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
-            scrollTrigger: { trigger: overviewRef.current, start: "top 70%" },
-          }
-        );
+    const ctx = gsap.context(() => {
+      if (overviewRef.current) {
+        const els = overviewRef.current.querySelectorAll(".reveal");
+        if (els.length) {
+          gsap.fromTo(els,
+            { opacity: 0, y: 22 },
+            {
+              opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
+              scrollTrigger: { trigger: overviewRef.current, start: "top 70%" },
+            }
+          );
+        }
       }
-    }
+    }, overviewRef);
 
-    return () => st.kill();
+    return () => { st.kill(); ctx.revert(); };
   }, []);
 
   return (
@@ -859,26 +878,28 @@ export default function VaultPage() {
   const isAdmin = params.get("admin") === "1";
   const STORAGE_KEY = token ? `roj_vault_${token}` : null;
 
-  const [step, setStep] = useState("loading");
-  const [clientData, setClientData] = useState(null);
-
-  useEffect(() => {
-    if (isAdmin) { setStep("admin"); return; }
-    if (!token) { setStep("error"); return; }
+  // Decide the first screen synchronously — admin, error, cached content, or the
+  // verify gate — so we never call setState from an effect just to choose it.
+  const [initial] = useState(() => {
+    if (isAdmin) return { step: "admin", data: null };
+    if (!token) return { step: "error", data: null };
     try {
       const cached = localStorage.getItem(STORAGE_KEY);
       if (cached) {
-        const { data } = JSON.parse(cached);
-        if (data) { setClientData(data); setStep("content"); return; }
+        const parsed = JSON.parse(cached);
+        if (parsed?.data) return { step: "content", data: parsed.data };
       }
-    } catch {}
-    setStep("verify");
-  }, []);
+    } catch { /* ignore malformed cache */ }
+    return { step: "verify", data: null };
+  });
+
+  const [step, setStep] = useState(initial.step);
+  const [clientData, setClientData] = useState(initial.data);
 
   const handleVerified = (data, verifiedEmail) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, verifiedEmail }));
-    } catch {}
+    } catch { /* ignore storage write failure */ }
     setClientData(data);
     setStep("content");
   };

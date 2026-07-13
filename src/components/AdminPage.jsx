@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+// The cached admin password ("stats_key") expires after 30 days, so a lost or
+// old device cannot stay signed in indefinitely.
+const STATS_KEY_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
 // Verifies the admin password against the stats endpoint (the simple, reliable
 // password check), stores it so the other admin pages (stats, media) auto-open
 // on this device, and shows a hub of links to every non-public area.
@@ -22,10 +26,10 @@ export default function AdminPage() {
       if (!res.ok || json.error) {
         setError(json.error || "Failed.");
         setAuthed(false);
-        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+        try { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); } catch { /* ignore */ }
       } else {
         setAuthed(true);
-        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        try { localStorage.setItem("stats_key", adminSecret); localStorage.setItem("stats_key_t", String(Date.now())); } catch { /* ignore */ }
       }
     } catch {
       setError("Request failed. Check your connection.");
@@ -36,7 +40,16 @@ export default function AdminPage() {
 
   useEffect(() => {
     const urlKey = new URLSearchParams(window.location.search).get("key");
-    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
+    const saved = urlKey || (() => {
+      try {
+        const k = localStorage.getItem("stats_key");
+        const t = Number(localStorage.getItem("stats_key_t"));
+        if (k && t && Date.now() - t < STATS_KEY_MAX_AGE_MS) return k;
+        localStorage.removeItem("stats_key");
+        localStorage.removeItem("stats_key_t");
+        return null;
+      } catch { return null; }
+    })();
     if (urlKey) window.history.replaceState({}, "", "/admin");
     if (saved) login(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
