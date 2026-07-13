@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
@@ -7,12 +7,12 @@ import CatPageViewer from "./CatPageViewer";
 import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
 import { ScreensGalleryModal } from "./BespokeCommissions";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { netlifyImg } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // ── Regional Pricing Gate ─────────────────────────────────────────────────
 const ADMIN_CODE = "1966";
-const TEMP_SHOW_ALL_PRICES = false;
 const checkWA = (pc) => { const n = parseInt(pc, 10); return n >= 6000 && n <= 6999; };
 const trackEvent = (payload) => {
   fetch("/api/track-event", {
@@ -276,11 +276,12 @@ function ReelsPortal({ onOpen }) {
   );
 }
 
-const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
+// Raw local path — the CDN-sourced catalogue shots live in public/images/cdn-gallery/.
+// Kept as a plain /images/ path so netlifyImg() can width-optimise them uniformly
+// like every other local image (it rewrites to /.netlify/images at render time).
+const CDN = "/images/cdn-gallery";
 
 // Wall Art series — display order
-const CDN_G = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
-
 const WALL_ART_SERIES = [
   // ── AUSTRALIAN NATIVES ───────────────────
   {
@@ -950,69 +951,6 @@ const PIECE_SIZES = {
   ],
 };
 
-// Dimensions lookup — edit these values to match actual piece measurements
-const DIMENSIONS = {
-  // Branches Series
-  "GREN Edge":          "1200 × 900 mm",
-  "GREN Tao":           "1200 × 900 mm",
-  "WANDOO":             "900 × 600 mm",
-  "KYRA LEAF":          "800 × 600 mm",
-  "AUTUMN LEAF":        "1000 × 700 mm",
-  "VILLA LEAF":         "1500 × 900 mm",
-  // Banksia Collection
-  "BANKSIA Free Range":     "900 × 900 mm",
-  "BANKSIA Rec Landscape":  "1200 × 800 mm",
-  "BANKSIA Rec Portrait":   "800 × 1200 mm",
-  "BANKSIA Frame":      "1200 × 900 mm",
-  "RUE the 3rd":        "800 × 800 mm",
-  "UBUD Round":         "Ø 800 mm",
-  "DANDELIONS":         "1200 × 600 mm",
-  "DIAMOND BLOOM":      "1410 × 1597 mm",
-  // Creeping Fig Series
-  "Creeping Fig I":     "1800 × 1200 mm",
-  "Creeping Fig II":    "1800 × 1200 mm",
-  "Creeping Fig III":   "1800 × 1200 mm",
-  "Creeping Fig IV":    "1800 × 1200 mm",
-  "Creeping Fig V":     "1800 × 1200 mm",
-  // Plume Collection
-  "PLUME DECO":         "1000 × 1200 mm",
-  "FEATHER":            "600 × 1200 mm",
-  "BIRDY NUM NUM":      "800 × 600 mm",
-  "FERLICI":            "900 × 900 mm",
-  "BAMBU":              "1200 × 400 mm",
-  // Screens & Gates
-  "ERGO":               "2400 × 1200 mm",
-  "GRAIL":              "2800 × 1600 mm",
-  "FERLIE":             "2000 × 1000 mm",
-  "LUCARIO":            "1800 × 900 mm",
-  "LUMIER":             "2200 × 1100 mm",
-  "XAVIER":             "2400 × 1800 mm",
-  // Geometric Series
-  "VUELTA":             "1200 × 900 mm",
-  "ASLYIAM":            "1800 × 1200 mm",
-  "WATTLE":             "600 × 600 mm",
-  "VAYA":               "1200 × 800 mm",
-  // Cultural Patterns
-  "BENIN Inspired":     "1500 × 1200 mm",
-  "RAVI Inspired":      "1800 × 1200 mm",
-  "MARAKESH TRIO":      "3 × 600 × 900 mm",
-  "Unity in Diversity": "2400 × 1200 mm",
-  // Fire & Light
-  "REEDS of UNGARO":    "1800 × 600 mm",
-  "EQUISETTI":          "1800 × 600 mm",
-  "URCHIN":             "Ø 600 mm",
-  "HOMEBASE Fire Pit":  "1200 × 600 mm",
-  "YAZAD Fire":         "1200 × 800 mm",
-  "TOTEMS":             "H 2400 mm",
-  // Sculpture
-  "ORIAN Totem":        "H 1800 mm",
-  "DANDELIONS Totems":  "H 2200 mm",
-  "HOMEBASE":           "2400 × 1200 mm",
-  "HUE":                "1800 × 1200 mm",
-  "Centennial Park":    "Site-specific",
-  "Fiona Stanley":      "Site-specific",
-};
-
 // Build a lookup: design name → all unique image URLs across every series/category
 const NAME_TO_IMAGES = (() => {
   const map = {};
@@ -1044,7 +982,7 @@ function SlidingThumb({ slides, alt, active, focus }) {
   return (
     <div className="w-full h-full relative">
       {slides.map((src, i) => (
-        <img key={src} src={src} alt={alt} loading="lazy" decoding="async"
+        <img key={src} src={netlifyImg(src, { w: 800, q: 80 })} alt={alt} loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ opacity: i === cur ? 1 : 0, transition: 'opacity 0.8s ease', objectPosition: focus || 'center center' }}
         />
@@ -1127,7 +1065,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
   const tier = sizeTiers.find(t => t.id === selectedSize);
   const price = priceFor(tier, selectedMaterial, effWA);
   const showPOA = !price && (isWAUser || isAdmin);
-  const showPrice = TEMP_SHOW_ALL_PRICES || !showPOA;
+  const showPrice = !showPOA;
   const matLabel = MATERIAL_OPTIONS.find(m => m.id === selectedMaterial)?.label;
   const canAdd = selectedSize && selectedMaterial && !added;
 
@@ -1136,7 +1074,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
       id: `${item.name}-${Date.now()}`,
       name: item.name,
       series: item._series || "",
-      size: tier,
+      size: tier && { id: tier.id, label: tier.label, dims: tier.dims },
       material: MATERIAL_OPTIONS.find(m => m.id === selectedMaterial),
       img: item.img,
     }}));
@@ -1263,30 +1201,43 @@ export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPost
 
   const slides = NAME_TO_IMAGES[item.name] || [item.img];
 
-  // Auto-advance slideshow every 2 seconds when there are multiple images
+  // Component-scoped GSAP context — every imperative tween registers here and is
+  // reverted on unmount (mandatory repo pattern), so no tween or setState fires
+  // after the card is gone.
+  const ctxRef = useRef(null);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "power2.out" });
+      gsap.fromTo(cardRef.current, { y: 14, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.15, ease: "power3.out" });
+    }, overlayRef);
+    ctxRef.current = ctx;
+    return () => { ctx.revert(); ctxRef.current = null; };
+  }, []);
+
+  // Auto-advance slideshow when there are multiple images
   useEffect(() => {
     if (slides.length < 2) return;
     const timer = setInterval(() => {
       if (!imgRef.current) return;
-      gsap.to(imgRef.current, {
-        opacity: 0, duration: 1.2, ease: "power2.inOut",
-        onComplete: () => {
-          setSlideIndex((i) => (i + 1) % slides.length);
-          gsap.to(imgRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
-        },
+      ctxRef.current?.add(() => {
+        gsap.to(imgRef.current, {
+          opacity: 0, duration: 1.2, ease: "power2.inOut",
+          onComplete: () => {
+            setSlideIndex((i) => (i + 1) % slides.length);
+            gsap.to(imgRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
+          },
+        });
       });
     }, 4000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  useEffect(() => {
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "power2.out" });
-    gsap.fromTo(cardRef.current, { y: 14, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.15, ease: "power3.out" });
-  }, []);
-
   const handleClose = useCallback(() => {
-    gsap.to(cardRef.current, { y: 14, opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.in" });
-    gsap.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in", delay: 0.05, onComplete: onClose });
+    const run = () => {
+      gsap.to(cardRef.current, { y: 14, opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.in" });
+      gsap.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in", delay: 0.05, onComplete: onClose });
+    };
+    if (ctxRef.current) ctxRef.current.add(run); else run();
   }, [onClose]);
 
   useEffect(() => {
@@ -1325,7 +1276,7 @@ export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPost
         <div className="aspect-[4/3] overflow-hidden relative bg-charcoal flex items-center justify-center">
           <img
             ref={imgRef}
-            src={slides[slideIndex]}
+            src={netlifyImg(slides[slideIndex], { w: 800, q: 82 })}
             alt={item.name}
             className="w-full h-full object-contain"
           />
@@ -1416,36 +1367,49 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setSlideIdx(0); setShowPricingPopup(false); setImgExpanded(false); }, [index]);
 
+  // Component-scoped GSAP context for imperative tweens (index change, close,
+  // crossfade) — reverted on unmount so no tween or setState fires after close.
+  const ctxRef = useRef(null);
+  useEffect(() => {
+    const ctx = gsap.context(() => {}, overlayRef);
+    ctxRef.current = ctx;
+    return () => { ctx.revert(); ctxRef.current = null; };
+  }, []);
+
   useEffect(() => {
     lenis?.stop();
     const ctx = gsap.context(() => {
       gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
       gsap.fromTo(contentRef.current, { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" });
-    });
+    }, overlayRef);
     return () => { ctx.revert(); lenis?.start(); };
   }, [lenis]);
 
   const prevIndex = useRef(index);
   useEffect(() => {
     if (prevIndex.current !== index && contentRef.current) {
-      gsap.fromTo(contentRef.current, { scale: 0.96, opacity: 0.3 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" });
+      ctxRef.current?.add(() => gsap.fromTo(contentRef.current, { scale: 0.96, opacity: 0.3 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" }));
     }
     prevIndex.current = index;
   }, [index]);
 
   const handleClose = useCallback(() => {
     setPlaying(false);
-    const tl = gsap.timeline({ onComplete: onClose });
-    tl.to(contentRef.current, { scale: 0.92, opacity: 0, duration: 0.3, ease: "power2.in" });
-    tl.to(overlayRef.current, { opacity: 0, duration: 0.3, ease: "power2.in" }, "-=0.15");
+    const run = () => {
+      const tl = gsap.timeline({ onComplete: onClose });
+      tl.to(contentRef.current, { scale: 0.92, opacity: 0, duration: 0.3, ease: "power2.in" });
+      tl.to(overlayRef.current, { opacity: 0, duration: 0.3, ease: "power2.in" }, "-=0.15");
+    };
+    if (ctxRef.current) ctxRef.current.add(run); else run();
   }, [onClose]);
 
   const crossfadeTo = useCallback((fn) => {
     if (!imgRef.current) { fn(); return; }
-    gsap.to(imgRef.current, {
+    const run = () => gsap.to(imgRef.current, {
       opacity: 0, duration: 0.35, ease: "power2.inOut",
       onComplete: () => { fn(); gsap.to(imgRef.current, { opacity: 1, duration: 0.35, ease: "power2.inOut" }); },
     });
+    if (ctxRef.current) ctxRef.current.add(run); else run();
   }, []);
 
   const handleLeft = useCallback(() => {
@@ -1491,7 +1455,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
       {/* Image + info */}
       <div ref={contentRef} className="flex flex-col items-center justify-center px-14 md:px-20 w-full max-w-5xl gap-3" style={{ height: "calc(100vh - 96px)", marginTop: "72px" }} onClick={(e) => e.stopPropagation()}>
         <div className="w-full flex items-center justify-center relative flex-none group/img">
-          <img ref={imgRef} src={slides[slideIdx]} alt={item.name} className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
+          <img ref={imgRef} src={netlifyImg(slides[slideIdx], { w: 1600, q: 82 })} alt={item.name} className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
           <button
             onClick={(e) => { e.stopPropagation(); setImgExpanded(true); }}
             className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/55 text-cream/60 hover:bg-black/80 hover:text-cream transition-all duration-200 opacity-0 group-hover/img:opacity-100"
@@ -1582,7 +1546,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
           onClick={(e) => { e.stopPropagation(); setImgExpanded(false); }}
         >
           <img
-            src={slides[slideIdx]}
+            src={netlifyImg(slides[slideIdx], { w: 2000, q: 85 })}
             alt={item.name}
             className="max-w-[95vw] max-h-[95vh] object-contain"
           />
@@ -1615,18 +1579,15 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
 }
 
 function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
-  const [_hovered, setHovered] = useState(false);
   return (
     <div
       className="gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
       onClick={() => onDrill ? onDrill(item, cat.label) : onOpen(cat.items, idx, cat.label)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       {item.slides ? (
         <SlidingThumb slides={item.slides} alt={`${item.name} — ROGETjames`} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
+        <img src={netlifyImg(item.img, { w: 800, q: 80 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1645,18 +1606,15 @@ function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
 }
 
 function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }) {
-  const [_hovered, setHovered] = useState(false);
   return (
     <div
       className="gallery-card group cursor-pointer rounded-2xl overflow-hidden relative flex-none h-full aspect-square"
       onClick={() => onDrill ? onDrill(item, series.label) : onOpen(series.items, idx, series.label)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       {item.slides ? (
         <SlidingThumb slides={item.slides} alt={`${item.name} — ROGETjames`} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
+        <img src={netlifyImg(item.img, { w: 800, q: 80 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1671,44 +1629,6 @@ function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }
       >
         details
       </button>
-    </div>
-  );
-}
-
-const SCREENS_STRIP_IMGS = [
-  "/images/screens/strip/aslyiam.jpg",
-  "/images/screens/strip/ferlie-close.jpg",
-  "/images/screens/strip/grail-close.jpg",
-  "/images/screens/strip/marakesh-fdl.jpg",
-  "/images/screens/strip/orian.jpg",
-  "/images/screens/strip/viasi.jpg",
-  "/images/screens/strip/wattle-urn.jpg",
-  "/images/screens/strip/wattle.jpg",
-  "/images/screens/strip/xavier-close.jpg",
-];
-
-function ScreensStrip() {
-  const tiles = [...SCREENS_STRIP_IMGS, ...SCREENS_STRIP_IMGS];
-  return (
-    <div className="w-full overflow-hidden my-4" style={{ height: "120px" }} aria-hidden="true">
-      <div
-        className="flex gap-2 h-full"
-        style={{
-          width: "max-content",
-          animation: "marquee-scroll 40s linear infinite",
-          willChange: "transform",
-        }}
-      >
-        {tiles.map((src, i) => (
-          <img
-            key={i}
-            src={src}
-            alt=""
-            className="h-full w-auto object-cover rounded"
-            style={{ aspectRatio: "4/3", flexShrink: 0 }}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -1867,7 +1787,7 @@ const SCULPTURE_CAT_PAGES = [1, 5, 4, 6, 7].map(n =>
 );
 
 function DrillView({ item, seriesLabel, onClose, onExpand }) {
-  const images = [...new Set([...(item.slides ?? [item.img]), ...(item.detailSlides ?? [])].filter(Boolean))];
+  const images = [...new Set((item.slides ?? [item.img]).filter(Boolean))];
   return (
     <div className="fixed inset-0 z-[9992] bg-jet flex flex-col">
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
@@ -1886,7 +1806,7 @@ function DrillView({ item, seriesLabel, onClose, onExpand }) {
             <div key={i} onClick={onExpand}
               className="group cursor-pointer aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
               style={{ opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-              <img src={src} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <img src={netlifyImg(src, { w: 800, q: 80 })} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
           ))}
         </div>
@@ -1908,6 +1828,8 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
   const gridRef = useRef(null);
   const searchRowRef = useRef(null);
   const isAnimating = useRef(false);
+  const sweepTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(sweepTimerRef.current), []);
 
   useEffect(() => {
     const handler = (e) => { if (e.detail) setActiveTab(e.detail); };
@@ -1915,20 +1837,22 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
     return () => window.removeEventListener("open-gallery-tab", handler);
   }, []);
 
-  const searchResults = query.trim().length > 0
-    ? ALL_SEARCHABLE.filter(item => {
-        const q = query.trim().toLowerCase();
-        const nameMatch = item.name.toLowerCase().includes(q) || item._series.toLowerCase().includes(q);
-        const aliasMatch = Object.entries(SEARCH_ALIASES).some(([keyword, entries]) =>
-          keyword.includes(q) && entries.some(e =>
-            typeof e === "string"
-              ? e === item.name
-              : e.name === item.name && item._series.includes(e.series)
-          )
-        );
-        return (nameMatch || aliasMatch) && !item.img.includes("placeholder");
-      })
-    : null;
+  const searchResults = useMemo(() => (
+    query.trim().length > 0
+      ? ALL_SEARCHABLE.filter(item => {
+          const q = query.trim().toLowerCase();
+          const nameMatch = item.name.toLowerCase().includes(q) || item._series.toLowerCase().includes(q);
+          const aliasMatch = Object.entries(SEARCH_ALIASES).some(([keyword, entries]) =>
+            keyword.includes(q) && entries.some(e =>
+              typeof e === "string"
+                ? e === item.name
+                : e.name === item.name && item._series.includes(e.series)
+            )
+          );
+          return (nameMatch || aliasMatch) && !item.img.includes("placeholder");
+        })
+      : null
+  ), [query]);
 
   // Reset catalogue panel when switching tabs
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -1981,6 +1905,8 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
     const rowEls = Array.from(container.querySelectorAll(".series-scroll"));
     if (!rowEls.length) return;
 
+    const timers = [];
+
     // Set all cards invisible
     rowEls.forEach(row => {
       gsap.set(Array.from(row.children), { opacity: 0 });
@@ -2000,7 +1926,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
       });
       // Start next row after the 3rd card begins fading
       const triggerAfter = Math.min(2, cards.length - 1) * STAGGER;
-      setTimeout(() => onDone?.(), triggerAfter * 1000);
+      timers.push(setTimeout(() => onDone?.(), triggerAfter * 1000));
     }
 
     function chainRows(idx) {
@@ -2016,7 +1942,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
     }, { threshold: 0.1, root: container });
 
     observer.observe(rowEls[0]);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); timers.forEach(clearTimeout); };
   }, [activeTab, containerRef]);
 
   // Horizontal scroll + edge-scroll on hover
@@ -2170,13 +2096,13 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
           </p>
           {searchResults.length > 0 && (
             <div ref={searchRowRef} className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2" data-lenis-prevent>
-              {searchResults.map((item, idx) => (
+              {searchResults.map((item) => (
                 <div
-                  key={idx}
+                  key={`${item._series}-${item.img}`}
                   className="gallery-card group cursor-pointer rounded-xl overflow-hidden bg-cream-dark relative aspect-square"
                   onClick={() => openLightbox([item], 0, item._series)}
                 >
-                  <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                  <img src={netlifyImg(item.img, { w: 800, q: 80 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                     <p className="text-cream font-heading font-semibold text-xs" style={{ wordSpacing: "-0.05em" }}>{item.name}</p>
@@ -2206,7 +2132,8 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
             onClick={() => {
               if (tab.id === activeTab || sweepingId) return;
               setSweepingId(tab.id);
-              setTimeout(() => { setSweepingId(null); switchTab(tab.id); }, 700);
+              clearTimeout(sweepTimerRef.current);
+              sweepTimerRef.current = setTimeout(() => { setSweepingId(null); switchTab(tab.id); }, 700);
             }}
             className={`filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
               sweepingId === tab.id ? "filter-btn-sweeping" :
@@ -2445,18 +2372,12 @@ const DECK_SERIES = [...WALL_ART_SERIES, ...OTHER_CATEGORIES].map(s => ({
   items: s.items.filter(i => i.img && !i.img.includes("placeholder")),
 })).filter(s => s.items.length > 0);
 
-// Stamp every item with a stable numeric ID for reliable navigation
-let _uidCounter = 0;
-DECK_SERIES.forEach(s => s.items.forEach(it => { it._uid = ++_uidCounter; }));
+// Which series ids belong to Wall Art (vs Sculpture) — stable, module-level so
+// it can serve as a clean useMemo dependency inside the overlay.
+const WALL_ART_IDS = new Set(WALL_ART_SERIES.map(s => s.id));
 
-const DECK_ALL_ITEMS = (() => {
-  const arr = DECK_SERIES.flatMap(s => s.items.flatMap(it => {
-    const imgs = it.singleInAll ? [it.img] : (it.slides && it.slides.length > 1) ? it.slides : [it.img];
-    return imgs.map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _seriesLabel: s.label, _slideIdx: sIdx }));
-  }));
-  for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
-  return arr;
-})();
+// Oldest→newest by upload time, so a freshly uploaded close-up always lands last.
+const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
 
 // ── "Up Close" gallery ────────────────────────────────────────────────────
 // Images for the "Up Close" pill (sits next to Slideshow in the wall art
@@ -2468,7 +2389,6 @@ const UP_CLOSE_IMAGES = [
 
 function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory, initialPiece = null }) {
   const [tab, setTab] = useState("all");
-  const [pillsOpen, setPillsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [collectionInfoOpen, setCollectionInfoOpen] = useState(false);
@@ -2531,9 +2451,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   // all appear here too, alongside their own design tile. Curated seed shots
   // stay first; everything uploaded is ordered oldest→newest by upload time, so
   // a newly placed close-up always lands at the END rather than jumping around.
-  const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
-  const mediaUpClose = mediaImages.filter(m => m.destinations.length > 0);
-  const upCloseImages = (() => {
+  const upCloseImages = useMemo(() => {
+    const mediaUpClose = mediaImages.filter(m => m.destinations.length > 0);
     const seedSrcs = new Set(UP_CLOSE_IMAGES.map(u => u.src));
     const uploads = [
       ...uploadedUpClose.map(u => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
@@ -2542,7 +2461,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     const seen = new Set();
     const ordered = uploads.filter(u => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
     return [...UP_CLOSE_IMAGES, ...ordered];
-  })();
+  }, [uploadedUpClose, mediaImages]);
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
   const slideshowTimerRef = useRef(null);
@@ -2566,10 +2485,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     }
   }, [categoryFilter]);
 
-  const wallArtIds = new Set(WALL_ART_SERIES.map(s => s.id));
   // Images for a category's auto "Up Close" tile: seeded on-disk shots + any
   // media-library uploads tagged with that category id.
-  const upCloseForSeries = (id) => {
+  const upCloseForSeries = useCallback((id) => {
     const seed = SEED_UPCLOSE[id] || [];
     // Seed shots first; placed uploads appended oldest→newest so new ones end up last.
     const uploads = [
@@ -2579,17 +2497,17 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     const out = [...seed];
     for (const u of uploads) if (!out.includes(u.src)) out.push(u.src);
     return out;
-  };
+  }, [mediaImages, uploadedUpClose]);
 
-  const filteredSeries = (() => {
+  const filteredSeries = useMemo(() => {
     const raw = categoryFilter === "sculpture"
-      ? DECK_SERIES.filter(s => !wallArtIds.has(s.id))
-      : DECK_SERIES.filter(s => wallArtIds.has(s.id));
+      ? DECK_SERIES.filter(s => !WALL_ART_IDS.has(s.id))
+      : DECK_SERIES.filter(s => WALL_ART_IDS.has(s.id));
     // Append an auto Up Close tile to any category that has close-up images.
     const base = raw.map(s => {
       const imgs = upCloseForSeries(s.id);
       if (!imgs.length) return s;
-      const tile = { name: `${s.label} — Up Close`, img: imgs[0], slides: imgs, _uid: `uc-${s.id}`, _autoUpClose: true };
+      const tile = { name: `${s.label} — Up Close`, img: imgs[0], slides: imgs };
       // Freshly uploaded pieces (_new) sit AFTER the Up Close tile so they are the very last cards.
       const normal = s.items.filter(it => !it._new);
       const fresh = s.items.filter(it => it._new);
@@ -2597,12 +2515,12 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     });
     if (categoryFilter !== "sculpture" || sculptureCat === "all") return base;
     return base.map(s => ({ ...s, items: s.items.filter(it => it.cat === sculptureCat) })).filter(s => s.items.length > 0);
-  })();
+  }, [categoryFilter, sculptureCat, upCloseForSeries]);
 
   // Every close-up / detail shot across all series, plus the combined Up Close
   // list — gathered so they sit together at the END of the All grid instead of
   // being scattered through the shuffle.
-  const closeupItems = (() => {
+  const closeupItems = useMemo(() => {
     const map = new Map();
     for (const s of filteredSeries) {
       for (const src of upCloseForSeries(s.id)) {
@@ -2615,45 +2533,29 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       }
     }
     return [...map.values()];
-  })();
-  const closeupSrcs = new Set(closeupItems.map(c => c.img));
+  }, [filteredSeries, categoryFilter, upCloseImages, upCloseForSeries]);
+  const closeupSrcs = useMemo(() => new Set(closeupItems.map(c => c.img)), [closeupItems]);
 
-  const filteredAllItems = (() => {
+  const filteredAllItems = useMemo(() => {
     const seen = new Set();
     const arr = filteredSeries.flatMap(s => s.items.flatMap(it => {
       const imgs = it.singleInAll ? [it.img] : (it.slides && it.slides.length > 1 ? it.slides : [it.img]);
       return imgs
         .filter(img => { if (seen.has(img) || closeupSrcs.has(img)) return false; seen.add(img); return true; })
-        .map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _seriesLabel: s.label, _slideIdx: sIdx }));
+        .map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _slideIdx: sIdx }));
     }));
     arr.forEach((_, i) => { if (i > 0) { const j = ((i * 2654435769) >>> 0) % (i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } });
     // Close-up images last, as a block.
     return [...arr, ...closeupItems];
-  })();
+  }, [filteredSeries, closeupSrcs, closeupItems]);
 
   const isAll = tab === "all";
   const series = isAll ? null : filteredSeries.find(s => s.id === tab);
   const items = isAll ? [] : (series?.items || []);
   const item = isAll ? null : items[cardIdx];
-  const itemSlides = item ? (() => {
-    let base = item.slides && item.slides.length > 1 ? [...item.slides] : [item.img];
-    // Pull in the uploaded Up Close shots so they also appear here (e.g. Plumes).
-    if (item.includeUploadedUpClose && uploadedUpClose.length) {
-      base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
-    }
-    // Route media-library uploads to this design via exact destination key(s)
-    // set on the item (see MediaPage.jsx DESTINATIONS for the fixed key list).
-    if (item.mediaKeys) {
-      const matched = mediaImages
-        .filter(m => item.mediaKeys.some(k => m.destinations.includes(k)))
-        .map(m => m.src);
-      // A pure "upload me" tile has no real slides of its own — once uploads
-      // exist, drop the placeholder cover so only the real photos show.
-      if (!item.slides && matched.length) base = matched;
-      else base = [...base, ...matched.filter(src => !base.includes(src))];
-    }
-    return base;
-  })() : [];
+  const itemSlides = item
+    ? (item.slides && item.slides.length > 1 ? [...item.slides] : [item.img])
+    : [];
   const displayImg = itemSlides[slideIdx] ?? item?.img;
   const [detailZoom, setDetailZoom] = useState(null);
 
@@ -2794,9 +2696,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             ) : (
               <div className="flex flex-wrap justify-center gap-2">
                 {upCloseImages.map((item, i) => (
-                  <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
+                  <div key={item.src} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80 }}>
-                    <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={netlifyImg(item.src, { w: 700, q: 80 })} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                 ))}
               </div>
@@ -2955,7 +2857,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Search results */}
       {searchQuery && (() => {
         const q = searchQuery.trim().toLowerCase();
-        const results = filteredSeries.flatMap(s => s.items.filter(it => it.name.toLowerCase().includes(q)).map(it => ({ ...it, _seriesId: s.id, _seriesLabel: s.label })));
+        const results = filteredSeries.flatMap(s => s.items.filter(it => it.name.toLowerCase().includes(q)).map(it => ({ ...it, _seriesId: s.id })));
         return (
           <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
             {results.length === 0
@@ -2965,10 +2867,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     const sIdx = filteredSeries.findIndex(s => s.id === it._seriesId);
                     const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
                     return (
-                      <div key={i} onClick={() => { setSearchQuery(""); jumpToItem(it._seriesId, iIdx, 0); }}
+                      <div key={`${it._seriesId}-${it.img}`} onClick={() => { setSearchQuery(""); jumpToItem(it._seriesId, iIdx, 0); }}
                         className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 transition-all duration-200"
                         style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.4s ease forwards", animationDelay: `${(i * 0.04).toFixed(2)}s` }}>
-                        <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img src={netlifyImg(it.img, { w: 700, q: 80 })} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                           <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                         </div>
@@ -2990,10 +2892,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
               const delay = (((i * 0.618) % 1) * 2.2).toFixed(2);
               return (
-                <div key={i} onClick={() => { if (it._closeup) { setDetailZoom(it.img); return; } const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
+                <div key={it.img} onClick={() => { if (it._closeup) { setDetailZoom(it.img); return; } const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: `fadeIn 0.6s ease forwards`, animationDelay: `${delay}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={netlifyImg(it.img, { w: 700, q: 80 })} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-end p-1.5">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                   </div>
@@ -3031,7 +2933,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
 
               {/* Card image */}
               <div style={{ transition: "opacity 0.7s ease", opacity: animDir ? 0 : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: isMobile ? "16px 20px" : "16px 64px", width: "100%" }}>
-                <img src={displayImg} alt={item.name}
+                <img src={netlifyImg(displayImg, { w: 1600, q: 82 })} alt={item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)", transition: "opacity 0.7s ease" }} />
                 {/* Title + Details directly under image */}
                 <div className="flex items-center gap-4">
@@ -3195,7 +3097,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           </p>
                           {/* Add to Quote */}
                           {item && (() => {
-                            const p = priceFor(selectedSize, selectedMat, postcodeInfo.isWA);
+                            const p = priceFor(selectedSize, selectedMat, postcodeInfo.isAdmin ? adminWA : postcodeInfo.isWA);
                             const canAdd = !!selectedSize;
                             return (
                               <button
@@ -3205,7 +3107,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                     name: item.name,
                                     img: displayImg,
                                     material: MATERIAL_OPTIONS.find(m => m.id === selectedMat),
-                                    size: selectedSize,
+                                    size: selectedSize && { id: selectedSize.id, label: selectedSize.label, dims: selectedSize.dims },
                                     price: p,
                                   }}));
                                   if (!postcodeInfo?.isAdmin) {
@@ -3263,7 +3165,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                         onClick={() => { setCardIdx(iIdx); setSlideIdx(sIdx); setShowDetails(false); }}
                         className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                         style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === cardIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                        <img src={img} alt={it.name} className="w-full h-full object-cover" />
+                        <img src={netlifyImg(img, { w: 160, q: 78 })} alt={it.name} className="w-full h-full object-cover" />
                       </div>
                     );
                   });
@@ -3273,24 +3175,6 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     );
                   }
                   return thumbs;
-                });
-                // Append detail slides for any item at the very end
-                items.forEach((it, iIdx) => {
-                  if (it.detailSlides && it.detailSlides.length > 0) {
-                    allThumbs.push(
-                      <div key={`detail-sep-${iIdx}`} style={{ width: 1, height: 34, background: "rgba(242,240,233,0.15)", flexShrink: 0, borderRadius: 1, margin: "0 3px" }} />
-                    );
-                    it.detailSlides.forEach((img, dIdx) => {
-                      allThumbs.push(
-                        <div key={`${iIdx}-d${dIdx}`}
-                          onClick={() => { setCardIdx(iIdx); setDetailZoom(img); }}
-                          className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
-                          style={{ width: 52, height: 52, border: "1.5px solid transparent", opacity: 0.6, transition: "all 0.2s" }}>
-                          <img src={img} alt={`${it.name} detail`} className="w-full h-full object-cover" />
-                        </div>
-                      );
-                    });
-                  }
                 });
                 return allThumbs;
               })()}
@@ -3342,10 +3226,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 const slides = (it.slides && it.slides.length > 1) ? it.slides : [it.img];
                 return slides.map((img, sIdx) => ({ img, name: it.name, designIdx, sIdx }));
               }).map((thumb, i) => (
-                <div key={i} onClick={() => { openSeries(drilledSeries.id, thumb.designIdx, thumb.sIdx); setDrilledSeries(null); }}
+                <div key={`${thumb.designIdx}-${thumb.sIdx}`} onClick={() => { openSeries(drilledSeries.id, thumb.designIdx, thumb.sIdx); setDrilledSeries(null); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-                  <img src={thumb.img} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={netlifyImg(thumb.img, { w: 700, q: 80 })} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5 pointer-events-none">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{thumb.name}</p>
                   </div>
@@ -3359,7 +3243,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Detail image zoom overlay */}
       {detailZoom && (
         <div className="fixed inset-0 z-[10004] flex items-center justify-center bg-black/90" onClick={() => setDetailZoom(null)}>
-          <img src={detailZoom} alt="detail" className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain" />
+          <img src={netlifyImg(detailZoom, { w: 1600, q: 82 })} alt="detail" className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain" />
         </div>
       )}
 
@@ -3382,17 +3266,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     </div>
   );
 }
-function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, setScreensOpen }) {
-  const [hovered, setHovered] = useState(false);
-  const browseColor = hovered
-    ? "rgba(242,240,233,0.95)"
-    : inSection
-      ? "rgba(242,240,233,0.75)"
-      : "rgba(242,240,233,0.35)";
-  const dotBg     = inSection ? "#9e7134" : "transparent";
-  const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
-
-  const GoldDot = () => (
+function GoldDot({ dotBg, dotBorder, inSection }) {
+  return (
     <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
       <span style={{ width: 5, height: 5, borderRadius: "50%", background: dotBg, border: `1px solid ${dotBorder}`, display: "block", transition: "background 0.4s, border-color 0.4s", flexShrink: 0 }} />
       {inSection && (
@@ -3406,6 +3281,17 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
       <style>{`@keyframes bcl-ripple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; } 100% { transform: translate(-50%,-50%) scale(8); opacity: 0; } }`}</style>
     </span>
   );
+}
+
+function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, setScreensOpen }) {
+  const [hovered, setHovered] = useState(false);
+  const browseColor = hovered
+    ? "rgba(242,240,233,0.95)"
+    : inSection
+      ? "rgba(242,240,233,0.75)"
+      : "rgba(242,240,233,0.35)";
+  const dotBg     = inSection ? "#9e7134" : "transparent";
+  const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
 
   const pills = [
     { id: "sculpture", label: "Sculpture", onOpen: () => { window.location.assign("/sculpture"); } },
@@ -3437,7 +3323,7 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
           ); })()}
         </div>
         {/* Col 2 — left dot */}
-        <GoldDot />
+        <GoldDot dotBg={dotBg} dotBorder={dotBorder} inSection={inSection} />
         {/* Col 3 — Wall Art, centred */}
         {(() => { const { id, label, onOpen } = pills[1]; const isActive = categoryClicked && selectedCategory === id; return (
           <button onClick={onOpen}
@@ -3449,7 +3335,7 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
           </button>
         ); })()}
         {/* Col 4 — right dot */}
-        <GoldDot />
+        <GoldDot dotBg={dotBg} dotBorder={dotBorder} inSection={inSection} />
         {/* Col 5 — Sculpture, flush left */}
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           {(() => { const { id, label, onOpen } = pills[2]; const isActive = categoryClicked && selectedCategory === id; return (
@@ -3478,7 +3364,6 @@ export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("wall-art");
   const [categoryClicked, setCategoryClicked] = useState(false);
   const [inSection, setInSection] = useState(false);
-  const [stripPaused, _setStripPaused] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
   const sectionRef      = useRef(null);
   const gateLeftRef     = useRef(null);
@@ -3635,10 +3520,10 @@ export default function Gallery() {
 
             {/* Left strip */}
             <div className="flex-1 overflow-hidden" aria-hidden="true">
-              <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
+              <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={netlifyImg(src, { w: 600, q: 78 })} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3649,10 +3534,10 @@ export default function Gallery() {
 
             {/* Right strip */}
             <div className="flex-1 overflow-hidden" aria-hidden="true">
-              <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
+              <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={netlifyImg(src, { w: 600, q: 78 })} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3679,10 +3564,10 @@ export default function Gallery() {
 
           {/* Top strip */}
           <div className="relative h-28 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
+            <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/wall-art"); }}>
-                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, { w: 600, q: 78 })} alt="" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>
