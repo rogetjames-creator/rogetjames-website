@@ -55,7 +55,39 @@ export default function Hero() {
   const [logoActive, setLogoActive] = useState(false);
   const [logoShown, setLogoShown] = useState(false);
   const [logoHolding, setLogoHolding] = useState(false);
+  // Mobile shows the mark at half size; the fixed pixel dimensions below are
+  // the single source of truth so the logo and its glass fog stay concentric.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
+  );
+  const logoActiveRef = useRef(false);
   const lenis = useLenis();
+
+  // Track viewport so the logo can be sized responsively (was a fixed 124px on
+  // every screen — roughly twice too large on a phone).
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  // Hide the logo the moment the visitor scrolls down off the very top — not
+  // only once 70% of the hero has left the viewport (the old IntersectionObserver
+  // threshold). It fades straight back in on return to the top.
+  useEffect(() => {
+    const HIDE_AT = () => Math.max(60, window.innerHeight * 0.1);
+    const onScroll = () => {
+      setLogoShown(logoActiveRef.current && window.scrollY < HIDE_AT());
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const LOGO = isMobile
+    ? { size: 62, top: 76, glassW: 50, glassH: 60, glassTop: 78, radius: 12 }
+    : { size: 124, top: 76, glassW: 101, glassH: 119, glassTop: 78, radius: 23 };
 
   // Reveal the slideshow once the intro text has settled.
   useEffect(() => {
@@ -104,7 +136,9 @@ export default function Hero() {
       }
 
       setLogoActive(true);
-      setLogoShown(true);
+      logoActiveRef.current = true;
+      // Only reveal it if we're at the top; the scroll handler owns it after.
+      setLogoShown(window.scrollY < Math.max(60, window.innerHeight * 0.1));
     };
 
     const resetDrift = () => {
@@ -169,7 +203,7 @@ export default function Hero() {
 
           {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
           {createPortal(
-            <span style={{ position: "fixed", top: 76, left: "50%", transform: "translateX(-50%)", opacity: logoShown ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 124, height: 124, zIndex: 99 }}>
+            <span style={{ position: "fixed", top: LOGO.top, left: "50%", transform: "translateX(-50%)", opacity: logoShown ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: LOGO.size, height: LOGO.size, zIndex: 99 }}>
               <RojLogoAnimation visible={logoActive} onHoldChange={setLogoHolding} />
             </span>,
             document.body
@@ -178,12 +212,12 @@ export default function Hero() {
           {createPortal(
             <div style={{
               position: "fixed",
-              top: 78,
+              top: LOGO.glassTop,
               left: "50%",
               transform: "translateX(-50%)",
-              width: 101,
-              height: 119,
-              borderRadius: "23px",
+              width: LOGO.glassW,
+              height: LOGO.glassH,
+              borderRadius: `${LOGO.radius}px`,
               background: "rgba(237,232,223,0.07)",
               backdropFilter: "blur(28px) brightness(1.06) saturate(0.85)",
               WebkitBackdropFilter: "blur(28px) brightness(1.06) saturate(0.85)",
