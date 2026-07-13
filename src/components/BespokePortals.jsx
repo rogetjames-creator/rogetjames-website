@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 
@@ -130,7 +130,11 @@ export function CommissionsSection() {
   const [initialScreensCat, setInitialScreensCat] = useState(false);
 
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
+  const didMountRef = useRef(false);
   useEffect(() => {
+    // Skip the mount pass so we don't fire a spurious "close" before any modal
+    // has ever opened; only dispatch when the open/closed state actually flips.
+    if (!didMountRef.current) { didMountRef.current = true; return; }
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 
