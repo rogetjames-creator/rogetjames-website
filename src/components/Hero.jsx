@@ -198,6 +198,7 @@ export default function Hero() {
           <img
             key={layer}
             ref={(el) => (layerRefs.current[layer] = el)}
+            data-prerender-hero
             src={netlifyImg(SLIDES[layerIdx[layer]], { w: 1600, q: 82 })}
             alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={layer !== 0}

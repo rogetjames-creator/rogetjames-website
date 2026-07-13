@@ -83,6 +83,19 @@ async function prerender() {
       el.style.scale = "";
     });
 
+    // Same fix for the two hero slideshow images. By snapshot time the intro
+    // has played (slideshowReady flips ~2.8s in) so GSAP/React bake the first
+    // image in at opacity:1 — but React's first CLIENT render has it at
+    // opacity:0 (slideshowReady starts false). The mismatch made the baked
+    // image paint, blank out the instant React mounts, then fade back in: a
+    // brief image "flash" when landing on "/" (e.g. clicking the top-left logo
+    // from a Feature/Vault page). Reset to the initial hidden state so first
+    // paint matches the client; the image src stays in the DOM for crawlers and
+    // the intro fade then plays once, cleanly.
+    document.querySelectorAll("[data-prerender-hero]").forEach((el) => {
+      el.style.opacity = "0";
+    });
+
     // Remove decorative nodes that React portals into <body>/<html> (the ROJ
     // logo and its glass fog). They live OUTSIDE React's root, so if their
     // mid-animation snapshot is baked into index.html, React can't reconcile
