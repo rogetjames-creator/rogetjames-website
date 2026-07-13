@@ -1,116 +1,23 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useLenis } from "lenis/react";
-import { X, ChevronLeft, ChevronRight, Pause, Play, Search } from "lucide-react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { X, Search } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
-
-gsap.registerPlugin(ScrollTrigger);
-
+import { netlifyImg } from "../utils/img";
 
 const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
-const STRIP_IMAGES = [
-  `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg`,
-  `${CDN}/453b1942-6be0-4365-b111-0affe46a048e_rw_1920.jpg`,
-  `${CDN}/d2a97109-c3ab-4f3b-a219-3726bdcaa590_rw_1920.jpg`,
-  `${CDN}/4abdd8f3-44a5-4a24-b6cb-ccdb233b297e_rw_1920.jpeg`,
-  `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg`,
-  "/images/hero/hero-marakesh-wide.jpg",
-  "/images/hero/hero-marakesh-tall.jpg",
-  "/images/hero/hero-homebase-dusk.jpg",
-  "/images/hero/hero-homebase-totems.jpg",
-  "/images/hero/hero-homebase-entrance.jpg",
-  "/images/hero/hero-homebase-sculpture.jpg",
-  "/images/hero/hero-cottesloe-patio.jpg",
-  "/images/hero/hero-cottesloe-gate.jpg",
-  "/images/hero/hero-commercial-helvetica.jpg",
-  `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`,
-];
+// Serve any gallery image at an explicit width through the Netlify Image CDN.
+// - external URLs pass through unchanged
+// - srcs already built from the CDN constant (/.netlify/images?url=...) just get sizing params appended
+// - plain local /images/... paths go through netlifyImg
+function sizedImg(src, w, q = 80) {
+  if (!src || src.startsWith("http") || src.startsWith("data:")) return src;
+  if (src.startsWith("/.netlify/images")) return `${src}&w=${w}&fm=webp&q=${q}`;
+  return netlifyImg(src, { w, q });
+}
 
 const COMMISSIONS = {
-  commercial: [
-    {
-      id: "commercial-1",
-      label: "HOSPITALITY & RETAIL",
-      items: [
-        { name: "ERGO",            img: `${CDN}/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg`, pos: "left center" },
-        { name: "LUMIER",          img: `${CDN}/65df5eb8-8965-49e7-a31c-9fdd5db80da9_rw_1200.jpg` },
-        { name: "XAVIER",          img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg` },
-        { name: "GRAIL",           img: `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg` },
-      ],
-    },
-    {
-      id: "commercial-2",
-      label: "ARCHITECTURAL SCREENS",
-      items: [
-        { name: "GRAIL",   description: "Grail privacy screen — under-framed divider and tinted perspex", img: `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg` },
-        { name: "FERLIE",  img: `${CDN}/a8f3ce2e-c51d-47fa-bbee-4563523ef01a_rw_1920.jpg` },
-        { name: "LUCARIO", img: `${CDN}/dfb5f9eb-ba6e-4863-9a8f-e75c77d22339_rw_1200.jpg` },
-        { name: "VAYA",    img: `${CDN}/f158bc26-4f22-47d2-bee1-ba39cc74113e_rw_1200.jpg` },
-        { name: "WATTLE",  img: `${CDN}/4f9d07e7-a1ba-4215-b4ed-86dee879d606_rw_600.jpg` },
-        { name: "VUELTA",              img: `${CDN}/1fcdb08d-cdb7-4792-8883-01100fee426d_rw_1200.jpg` },
-        { name: "VUELTA Aquilla Homes",img: `${CDN}/764a0e79-ff27-475c-9d20-83c1d9eb75df_rw_1200.jpg` },
-        { name: "ASLYIAM",             img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
-        { name: "ASLYIAM Light Feature",img: `${CDN}/1a26b497-b278-4edc-a050-a2b42e3718d4_rw_1200.jpg` },
-        { name: "ASLYIAM Cellar Door", img: `${CDN}/5387f1db-afbb-40f2-9e31-b1fcdf5163a5_rw_600.jpg` },
-        { name: "ASLYIAM — Diamond Nails", img: "/images/aslyiam/aslyiam-diamond-nails.jpg" },
-        { name: "AUDA",                img: `${CDN}/18320e7a-11d9-401e-be88-2882883feca6_rw_1920.jpg` },
-        { name: "CHIOLA",              img: `${CDN}/a7051a98-18b5-4a76-bf4f-f9569636a04b_rw_1200.jpg` },
-        { name: "ERGO Cottesloe Hotel", img: `${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`, slides: [`${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`, `${CDN}/ff393903-5912-40da-9b37-aca22ef599b4_rw_1920.jpg`] },
-        { name: "ORIEL",               img: `${CDN}/8e870d8c-8b02-4a6a-82b2-7aed7fc22c83_rw_1920.jpg` },
-        { name: "DOTTI",               img: `${CDN}/5d641ee3-f68a-46f0-836e-a439215cb153_rw_1200.jpg` },
-        { name: "XAVIER",              img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg` },
-        { name: "LUMIER",              img: `${CDN}/65df5eb8-8965-49e7-a31c-9fdd5db80da9_rw_1200.jpg` },
-      ],
-    },
-    {
-      id: "commercial-3",
-      label: "CORPORATE FEATURES",
-      items: [
-        { name: "BENIN Inspired",     img: `${CDN}/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg` },
-        { name: "RAVI Inspired",      img: `${CDN}/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg` },
-        { name: "Unity in Diversity", img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
-        { name: "VUELTA",             img: `${CDN}/1fcdb08d-cdb7-4792-8883-01100fee426d_rw_1200.jpg` },
-        { name: "ASLYIAM",            img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
-      ],
-    },
-    {
-      id: "commercial-4",
-      label: "SIGNAGE & FACADES",
-      items: [
-      ],
-    },
-    {
-      id: "commercial-5",
-      label: "LIGHTING FEATURES",
-      items: [],
-    },
-    {
-      id: "commercial-6",
-      label: "FEATURED PROJECTS",
-      items: [
-        { name: "MARAKESH",           img: "/images/hero/hero-marakesh-wide.jpg", slides: ["/images/hero/hero-marakesh-wide.jpg", "/images/hero/hero-marakesh-tall.jpg"] },
-        { name: "HOMEBASE Dusk",      img: "/images/hero/hero-homebase-dusk.jpg" },
-        { name: "HOMEBASE Totems",    img: "/images/hero/hero-homebase-totems.jpg" },
-        { name: "HOMEBASE Entrance",  img: "/images/hero/hero-homebase-entrance.jpg" },
-        { name: "HOMEBASE Sculpture", img: "/images/hero/hero-homebase-sculpture.jpg" },
-        { name: "Cottesloe",          img: "/images/hero/hero-cottesloe-patio.jpg", slides: ["/images/hero/hero-cottesloe-patio.jpg", "/images/hero/hero-cottesloe-gate.jpg"] },
-        { name: "Helvetica",          img: "/images/hero/hero-commercial-helvetica.jpg" },
-      ],
-    },
-  ],
+  commercial: [],
   public: [
-    {
-      id: "public-1",
-      label: "PUBLIC ART",
-      items: [
-        { name: "Fiona Stanley",      img: `${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg` },
-        { name: "Unity in Diversity", img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
-        { name: "BENIN Inspired",     img: `${CDN}/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg` },
-        { name: "RAVI Inspired",      img: `${CDN}/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg` },
-      ],
-    },
     {
       id: "public-2",
       label: "SCULPTURES & TOTEMS",
@@ -137,44 +44,6 @@ const COMMISSIONS = {
       ],
     },
     {
-      id: "public-3",
-      label: "CULTURAL COMMISSIONS",
-      items: [
-        { name: "BENIN Inspired",     img: `${CDN}/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg` },
-        { name: "MARAKESH TRIO",      img: `${CDN}/7242a044-526d-49ad-92f3-b6a74d6b0198_rw_1200.jpg` },
-        { name: "RAVI Inspired",      img: `${CDN}/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg` },
-        { name: "Unity in Diversity", img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
-      ],
-    },
-    {
-      id: "public-4",
-      label: "MEMORIAL WORKS",
-      items: [
-        { name: "ORIAN Totem",     img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
-      ],
-    },
-    {
-      id: "public-5",
-      label: "CIVIC INSTALLATIONS",
-      items: [
-        { name: "ERGO",              img: `${CDN}/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg`, pos: "left center" },
-        { name: "GRAIL",             img: `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg` },
-        { name: "DANDELIONS Totems", img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
-        { name: "ASLYIAM",           img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
-        { name: "VUELTA",            img: `${CDN}/1fcdb08d-cdb7-4792-8883-01100fee426d_rw_1200.jpg` },
-        { name: "XAVIER",            img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg` },
-      ],
-    },
-    {
-      id: "public-6",
-      label: "FIRE & LIGHT",
-      items: [
-        { name: "XAVIER",              img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg` },
-        { name: "Fiona Stanley",       img: `${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg` },
-        { name: "HOMEBASE Fire Pit",   img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
-      ],
-    },
-    {
       id: "public-7",
       label: "CONCEPTS",
       items: [
@@ -198,33 +67,6 @@ const COMMISSIONS = {
   ],
   residential: [
     {
-      id: "residential-1",
-      label: "FEATURE WALLS",
-      items: [
-        { name: "RAVI Inspired",    img: `${CDN}/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg` },
-        { name: "Homebase Feature", img: `${CDN}/68de0a24-fad7-4ca7-815c-c69bc555e26b_rw_1200.jpg` },
-        { name: "CREEPING FIG",     img: `${CDN}/d2a97109-c3ab-4f3b-a219-3726bdcaa590_rw_1920.jpg` },
-        { name: "VILLA LEAF",       img: `${CDN}/362f312d-4a16-4ba4-ab9d-8d199041a8cb_rw_1200.jpg` },
-        { name: "KYRA LEAF",        img: `${CDN}/5ba61f7c-c0d7-4036-93d5-d85abdbbb7c6_rw_1200.jpg` },
-      ],
-    },
-    {
-      id: "residential-2",
-      label: "FIRE & LIGHT",
-      items: [
-        { name: "HOMEBASE Fire Pit", img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
-        { name: "REEDS of UNGARO",  img: `${CDN}/b03ec13b-fba3-432f-9723-3f646b508054_rw_1920.jpg` },
-        { name: "URCHIN",           img: `${CDN}/4abdd8f3-44a5-4a24-b6cb-ccdb233b297e_rw_1920.jpeg` },
-        { name: "YAZAD Fire",       img: `${CDN}/a9ffceab-afdf-47d9-8ba1-53687b469ec4_rw_1200.jpg` },
-        { name: "EQUISETTI",        img: `${CDN}/453b1942-6be0-4365-b111-0affe46a048e_rw_1920.jpg` },
-        { name: "ORIAN Totem",      img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
-        { name: "LUCARIO",          img: `${CDN}/dfb5f9eb-ba6e-4863-9a8f-e75c77d22339_rw_1200.jpg` },
-        { name: "VAYA",             img: `${CDN}/2bcd6fe0-699f-4525-b006-5063523f80f3_rw_1200.jpg` },
-        { name: "BENIN Inspired",   img: `${CDN}/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg` },
-        { name: "RAVI Inspired",    img: `${CDN}/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg` },
-      ],
-    },
-    {
       id: "residential-3",
       label: "GARDEN SCULPTURES",
       items: [
@@ -235,75 +77,13 @@ const COMMISSIONS = {
         { name: "YAZAD",       img: `${CDN}/a9ffceab-afdf-47d9-8ba1-53687b469ec4_rw_1200.jpg` },
       ],
     },
-    {
-      id: "residential-4",
-      label: "ENTRY & GATES",
-      items: [
-        { name: "URO",     img: "/images/screens/uro-milvain.jpg" },
-        { name: "ERGO",    img: `${CDN}/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg`, pos: "left center" },
-        { name: "GRAIL",   img: `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg` },
-        { name: "FERLIE",  img: `${CDN}/a8f3ce2e-c51d-47fa-bbee-4563523ef01a_rw_1920.jpg` },
-        { name: "LUCARIO", img: `${CDN}/dfb5f9eb-ba6e-4863-9a8f-e75c77d22339_rw_1200.jpg` },
-        { name: "VAYA",    img: `${CDN}/2bcd6fe0-699f-4525-b006-5063523f80f3_rw_1200.jpg` },
-      ],
-    },
-    {
-      id: "residential-5",
-      label: "INTERIOR PANELS",
-      items: [
-        { name: "GRAIL",         img: `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg` },
-        { name: "ASLYIAM",       img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
-        { name: "WATTLE",        img: `${CDN}/4f9d07e7-a1ba-4215-b4ed-86dee879d606_rw_600.jpg` },
-        { name: "LUMIER",        img: `${CDN}/65df5eb8-8965-49e7-a31c-9fdd5db80da9_rw_1200.jpg` },
-        { name: "MARAKESH TRIO", img: `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg` },
-        { name: "HOMEBASE — Landscape design and features", img: `${CDN}/8aabcc1e-b8c3-45e3-aa3d-c56d5911ea03_rw_1920.jpg` },
-      ],
-    },
-    {
-      id: "residential-7",
-      label: "CUSTOM SCREENS",
-      items: [
-        { name: "Unity in Diversity", img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
-        { name: "CUSTOM", img: "/images/screens/hollingworth-1.jpg", slides: ["/images/screens/hollingworth-1.jpg", "/images/screens/hollingworth-2.jpg"] },
-      ],
-    },
-    {
-      id: "residential-6",
-      label: "PLANTERS",
-      items: [
-        { name: "HOMEBASE Totems", img: "/images/hero/hero-homebase-totems.jpg" },
-        { name: "EVO",             img: `${CDN}/35a4cd54-797e-43c5-9e58-40f7c00f5964_rw_1200.jpg` },
-        { name: "HOMEBASE Motif Sculpture", img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
-        { name: "ERGO — Cottesloe Hotel",  img: `${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`, slides: [`${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`, `${CDN}/ff393903-5912-40da-9b37-aca22ef599b4_rw_1920.jpg`] },
-        { name: "ZARATHSTRA — Helvetica Bar", img: "/images/zarathstra/helvetica-bar.jpg" },
-      ],
-    },
   ],
 };
-
-const TABS = [
-  { id: "commercial",  label: "Commercial" },
-  { id: "public",      label: "Public" },
-  { id: "residential", label: "Residential" },
-];
 
 const ALL_SERIES = [
   ...COMMISSIONS.commercial,
   ...COMMISSIONS.public,
   ...COMMISSIONS.residential,
-];
-
-function getBySeriesIds(ids) {
-  return ids.flatMap(id => ALL_SERIES.find(s => s.id === id)?.items ?? []);
-}
-
-const CATEGORY_FILTERS = [
-  { id: "sculpture",  label: "Sculpture",   seriesIds: ["public-2", "residential-3"] },
-  { id: "screens",    label: "Screens",      seriesIds: ["commercial-2", "residential-4", "residential-5", "residential-7"] },
-  { id: "fire-light", label: "Fire & Light", seriesIds: ["commercial-5", "residential-2", "public-6"] },
-  { id: "planters",   label: "Planters",     seriesIds: ["residential-6"] },
-  { id: "projects",   label: "Projects",     seriesIds: ["commercial-6"], allTabs: true },
-  { id: "concepts",   label: "Concepts",     seriesIds: ["public-7"], allTabs: true },
 ];
 
 export const SCULPTURE_ITEMS = (() => {
@@ -323,85 +103,6 @@ export const CONCEPTS_ITEMS = (() => {
     .flatMap(s => s.items)
     .filter(item => { if (seen.has(item.img)) return false; seen.add(item.img); return true; });
 })();
-
-// ── Debug label overlay — set to false to remove ─────────────────────────
-const DEBUG_LABELS = false;
-
-// Manually assigned codes + aspects per image (tab + category + descriptive aspects)
-const _manualCodes = {
-  [`${CDN}/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg`]: { tabs: "R", cats: "S", aspects: "Framed Divider, Display Home" },
-  [`${CDN}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg`]: { tabs: "P", cats: "SCU", aspects: "Homebase Feature" },
-  [`${CDN}/65df5eb8-8965-49e7-a31c-9fdd5db80da9_rw_1200.jpg`]: { tabs: "C P R", cats: "S", aspects: "R5·I4 — LUMIER · Promotional Image · Divider" },
-  [`${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg`]: { tabs: "P", cats: "S", aspects: "HIA Show Display, Sydney · Rollingstone Landscapes · Winning Display" },
-  [`${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg`]: { tabs: "R", cats: "S", aspects: "R5·I1 — GRAIL · Divider, Privacy Screen" },
-  [`${CDN}/a8f3ce2e-c51d-47fa-bbee-4563523ef01a_rw_1920.jpg`]: { tabs: "R", cats: "S", aspects: "Room Divider, Display Home" },
-  [`${CDN}/dfb5f9eb-ba6e-4863-9a8f-e75c77d22339_rw_1200.jpg`]: { tabs: "R", cats: "S", aspects: "Wall Decor, Stainless Steel 316" },
-  [`${CDN}/f158bc26-4f22-47d2-bee1-ba39cc74113e_rw_1200.jpg`]: { tabs: "R", cats: "S", aspects: "Room Divider, Display Home" },
-  [`${CDN}/4f9d07e7-a1ba-4215-b4ed-86dee879d606_rw_600.jpg`]: { tabs: "R", cats: "S", aspects: "R5·I3 — WATTLE · Custom feature for TDL" },
-  [`${CDN}/1fcdb08d-cdb7-4792-8883-01100fee426d_rw_1200.jpg`]: { tabs: "C P R", cats: "S", aspects: "Promotional Image" },
-  [`${CDN}/764a0e79-ff27-475c-9d20-83c1d9eb75df_rw_1200.jpg`]: { tabs: "R", cats: "S", aspects: "Fence Infill, Aquilla Homes" },
-  [`${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg`]: { tabs: "C P R", cats: "S", aspects: "R5·I2 — ASLYIAM · Promotional Image" },
-  [`${CDN}/1a26b497-b278-4edc-a050-a2b42e3718d4_rw_1200.jpg`]: { tabs: "R", cats: "S LF", aspects: "Prentise Adams" },
-  [`${CDN}/5387f1db-afbb-40f2-9e31-b1fcdf5163a5_rw_600.jpg`]: { tabs: "R", cats: "S LF", aspects: "Custom cellar door with perspex, Light Feature" },
-  ["/images/aslyiam/aslyiam-diamond-nails.jpg"]: { tabs: "C", cats: "S", aspects: "Window Feature, 1×4m" },
-  [`${CDN}/18320e7a-11d9-401e-be88-2882883feca6_rw_1920.jpg`]: { tabs: "R", cats: "S", aspects: "Framed Divider Screen, Display Home" },
-  [`${CDN}/a7051a98-18b5-4a76-bf4f-f9569636a04b_rw_1200.jpg`]: { tabs: "C P R", cats: "S", aspects: "Promotional Image · Apartment Entrance Gates, Security Door" },
-  [`${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`]: { tabs: "C", cats: "S", aspects: "R6·I4 — ERGO · Cottesloe Hotel · Gates · Fences · Screens · McDonald Jones Architects" },
-  [`${CDN}/8e870d8c-8b02-4a6a-82b2-7aed7fc22c83_rw_1920.jpg`]: { tabs: "C", cats: "S", aspects: "Fencing" },
-  [`${CDN}/5d641ee3-f68a-46f0-836e-a439215cb153_rw_1200.jpg`]: { tabs: "R", cats: "S", aspects: "Room Divider" },
-  [`${CDN}/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg`]: { tabs: "R", cats: "S", aspects: "Custom" },
-  [`${CDN}/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg`]: { tabs: "R", cats: "S", aspects: "Custom" },
-  [`${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`]: { tabs: "P", cats: "SCU LF", aspects: "R7·I1 — Unity in Diversity · Centennial Park" },
-  ["/images/hero/hero-homebase-totems.jpg"]: { tabs: "C P", cats: "SCU", aspects: "R6·I1 — HOMEBASE Totems" },
-  [`${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`]: { tabs: "C P", cats: "SCU LF", aspects: "R6·I3 — HOMEBASE Motif Sculpture" },
-  ["/images/zarathstra/helvetica-bar.jpg"]: { tabs: "C", cats: "S", aspects: "R6·I5 — ZARATHSTRA · Helvetica Bar · Divider" },
-  [`${CDN}/35a4cd54-797e-43c5-9e58-40f7c00f5964_rw_1200.jpg`]: { tabs: "C P R", cats: "PL LF", aspects: "R6·I2 — EVO · HOMEBASE · landscape design and features" },
-  [`${CDN}/4abdd8f3-44a5-4a24-b6cb-ccdb233b297e_rw_1920.jpeg`]: { tabs: "C P", cats: "LF", aspects: "R15 — URCHIN · Light Feature · HOMEBASE · landscape design and features" },
-  [`${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg`]: { tabs: "P", cats: "SCU LF", aspects: "R10·I1 — Fiona Stanley · indigenous motif Totems" },
-  [`${CDN}/4605043d-cb34-4ade-9339-8d8bd07645a4_rw_1200.jpg`]: { tabs: "C P", cats: "SCU LF", aspects: "R10·I2 — HOMEBASE Signage Totems" },
-  [`${CDN}/181378db-3310-4b32-8704-00836f3e0cc8_rw_1200.jpg`]: { tabs: "C P", cats: "PL", aspects: "EVO Planters · HOMEBASE" },
-  [`${CDN}/3826640c-6476-446d-b49c-ba7d1e312544_rw_1200.jpg`]: { tabs: "C P", cats: "PL", aspects: "EVO Planters · HOMEBASE" },
-  [`${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg`]: { tabs: "C P R", cats: "SCU", aspects: "MARAKESH TRIO · customised entrance feature" },
-  [`${CDN}/8aabcc1e-b8c3-45e3-aa3d-c56d5911ea03_rw_1920.jpg`]: { tabs: "C P", cats: "S LF SCU", aspects: "R5·I6 — HOMEBASE · Landscape design and features" },
-};
-
-const _debugMap = (() => {
-  const catLabel = { sculpture: "SCU", screens: "S", "fire-light": "FL", planters: "PL", projects: "PRJ", concepts: "CON" };
-  const tabLabel = { commercial: "C", public: "P", residential: "R" };
-  const bySeries = {};
-  CATEGORY_FILTERS.forEach(c => c.seriesIds.forEach(sid => {
-    (bySeries[sid] = bySeries[sid] || []).push(catLabel[c.id] || c.id.toUpperCase());
-  }));
-  const m = new Map();
-  // Aggregate ALL series for each image (same image can appear in multiple tabs/categories)
-  Object.entries(COMMISSIONS).forEach(([tid, sarr]) => {
-    sarr.forEach(s => {
-      s.items.forEach(item => {
-        const tl = tabLabel[tid];
-        const cats = bySeries[s.id] || [];
-        if (!m.has(item.img)) {
-          m.set(item.img, { tabs: new Set([tl]), cats: new Set(cats) });
-        } else {
-          const e = m.get(item.img);
-          e.tabs.add(tl);
-          cats.forEach(c => e.cats.add(c));
-        }
-      });
-    });
-  });
-  m.forEach((v, k) => m.set(k, { tabs: [...v.tabs].join(' '), cats: [...v.cats].join(' ') }));
-  return m;
-})();
-
-const SCREENS_MARQUEE_IMGS = [
-  "/images/screens/strip/aslyiam.jpg",
-  "/images/screens/strip/ferlie-close.jpg",
-  "/images/screens/strip/grail-close.jpg",
-  "/images/screens/strip/marakesh-fdl.jpg",
-  "/images/screens/strip/wattle-urn.jpg",
-  "/images/screens/strip/wattle.jpg",
-  "/images/screens/strip/xavier-close.jpg",
-];
 
 // ── Screens feature slideshow — edit slides here ──────────────────────────────
 // Each slide: img (path), heading, subheading, body (optional text lines)
@@ -505,12 +206,6 @@ function ScreensFeatureSlideshow() {
   const [storyOpen, setStoryOpen] = useState(false);
   const timerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
-
-  const _goTo = (idx) => {
-    if (animating || idx === cur) return;
-    setAnimating(true);
-    setTimeout(() => { setCur(idx); setAnimating(false); }, 500);
-  };
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -876,60 +571,6 @@ const SCREEN_DESIGNS = [
   { name: "SABAH", sectionStart: "THE MIRRORS", items: [{ name: "SABAH", img: "/images/mirrors/sabah-1.jpg" }] },
 ];
 
-const ALL_BESPOKE_SEARCHABLE = (() => {
-  const seen = new Set();
-  const result = [];
-  for (const [tabId, seriesArr] of Object.entries(COMMISSIONS)) {
-    const tabLabel = TABS.find(t => t.id === tabId)?.label ?? tabId;
-    for (const s of seriesArr) {
-      for (const item of s.items) {
-        if (!seen.has(item.img)) {
-          seen.add(item.img);
-          result.push({ ...item, _series: s.label, _tab: tabLabel });
-        }
-      }
-    }
-  }
-  // Include SCREEN_DESIGNS items so they appear in search
-  for (const design of SCREEN_DESIGNS) {
-    for (const item of design.items) {
-      if (!seen.has(item.img)) {
-        seen.add(item.img);
-        result.push({ ...item, _series: design.name, _tab: "Screens" });
-      }
-    }
-  }
-  return result;
-})();
-
-const BESPOKE_SEARCH_ALIASES = {
-  // Screen catalogue categories (p.33–37)
-  "icons":           ["WATTLE", "FERLIE", "VIASI", "ASLYIAM", "VUELTA", "LUCARIO", "GRAIL", "ROANDER", "ERGO"],
-  "architectural":   ["ELLE", "EROS", "ZARATHSTRA", "ORIEL", "SABU", "CHIOLA", "URO", "CUSTOM", "HEXO", "GRAIL"],
-  "organics":        ["BANKSIA", "WATTLE", "FERLIE", "VIASI", "PANGEA", "ZED", "VUELTA"],
-  "classics":        ["LUMIER", "ORIAN", "DOTTI", "ZANADA", "ROANDER", "XAVIER", "LUCARIO", "VAYA", "RISHIKESH"],
-  "indies":          ["AUDA", "SPANGLE"],
-  // Residential use types
-  "gates":           ["FERLIE", "VIASI", "ZANADA", "EROS", "ZARATHSTRA", "WATTLE", "ERGO", "CHIOLA", "LUCARIO", "ROANDER", "GRAIL", "CUSTOM", "ORIAN", "URO"],
-  "fencing":         ["FERLIE", "VIASI", "ZANADA", "EROS", "GRAIL", "URO", "CUSTOM", "ORIEL"],
-  "dividers":        ["ASLYIAM", "GRAIL", "WATTLE", "LUMIER", "VUELTA", "XAVIER", "ORIAN", "DOTTI", "VAYA", "ORIEL", "ROANDER", "AUDA"],
-  "privacy screens": ["ASLYIAM", "GRAIL", "WATTLE", "LUMIER", "VUELTA", "XAVIER", "ORIAN", "FERLIE", "VIASI"],
-  "light features":  ["ERGO"],
-  "gates & doors":   ["LUCARIO", "CHIOLA", "EROS", "FERLIE", "VIASI", "ZANADA", "ZARATHSTRA", "WATTLE", "ERGO", "ROANDER", "GRAIL", "CUSTOM"],
-  "wall decor":      ["RAVI Inspired", "Homebase Feature", "CREEPING FIG", "VILLA LEAF", "KYRA LEAF", "ROANDER"],
-  "entrance":        ["GRAIL", "FERLIE", "LUCARIO", "CHIOLA", "VAYA"],
-  "display homes":   ["ASLYIAM", "WATTLE", "LUMIER", "XAVIER", "VIASI", "ORIAN", "DOTTI", "AUDA"],
-  "balustrade":      ["EROS", "VUELTA"],
-  // Non-screen categories
-  "hospitality":     ["HOMEBASE", "LUMIER", "XAVIER", "Divider", "GRAIL", "Cottesloe Patio", "Cottesloe Gate", "Helvetica", "HEXO"],
-  "corporate":       ["BENIN Inspired", "RAVI Inspired", "Unity in Diversity", "VUELTA", "ASLYIAM"],
-  "outdoor":         ["FERLIE", "DANDELIONS Totems", "ORIAN Totem", "TOTEMS"],
-  "memorial":        ["ORIAN Totem", "HUE"],
-  "sculptures":      ["DANDELIONS Totems", "TOTEMS", "HUE", "Fiona Stanley", "Centennial Park", "MARAKESH TRIO"],
-  "fire pits":       ["HOMEBASE Fire Pit", "REEDS of UNGARO", "YAZAD Fire", "URCHIN", "EQUISETTI"],
-  "totems":          ["DANDELIONS Totems", "TOTEMS", "ORIAN Totem"],
-};
-
 const PROJECT_CATEGORIES = [
   { id: "homebase",       label: "Homebase WA" },
   { id: "williamstown",   label: "Williamstown Vic" },
@@ -994,930 +635,6 @@ const PROJECTS_ROWS = [
     { name: "EROS",               img: "/images/eros/eros-2.jpg" },
     { name: "EROS",               img: "/images/eros/eros-1.jpg" },
   ] },
-];
-
-const CONCEPTS_ROWS = [
-  {
-    id: "concepts-percent",
-    name: "PERCENT FOR ART",
-    items: [
-      { name: "Percent for Art", img: `${CDN}/a017e095-21a4-41a4-bdd7-630bb270b4f3_rw_1200.jpg`, slides: [`${CDN}/a017e095-21a4-41a4-bdd7-630bb270b4f3_rw_1200.jpg`, `${CDN}/713bf242-7075-4082-90cd-c885aa129107_rw_1920.jpg`] },
-    ],
-  },
-  {
-    id: "concepts-outback",
-    name: "OUTBACK INFO BAYS",
-    items: [
-      { name: "Outback Info Bays", img: `${CDN}/882272cb-30b0-4cef-8f0e-dee3241578e3_rw_1920.jpg` },
-    ],
-  },
-  {
-    id: "concepts-shire",
-    name: "SHIRE OF PEEL",
-    items: [
-      { name: "Shire of Peel", img: `${CDN}/8157a7f2-763b-469d-bca4-dee47707d7da_rw_1920.jpg`, slides: [`${CDN}/8157a7f2-763b-469d-bca4-dee47707d7da_rw_1920.jpg`, `${CDN}/39f2b9a7-cf77-4a54-a88e-a92948a82ebe_rw_1920.jpg`], videoUrl: "/videos/waroona.mp4" },
-    ],
-  },
-  {
-    id: "concepts-homebase",
-    name: "HOME BASE",
-    items: [
-      { name: "Home Base",           img: `${CDN}/ba29da64-778e-4e6c-a942-02acff420a19_rw_1200.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/8aabcc1e-b8c3-45e3-aa3d-c56d5911ea03_rw_1920.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/4fe97b52-7eca-4995-a9b0-e9caa6d72967_rw_1920.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/3ef7ea8e-eec1-4856-b37a-f2d23978aca3_rw_1920.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/66a80833-aa96-4e7a-a62e-6ce882831573_rw_1200.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/9422ac0b-5ce1-4cca-83fc-660e854c3bb0_rw_1200.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/04ac8236-413f-4590-a522-dfca01a94fe8_rw_1200.jpg` },
-    ],
-  },
-  {
-    id: "concepts-centennial",
-    name: "CENTENNIAL PARK",
-    items: [
-      { name: "Centennial Park (Concepts)", img: `${CDN}/8b43f372-e1ca-4882-b630-bc0d985db4a7_rw_1200.jpg` },
-    ],
-  },
-  {
-    id: "concepts-cottesloe",
-    name: "COTTESLOE RESIDENCE",
-    items: [
-      { name: "Cottesloe Residence", img: `${CDN}/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg` },
-      { name: "Cottesloe Residence", img: `${CDN}/d8d96ede-c60e-4b48-991b-b80f157db3a5_rw_1920.jpg` },
-    ],
-  },
-];
-
-const BESPOKE_SEARCH_PROMPTS = [
-  { label: "Screen Collection", items: ["icons", "architectural", "organics", "classics", "indies"] },
-  { label: "By Use",            items: ["gates", "dividers", "privacy screens", "fencing", "balustrade", "light features", "wall decor"] },
-  { label: "By Project",        items: ["display homes", "hospitality", "corporate", "entrance"] },
-  { label: "By Type",           items: ["sculptures", "fire pits", "totems"] },
-];
-
-function CommissionDetail({ item, onClose }) {
-  const overlayRef = useRef(null);
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" });
-    gsap.fromTo(cardRef.current, { y: 20, opacity: 0, scale: 0.95 }, { y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power3.out" });
-  }, []);
-
-  const handleClose = useCallback(() => {
-    gsap.to(cardRef.current, { y: 14, opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.in" });
-    gsap.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in", delay: 0.05, onComplete: onClose });
-  }, [onClose]);
-
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") handleClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [handleClose]);
-
-  return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-[9995] flex items-center justify-center p-4"
-      style={{ background: "rgba(10,10,10,0.82)", backdropFilter: "blur(18px)" }}
-      onClick={handleClose}
-    >
-      <div
-        ref={cardRef}
-        className="relative w-full max-w-[400px] rounded-3xl overflow-hidden shadow-2xl"
-        style={{ background: "rgba(20,20,20,0.97)", border: "1px solid rgba(242,240,233,0.09)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button onClick={handleClose} className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center text-cream/50 hover:text-cream hover:bg-black/80 transition-colors">
-          <X size={13} />
-        </button>
-        <div className="aspect-[4/3] overflow-hidden relative bg-charcoal">
-          <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
-        </div>
-        <div className="p-6">
-          <p className="font-heading font-semibold text-cream text-base leading-snug">{item.client || item.name}</p>
-          {item.description && (
-            <p className="text-cream/55 text-sm leading-relaxed mt-3 font-detail">{item.description}</p>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Lightbox({ items, index, onClose, onPrev, onNext }) {
-  const overlayRef = useRef(null);
-  const contentRef = useRef(null);
-  const lenis = useLenis();
-
-  useEffect(() => {
-    lenis?.stop();
-    const ctx = gsap.context(() => {
-      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
-      gsap.fromTo(contentRef.current, { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" });
-    });
-    return () => { ctx.revert(); lenis?.start(); };
-  }, [lenis]);
-
-  const prevIdx = useRef(index);
-  useEffect(() => {
-    if (prevIdx.current !== index && contentRef.current) {
-      gsap.fromTo(contentRef.current, { scale: 0.96, opacity: 0.3 }, { scale: 1, opacity: 1, duration: 0.25, ease: "power2.out" });
-    }
-    prevIdx.current = index;
-  }, [index]);
-
-  const handleClose = useCallback(() => {
-    const tl = gsap.timeline({ onComplete: onClose });
-    tl.to(contentRef.current, { scale: 0.92, opacity: 0, duration: 0.25, ease: "power2.in" });
-    tl.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in" }, "-=0.1");
-  }, [onClose]);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "Escape") handleClose();
-      if (e.key === "ArrowLeft") onPrev();
-      if (e.key === "ArrowRight") onNext();
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [handleClose, onPrev, onNext]);
-
-  const item = items[index];
-  return (
-    <div ref={overlayRef} className="fixed inset-0 z-[200] bg-charcoal/95 flex items-center justify-center" onClick={handleClose}>
-      <button onClick={(e) => { e.stopPropagation(); onPrev(); }} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-        <ChevronLeft size={24} />
-      </button>
-      <div ref={contentRef} className="flex flex-col items-center gap-4 px-20" onClick={(e) => e.stopPropagation()}>
-        <img src={item.img} alt={item.name} className="max-w-[80vw] max-h-[78vh] object-contain rounded-2xl" />
-        <div className="flex items-center gap-6">
-          <p className="text-cream/80 font-heading font-medium text-sm tracking-wide">{item.name}</p>
-          {item.videoUrl && (
-            <a href={item.videoUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-2 text-clay text-sm font-detail font-semibold hover:text-cream transition-colors">
-              <span className="w-6 h-6 rounded-full border border-clay flex items-center justify-center" style={{ paddingLeft: "2px" }}>▶</span>
-              Watch Reel
-            </a>
-          )}
-        </div>
-      </div>
-      <button onClick={(e) => { e.stopPropagation(); onNext(); }} className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-        <ChevronRight size={24} />
-      </button>
-      <button onClick={handleClose} className="absolute top-4 md:top-6 right-4 md:right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-        <X size={20} />
-      </button>
-      <div className="absolute bottom-6 font-detail text-cream/40 text-xs">{index + 1} / {items.length}</div>
-    </div>
-  );
-}
-
-function SlidingThumb({ slides, alt, active, pos }) {
-  const [cur, setCur] = useState(0);
-  const timerRef = useRef(null);
-  useEffect(() => {
-    if (slides.length <= 1 || !active) return;
-    timerRef.current = setInterval(() => setCur(prev => (prev + 1) % slides.length), 3000);
-    return () => { clearInterval(timerRef.current); timerRef.current = null; };
-  }, [active, slides.length]);
-  return (
-    <div className="w-full h-full relative">
-      {slides.map((src, i) => (
-        <img key={src} src={src} alt={alt}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          style={{ opacity: i === cur ? 1 : 0, transition: 'opacity 0.8s ease', objectPosition: pos || 'center center' }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function ScreenDesignRow({ design, onOpenLightbox, onDetail, getDebug }) {
-  const rowRef = useRef(null);
-  const [showRight, setShowRight] = useState(design.items.length > 4);
-  const [showLeft, setShowLeft] = useState(false);
-  const [rowActive, setRowActive] = useState(false);
-
-  const checkScroll = () => {
-    const el = rowRef.current;
-    if (!el) return;
-    setShowLeft(el.scrollLeft > 8);
-    setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
-  };
-
-  const scrollAmount = () => {
-    const el = rowRef.current;
-    if (!el) return 200;
-    const card = el.firstElementChild;
-    const cardW = card ? card.offsetWidth + 12 : 220;
-    return window.innerWidth < 768 ? cardW : cardW * 2;
-  };
-  const scrollRight = () => rowRef.current?.scrollBy({ left: scrollAmount(), behavior: "smooth" });
-  const scrollLeft  = () => rowRef.current?.scrollBy({ left: -scrollAmount(), behavior: "smooth" });
-
-  const arrowClass = "hidden md:flex absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-charcoal/90 border border-white/15 items-center justify-center text-cream/70 hover:text-cream hover:border-clay hover:bg-charcoal active:bg-charcoal transition-all backdrop-blur-sm z-20";
-
-  return (
-    <div onMouseEnter={() => setRowActive(true)} onMouseLeave={() => setRowActive(false)}>
-      <div data-series-label className="group/lbl inline-flex mb-2 px-1 cursor-default gap-[0.01em]">
-        {design.name.split("").map((char, i) => (
-          <span
-            key={i}
-            className="font-detail text-xs uppercase text-warm-gray group-hover/lbl:text-clay group-hover/lbl:-translate-y-0.5 transition-all"
-            style={{ letterSpacing: "0.2em", transitionDuration: "350ms", transitionDelay: `${i * 22}ms`, display: "inline-block", whiteSpace: "pre" }}
-          >
-            {char}
-          </span>
-        ))}
-      </div>
-      <div className="relative">
-        <div
-          ref={rowRef}
-          className="series-scroll flex gap-3 overflow-x-auto pb-1 h-52"
-          data-lenis-prevent
-          onScroll={checkScroll}
-        >
-          {design.items.map((item, idx) => {
-            const dbg = getDebug ? getDebug(item) : null;
-            return (
-              <div
-                key={idx}
-                className="gallery-card group cursor-pointer rounded-2xl overflow-hidden relative flex-none h-full aspect-square"
-                onClick={() => onOpenLightbox(design.items, idx)}
-              >
-                {item.slides
-                  ? <SlidingThumb slides={item.slides} alt={item.name} active={rowActive} pos={item.pos} />
-                  : <img src={item.img} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={item.pos ? { objectPosition: item.pos } : undefined} />
-                }
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-                  <p className="text-cream font-heading font-semibold text-xs">{item.name}</p>
-                </div>
-                <button
-                  className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/80 text-[9px] font-detail tracking-widest uppercase opacity-0 group-hover:opacity-100 hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
-                  onClick={(e) => { e.stopPropagation(); onDetail(item); }}
-                >
-                  details
-                </button>
-                {dbg && (
-                  <div className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-end p-1">
-                    <div className="bg-black/88 backdrop-blur-sm rounded-md px-1.5 py-1.5 space-y-1">
-                      <p className="text-cream text-[8px] font-mono font-semibold leading-tight" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>{item.name}</p>
-                      <p className="text-[7.5px] font-mono leading-tight">
-                        <span className="text-yellow-300">{dbg.tabs}</span>
-                        {dbg.cats && <span className="text-green-300"> · {dbg.cats}</span>}
-                      </p>
-                      {dbg.aspects !== undefined && (
-                        <div className="border-t border-white/15 pt-0.5">
-                          <span className="text-white/40 text-[6.5px] font-mono uppercase tracking-wide">Aspects </span>
-                          <span className="text-orange-200 text-[7px] font-mono leading-tight">{dbg.aspects || "—"}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        {showLeft && (
-          <button onClick={scrollLeft} aria-label="Scroll left" className={`${arrowClass} left-1`}>
-            <ChevronLeft size={16} />
-          </button>
-        )}
-        {showRight && (
-          <button onClick={scrollRight} aria-label="Scroll right" className={`${arrowClass} right-5`}>
-            <ChevronRight size={16} />
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function GalleryCard({ item, onClick, onDetail }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      className="gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {item.slides
-        ? <SlidingThumb slides={item.slides} alt={item.name} active={hovered} pos={item.pos} />
-        : <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" style={item.pos ? { objectPosition: item.pos } : undefined} />
-      }
-      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-        <p className="text-cream font-heading font-semibold text-sm">{item.name}</p>
-      </div>
-      <button
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/80 text-[9px] font-detail tracking-widest uppercase opacity-0 group-hover:opacity-100 hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
-        onClick={(e) => { e.stopPropagation(); onDetail(); }}
-      >
-        details
-      </button>
-    </div>
-  );
-}
-
-function GalleryModal({ onClose, initialCategory = null }) {
-  const [activeTab, setActiveTab] = useState(null);
-  const [activeCategory, setActiveCategory] = useState(initialCategory);
-  const [sweepingId, setSweepingId] = useState(null);
-  const [lightboxItems, setLightboxItems] = useState(null);
-  const [lightboxIndex, setLightboxIndex] = useState(null);
-  const [detailItem, setDetailItem] = useState(null);
-  const [activeProjectCat, setActiveProjectCat] = useState("homebase");
-  const [activeScreenDesign, setActiveScreenDesign] = useState(null);
-  const [query, setQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
-  const overlayRef = useRef(null);
-  const panelRef = useRef(null);
-  const bodyRef = useRef(null);
-  const gridRef = useRef(null);
-  const searchRef = useRef(null);
-  const searchRowRef = useRef(null);
-  const isAnimating = useRef(false);
-  const lenis = useLenis();
-
-  useEffect(() => {
-    lenis?.stop();
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
-    gsap.fromTo(panelRef.current, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" });
-    window.__galleryModalBody = bodyRef;
-    return () => { lenis?.start(); window.__galleryModalBody = null; };
-  }, [lenis]);
-
-  useEffect(() => {
-    if (!gridRef.current) return;
-    const cards = gridRef.current.querySelectorAll(".gallery-card");
-    if (!cards.length) return;
-    const stagger = cards.length > 50 ? 0 : 0.05;
-    gsap.fromTo(cards, { y: 30, opacity: 0, scale: 0.97 }, {
-      y: 0, opacity: 1, scale: 1, duration: 0.5, stagger, ease: "power3.out",
-    });
-  }, [activeTab, activeCategory]);
-
-  // Screen design label flip-in (same pattern as wall art series labels)
-  useEffect(() => {
-    if (activeCategory !== "screens") return;
-    const labels = bodyRef.current?.querySelectorAll("[data-series-label]");
-    if (!labels?.length) return;
-    const observers = [];
-    labels.forEach((label) => {
-      const spans = label.querySelectorAll("span");
-      gsap.set(spans, { rotationY: 90, transformPerspective: 400, transformOrigin: "center center", opacity: 0 });
-      const observer = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) {
-          gsap.to(spans, {
-            rotationY: 0, opacity: 1, color: "#9E7134",
-            duration: 0.5, stagger: 0.04, ease: "back.out(1.4)",
-            onComplete: () => gsap.set(spans, { clearProps: "rotationY,transformPerspective,transformOrigin" }),
-          });
-        } else {
-          gsap.killTweensOf(spans);
-          gsap.set(spans, { rotationY: 90, transformPerspective: 400, transformOrigin: "center center", opacity: 0 });
-        }
-      }, { threshold: 0.3, root: bodyRef.current });
-      observer.observe(label);
-      observers.push(observer);
-    });
-    return () => observers.forEach((o) => o.disconnect());
-  }, [activeCategory]);
-
-  const handleClose = useCallback(() => {
-    const tl = gsap.timeline({ onComplete: onClose });
-    tl.to(panelRef.current, { y: 30, opacity: 0, duration: 0.3, ease: "power2.in" });
-    tl.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in" }, "-=0.15");
-  }, [onClose]);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === "Escape" && !lightboxItems && !detailItem) {
-        if (query) setQuery("");
-        else handleClose();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [handleClose, lightboxItems, detailItem, query]);
-
-  const searchResults = query.trim().length > 0
-    ? (() => {
-        const q = query.trim().toLowerCase();
-        const aliasNames = Object.entries(BESPOKE_SEARCH_ALIASES)
-          .filter(([key]) => key.includes(q) || q.includes(key))
-          .flatMap(([, names]) => names.map(n => n.toLowerCase()));
-        return ALL_BESPOKE_SEARCHABLE.filter(item =>
-          item.name.toLowerCase().includes(q) ||
-          item._series.toLowerCase().includes(q) ||
-          item._tab.toLowerCase().includes(q) ||
-          item.client?.toLowerCase().includes(q) ||
-          item.description?.toLowerCase().includes(q) ||
-          aliasNames.includes(item.name.toLowerCase())
-        );
-      })()
-    : null;
-
-  useEffect(() => {
-    const row = searchRowRef.current;
-    if (!row) return;
-    let targetSpeed = 0, scrollSpeed = 0, rafId = null;
-    const tick = () => { scrollSpeed += (targetSpeed - scrollSpeed) * 0.1; if (Math.abs(scrollSpeed) > 0.05) row.scrollLeft += scrollSpeed; rafId = requestAnimationFrame(tick); };
-    const onMouseMove = (e) => { const rect = row.getBoundingClientRect(); const x = e.clientX - rect.left; const w = rect.width; const zone = w * 0.22; if (x > w - zone) targetSpeed = ((x - (w - zone)) / zone) * 14; else if (x < zone) targetSpeed = -((zone - x) / zone) * 14; else targetSpeed = 0; };
-    const onEnter = () => { rafId = requestAnimationFrame(tick); };
-    const onLeave = () => { targetSpeed = 0; if (rafId) { cancelAnimationFrame(rafId); rafId = null; scrollSpeed = 0; } };
-    row.addEventListener("mouseenter", onEnter);
-    row.addEventListener("mouseleave", onLeave);
-    row.addEventListener("mousemove", onMouseMove);
-    return () => { row.removeEventListener("mouseenter", onEnter); row.removeEventListener("mouseleave", onLeave); row.removeEventListener("mousemove", onMouseMove); if (rafId) cancelAnimationFrame(rafId); };
-  }, [searchResults]);
-
-  const animateOut = useCallback((onComplete) => {
-    if (isAnimating.current) return;
-    isAnimating.current = true;
-    const cards = gridRef.current?.querySelectorAll(".gallery-card");
-    if (!cards?.length) { onComplete(); isAnimating.current = false; return; }
-    gsap.to(cards, {
-      opacity: 0, scale: 0.95, y: -15, duration: 0.2, stagger: 0.02, ease: "power2.in",
-      onComplete: () => { onComplete(); isAnimating.current = false; },
-    });
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    animateOut(() => { setActiveTab(null); setActiveCategory(null); setActiveScreenDesign(null); });
-  }, [animateOut]);
-
-  const switchTab = useCallback((id) => {
-    animateOut(() => { setActiveTab(t => t === id ? null : id); setActiveScreenDesign(null); });
-  }, [animateOut]);
-
-  const switchCategory = useCallback((id) => {
-    animateOut(() => { setActiveCategory(c => c === id ? null : id); setActiveScreenDesign(null); });
-  }, [animateOut]);
-
-  const dedup = (items) => {
-    const seen = new Set();
-    return items.filter(item => { if (seen.has(item.img)) return false; seen.add(item.img); return true; });
-  };
-
-  const activeCatDef = CATEGORY_FILTERS.find(c => c.id === activeCategory);
-  const catItems = activeCatDef ? getBySeriesIds(activeCatDef.seriesIds) : null;
-
-  // Projects and Concepts are standalone row-based galleries — not combinable with tabs
-  const isStandaloneGallery = activeCategory === "projects" || activeCategory === "concepts";
-
-  // null → use organised series view (tab only); array → flat grid
-  const flatItems = (() => {
-    // Default: both null → show all images
-    if (!activeTab && !activeCategory) return dedup(ALL_SERIES.flatMap(s => s.items));
-    // Standalone galleries (Projects, Concepts) render as rows — bypass flat grid
-    if (isStandaloneGallery) return null;
-    // Tab only → series view
-    if (activeTab && !activeCategory) return null;
-    // Concepts (allTabs:true) or category only → full category regardless of tab
-    if (activeCatDef?.allTabs || !activeTab) return dedup(catItems);
-    // Tab + category → intersection via series IDs (prevents cross-tab bleed)
-    const tabSeriesIds = new Set(COMMISSIONS[activeTab].map(s => s.id));
-    const intersectIds = activeCatDef.seriesIds.filter(id => tabSeriesIds.has(id));
-    return dedup(getBySeriesIds(intersectIds));
-  })();
-
-  const activeSeries = flatItems === null ? COMMISSIONS[activeTab] : null;
-  const hasFilters = activeTab !== null || activeCategory !== null;
-
-  // Scope the lightbox to just the series that owns the clicked image, then loop within it.
-  const openLightbox = (items, idx) => { setLightboxItems(items); setLightboxIndex(idx); };
-  const openLightboxScoped = useCallback((item) => {
-    const owner = ALL_SERIES.find(s => s.items.some(si => si.img === item.img));
-    const pool  = owner ? owner.items : [item];
-    const i     = pool.findIndex(si => si.img === item.img);
-    setLightboxItems(pool);
-    setLightboxIndex(i >= 0 ? i : 0);
-  }, []);
-  const openDetailOrLightbox = useCallback((item) => {
-    if (item.videoUrl) { openLightboxScoped(item); } else { setDetailItem(item); }
-  }, [openLightboxScoped]);
-  const closeLightbox = useCallback(() => { setLightboxItems(null); setLightboxIndex(null); }, []);
-  const prevLightbox = useCallback(() => setLightboxIndex((i) => (i > 0 ? i - 1 : lightboxItems.length - 1)), [lightboxItems]);
-  const nextLightbox = useCallback(() => setLightboxIndex((i) => (i < lightboxItems.length - 1 ? i + 1 : 0)), [lightboxItems]);
-
-  return (
-    <>
-      <div ref={overlayRef} className="fixed inset-0 z-[100] bg-charcoal/80 backdrop-blur-sm" onClick={handleClose} />
-      <div ref={panelRef} className="fixed inset-0 md:inset-6 z-[110] bg-charcoal md:rounded-3xl flex flex-col overflow-hidden">
-
-        {/* Header */}
-        <div className="flex flex-wrap items-center gap-3 px-5 md:px-8 py-4 md:py-5 border-b border-white/10 flex-none">
-          <div className="flex-none">
-            <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
-            <h2 className="font-heading font-bold text-xl md:text-2xl text-cream mt-1">
-              Bespoke <span className="text-cream/60">Gallery</span>
-            </h2>
-          </div>
-          {/* Search bar */}
-          <div className="relative flex-1 min-w-[140px] max-w-sm ml-auto">
-            <div className={`flex items-center gap-2 bg-white/5 border rounded-full px-4 py-2 transition-colors ${searchFocused ? "border-clay/50" : "border-white/10"}`}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-warm-gray flex-none">
-                <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M10 10L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <input
-                ref={searchRef}
-                type="text"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setTimeout(() => setSearchFocused(false), 180)}
-                placeholder="Search"
-                className="flex-1 bg-transparent text-cream text-base font-detail font-medium outline-none placeholder:text-cream/60 min-w-0"
-              />
-              {query && (
-                <button onClick={() => { setQuery(""); searchRef.current?.focus(); }} className="text-warm-gray hover:text-cream transition-colors flex-none">
-                  <X size={13} />
-                </button>
-              )}
-            </div>
-            {/* Suggestions dropdown */}
-            {searchFocused && !query && (
-              <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-[#1a1a1a] border border-white/10 rounded-2xl p-4 shadow-2xl">
-                <p className="font-detail text-[9px] text-warm-gray/40 uppercase tracking-[0.2em] mb-3">Try searching for…</p>
-                {BESPOKE_SEARCH_PROMPTS.map(group => (
-                  <div key={group.label} className="mb-3 last:mb-0">
-                    <p className="font-detail text-[9px] text-warm-gray/60 uppercase tracking-[0.2em] mb-2">{group.label}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {group.items.map(term => (
-                        <button
-                          key={term}
-                          onMouseDown={e => e.preventDefault()}
-                          onClick={() => { setQuery(term); searchRef.current?.focus(); }}
-                          className="px-3 py-1 rounded-full text-xs font-detail bg-white/5 border border-white/10 text-cream/60 hover:border-clay/60 hover:text-cream hover:bg-white/8 transition-all duration-200 capitalize"
-                        >
-                          {term}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          <button onClick={handleClose} className="flex-none p-2.5 rounded-full bg-white/10 text-cream hover:bg-white/20 transition-colors" aria-label="Close">
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Scrollable body */}
-        <div ref={bodyRef} className="flex-1 overflow-y-auto" data-lenis-prevent onWheel={e => e.stopPropagation()}>
-          <div className="max-w-7xl mx-auto px-6 md:px-12 py-8">
-
-            {/* Search results */}
-            {searchResults !== null && (
-              <div className="mb-8 space-y-4">
-                <p className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">
-                  {searchResults.length === 0 ? "No results found" : `${searchResults.length} result${searchResults.length !== 1 ? "s" : ""}`}
-                </p>
-                {searchResults.length > 0 && (
-                  <div ref={searchRowRef} className="search-scroll flex gap-3 overflow-x-auto pb-2" data-lenis-prevent>
-                    {searchResults.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square flex-none"
-                        style={{ width: "calc(20% - 9.6px)", minWidth: "160px" }}
-                        onClick={() => openLightboxScoped(item)}
-                      >
-                        <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-                          <p className="text-cream font-heading font-semibold text-xs">{item.name}</p>
-                          <p className="text-cream/50 font-detail text-[9px] uppercase tracking-wider mt-0.5">{item._series}</p>
-                        </div>
-                        <button
-                          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/80 text-[9px] font-detail tracking-widest uppercase opacity-0 group-hover:opacity-100 hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
-                          onClick={(e) => { e.stopPropagation(); setDetailItem(item); }}
-                        >
-                          details
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Filter pills — hidden while searching */}
-            {searchResults === null && <div className="flex flex-col gap-3 mb-10">
-              <div className="flex flex-wrap items-center gap-2 pb-1">
-
-                {/* All pill — active when no filters are set */}
-                <button
-                  onClick={clearFilters}
-                  className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                  style={{
-                    backgroundColor: !hasFilters ? "#9E7134" : "#1A1A1A",
-                    color: "#F2F0E9",
-                    border: !hasFilters ? "none" : "1px solid rgba(242,240,233,0.15)",
-                    transition: "background-color 0.3s ease",
-                  }}
-                >
-                  All
-                </button>
-
-                <span className="w-2.5 h-2.5 rounded-full border border-clay/60 flex-none mx-1" />
-
-                {/* Tab pills */}
-                {TABS.map((tab) => {
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => {
-                        if (sweepingId) return;
-                        setSweepingId(tab.id);
-                        setTimeout(() => { setSweepingId(null); switchTab(tab.id); }, 700);
-                      }}
-                      className={`filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
-                        sweepingId === tab.id ? "filter-btn-sweeping" :
-                        isActive ? "filter-btn-active" : "filter-btn-inactive"
-                      }`}
-                      style={{
-                        backgroundColor: isActive ? "#9E7134" : "#1A1A1A",
-                        color: "#F2F0E9",
-                        border: isActive ? "none" : "1px solid rgba(242,240,233,0.15)",
-                        transition: "background-color 0.6s ease 0.7s, opacity 0.3s ease",
-                        position: "relative",
-                        opacity: isStandaloneGallery ? 0.3 : 1,
-                        pointerEvents: isStandaloneGallery ? "none" : "auto",
-                      }}
-                    >
-                      <span>{tab.label}</span>
-                    </button>
-                  );
-                })}
-
-                <span className="w-2.5 h-2.5 rounded-full border border-clay/60 flex-none mx-1" />
-
-                {/* Category pills */}
-                {CATEGORY_FILTERS.map((cat, idx) => {
-                  const isActive = activeCategory === cat.id;
-                  const isStandalone = cat.id === "projects" || cat.id === "concepts";
-                  // Non-standalone pills dim when a standalone gallery is active
-                  const dimmed = isStandaloneGallery && !isStandalone;
-                  return (
-                    <span key={cat.id} className="flex items-center gap-2">
-                      {idx === 4 && <span className="w-2.5 h-2.5 rounded-full border border-clay/60 flex-none" />}
-                      <button
-                        onClick={() => switchCategory(cat.id)}
-                        className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                        style={{
-                          backgroundColor: isActive ? "#9E7134" : "#1A1A1A",
-                          color: "#F2F0E9",
-                          border: isActive ? "none" : "1px solid rgba(242,240,233,0.15)",
-                          transition: "background-color 0.3s ease, opacity 0.3s ease",
-                          opacity: dimmed ? 0.3 : 1,
-                          pointerEvents: dimmed ? "none" : "auto",
-                        }}
-                      >
-                        {cat.label}
-                      </button>
-                    </span>
-                  );
-                })}
-              </div>
-
-              {/* Clear button — only visible when a filter is active */}
-              {hasFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-detail text-cream/40 hover:text-cream/70 border border-white/10 hover:border-white/25 transition-all duration-200"
-                >
-                  <X size={10} />
-                  <span className="uppercase tracking-wider">Clear filters</span>
-                </button>
-              )}
-            </div>}
-
-            {/* Grid — hidden while searching */}
-            {searchResults === null && <div ref={gridRef}>
-              {activeCategory === "projects" ? (
-                <div className="flex flex-col gap-6">
-                  {/* Category pills */}
-                  <div className="flex flex-wrap gap-2 pb-2 border-b border-white/8">
-                    {PROJECT_CATEGORIES.map(cat => (
-                      <button
-                        key={cat.id}
-                        onClick={() => setActiveProjectCat(cat.id)}
-                        className={`px-4 py-1.5 rounded-full font-detail text-[11px] uppercase tracking-[0.15em] transition-all duration-200 ${
-                          activeProjectCat === cat.id
-                            ? "bg-clay text-jet font-semibold"
-                            : "bg-white/8 text-cream/60 hover:bg-white/15 hover:text-cream"
-                        }`}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-                  {/* Filtered rows */}
-                  {PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat && r.items.length > 0).length === 0 ? (
-                    <p className="font-detail text-cream/30 text-sm text-center py-16 tracking-wider uppercase">Images coming soon</p>
-                  ) : (
-                    PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat).map(row => (
-                      <ScreenDesignRow key={row.id} design={row} onOpenLightbox={openLightbox} onDetail={openDetailOrLightbox}
-                        getDebug={DEBUG_LABELS ? (item) => _manualCodes[item.img] || _debugMap.get(item.img) : null} />
-                    ))
-                  )}
-                </div>
-              ) : activeCategory === "concepts" ? (
-                <div className="flex flex-col gap-8">
-                  {CONCEPTS_ROWS.map(row => (
-                    <ScreenDesignRow key={row.id} design={row} onOpenLightbox={openLightbox} onDetail={openDetailOrLightbox}
-                      getDebug={DEBUG_LABELS ? (item) => _manualCodes[item.img] || _debugMap.get(item.img) : null} />
-                  ))}
-                </div>
-              ) : activeCategory === "screens" && !activeTab ? (
-                <div className="flex flex-col gap-4">
-                  {/* Design pills — shown always; "All designs" resets selection */}
-                  <div className="flex flex-wrap gap-2 pb-3 border-b border-white/8">
-                    <button
-                      onClick={() => setActiveScreenDesign(null)}
-                      className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                      style={{ backgroundColor: !activeScreenDesign ? "#9E7134" : "#1A1A1A", color: "#F2F0E9", border: !activeScreenDesign ? "none" : "1px solid rgba(242,240,233,0.15)", transition: "background-color 0.3s ease" }}
-                    >All designs</button>
-                    {SCREEN_DESIGNS.filter(d => d.items.length > 0).map(design => (
-                      <button
-                        key={design.name}
-                        onClick={() => setActiveScreenDesign(design.name)}
-                        className="filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap"
-                        style={{ backgroundColor: activeScreenDesign === design.name ? "#9E7134" : "#1A1A1A", color: "#F2F0E9", border: activeScreenDesign === design.name ? "none" : "1px solid rgba(242,240,233,0.15)", transition: "background-color 0.3s ease" }}
-                      >{design.name}</button>
-                    ))}
-                  </div>
-
-                  {/* No design selected: overview rows — clicking thumb selects that design */}
-                  {!activeScreenDesign && (() => {
-                    let visibleRowIdx = 0;
-                    return SCREEN_DESIGNS.map(design => {
-                      if (!design.items.length) return null;
-                      const rowIdx = visibleRowIdx++;
-                      return (
-                        <React.Fragment key={design.name}>
-                          {design.sectionStart && (
-                            <p className="font-detail text-[10px] text-warm-gray/50 uppercase tracking-[0.22em] pt-6 pb-3 mt-2">
-                              {design.sectionStart}
-                            </p>
-                          )}
-                          <ScreenDesignRow
-                            design={design}
-                            onOpenLightbox={() => setActiveScreenDesign(design.name)}
-                            onDetail={() => setActiveScreenDesign(design.name)}
-                          />
-                          {(rowIdx === 2 || rowIdx === 3 || rowIdx === 4) && (
-                            <div className="w-full overflow-hidden my-2" style={{ height: "110px" }}>
-                              <div className="flex gap-2 h-full" style={{ width: "max-content", animation: "marquee-scroll 40s linear infinite", willChange: "transform" }}>
-                                {[...SCREENS_MARQUEE_IMGS, ...SCREENS_MARQUEE_IMGS].map((src, i) => (
-                                  <img key={i} src={src} alt="" role="presentation" className="h-full w-auto object-cover rounded" style={{ aspectRatio: "4/3", flexShrink: 0 }} />
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </React.Fragment>
-                      );
-                    });
-                  })()}
-
-                  {/* Design selected: all its images as a grid — clicking opens lightbox */}
-                  {activeScreenDesign && (() => {
-                    const d = SCREEN_DESIGNS.find(d => d.name === activeScreenDesign);
-                    if (!d) return null;
-                    return (
-                      <div className="flex flex-wrap justify-center gap-2">
-                        {d.items.map((item, idx) => (
-                          <div key={idx}
-                            onClick={() => openLightbox(d.items, idx)}
-                            className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
-                            style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((idx * 0.618) % 1) * 1.5).toFixed(2)}s` }}>
-                            {item.slides
-                              ? <img src={item.slides[0]} alt={item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
-                              : <img src={item.img} alt={item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
-                            }
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
-                              <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{item.name}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-                </div>
-              ) : flatItems ? (
-                flatItems.length === 0 ? (
-                  <p className="font-detail text-cream/30 text-sm text-center py-16 tracking-wider uppercase">No matching works in this combination</p>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                    {flatItems.map((item, idx) => {
-                      const r = Math.floor(idx / 5) + 1;
-                      const c = (idx % 5) + 1;
-                      const isAllView = !activeTab && !activeCategory;
-                      const dbg = DEBUG_LABELS ? (_manualCodes[item.img] || _debugMap.get(item.img)) : null;
-                      return (
-                        <div key={idx} className="relative">
-                          <GalleryCard item={item} onClick={() => openLightboxScoped(item)} onDetail={() => openDetailOrLightbox(item)} />
-                          {dbg && (
-                            <div className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-between p-1">
-                              <div className="self-start">
-                                {isAllView && (
-                                  <div className="bg-clay text-[#111] text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md leading-tight">
-                                    R{r}·I{c}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="bg-black/88 backdrop-blur-sm rounded-md px-1.5 py-1.5 space-y-1">
-                                <p className="text-cream text-[8px] font-mono font-semibold leading-tight" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>{item.name}</p>
-                                <p className="text-[7.5px] font-mono leading-tight">
-                                  <span className="text-yellow-300">{dbg.tabs}</span>
-                                  {dbg.cats && <span className="text-green-300"> · {dbg.cats}</span>}
-                                </p>
-                                {dbg.aspects !== undefined && (
-                                  <div className="border-t border-white/15 pt-0.5">
-                                    <span className="text-white/40 text-[6.5px] font-mono uppercase tracking-wide">Aspects </span>
-                                    <span className="text-orange-200 text-[7px] font-mono leading-tight">{dbg.aspects || "—"}</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )
-              ) : activeSeries ? (
-                activeSeries.map((series) => (
-                  series.items.length > 0 && (
-                    <div key={series.id} className="mb-10">
-                      <p className="font-detail text-[10px] text-warm-gray uppercase tracking-[0.2em] mb-4">{series.label}</p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                        {series.items.map((item, idx) => {
-                          const dbg = DEBUG_LABELS ? (_manualCodes[item.img] || _debugMap.get(item.img)) : null;
-                          return (
-                            <div key={idx} className="relative">
-                              <GalleryCard item={item} onClick={() => openLightbox(series.items, idx)} onDetail={() => openDetailOrLightbox(item)} />
-                              {dbg && (
-                                <div className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-end p-1">
-                                  <div className="bg-black/88 backdrop-blur-sm rounded-md px-1.5 py-1.5 space-y-1">
-                                    <p className="text-cream text-[8px] font-mono font-semibold leading-tight" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>{item.name}</p>
-                                    <p className="text-[7.5px] font-mono leading-tight">
-                                      <span className="text-yellow-300">{dbg.tabs}</span>
-                                      {dbg.cats && <span className="text-green-300"> · {dbg.cats}</span>}
-                                    </p>
-                                    {dbg.aspects !== undefined && (
-                                      <div className="border-t border-white/15 pt-0.5">
-                                        <span className="text-white/40 text-[6.5px] font-mono uppercase tracking-wide">Aspects </span>
-                                        <span className="text-orange-200 text-[7px] font-mono leading-tight">{dbg.aspects || "—"}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )
-                ))
-              ) : null}
-            </div>}
-
-          </div>
-        </div>
-      </div>
-
-      {lightboxItems !== null && lightboxIndex !== null && (
-        <Lightbox items={lightboxItems} index={lightboxIndex} onClose={closeLightbox} onPrev={prevLightbox} onNext={nextLightbox} />
-      )}
-
-      {detailItem && (
-        <CommissionDetail item={detailItem} onClose={() => setDetailItem(null)} />
-      )}
-    </>
-  );
-}
-
-
-// ── Screens Portal ──────────────────────────────────────────────────────────
-
-const SCREENS_PORTAL_IMGS = [
-  `/images/screens/strip/viasi.jpg`,
-  `/images/screens/strip/marakesh-fdl.jpg`,
-  `/images/screens/strip/wattle.jpg`,
-  `/images/screens/strip/aslyiam.jpg`,
-  `/images/screens/strip/orian.jpg`,
-  `/images/screens/strip/wattle-urn.jpg`,
-  `/images/bloom/bloom-closeup.jpg`,
 ];
 
 const SCREENS_CAT_PAGES = [
@@ -1985,106 +702,6 @@ function ScreensCatalogueModal({ onClose }) {
   return <CatPageViewer pages={SCREENS_CAT_PAGES} label="Screens Catalogue" onClose={onClose} />;
 }
 
-function PortalLightbox({ items, index, onClose, onPrev, onNext }) {
-  const overlayRef = useRef(null);
-  const contentRef = useRef(null);
-  const imgRef = useRef(null);
-  const lenis = useLenis();
-  const [slideIdx, setSlideIdx] = useState(0);
-
-  const item = items[index];
-  const slides = item.slides || [item.img];
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { setSlideIdx(0); }, [index]);
-
-  useEffect(() => {
-    lenis?.stop();
-    const ctx = gsap.context(() => {
-      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
-      gsap.fromTo(contentRef.current, { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" });
-    });
-    return () => { ctx.revert(); lenis?.start(); };
-  }, [lenis]);
-
-  const handleClose = useCallback(() => {
-    const tl = gsap.timeline({ onComplete: onClose });
-    tl.to(contentRef.current, { scale: 0.92, opacity: 0, duration: 0.3, ease: "power2.in" });
-    tl.to(overlayRef.current, { opacity: 0, duration: 0.3, ease: "power2.in" }, "-=0.15");
-  }, [onClose]);
-
-  const crossfadeTo = useCallback((fn) => {
-    if (!imgRef.current) { fn(); return; }
-    gsap.to(imgRef.current, {
-      opacity: 0, duration: 0.25, ease: "power2.inOut",
-      onComplete: () => { fn(); gsap.to(imgRef.current, { opacity: 1, duration: 0.25, ease: "power2.inOut" }); },
-    });
-  }, []);
-
-  const handleLeft = useCallback(() => {
-    if (slideIdx > 0) crossfadeTo(() => setSlideIdx(i => i - 1));
-    else crossfadeTo(() => { setSlideIdx(0); onPrev(); });
-  }, [slideIdx, crossfadeTo, onPrev]);
-
-  const handleRight = useCallback(() => {
-    if (slideIdx < slides.length - 1) crossfadeTo(() => setSlideIdx(i => i + 1));
-    else crossfadeTo(() => { setSlideIdx(0); onNext(); });
-  }, [slideIdx, slides.length, crossfadeTo, onNext]);
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") handleClose();
-      if (e.key === "ArrowLeft") handleLeft();
-      if (e.key === "ArrowRight") handleRight();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [handleClose, handleLeft, handleRight]);
-
-  return (
-    <div ref={overlayRef} className="lightbox-overlay" onClick={handleClose}>
-      <button onClick={(e) => { e.stopPropagation(); handleLeft(); }}
-        className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 active:bg-white/30 transition-colors z-20"
-        aria-label="Previous">
-        <ChevronLeft size={24} />
-      </button>
-      <div ref={contentRef} className="flex flex-col items-center justify-center px-14 md:px-20 w-full max-w-5xl gap-3"
-        style={{ height: "calc(100vh - 72px)", marginTop: "52px" }}
-        onClick={(e) => e.stopPropagation()}>
-        <div className="w-full flex items-center justify-center relative flex-none">
-          <img ref={imgRef} src={slides[slideIdx]} alt={item.name}
-            className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "74vh" }} />
-        </div>
-        <div className="flex-shrink-0 flex flex-col items-center gap-1 pt-0 pb-4 w-full max-w-lg">
-          <p className="text-cream font-heading font-semibold text-base tracking-wide">{item.name}</p>
-          {slides.length > 1 && (
-            <div className="flex gap-2 mt-0.5">
-              {slides.map((_, i) => (
-                <button key={i} onClick={() => crossfadeTo(() => setSlideIdx(i))}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${i === slideIdx ? "bg-cream" : "bg-cream/40"}`} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      <button onClick={(e) => { e.stopPropagation(); handleRight(); }}
-        className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 active:bg-white/30 transition-colors z-20"
-        aria-label="Next">
-        <ChevronRight size={24} />
-      </button>
-      <div className="absolute top-4 md:top-6 left-4 right-4 flex items-center justify-between z-20"
-        onClick={(e) => e.stopPropagation()}>
-        <div className="font-detail text-cream/40 text-xs tracking-wider">{index + 1} / {items.length}</div>
-        <button onClick={handleClose}
-          className="p-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 active:bg-white/30 transition-colors"
-          aria-label="Close">
-          <X size={20} />
-        </button>
-      </div>
-    </div>
-  );
-}
-
 const SCREEN_SEARCH_SUGGESTIONS = [
   { label: "By Category", items: ["icons", "architectural", "organics", "classics", "indies"] },
   { label: "By Use",      items: ["gates", "fencing", "balustrade", "privacy screens", "dividers", "wall decor", "light features", "pergolas", "awning", "commercial", "residential", "display homes"] },
@@ -2108,41 +725,34 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   const thumbStripRef = useRef(null);
   const activeThumbRef = useRef(null);
   const touchStartX = useRef(0);
-  const pillStripRef = useRef(null);
-  const [_pillAtEnd, setPillAtEnd] = useState(false);
-
-  // Callback ref: fires when element mounts — guarantees non-passive wheel listener attaches
-  const pillStripCallbackRef = useCallback((el) => {
-    if (pillStripRef.current) {
-      pillStripRef.current._wheelHandler && pillStripRef.current.removeEventListener("wheel", pillStripRef.current._wheelHandler);
-    }
-    pillStripRef.current = el;
-    if (!el) return;
-    const handler = (e) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    };
-    el._wheelHandler = handler;
-    el.addEventListener("wheel", handler, { passive: false });
-    el.addEventListener("scroll", () => {
-      setPillAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 8);
-    }, { passive: true });
+  const navTimerRef = useRef(null);
+  const schedule = useCallback((fn, ms = 180) => {
+    clearTimeout(navTimerRef.current);
+    navTimerRef.current = setTimeout(fn, ms);
   }, []);
+  useEffect(() => () => clearTimeout(navTimerRef.current), []);
 
-  const tabDesigns = tab === "all"
-    ? SCREEN_DESIGNS_SECTIONED
-    : SCREEN_DESIGNS_SECTIONED.filter(d => d._sections.includes(tab));
-  const visibleDesigns = activeDesign
-    ? tabDesigns.filter(d => d.name === activeDesign)
-    : tabDesigns;
+  const tabDesigns = useMemo(() => (
+    tab === "all"
+      ? SCREEN_DESIGNS_SECTIONED
+      : SCREEN_DESIGNS_SECTIONED.filter(d => d._sections.includes(tab))
+  ), [tab]);
+  const visibleDesigns = useMemo(() => (
+    activeDesign ? tabDesigns.filter(d => d.name === activeDesign) : tabDesigns
+  ), [tabDesigns, activeDesign]);
   const activeDrillDesign = activeDesign ? tabDesigns.find(d => d.name === activeDesign) : null;
 
   // One entry per image across all visible designs
-  const gridItems = visibleDesigns.flatMap((d, dIdx) =>
-    d.items.map((it, iIdx) => ({ img: it.img, pos: it.pos, name: d.name, section: d._section, dIdx, iIdx }))
-  );
+  const gridItems = useMemo(() => (
+    visibleDesigns.flatMap((d, dIdx) =>
+      d.items.map((it, iIdx) => ({ img: it.img, pos: it.pos, name: d.name, section: d._section, dIdx, iIdx }))
+    )
+  ), [visibleDesigns]);
+
+  // Flat index map over ALL designs — resolves a search hit to a grid position
+  const allFlat = useMemo(() => (
+    SCREEN_DESIGNS_SECTIONED.flatMap((d, dI) => d.items.map((_, iI) => ({ dIdx: dI, iIdx: iI })))
+  ), []);
 
   // Current image in expanded view
   const curFlat   = flatIdx !== null ? gridItems[flatIdx] : null;
@@ -2150,28 +760,29 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   const curItem   = curFlat ? curDesign?.items[curFlat.iIdx] : null;
   const curSlides = curItem ? (curItem.slides ?? [curItem.img]) : [];
   const displayImg = curSlides[slideIdx] ?? curFlat?.img;
-  const _curSection = curFlat?.section ?? null;
 
   // Search results (always across all designs)
   const q = searchQuery.trim().toLowerCase();
-  const searchResults = q
-    ? SCREEN_DESIGNS_SECTIONED.flatMap((d, dIdx) => {
-        const nameMatch = d.name.toLowerCase().includes(q);
-        const tabMatch  = (d.tabs ?? []).some(t => t.includes(q) || q.includes(t));
-        // Check if any items in this design have item-level tags (if so, don't fall back to design-level)
-        const hasItemTags = d.items.some(it => (it.tags ?? []).length > 0);
-        const designTagMatch = !hasItemTags && (d.tags ?? []).some(t => t.includes(q) || q.includes(t));
-        return d.items.flatMap((it, iIdx) => {
-          const itemMatch = it.name?.toLowerCase().includes(q) || it.description?.toLowerCase().includes(q);
-          // Item-level tag: if item has tags, check those; else if design has no item-level tags, use design tags
-          const itemTagMatch = (it.tags ?? []).length > 0
-            ? (it.tags).some(t => t.includes(q) || q.includes(t))
-            : designTagMatch;
-          if (!nameMatch && !itemTagMatch && !tabMatch && !itemMatch) return [];
-          return [{ img: it.img, pos: it.pos, name: it.name ?? d.name, dIdx, iIdx }];
-        });
-      })
-    : [];
+  const searchResults = useMemo(() => (
+    !q
+      ? []
+      : SCREEN_DESIGNS_SECTIONED.flatMap((d, dIdx) => {
+          const nameMatch = d.name.toLowerCase().includes(q);
+          const tabMatch  = (d.tabs ?? []).some(t => t.includes(q) || q.includes(t));
+          // Check if any items in this design have item-level tags (if so, don't fall back to design-level)
+          const hasItemTags = d.items.some(it => (it.tags ?? []).length > 0);
+          const designTagMatch = !hasItemTags && (d.tags ?? []).some(t => t.includes(q) || q.includes(t));
+          return d.items.flatMap((it, iIdx) => {
+            const itemMatch = it.name?.toLowerCase().includes(q) || it.description?.toLowerCase().includes(q);
+            // Item-level tag: if item has tags, check those; else if design has no item-level tags, use design tags
+            const itemTagMatch = (it.tags ?? []).length > 0
+              ? (it.tags).some(t => t.includes(q) || q.includes(t))
+              : designTagMatch;
+            if (!nameMatch && !itemTagMatch && !tabMatch && !itemMatch) return [];
+            return [{ img: it.img, pos: it.pos, name: it.name ?? d.name, dIdx, iIdx }];
+          });
+        })
+  ), [q]);
 
   // Auto-scroll thumb strip to keep active thumb visible
   useEffect(() => {
@@ -2194,20 +805,20 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
         while (next < gridItems.length && gridItems[next].name === curName) next++;
         if (next >= gridItems.length) next = 0;
         setAnimDir(1);
-        setTimeout(() => { setFlatIdx(next); setSlideIdx(0); setAnimDir(null); }, 180);
+        schedule(() => { setFlatIdx(next); setSlideIdx(0); setAnimDir(null); });
       } else {
         const firstOfCurrent = gridItems.findIndex(it => it.name === curName);
         if (firstOfCurrent > 0) {
           const prevName = gridItems[firstOfCurrent - 1].name;
           const firstOfPrev = gridItems.findIndex(it => it.name === prevName);
           setAnimDir(-1);
-          setTimeout(() => { setFlatIdx(firstOfPrev >= 0 ? firstOfPrev : 0); setSlideIdx(0); setAnimDir(null); }, 180);
+          schedule(() => { setFlatIdx(firstOfPrev >= 0 ? firstOfPrev : 0); setSlideIdx(0); setAnimDir(null); });
         } else {
           // Already first design — wrap to last
           const lastName = gridItems[gridItems.length - 1]?.name;
           const firstOfLast = gridItems.findIndex(it => it.name === lastName);
           setAnimDir(-1);
-          setTimeout(() => { setFlatIdx(firstOfLast >= 0 ? firstOfLast : 0); setSlideIdx(0); setAnimDir(null); }, 180);
+          schedule(() => { setFlatIdx(firstOfLast >= 0 ? firstOfLast : 0); setSlideIdx(0); setAnimDir(null); });
         }
       }
     } else {
@@ -2217,27 +828,27 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
         const next = flatIdx + 1;
         if (next < gridItems.length && gridItems[next].name === curName) {
           setAnimDir(1);
-          setTimeout(() => { setFlatIdx(next); setSlideIdx(0); setAnimDir(null); }, 180);
+          schedule(() => { setFlatIdx(next); setSlideIdx(0); setAnimDir(null); });
         } else {
           const first = gridItems.findIndex(it => it.name === curName);
           setAnimDir(1);
-          setTimeout(() => { setFlatIdx(first >= 0 ? first : 0); setSlideIdx(0); setAnimDir(null); }, 180);
+          schedule(() => { setFlatIdx(first >= 0 ? first : 0); setSlideIdx(0); setAnimDir(null); });
         }
       } else {
         if (slideIdx > 0) { setSlideIdx(s => s - 1); return; }
         const prev = flatIdx - 1;
         if (prev >= 0 && gridItems[prev].name === curName) {
           setAnimDir(-1);
-          setTimeout(() => { setFlatIdx(prev); setSlideIdx(0); setAnimDir(null); }, 180);
+          schedule(() => { setFlatIdx(prev); setSlideIdx(0); setAnimDir(null); });
         } else {
           let last = flatIdx;
           while (last + 1 < gridItems.length && gridItems[last + 1].name === curName) last++;
           setAnimDir(-1);
-          setTimeout(() => { setFlatIdx(last); setSlideIdx(0); setAnimDir(null); }, 180);
+          schedule(() => { setFlatIdx(last); setSlideIdx(0); setAnimDir(null); });
         }
       }
     }
-  }, [flatIdx, jumpByDesign, slideIdx, curSlides.length, gridItems]);
+  }, [flatIdx, jumpByDesign, slideIdx, curSlides.length, gridItems, schedule]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -2407,18 +1018,15 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
             ? <p className="font-detail text-cream/30 text-xs uppercase tracking-[0.2em] text-center mt-10">No results</p>
             : <div className="flex flex-wrap justify-center gap-2">
                 {searchResults.map((it, i) => (
-                  <div key={i} onClick={() => {
-                    // dIdx/iIdx are relative to SCREEN_DESIGNS_SECTIONED = ALL visibleDesigns
-                    const allFlat = SCREEN_DESIGNS_SECTIONED.flatMap((d, dI) =>
-                      d.items.map((_, iI) => ({ dIdx: dI, iIdx: iI }))
-                    );
+                  <div key={it.img} onClick={() => {
+                    // dIdx/iIdx are relative to SCREEN_DESIGNS_SECTIONED = ALL designs
                     const fi = allFlat.findIndex(x => x.dIdx === it.dIdx && x.iIdx === it.iIdx);
                     setTab("all"); setFlatIdx(fi >= 0 ? fi : null); setSlideIdx(0);
                     setSearchQuery(""); setSearchOpen(false);
                   }}
                     className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                    <img src={it.img} alt={it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    <img src={sizedImg(it.img, 700)} alt={it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       style={it.pos ? { objectPosition: it.pos } : undefined} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                       <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
@@ -2468,8 +1076,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
           }}>
           <div className="flex flex-wrap justify-center gap-2">
             {gridItems.map((it, i) => (
-              <React.Fragment key={i}>
-                {false && i === 20 && tab === "all" && <ScreensFeatureSlideshow />}
+              <React.Fragment key={it.img}>
                 <div
                   onClick={() => {
                     if (!activeDesign) {
@@ -2480,7 +1087,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                   }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy"
+                  <img src={sizedImg(it.img, 700)} alt={it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2504,7 +1111,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                 style={{ fontSize: 20 }}>‹</button>
 
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={displayImg} alt={curFlat.name}
+                <img src={sizedImg(displayImg, 1600)} alt={curFlat.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{curFlat.name}</p>
               </div>
@@ -2528,7 +1135,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                     onClick={() => { setFlatIdx(fi); setSlideIdx(0); setJumpByDesign(true); }}
                     className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                     style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : isSameDesign ? 0.75 : 0.35, transition: "all 0.2s" }}>
-                    <img src={it.img} alt={it.name} className="w-full h-full object-cover" />
+                    <img src={sizedImg(it.img, 600)} alt={it.name} className="w-full h-full object-cover" />
                   </div>
                 );
               })}
@@ -2624,6 +1231,14 @@ export function ProjectsGalleryModal({ onClose }) {
   const slides = item ? (item.slides || [item.img]) : [];
   const total = items.length;
 
+  const navTimerRef = useRef(null);
+  const schedule = useCallback((fn, ms = 180) => {
+    clearTimeout(navTimerRef.current);
+    navTimerRef.current = setTimeout(fn, ms);
+  }, []);
+  useEffect(() => () => clearTimeout(navTimerRef.current), []);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setItemIdx(null); setSlideIdx(0); }, [activeProjectCat]);
 
   useEffect(() => {
@@ -2633,17 +1248,17 @@ export function ProjectsGalleryModal({ onClose }) {
         onClose();
       }
       if (itemIdx !== null) {
-        if (e.key === "ArrowRight") { setAnimDir(1); setTimeout(() => { setItemIdx(i => (i + 1) % total); setSlideIdx(0); setAnimDir(null); }, 180); }
-        if (e.key === "ArrowLeft")  { setAnimDir(-1); setTimeout(() => { setItemIdx(i => (i - 1 + total) % total); setSlideIdx(0); setAnimDir(null); }, 180); }
+        if (e.key === "ArrowRight") { setAnimDir(1); schedule(() => { setItemIdx(i => (i + 1) % total); setSlideIdx(0); setAnimDir(null); }); }
+        if (e.key === "ArrowLeft")  { setAnimDir(-1); schedule(() => { setItemIdx(i => (i - 1 + total) % total); setSlideIdx(0); setAnimDir(null); }); }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [itemIdx, onClose, total]);
+  }, [itemIdx, onClose, total, schedule]);
 
   const navigate = (dir) => {
     setAnimDir(dir);
-    setTimeout(() => { setItemIdx(i => (i + dir + total) % total); setSlideIdx(0); setAnimDir(null); }, 180);
+    schedule(() => { setItemIdx(i => (i + dir + total) % total); setSlideIdx(0); setAnimDir(null); });
   };
 
   return (
@@ -2705,10 +1320,10 @@ export function ProjectsGalleryModal({ onClose }) {
           ) : (
             <div className="flex flex-wrap justify-center gap-2">
               {items.map((it, i) => (
-                <div key={i} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
+                <div key={it.img} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy"
+                  <img src={sizedImg(it.img, 700)} alt={it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2730,7 +1345,7 @@ export function ProjectsGalleryModal({ onClose }) {
                 className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors"
                 style={{ fontSize: 20 }}>‹</button>
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={slides[slideIdx] ?? item.img} alt={item.name}
+                <img src={sizedImg(slides[slideIdx] ?? item.img, 1600)} alt={item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{item.name}</p>
               </div>
@@ -2749,7 +1364,7 @@ export function ProjectsGalleryModal({ onClose }) {
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                       style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                      <img src={src} alt={it.name} className="w-full h-full object-cover" />
+                      <img src={sizedImg(src, 600)} alt={it.name} className="w-full h-full object-cover" />
                     </div>
                   );
                 });
@@ -2785,6 +1400,13 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
   const slides = item ? (item.slides || [item.img]) : [];
   const total = items.length;
 
+  const navTimerRef = useRef(null);
+  const schedule = useCallback((fn, ms = 180) => {
+    clearTimeout(navTimerRef.current);
+    navTimerRef.current = setTimeout(fn, ms);
+  }, []);
+  useEffect(() => () => clearTimeout(navTimerRef.current), []);
+
   const searchResults = searchQuery
     ? items.map((it, i) => ({ ...it, origIdx: i })).filter(it => it.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : [];
@@ -2798,17 +1420,17 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
         onClose();
       }
       if (itemIdx !== null && !searchOpen) {
-        if (e.key === "ArrowRight") { setAnimDir(1); setTimeout(() => { setItemIdx(i => (i + 1) % total); setSlideIdx(0); setAnimDir(null); }, 180); }
-        if (e.key === "ArrowLeft")  { setAnimDir(-1); setTimeout(() => { setItemIdx(i => (i - 1 + total) % total); setSlideIdx(0); setAnimDir(null); }, 180); }
+        if (e.key === "ArrowRight") { setAnimDir(1); schedule(() => { setItemIdx(i => (i + 1) % total); setSlideIdx(0); setAnimDir(null); }); }
+        if (e.key === "ArrowLeft")  { setAnimDir(-1); schedule(() => { setItemIdx(i => (i - 1 + total) % total); setSlideIdx(0); setAnimDir(null); }); }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [itemIdx, onClose, total, searchQuery, searchOpen]);
+  }, [itemIdx, onClose, total, searchQuery, searchOpen, schedule]);
 
   const navigate = (dir) => {
     setAnimDir(dir);
-    setTimeout(() => { setItemIdx(i => (i + dir + total) % total); setSlideIdx(0); setAnimDir(null); }, 180);
+    schedule(() => { setItemIdx(i => (i + dir + total) % total); setSlideIdx(0); setAnimDir(null); });
   };
 
   return (
@@ -2875,7 +1497,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                 <div key={it.origIdx} onClick={() => { setItemIdx(it.origIdx); setSlideIdx(0); setSearchQuery(""); setSearchOpen(false); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy"
+                  <img src={sizedImg(it.img, 700)} alt={it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2893,10 +1515,10 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
         <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
           <div className="flex flex-wrap justify-center gap-2">
             {items.map((it, i) => (
-              <div key={i} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
+              <div key={it.img} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
                 className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                 style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                <img src={it.img} alt={it.name} loading="lazy"
+                <img src={sizedImg(it.img, 700)} alt={it.name} loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   style={it.pos ? { objectPosition: it.pos } : undefined} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2918,7 +1540,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                 style={{ fontSize: 20 }}>‹</button>
 
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={slides[slideIdx] ?? item.img} alt={item.name}
+                <img src={sizedImg(slides[slideIdx] ?? item.img, 1600)} alt={item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{item.name}</p>
               </div>
@@ -2940,7 +1562,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                       style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                      <img src={src} alt={it.name} className="w-full h-full object-cover" />
+                      <img src={sizedImg(src, 600)} alt={it.name} className="w-full h-full object-cover" />
                     </div>
                   );
                 });
@@ -2951,472 +1573,5 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
         </>
       )}
     </div>
-  );
-}
-
-function ScreensPortal() {
-  const [cur, setCur] = useState(0);
-  const [galleryOpen, setGalleryOpen] = useState(false);
-  const [glowing, setGlowing] = useState(false);
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setCur(p => (p + 1) % SCREENS_PORTAL_IMGS.length), 3200);
-    return () => clearInterval(timerRef.current);
-  }, []);
-
-  return (
-    <>
-      <button
-        onClick={() => setGalleryOpen(true)}
-        onMouseEnter={() => setGlowing(true)}
-        onMouseLeave={() => setGlowing(false)}
-        className="group relative cursor-pointer"
-        style={{
-          borderRadius: "50%",
-          padding: "9px",
-          background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
-          boxShadow: glowing
-            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #111111, 0 0 0 8px rgba(255,255,255,0.28), 0 0 55px 14px rgba(255,255,255,0.13), 0 0 90px 28px rgba(255,255,255,0.06)"
-            : "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #111111, 0 0 0 8px rgba(255,255,255,0.28)",
-          transition: "box-shadow 0.6s ease",
-        }}
-        aria-label="View Screens"
-      >
-        <div className="relative overflow-hidden w-56 h-56 md:w-64 md:h-64" style={{ borderRadius: "50%" }}>
-          {SCREENS_PORTAL_IMGS.map((img, i) => (
-            <img key={i} src={img} alt="" role="presentation"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
-          ))}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/90">
-            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="w-28 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
-            <span className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.22em] border border-white/20 rounded-full px-4 py-1.5">
-              Screens
-            </span>
-          </div>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
-            {SCREENS_PORTAL_IMGS.map((_, i) => (
-              <span key={i} className="w-1 h-1 rounded-full transition-colors duration-500"
-                style={{ background: i === cur ? "rgba(242,240,233,0.9)" : "rgba(242,240,233,0.3)" }} />
-            ))}
-          </div>
-        </div>
-      </button>
-      {galleryOpen && <ScreensGalleryModal onClose={() => setGalleryOpen(false)} />}
-    </>
-  );
-}
-
-const BESPOKE_PORTAL_ITEMS = [
-  { type: "video", src: "/videos/natives-collage-2.mp4", label: "CUSTOM Natives — Collage", detail: "A commission in our native botanicals series — hand-composed and laser cut to order." },
-];
-
-function BespokePortal() {
-  const [cur, setCur] = useState(0);
-  const [popOpen, setPopOpen] = useState(false);
-  const [playingItem, setPlayingItem] = useState(null);
-  const [glowing, setGlowing] = useState(false);
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    clearInterval(timerRef.current);
-    if (BESPOKE_PORTAL_ITEMS[cur]?.type !== "video") {
-      timerRef.current = setInterval(() => setCur(p => (p + 1) % BESPOKE_PORTAL_ITEMS.length), 3200);
-    }
-    return () => clearInterval(timerRef.current);
-  }, [cur]);
-
-  const _go = (n) => setCur(p => (p + n + BESPOKE_PORTAL_ITEMS.length) % BESPOKE_PORTAL_ITEMS.length);
-
-  return (
-    <>
-      <button
-        onClick={() => setPopOpen(true)}
-        onMouseEnter={() => setGlowing(true)}
-        onMouseLeave={() => setGlowing(false)}
-        className="group relative cursor-pointer"
-        style={{
-          borderRadius: "50%",
-          padding: "9px",
-          background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
-          boxShadow: glowing
-            ? "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #111111, 0 0 0 8px rgba(255,255,255,0.28), 0 0 55px 14px rgba(255,255,255,0.13), 0 0 90px 28px rgba(255,255,255,0.06)"
-            : "inset 0 -5px 10px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.95), 0 2px 6px rgba(0,0,0,0.7), 0 0 0 5px #111111, 0 0 0 8px rgba(255,255,255,0.28)",
-          transition: "box-shadow 0.6s ease",
-        }}
-        aria-label="View Catalogue"
-      >
-        <div className="relative overflow-hidden w-64 h-64 md:w-72 md:h-72" style={{ borderRadius: "50%" }}>
-          {BESPOKE_PORTAL_ITEMS.map((item, i) => (
-            item.type === "video"
-              ? <video key={i} src={item.src} autoPlay muted loop playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
-              : <img key={i} src={item.img} alt={item.label}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
-          ))}
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/90">
-            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="w-36 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
-            <span className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.22em] border border-white/20 rounded-full px-4 py-1.5">
-              View
-            </span>
-          </div>
-          {BESPOKE_PORTAL_ITEMS.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
-              {BESPOKE_PORTAL_ITEMS.map((_, i) => (
-                <span key={i} className="w-1 h-1 rounded-full transition-colors duration-500"
-                  style={{ background: i === cur ? "rgba(242,240,233,0.9)" : "rgba(242,240,233,0.3)" }} />
-              ))}
-            </div>
-          )}
-        </div>
-      </button>
-
-      {popOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/97 backdrop-blur-md p-4"
-          onClick={() => { setPopOpen(false); setPlayingItem(null); }}>
-
-          {/* ── Playing a video full screen ── */}
-          {playingItem ? (
-            <div className="relative flex flex-col items-center gap-4 max-w-[90vw]" onClick={e => e.stopPropagation()}>
-              <button onClick={() => setPlayingItem(null)}
-                className="self-start flex items-center gap-2 text-cream/60 hover:text-cream transition-colors text-sm font-detail tracking-wider uppercase mb-2">
-                <ChevronLeft size={16} /> Back
-              </button>
-              <video src={playingItem.src} autoPlay controls controlsList="nodownload noremoteplayback nofullscreen" disablePictureInPicture playsInline
-                className="max-h-[72vh] max-w-full rounded-2xl"
-                onEnded={() => setPlayingItem(null)} />
-              {playingItem.label && <p className="font-detail text-[10px] text-cream/55 uppercase tracking-[0.2em]">{playingItem.label}</p>}
-            </div>
-
-          ) : (
-          /* ── Selection grid ── */
-          <div className="relative flex flex-col rounded-2xl overflow-hidden bg-charcoal"
-            style={{ width: "min(78vh, 620px)" }}
-            onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/8">
-              <p className="font-detail text-[10px] text-warm-gray uppercase tracking-[0.2em]">Select a Reel</p>
-              <button onClick={() => setPopOpen(false)} className="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center text-cream/60 hover:text-cream hover:bg-white/15 transition-all">
-                <X size={14} />
-              </button>
-            </div>
-            <div className="p-4 grid grid-cols-2 gap-3 overflow-y-auto" style={{ maxHeight: "70vh" }} data-lenis-prevent>
-              {BESPOKE_PORTAL_ITEMS.map((item, i) => (
-                <button key={i} onClick={() => item.type === "video" ? setPlayingItem(item) : null}
-                  className="group relative rounded-xl overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-300 text-left"
-                  style={{ aspectRatio: "16/9" }}>
-                  {item.img
-                    ? <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    : <video src={item.src} muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
-                  }
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  {item.type === "video" && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-10 h-10 rounded-full bg-white/15 border border-white/30 flex items-center justify-center group-hover:bg-clay/80 group-hover:border-clay transition-all duration-300">
-                        <Play size={16} className="text-cream ml-0.5" />
-                      </div>
-                    </div>
-                  )}
-                  {item.label && (
-                    <div className="absolute bottom-0 left-0 right-0 px-3 pb-2">
-                      <p className="font-heading font-bold text-xs text-cream leading-snug">{item.label}</p>
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-          )}
-        </div>
-      )}
-    </>
-  );
-}
-
-const TITLE_STRIP_WORDS = [
-  "ASLYIAM", "ERGO", "FERLIE", "GRAIL", "HOMEBASE", "MARAKESH",
-  "ZARATHSTRA", "LUMIER", "WATTLE", "COTTESLOE", "BANKSIA",
-  "UNITY IN DIVERSITY", "CREEPING FIG", "ORIAN", "CHIOLA",
-  "DANDELIONS", "XAVIER", "CENTENNIAL PARK", "VUELTA", "EQUISETTI",
-  "WANDOO", "HUE", "REEDS OF UNGARO", "FIONA STANLEY", "VIASI",
-  "LUCARIO", "VAYA", "AUDA", "ROANDER", "COMMERCIAL", "PUBLIC",
-  "RESIDENTIAL", "SCREENS", "SCULPTURE", "LIGHT FEATURES", "CONCEPTS",
-];
-
-function TitleDrift() {
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const W = container.offsetWidth || 1200;
-    const H = container.offsetHeight || 112;
-    const SLOTS = 6;
-    const els = [];
-    const lightEls = [];
-
-    // Shuffle helper
-    const shuffle = arr => {
-      const a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    };
-    let queue = shuffle(TITLE_STRIP_WORDS);
-    let qi = 0;
-    const nextWord = () => {
-      if (qi >= queue.length) { queue = shuffle(TITLE_STRIP_WORDS); qi = 0; }
-      return queue[qi++];
-    };
-
-    // Create 6 word elements — each with a warm light overlay span
-    for (let i = 0; i < SLOTS; i++) {
-      const wrap = document.createElement("span");
-      wrap.style.cssText = "position:absolute;top:50%;left:50%;white-space:nowrap;transform-origin:center center;pointer-events:none;user-select:none;will-change:transform,opacity;opacity:0;";
-
-      const text = document.createElement("span");
-      text.style.cssText = "position:relative;display:inline-block;font-family:Impact,'Arial Narrow',sans-serif;font-size:110px;line-height:1;letter-spacing:0.10em;color:rgb(242,240,233);white-space:nowrap;";
-      text.className = "uppercase";
-      text.textContent = nextWord();
-
-      const light = document.createElement("span");
-      light.style.cssText = "position:absolute;inset:0;font-family:Impact,'Arial Narrow',sans-serif;font-size:110px;line-height:1;letter-spacing:0.10em;white-space:nowrap;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;";
-      light.textContent = text.textContent;
-
-      text.appendChild(light);
-      wrap.appendChild(text);
-      container.appendChild(wrap);
-      els.push(wrap);
-      lightEls.push(light);
-    }
-
-    // Depth: scale + opacity yoyo seeked to random phase — all words visible immediately
-    // far = tiny + dim, near = large + bright
-    const DEPTH = [
-      [0.12, 2.6, 0.03, 0.20, 42],
-      [0.12, 2.0, 0.03, 0.17, 34],
-      [0.12, 2.4, 0.03, 0.19, 29],
-      [0.12, 1.7, 0.03, 0.15, 25],
-      [0.12, 2.2, 0.03, 0.18, 38],
-      [0.12, 1.5, 0.03, 0.14, 21],
-    ];
-    els.forEach((w, i) => {
-      const [minS, maxS, dimOp, brightOp, dur] = DEPTH[i];
-      gsap.set(w, { xPercent: -50, yPercent: -50, filter: "drop-shadow(0 0 0px rgba(210,165,70,0))" });
-      const tl = gsap.fromTo(w,
-        { scale: minS, opacity: dimOp },
-        { scale: maxS, opacity: brightOp, duration: dur, ease: "sine.inOut", yoyo: true, repeat: -1 }
-      );
-      tl.seek(Math.random() * dur * 2);
-    });
-
-    // Drift — continuous overlapping moves, never stops
-    const drift = (el, range, minDur, maxDur) => {
-      const go = () => {
-        const x = (Math.random() - 0.5) * range;
-        const y = (Math.random() - 0.5) * H * 0.6;
-        const dur = minDur + Math.random() * (maxDur - minDur);
-        gsap.to(el, { x, y, duration: dur, ease: "sine.inOut" });
-        setTimeout(go, dur * 680);
-      };
-      setTimeout(go, Math.random() * 4000);
-    };
-    drift(els[0], W * 0.8, 40, 65);
-    drift(els[1], W * 0.65, 32, 52);
-    drift(els[2], W * 0.55, 28, 46);
-    drift(els[3], W * 0.45, 24, 40);
-    drift(els[4], W * 0.70, 36, 58);
-    drift(els[5], W * 0.50, 26, 44);
-
-    // Warm roaming light over ALL word letters simultaneously
-    const lts = [
-      { x: 15, y: 50, size: 240, op: 0.55 },
-      { x: 72, y: 50, size: 180, op: 0.44 },
-    ];
-    const updateLights = () => {
-      const img = lts.map(l =>
-        `radial-gradient(ellipse ${l.size}px ${Math.round(l.size * 0.5)}px at ${l.x}% ${l.y}%, rgba(235,200,130,${l.op}) 0%, transparent 65%)`
-      ).join(", ");
-      lightEls.forEach(l => { l.style.backgroundImage = img; });
-    };
-    updateLights();
-    const roamLight = (l, ax) => {
-      const linger = Math.random() < 0.25;
-      const target = linger ? l[ax] + (Math.random() - 0.5) * 10 : 5 + Math.random() * 90;
-      gsap.to(l, {
-        [ax]: target,
-        duration: linger ? 3 + Math.random() * 5 : 9 + Math.random() * 20,
-        ease: "sine.inOut",
-        onUpdate: updateLights,
-        onComplete: () => roamLight(l, ax),
-      });
-    };
-    lts.forEach((l, i) => setTimeout(() => { roamLight(l, "x"); roamLight(l, "y"); }, i * 900));
-
-    // Random illuminate — one word gently brightens with warm glow, then fades
-    const BASE_DIM = DEPTH.map(d => d[2]);
-    const illuminate = () => {
-      const pick = Math.floor(Math.random() * SLOTS);
-      const el = els[pick];
-      gsap.to(el, {
-        opacity: 0.28 + Math.random() * 0.12,
-        filter: `drop-shadow(0 0 ${16 + Math.random() * 12}px rgba(210,165,70,0.55))`,
-        duration: 3 + Math.random() * 3,
-        ease: "sine.inOut",
-        overwrite: false,
-        onComplete: () => {
-          gsap.to(el, {
-            opacity: BASE_DIM[pick],
-            filter: "drop-shadow(0 0 0px rgba(210,165,70,0))",
-            duration: 4 + Math.random() * 5,
-            ease: "sine.inOut",
-            onComplete: () => setTimeout(illuminate, 2000 + Math.random() * 6000),
-          });
-        },
-      });
-    };
-    setTimeout(illuminate, 1500);
-
-    return () => {
-      els.forEach(w => { gsap.killTweensOf(w); w.remove(); });
-    };
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 select-none pointer-events-none"
-      style={{ overflow: "hidden" }}
-    />
-  );
-}
-
-export default function BespokeCommissions() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [pendingCategory, setPendingCategory] = useState(null);
-  const sectionRef   = useRef(null);
-  const gateLeftRef  = useRef(null);
-  const gateRightRef = useRef(null);
-  const stripAreaRef = useRef(null);
-
-  useEffect(() => {
-    const handler = (e) => {
-      setPendingCategory(e.detail || null);
-      setModalOpen(true);
-    };
-    window.addEventListener("open-bespoke-category", handler);
-    return () => window.removeEventListener("open-bespoke-category", handler);
-  }, []);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".bespoke-label", {
-        scrollTrigger: { trigger: ".bespoke-label", start: "top 90%", toggleActions: "play none none none" },
-        y: 20, opacity: 0, duration: 0.7, ease: "power3.out",
-      });
-
-      const tl = gsap.timeline({
-        delay: 0,
-        scrollTrigger: {
-          trigger: stripAreaRef.current,
-          start: "top bottom",
-          toggleActions: "play none none none",
-        },
-      });
-      tl.to(gateLeftRef.current,  { x: "-100%", duration: 8, ease: "none" }, 0);
-      tl.to(gateRightRef.current, { x: "100%",  duration: 8, ease: "none" }, 0);
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
-
-  const leftDup = [...STRIP_IMAGES, ...STRIP_IMAGES];
-
-  return (
-    <>
-      <section id="bespoke" ref={sectionRef} className="bg-onyx pt-0 pb-0 overflow-x-hidden">
-
-        {/* Label row */}
-        <div className="bespoke-label max-w-7xl mx-auto px-6 md:px-12 pt-10 pb-16 text-center">
-          <span className="font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">Commissions</span>
-          <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl text-cream/60 tracking-tight mt-1">
-            Bespoke <span className="text-cream/35">&amp;</span> <span className="text-cream/60">Commissions</span>
-          </h2>
-        </div>
-
-        {/* ── Desktop: diverging strips ──────────────────── */}
-        <div className="hidden md:flex flex-col items-center">
-
-          {/* Faint rule above strip */}
-          <div className="w-full h-px bg-white/20 mb-10" />
-
-          <div ref={stripAreaRef} className="relative flex items-stretch h-52 w-full gap-0">
-            {/* Gate panels — slide outward from centre on scroll into view */}
-            <div ref={gateLeftRef}  className="absolute inset-y-0 left-0 w-1/2 z-20 pointer-events-none" style={{ background: "#040404" }} />
-            <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#040404" }} />
-
-            {/* Left — Screens portal */}
-            <div className="flex-none self-center ml-8 mr-6 relative z-30">
-              <ScreensPortal />
-            </div>
-
-            {/* Centre strip — scrolls left */}
-            <div className="flex-1 overflow-hidden">
-              <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
-                {leftDup.map((src, i) => (
-                  <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                    <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right — Bespoke portal */}
-            <div className="flex-none self-center ml-6 mr-8 relative z-30">
-              <BespokePortal />
-            </div>
-          </div>
-
-          {/* Faint rule below strip */}
-          <div className="w-full h-px bg-white/20 mt-10" />
-
-          {/* Graphite zone below the hairline */}
-          <div className="w-full bg-graphite" style={{ height: "112px" }} />
-        </div>
-
-        {/* ── Mobile: stacked strips + portal ──────────────────── */}
-        <div className="md:hidden flex flex-col">
-
-          {/* Portals */}
-          <div className="flex justify-center gap-8 py-8">
-            <ScreensPortal />
-            <BespokePortal />
-          </div>
-
-
-          {/* Bottom strip */}
-          <div className="h-28 overflow-hidden">
-            <div className="marquee-track-right flex gap-2 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
-              {[...STRIP_IMAGES, ...STRIP_IMAGES].map((src, i) => (
-                <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden">
-                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Graphite zone below strips on mobile */}
-          <div className="w-full bg-graphite" style={{ height: "112px" }} />
-        </div>
-
-      </section>
-
-      {modalOpen && <GalleryModal onClose={() => { setModalOpen(false); setPendingCategory(null); }} initialCategory={pendingCategory} />}
-    </>
   );
 }
