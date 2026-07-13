@@ -41,6 +41,16 @@ function YoutubeIcon() {
   );
 }
 
+// Frosted dark-glass panel behind the hover dropdowns so their items stay
+// legible over any hero image (matches the nav bar's own glass).
+const DROPDOWN_PANEL = {
+  background: "rgba(14,12,10,0.82)",
+  backdropFilter: "blur(22px) saturate(1.4)",
+  WebkitBackdropFilter: "blur(22px) saturate(1.4)",
+  border: "1px solid rgba(237,232,223,0.08)",
+  boxShadow: "0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(237,232,223,0.05)",
+};
+
 export default function Navbar({ quoteCount = 0 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -149,6 +159,14 @@ export default function Navbar({ quoteCount = 0 }) {
 
   return (
     <>
+      {/* ── Top scrim — a soft dark gradient so the nav links stay legible over
+           bright hero images, on any photo. Sits behind the bar, never blocks
+           clicks. ── */}
+      <div
+        className="fixed top-0 left-0 w-full h-36 z-[95] pointer-events-none"
+        style={{ background: "linear-gradient(to bottom, rgba(6,5,4,0.6) 0%, rgba(6,5,4,0.28) 45%, transparent 100%)" }}
+      />
+
       {/* ── Always-visible strip: wordmark + instagram ── */}
       <div className="fixed top-0 left-0 z-[101] flex items-center gap-3 px-5 py-3 pointer-events-none">
         {/* Wordmark */}
@@ -178,7 +196,7 @@ export default function Navbar({ quoteCount = 0 }) {
         style={{
           transform: "translateY(0)",
           opacity: 1,
-          background: "rgba(14, 12, 10, 0.45)",
+          background: "rgba(14, 12, 10, 0.58)",
           backdropFilter: "blur(22px) saturate(1.4)",
           WebkitBackdropFilter: "blur(22px) saturate(1.4)",
           borderBottom: "1px solid rgba(237, 232, 223, 0.07)",
@@ -198,13 +216,15 @@ export default function Navbar({ quoteCount = 0 }) {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${collectionOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {collectionOpen && (
-                <div className="absolute top-full left-0 pt-2 pb-1 min-w-[120px]">
+                <div className="absolute top-full left-0 pt-2 min-w-[150px]">
+                  <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
                   {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); if (href) { window.location.href = href; return; } window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200">
                       {label}
                     </button>
                   ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -216,17 +236,19 @@ export default function Navbar({ quoteCount = 0 }) {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${bespokeOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {bespokeOpen && (
-                <div className="absolute top-full left-0 pt-2 pb-1 min-w-[120px]">
+                <div className="absolute top-full left-0 pt-2 min-w-[150px]">
+                  <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
                   {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
                     const locked = LOCKED_BESPOKE_CATS.includes(cat);
                     return (
                       <button key={cat} onClick={() => openBespokeCat(cat)}
-                        className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)] flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream hover:text-white"}`}>
+                        className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream hover:text-white"}`}>
                         {label}
                         {locked && <Lock size={9} className="text-cream/35" />}
                       </button>
                     );
                   })}
+                  </div>
                 </div>
               )}
             </div>
@@ -243,13 +265,15 @@ export default function Navbar({ quoteCount = 0 }) {
                 </svg>
               </button>
               {catOpen && (
-                <div className="absolute top-full left-0 pt-2 pb-1 min-w-[180px]">
+                <div className="absolute top-full left-0 pt-2 min-w-[200px]">
+                  <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
                   {CATALOGUES.map((cat) => (
                     <button key={cat.label} onClick={() => { setOpenCat(cat); setCatOpen(false); }}
-                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200 [text-shadow:0_1px_4px_rgb(0_0_0_/_0.95)]">
+                      className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200">
                       {cat.label}
                     </button>
                   ))}
+                  </div>
                 </div>
               )}
             </div>
