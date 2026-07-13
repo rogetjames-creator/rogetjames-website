@@ -203,14 +203,14 @@ export default function Hero() {
 
           {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
           {createPortal(
-            <span style={{ position: "fixed", top: LOGO.top, left: "50%", transform: "translateX(-50%)", opacity: logoShown ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: LOGO.size, height: LOGO.size, zIndex: 99 }}>
+            <span data-prerender-strip style={{ position: "fixed", top: LOGO.top, left: "50%", transform: "translateX(-50%)", opacity: logoShown ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: LOGO.size, height: LOGO.size, zIndex: 99 }}>
               <RojLogoAnimation visible={logoActive} onHoldChange={setLogoHolding} />
             </span>,
             document.body
           )}
           {/* Glass fog fill — own portal so backdrop-filter is not trapped inside opacity-animated parent */}
           {createPortal(
-            <div style={{
+            <div data-prerender-strip style={{
               position: "fixed",
               top: LOGO.glassTop,
               left: "50%",

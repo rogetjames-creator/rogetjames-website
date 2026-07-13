@@ -82,6 +82,14 @@ async function prerender() {
       el.style.rotate = "";
       el.style.scale = "";
     });
+
+    // Remove decorative nodes that React portals into <body>/<html> (the ROJ
+    // logo and its glass fog). They live OUTSIDE React's root, so if their
+    // mid-animation snapshot is baked into index.html, React can't reconcile
+    // it away on hydration — you get a frozen "ghost" logo layered under the
+    // live one (wrong size on mobile, never hides on scroll). Crawlers don't
+    // need them; strip them so only the client-rendered logo ever exists.
+    document.querySelectorAll("[data-prerender-strip]").forEach((el) => el.remove());
   });
 
   // Extract the rendered HTML
