@@ -34,18 +34,37 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': noUnusedVars,
+      // React Compiler adoption rule; this project doesn't use the compiler, so
+      // keep its "manual memoization can't be preserved" advice a warning, not a
+      // build-breaking error (it fires on pre-existing, working memoization).
+      'react-hooks/preserve-manual-memoization': 'warn',
     },
   },
 
-  // Node context: serverless functions, build scripts, and Vite config.
-  // These use process/Buffer/__dirname/module etc. — declare Node globals so
-  // they aren't flagged as undefined, and lint .mjs too.
+  // Node context: serverless functions and the Vite config. These use
+  // process/Buffer/__dirname/module etc. — declare Node globals so they aren't
+  // flagged as undefined.
   {
-    files: ['netlify/**/*.{js,mjs}', 'scripts/**/*.{js,mjs}', '*.config.{js,mjs}'],
+    files: ['netlify/**/*.{js,mjs}', '*.config.{js,mjs}'],
     extends: [js.configs.recommended],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: globals.node,
+      sourceType: 'module',
+    },
+    rules: {
+      'no-unused-vars': noUnusedVars,
+    },
+  },
+
+  // Build scripts run under Node, but prerender.mjs executes code inside a real
+  // browser via Playwright's page.evaluate(), so allow browser globals too.
+  {
+    files: ['scripts/**/*.{js,mjs}'],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: { ...globals.node, ...globals.browser },
       sourceType: 'module',
     },
     rules: {
