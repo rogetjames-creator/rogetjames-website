@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, Play, Pause, ExternalLink, Phone, Mail, Instagram } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -552,10 +551,6 @@ export default function DiscoverPortals() {
   const headerRef = useRef(null);
   const [bottomH, setBottomH] = useState(0);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
-  const [screensOpen, setScreensOpen] = useState(false);
-  const [sculptureOpen, setSculptureOpen] = useState(false);
-  const [projectsOpen, setProjectsOpen] = useState(false);
-  const [conceptsOpen, setConceptsOpen] = useState(false);
   const [clientReelsOpen, setClientReelsOpen] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
 
@@ -577,11 +572,7 @@ export default function DiscoverPortals() {
   }, []);
 
   const getOnOpen = (portal) => {
-    if (portal.popupType === "reels")     return () => setClientReelsOpen(true);
-    if (portal.popupType === "screens")   return () => setScreensOpen(true);
-    if (portal.popupType === "sculpture") return () => setSculptureOpen(true);
-    if (portal.popupType === "projects")  return () => setProjectsOpen(true);
-    if (portal.popupType === "concepts")  return () => setConceptsOpen(true);
+    if (portal.popupType === "reels") return () => setClientReelsOpen(true);
     return null;
   };
 
@@ -629,10 +620,6 @@ export default function DiscoverPortals() {
       <div style={{ height: bottomH || 160 }} />
       {clientReelsOpen && <ArtPopup images={CLIENT_IMAGES} startIndex={0} onClose={() => setClientReelsOpen(false)} />}
       {linksOpen && <LinksPopup onClose={() => setLinksOpen(false)} />}
-      {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
-      {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
-      {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
-      {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
     </section>
   );
 }

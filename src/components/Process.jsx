@@ -56,7 +56,6 @@ const STEPS = [
 
 export default function Process() {
   const sectionRef = useRef(null);
-  const cardsRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -119,7 +118,7 @@ export default function Process() {
         </div>
 
         {/* Horizontal plates — centred column */}
-        <div ref={cardsRef} className="flex flex-col gap-3 max-w-3xl mx-auto">
+        <div className="flex flex-col gap-3 max-w-3xl mx-auto">
           {STEPS.map((step) => {
             const Icon = step.icon;
             return (

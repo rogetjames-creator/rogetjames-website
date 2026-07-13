@@ -17,7 +17,7 @@ function criticalCssPlugin() {
           const html = readFileSync(fullPath, 'utf8')
           const result = await critters.process(html)
           writeFileSync(fullPath, result)
-        } catch (_) {}
+        } catch { /* leave the un-inlined HTML if Critters fails */ }
       }
     },
   }
@@ -44,7 +44,6 @@ export default defineConfig({
           'vendor-gsap':   ['gsap'],
           'vendor-lenis':  ['lenis'],
           'vendor-lucide': ['lucide-react'],
-          'vendor-lottie': ['lottie-react'],
         },
       },
     },
