@@ -19,25 +19,12 @@ const PATHS = [
 const BUILD_ORDER = [0, 2, 1, 4, 3];
 
 const STEP_IN  = 950;   // ms between each path fading in
-const STEP_OUT = 650;   // ms between each path fading out (rewind)
-const HOLD     = 15000; // ms to hold full logo before rewinding
 const FADE_DUR = 1600;  // CSS transition duration (ms)
-const PAUSE    = 1000;  // gap between rewind end and next cycle start
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 export default function RojLogoAnimation({ visible, onHoldChange }) {
   const [shown, setShown] = useState(new Set());
   const [holding, setHolding] = useState(false);
   const timers = useRef([]);
-  const cycleCount = useRef(0);
   const running = useRef(false);
 
   function clearAll() {
@@ -53,17 +40,13 @@ export default function RojLogoAnimation({ visible, onHoldChange }) {
 
   function runCycle() {
     if (!running.current) return;
-    cycleCount.current += 1;
 
-    // Every 3rd cycle: canonical A→E build. Otherwise: random, O-large always last.
-    const isBuild = cycleCount.current % 3 === 1;
-    const order = isBuild
-      ? [...BUILD_ORDER]
-      : [...shuffle([0, 1, 2, 4]), 3];
-
+    // Canonical A→E build, once. No rewind, no loop — the logo forms fully
+    // and then simply holds. Scroll (handled by the parent's opacity) is what
+    // hides it; it never disappears or re-forms on its own.
+    const order = [...BUILD_ORDER];
     let t = 0;
 
-    // Fade in each path — glass fires with the rectangle (path 4)
     order.forEach(idx => {
       t += STEP_IN;
       after(t, () => {
@@ -73,27 +56,8 @@ export default function RojLogoAnimation({ visible, onHoldChange }) {
       });
     });
 
-    // Hold at full logo — activate drop shadow
+    // Fully formed — activate the drop shadow and hold indefinitely.
     after(t, () => { if (running.current) setHolding(true); });
-    t += HOLD;
-
-    // Rewind — remove drop shadow, reverse order; glass disappears with the rectangle
-    after(t, () => { if (running.current) setHolding(false); });
-    [...order].reverse().forEach(idx => {
-      t += STEP_OUT;
-      after(t, () => {
-        if (!running.current) return;
-        setShown(prev => { const n = new Set(prev); n.delete(idx); return n; });
-        if (idx === 4) onHoldChange?.(false);
-      });
-    });
-
-    // Pause then next cycle
-    t += FADE_DUR + PAUSE;
-    after(t, () => {
-      if (!running.current) return;
-      runCycle();
-    });
   }
 
   useEffect(() => {
@@ -104,7 +68,6 @@ export default function RojLogoAnimation({ visible, onHoldChange }) {
       return;
     }
     running.current = true;
-    cycleCount.current = 0;
     const t = setTimeout(runCycle, 600);
     return () => {
       running.current = false;

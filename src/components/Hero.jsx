@@ -48,7 +48,12 @@ export default function Hero() {
   const idxRef = useRef(0);
   const layerRefs = useRef([null, null]);
   const [slideshowReady, setSlideshowReady] = useState(false);
-  const [logoVisible, setLogoVisible] = useState(false);
+  // logoActive: one-way true — starts the build once and NEVER resets, so a
+  // scroll can't kill the logo mid-form (it stays fully formed underneath).
+  // logoShown: opacity only — fades the formed logo out when you scroll past
+  // the hero, back in when you scroll up.
+  const [logoActive, setLogoActive] = useState(false);
+  const [logoShown, setLogoShown] = useState(false);
   const [logoHolding, setLogoHolding] = useState(false);
   const lenis = useLenis();
 
@@ -98,14 +103,15 @@ export default function Hero() {
         tl.to(ul, { x: 320, opacity: 0, duration: 0.55, ease: "power2.in" }, "+=0.35");
       }
 
-      setLogoVisible(true);
+      setLogoActive(true);
+      setLogoShown(true);
     };
 
     const resetDrift = () => {
       DRIFT.forEach(({ el, x, y }) => gsap.set(el, { x, y, opacity: 0 }));
       if (underlineRef.current) gsap.set(underlineRef.current, { scaleX: 0, x: 0, opacity: 1 });
       clearTimeout(logoTimerRef.current);
-      setLogoVisible(false);
+      setLogoShown(false);
     };
 
     resetDrift();
@@ -163,8 +169,8 @@ export default function Hero() {
 
           {/* ROJ logo — portalled to body so GSAP parallax doesn't trap fixed positioning */}
           {createPortal(
-            <span style={{ position: "fixed", top: 76, left: "50%", transform: "translateX(-50%)", opacity: logoVisible ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 124, height: 124, zIndex: 99 }}>
-              <RojLogoAnimation visible={logoVisible} onHoldChange={setLogoHolding} />
+            <span style={{ position: "fixed", top: 76, left: "50%", transform: "translateX(-50%)", opacity: logoShown ? 1 : 0, transition: "opacity 1.4s ease", pointerEvents: "none", width: 124, height: 124, zIndex: 99 }}>
+              <RojLogoAnimation visible={logoActive} onHoldChange={setLogoHolding} />
             </span>,
             document.body
           )}
@@ -181,7 +187,7 @@ export default function Hero() {
               background: "rgba(237,232,223,0.07)",
               backdropFilter: "blur(28px) brightness(1.06) saturate(0.85)",
               WebkitBackdropFilter: "blur(28px) brightness(1.06) saturate(0.85)",
-              opacity: logoVisible && logoHolding ? 1 : 0,
+              opacity: logoShown && logoHolding ? 1 : 0,
               transition: "opacity 1.4s ease",
               pointerEvents: "none",
               zIndex: 98,
