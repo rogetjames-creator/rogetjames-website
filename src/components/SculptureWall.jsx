@@ -87,7 +87,6 @@ const CSS = `
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
-.fw-deliver{margin-top:16px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.5);text-shadow:0 2px 8px rgba(0,0,0,.8)}
 .fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(242,240,233,.04);color:inherit;font-family:inherit;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.35s}
 .fw-pill:hover{background:rgba(242,240,233,.14);border-color:rgba(242,240,233,.6);color:#F2F0E9;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1)}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
@@ -531,7 +530,6 @@ function Gallery() {
             View the {c.label.toLowerCase().replace(/^the\s+/, "")} collection
           </button>
         </div>
-        <div className="fw-deliver fw-anim d3">Production lead time 3&ndash;6 weeks &middot; Australia-wide delivery</div>
       </div>
 
       <div className="fw-bottomrow">
