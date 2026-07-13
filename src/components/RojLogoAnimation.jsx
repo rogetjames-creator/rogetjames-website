@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 // Path data extracted from ROJ Logo A–E SVGs
 // Each path represents one element of the logo build
@@ -18,62 +18,64 @@ const PATHS = [
 // Canonical A→E build order: R-top, O-small, R-bottom, frame, O-large
 const BUILD_ORDER = [0, 2, 1, 4, 3];
 
+const START_DELAY = 600;  // ms before the first path appears
 const STEP_IN  = 950;   // ms between each path fading in
 const FADE_DUR = 1600;  // CSS transition duration (ms)
 
 export default function RojLogoAnimation({ visible, onHoldChange }) {
-  const [shown, setShown] = useState(new Set());
+  // `stage` = how many build steps have been revealed (0 → BUILD_ORDER.length).
+  const [stage, setStage] = useState(0);
   const [holding, setHolding] = useState(false);
-  const timers = useRef([]);
-  const running = useRef(false);
+  const rafRef = useRef(0);
 
-  function clearAll() {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-  }
+  // Which build step (0-based) each path belongs to, so a path shows once the
+  // clock passes its step. Path index → position in the A→E build order.
+  const stepOfPath = useMemo(() => {
+    const m = {};
+    BUILD_ORDER.forEach((pathIdx, pos) => { m[pathIdx] = pos; });
+    return m;
+  }, []);
 
-  function after(ms, fn) {
-    const t = setTimeout(fn, ms);
-    timers.current.push(t);
-    return ms;
-  }
-
-  function runCycle() {
-    if (!running.current) return;
-
-    // Canonical A→E build, once. No rewind, no loop — the logo forms fully
-    // and then simply holds. Scroll (handled by the parent's opacity) is what
-    // hides it; it never disappears or re-forms on its own.
-    const order = [...BUILD_ORDER];
-    let t = 0;
-
-    order.forEach(idx => {
-      t += STEP_IN;
-      after(t, () => {
-        if (!running.current) return;
-        setShown(prev => new Set([...prev, idx]));
-        if (idx === 4) onHoldChange?.(true);
-      });
-    });
-
-    // Fully formed — activate the drop shadow and hold indefinitely.
-    after(t, () => { if (running.current) setHolding(true); });
-  }
-
+  // The build is driven by requestAnimationFrame, NOT setTimeout. rAF does not
+  // fire while the tab is hidden/backgrounded, and we clamp any large frame
+  // delta to a single frame — so the five steps can never coalesce and "pop in"
+  // all at once when a background tab is refocused (the old setTimeout bug).
+  // The logo always draws itself incrementally while the user is looking at it.
   useEffect(() => {
     if (!visible) {
-      running.current = false;
-      clearAll();
-      setShown(new Set());
+      cancelAnimationFrame(rafRef.current);
+      setStage(0);
+      setHolding(false);
+      onHoldChange?.(false);
       return;
     }
-    running.current = true;
-    const t = setTimeout(runCycle, 600);
-    return () => {
-      running.current = false;
-      clearTimeout(t);
-      clearAll();
+
+    let last = null;
+    let elapsed = 0;
+
+    const tick = (now) => {
+      if (last == null) last = now;
+      let dt = now - last;
+      last = now;
+      // Guard: a refocused/unthrottled tab can hand rAF a huge delta. Advance
+      // one frame's worth only, so stages step forward, never jump.
+      if (dt > 100) dt = 16;
+      elapsed += dt;
+
+      const past = elapsed - START_DELAY;
+      const next = past <= 0 ? 0 : Math.min(BUILD_ORDER.length, Math.floor(past / STEP_IN) + 1);
+      setStage(prev => (prev === next ? prev : next));
+
+      // Glass fog fires with the rectangle frame (path 4). Drop shadow lands
+      // once the whole mark is formed.
+      if (next >= stepOfPath[4] + 1) onHoldChange?.(true);
+      if (next >= BUILD_ORDER.length) { setHolding(true); return; }
+
+      rafRef.current = requestAnimationFrame(tick);
     };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
@@ -95,7 +97,7 @@ export default function RojLogoAnimation({ visible, onHoldChange }) {
             d={d}
             fill="#EDE8DF"
             style={{
-              opacity: shown.has(i) ? 0.38 : 0,
+              opacity: stepOfPath[i] < stage ? 0.38 : 0,
               transition: `opacity ${FADE_DUR}ms ease`,
             }}
           />
