@@ -57,9 +57,18 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose, zoomed, total]);
 
+  // Lock background scroll while the viewer is open (it is mounted only while
+  // open in every place it is used). Matches ClientPreview's overflow lock so it
+  // works regardless of whether a Lenis provider is present.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   return (
     <>
-      <div className="fixed inset-0 z-[10010] flex flex-col bg-[#0a0a0a]">
+      <div role="dialog" aria-modal="true" aria-label={label} className="fixed inset-0 z-[10010] flex flex-col bg-[#0a0a0a]">
 
         {/* Header */}
         <div className="flex-none px-5 py-3.5 flex items-center gap-3 border-b border-white/10">
@@ -93,21 +102,21 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
             className="max-h-full max-w-full object-contain pointer-events-none select-none" />
 
           {page > 0 && (
-            <div onClick={() => go(-1)}
+            <button type="button" onClick={() => go(-1)} aria-label="Previous page"
               className="absolute inset-y-0 left-0 w-1/2 cursor-pointer flex items-center justify-start pl-4 group/prev">
               <div className="w-9 h-9 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-cream/0 group-hover/prev:text-cream/80 transition-colors">
                 <ChevronLeft size={16} />
               </div>
-            </div>
+            </button>
           )}
 
           {page < total - 1 && (
-            <div onClick={() => go(1)}
+            <button type="button" onClick={() => go(1)} aria-label="Next page"
               className="absolute inset-y-0 right-0 w-1/2 cursor-pointer flex items-center justify-end pr-4 group/next">
               <div className="w-9 h-9 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-cream/0 group-hover/next:text-cream/80 transition-colors">
                 <ChevronRight size={16} />
               </div>
-            </div>
+            </button>
           )}
         </div>
 
@@ -128,7 +137,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
 
       {/* Zoom overlay — full-res scrollable */}
       {zoomed && (
-        <div className="fixed inset-0 z-[10011] bg-black/97 flex flex-col">
+        <div role="dialog" aria-modal="true" aria-label={`${label} — zoomed`} className="fixed inset-0 z-[10011] bg-black/97 flex flex-col">
           <div className="flex-none flex items-center justify-between px-5 py-3 border-b border-white/10">
             <span className="font-detail text-xs text-cream/40 uppercase tracking-[0.2em]">
               Page {page + 1} of {total}

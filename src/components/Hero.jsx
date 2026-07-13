@@ -41,8 +41,6 @@ const DRIFT = [
 export default function Hero() {
   const sectionRef    = useRef(null);
   const underlineRef  = useRef(null);
-  const _lottieLogoRef = useRef(null);
-  const logoTimerRef  = useRef(null);
   const [layerIdx, setLayerIdx] = useState(() => [0, 1 % SLIDES.length]);
   const [active, setActive] = useState(0);
   const idxRef = useRef(0);
@@ -134,19 +132,43 @@ export default function Hero() {
     const section = sectionRef.current;
     if (!section) return;
 
-    const runDrift = () => {
-      DRIFT.forEach(({ el, x, y, delay }) => {
-        gsap.fromTo(el, { x, y, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.6, delay, ease: "power2.out" });
+    const ctx = gsap.context(() => {
+      ScrollTrigger.matchMedia({
+        "(min-width: 768px)": () => {
+          gsap.to(".hero-content", {
+            scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: 1 },
+            y: -60, opacity: 0,
+          });
+        },
       });
+    }, sectionRef);
 
-      // Underline: waits for "meets design." to settle, grows L→R, then flies off right
-      const ul = underlineRef.current;
-      if (ul) {
-        gsap.set(ul, { scaleX: 0, x: 0, transformOrigin: "left center", opacity: 1 });
-        const tl = gsap.timeline({ delay: 2.4 });
-        tl.to(ul, { scaleX: 1, duration: 0.7, ease: "power3.out" });
-        tl.to(ul, { x: 320, opacity: 0, duration: 0.55, ease: "power2.in" }, "+=0.35");
-      }
+    // Track the live drift tweens so a re-enter kills the previous run instead
+    // of stacking a fresh timeline on top of it. Every tween is created via
+    // ctx.add(...) so it lives inside the hero's gsap context and ctx.revert()
+    // on unmount tears it all down.
+    let driftAnims = [];
+    const killDrift = () => { driftAnims.forEach((a) => a.kill()); driftAnims = []; };
+
+    const runDrift = () => {
+      ctx.add(() => {
+        killDrift();
+        DRIFT.forEach(({ el, x, y, delay }) => {
+          driftAnims.push(
+            gsap.fromTo(el, { x, y, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.6, delay, ease: "power2.out" })
+          );
+        });
+
+        // Underline: waits for "meets design." to settle, grows L→R, then flies off right
+        const ul = underlineRef.current;
+        if (ul) {
+          gsap.set(ul, { scaleX: 0, x: 0, transformOrigin: "left center", opacity: 1 });
+          const tl = gsap.timeline({ delay: 2.4 });
+          tl.to(ul, { scaleX: 1, duration: 0.7, ease: "power3.out" });
+          tl.to(ul, { x: 320, opacity: 0, duration: 0.55, ease: "power2.in" }, "+=0.35");
+          driftAnims.push(tl);
+        }
+      });
 
       setLogoActive(true);
       logoActiveRef.current = true;
@@ -156,9 +178,11 @@ export default function Hero() {
     };
 
     const resetDrift = () => {
-      DRIFT.forEach(({ el, x, y }) => gsap.set(el, { x, y, opacity: 0 }));
-      if (underlineRef.current) gsap.set(underlineRef.current, { scaleX: 0, x: 0, opacity: 1 });
-      clearTimeout(logoTimerRef.current);
+      ctx.add(() => {
+        killDrift();
+        DRIFT.forEach(({ el, x, y }) => gsap.set(el, { x, y, opacity: 0 }));
+        if (underlineRef.current) gsap.set(underlineRef.current, { scaleX: 0, x: 0, opacity: 1 });
+      });
       setLogoShown(false);
     };
 
@@ -175,18 +199,7 @@ export default function Hero() {
     );
     observer.observe(section);
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.matchMedia({
-        "(min-width: 768px)": () => {
-          gsap.to(".hero-content", {
-            scrollTrigger: { trigger: section, start: "top top", end: "bottom top", scrub: 1 },
-            y: -60, opacity: 0,
-          });
-        },
-      });
-    }, sectionRef);
-
-    return () => { observer.disconnect(); ctx.revert(); };
+    return () => { observer.disconnect(); killDrift(); ctx.revert(); };
   }, []);
 
   return (

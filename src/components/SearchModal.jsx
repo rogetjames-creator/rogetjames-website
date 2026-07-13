@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
@@ -130,32 +130,60 @@ function fuzzySearch(query, items) {
 
 export default function SearchModal({ open, onClose }) {
   const [query, setQuery] = useState("");
-  const results = fuzzySearch(query, SEARCH_INDEX);
+  // Memoized so the fuzzy match only recomputes when the query changes, not on
+  // every render. SEARCH_INDEX is a module constant, so the query is the only
+  // input that varies.
+  const results = useMemo(() => fuzzySearch(query, SEARCH_INDEX), [query]);
   const overlayRef = useRef(null);
   const cardRef = useRef(null);
   const inputRef = useRef(null);
+  const ctxRef = useRef(null);
+  const prevFocusRef = useRef(null);
   const lenis = useLenis();
 
-  // Animate in/out — component stays mounted so lenis always gets restarted
+  // Animate in/out — component stays mounted so lenis always gets restarted.
+  // Tweens run inside a persistent gsap.context (reverted only on unmount, see
+  // below) so they never leak, without reverting mid-toggle and cutting the
+  // close animation short.
   useEffect(() => {
     if (!overlayRef.current || !cardRef.current) return;
+    if (!ctxRef.current) ctxRef.current = gsap.context(() => {}, overlayRef);
+    ctxRef.current.add(() => {
+      if (open) {
+        lenis?.stop();
+        gsap.set(overlayRef.current, { display: "flex" });
+        gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
+        gsap.fromTo(cardRef.current, { y: -24, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" });
+      } else {
+        // Immediately re-enable scroll + stop blocking clicks
+        lenis?.start();
+        gsap.set(overlayRef.current, { pointerEvents: "none" });
+        gsap.to(cardRef.current, { y: -16, opacity: 0, scale: 0.97, duration: 0.2, ease: "power2.in" });
+        gsap.to(overlayRef.current, {
+          opacity: 0, duration: 0.25, ease: "power2.in",
+          onComplete: () => { gsap.set(overlayRef.current, { display: "none", pointerEvents: "auto" }); setQuery(""); },
+        });
+      }
+    });
+
     if (open) {
-      lenis?.stop();
-      gsap.set(overlayRef.current, { display: "flex" });
-      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
-      gsap.fromTo(cardRef.current, { y: -24, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" });
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      // Immediately re-enable scroll + stop blocking clicks
-      lenis?.start();
-      gsap.set(overlayRef.current, { pointerEvents: "none" });
-      gsap.to(cardRef.current, { y: -16, opacity: 0, scale: 0.97, duration: 0.2, ease: "power2.in" });
-      gsap.to(overlayRef.current, {
-        opacity: 0, duration: 0.25, ease: "power2.in",
-        onComplete: () => { gsap.set(overlayRef.current, { display: "none", pointerEvents: "auto" }); setQuery(""); },
-      });
+      // Remember what was focused so it can be restored on close, then move
+      // focus into the search field.
+      prevFocusRef.current = document.activeElement;
+      const t = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => clearTimeout(t);
+    }
+    // Restore focus to whatever opened the modal.
+    const prev = prevFocusRef.current;
+    prevFocusRef.current = null;
+    if (prev && typeof prev.focus === "function") {
+      const t = setTimeout(() => prev.focus(), 0);
+      return () => clearTimeout(t);
     }
   }, [open, lenis]);
+
+  // Revert the animation context only on unmount so every tween is killed.
+  useEffect(() => () => { ctxRef.current?.revert(); ctxRef.current = null; }, []);
 
   // Keyboard close
   useEffect(() => {
@@ -179,6 +207,9 @@ export default function SearchModal({ open, onClose }) {
   return (
     <div
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search"
       className="fixed inset-0 z-[200] items-start justify-center pt-[12vh] px-4"
       style={{ background: "rgba(10,10,10,0.85)", backdropFilter: "blur(12px)", display: "none" }}
       onClick={onClose}

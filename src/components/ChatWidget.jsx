@@ -109,7 +109,7 @@ export default function ChatWidget() {
               <p className="font-detail text-[10px] text-warm-gray/60 uppercase tracking-wider mt-0.5">ROGETjames</p>
             </div>
           </div>
-          <button onClick={closeChat} className="text-warm-gray/40 hover:text-cream/60 transition-colors">
+          <button onClick={closeChat} aria-label="Close chat" className="text-warm-gray/40 hover:text-cream/60 transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -175,7 +175,7 @@ export default function ChatWidget() {
       {/* Toggle button */}
       <button
         onClick={() => open ? closeChat() : setOpen(true)}
-        aria-label="Open chat"
+        aria-label={open ? "Close chat" : "Open chat"}
         className="fixed bottom-6 left-6 z-[95] flex items-center gap-2.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-300"
         style={{
           background: open ? "#9E7134" : "transparent",
