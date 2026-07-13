@@ -18,10 +18,12 @@ const PATHS = [
 // Canonical A→E build order: R-top, O-small, R-bottom, frame, O-large
 const BUILD_ORDER = [0, 2, 1, 4, 3];
 
-const STEP_IN  = 320;   // ms between each path fading in — brisk, clearly 1-2-3-4-5
-const STEP_OUT = 300;   // ms between each path fading out (rewind)
+const STEP_IN  = 460;   // ms between each path fading in — each step lands
+                        // distinctly (clearly 1-2-3-4-5) but the whole build
+                        // still finishes in ~2.5s, not the old ~6s.
+const STEP_OUT = 340;   // ms between each path fading out (rewind)
 const HOLD     = 15000; // ms to hold full logo before rewinding
-const FADE_DUR = 480;   // CSS transition duration (ms)
+const FADE_DUR = 520;   // CSS transition duration (ms)
 const PAUSE    = 1000;  // gap between rewind end and next cycle start
 
 function shuffle(arr) {
