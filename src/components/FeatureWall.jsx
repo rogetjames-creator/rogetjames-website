@@ -4,6 +4,7 @@ import { WALL_ART_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { netlifyImg } from "../utils/img";
 
 // The live public Wall Art gallery at /wall-art. Linked from the
 // nav/footer/homepage Collection. Reads the same live Up Close / media data
@@ -27,13 +28,24 @@ const UP_CLOSE_IMAGES = [
   { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
 ];
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+// Deterministic string hash (FNV-1a) — gives the Australian Natives
+// "randomised" layout a stable, shuffle-looking order: the same set of images
+// always yields the same order, so it never reshuffles on remount. That keeps
+// the search index and the rendered grid from ever disagreeing on a
+// thumbnail's position.
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-  return a;
+  return h >>> 0;
+}
+// Stable "shuffle" — orders by a hash of each item's image path. Looks
+// arbitrary but is fixed for a given set of images (replaces the old
+// Math.random shuffle that re-ordered on every render).
+function stableShuffle(arr) {
+  return [...arr].sort((a, b) => hashStr(a.img) - hashStr(b.img));
 }
 
 // Australian Natives thumbnail layout (per James): these three shots are
@@ -54,13 +66,23 @@ function orderAustralianNatives(flat) {
     if (slot !== undefined && !pinned.has(slot)) pinned.set(slot, p);
     else pool.push(p);
   }
-  const shuffled = shuffle(pool);
+  const shuffled = stableShuffle(pool);
   const out = [];
   let pi = 0;
   for (let i = 0; i < rest.length; i++) {
     out.push(pinned.has(i) ? pinned.get(i) : shuffled[pi++]);
   }
   return [...out, ...upclose];
+}
+
+// Flatten a category's pieces into one thumb per photo (Gallery.jsx "slides"),
+// applying the Australian Natives ordering. Shared by BOTH the search index
+// and the rendered grid, so a search result's index always matches the grid.
+function orderPieces(cat) {
+  const flat = cat.pieces.flatMap((p) =>
+    p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
+  );
+  return cat.id === "australian-natives" ? orderAustralianNatives(flat) : flat;
 }
 
 const CSS = `
@@ -285,10 +307,10 @@ function Gallery() {
   const searchIndex = useMemo(() => {
     const idx = [];
     CATS.forEach((cat, catIdx) => {
-      const flat = cat.pieces.flatMap((p) =>
-        p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
-      );
-      flat.forEach((p, flatIdx) => {
+      // Build the index from the SAME ordered array the grid renders
+      // (orderPieces), so a result's flatIdx lands on the exact thumbnail
+      // shown — including the reordered Australian Natives collection.
+      orderPieces(cat).forEach((p, flatIdx) => {
         if (p._upclose) return;
         idx.push({ name: p.name, catIdx, catLabel: cat.label, img: p.img, flatIdx });
       });
@@ -355,7 +377,7 @@ function Gallery() {
     const n = CATS.length;
     const near = n ? [cur, (cur + 1) % n, (cur - 1 + n) % n] : [];
     near.forEach((i) => CATS[i]?.pieces.forEach((p) => {
-      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
+      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = netlifyImg(src, { w: 1600, q: 80 }); });
     }));
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -385,6 +407,14 @@ function Gallery() {
       window.removeEventListener("keydown", onKey);
     };
   }, [searchOpen]);
+
+  // Close the expanded lightbox on Escape, matching the site's other modals.
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e) => { if (e.key === "Escape") setExpanded(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
 
   // Piece thumbnails: hovering near either edge auto-scrolls that way, and
   // stops naturally at the start/end — no looping or wrap-around, and the
@@ -440,12 +470,7 @@ function Gallery() {
   // collapsing each design down to a single cover shot.
   // Stable per collection (reshuffles only when the collection or its media
   // changes) so thumbs don't jump around on every render.
-  const pieces = useMemo(() => {
-    const flat = c.pieces.flatMap((p) =>
-      p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
-    );
-    return c.id === "australian-natives" ? orderAustralianNatives(flat) : flat;
-  }, [c.id, c.pieces]);
+  const pieces = useMemo(() => orderPieces(c), [c]);
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
   // Real design count for this collection — excludes the synthetic "Up
@@ -465,7 +490,7 @@ function Gallery() {
       <style>{CSS}</style>
       <div className="fw-imgslot">
         {pieces.map((p, i) => (
-          <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
+          <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${netlifyImg(p.img, { w: 1600, q: 80 })}")` }} />
         ))}
       </div>
 
@@ -503,7 +528,7 @@ function Gallery() {
                         className="fw-search-result"
                         onClick={() => jumpToPiece(r.catIdx, r.flatIdx)}
                       >
-                        <img src={r.img} alt="" />
+                        <img src={netlifyImg(r.img, { w: 120, q: 72 })} alt="" />
                         <span>
                           <span className="fw-search-result-name">{r.name}</span>
                           <span className="fw-search-result-cat">{r.catLabel}</span>
@@ -602,7 +627,7 @@ function Gallery() {
             {pieces.map((p, i) => (
               <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
                 onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={p.name} />
+                <img src={netlifyImg(p.img, { w: 600, q: 78 })} alt={p.name} />
               </div>
             ))}
           </div>
@@ -632,7 +657,7 @@ function Gallery() {
           )}
           <div className="fw-expand-stack" onClick={(e) => e.stopPropagation()}>
             <div className="fw-expand-imgwrap">
-              <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+              <img src={netlifyImg(activePiece.img, { w: 1600, q: 80 })} alt={activePiece.name} className="fw-expand-img" />
               {!activePiece._upclose && (
                 <button
                   className="fw-expand-details"

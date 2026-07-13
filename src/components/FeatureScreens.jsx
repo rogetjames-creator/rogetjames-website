@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import { SCREEN_COVERS } from "./BespokeCommissions";
+import { netlifyImg } from "../utils/img";
 
 // Private, password-gated preview of an ALTERNATIVE gallery design for
 // Screens — same model as the Feature Wall / Feature Sculpture pages, minus
@@ -18,7 +19,8 @@ const CSS = `
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(.75);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
-.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
+.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
+.fw-logo:hover{color:#c08c46}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
@@ -168,8 +170,13 @@ function Gallery() {
   }, []);
 
   useEffect(() => {
-    CATS.forEach((cat) => cat.pieces.forEach((p) => {
-      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
+    // Warm only the current collection and its immediate neighbours (for a
+    // smooth Next/Prev) rather than eager-loading every collection's images
+    // up front — matching the Feature Wall / Sculpture pages.
+    const n = CATS.length;
+    const near = n ? [cur, (cur + 1) % n, (cur - 1 + n) % n] : [];
+    near.forEach((i) => CATS[i]?.pieces.forEach((p) => {
+      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = netlifyImg(src, { w: 1600, q: 80 }); });
     }));
     const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
     window.addEventListener("keydown", onKey);
@@ -249,11 +256,11 @@ function Gallery() {
     <div className="fw-wrap">
       <style>{CSS}</style>
       {pieces.map((p, i) => (
-        <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
+        <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${netlifyImg(p.img, { w: 1600, q: 80 })}")` }} />
       ))}
 
       <header className="fw-top">
-        <div className="fw-logo">ROGET<i>james</i></div>
+        <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
         <a className="fw-catalogue-link" href="/?bespoke=screenscat" target="_blank" rel="noopener noreferrer">
           Screens Catalogue
         </a>
@@ -296,7 +303,7 @@ function Gallery() {
             {pieces.map((p, i) => (
               <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
                 onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={p.name} />
+                <img src={netlifyImg(p.img, { w: 600, q: 78 })} alt={p.name} />
               </div>
             ))}
           </div>
@@ -333,19 +340,32 @@ export default function FeatureScreens() {
       const json = await res.json();
       if (!res.ok || json.error) {
         setError(json.error || "Failed."); setAuthed(false);
-        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+        try { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); } catch { /* ignore */ }
       } else {
         setAuthed(true);
-        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        try { localStorage.setItem("stats_key", adminSecret); localStorage.setItem("stats_key_t", String(Date.now())); } catch { /* ignore */ }
       }
     } catch { setError("Request failed. Check your connection."); }
     finally { setLoading(false); }
   };
 
   useEffect(() => {
+    // Cached admin password expires after 30 days — before trusting it, check
+    // the timestamp written alongside it; if it's missing or stale, clear both
+    // and fall back to the password form. A ?key= in the URL still works as
+    // before and refreshes the timestamp on a successful login.
+    const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
     const urlKey = new URLSearchParams(window.location.search).get("key");
-    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", "/feature-screens");
+    let saved = urlKey || null;
+    if (!saved) {
+      try {
+        const cached = localStorage.getItem("stats_key");
+        const t = Number(localStorage.getItem("stats_key_t") || 0);
+        if (cached && t && Date.now() - t < MAX_AGE) saved = cached;
+        else { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); }
+      } catch { /* ignore */ }
+    }
     if (saved) login(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

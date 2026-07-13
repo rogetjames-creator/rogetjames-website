@@ -92,7 +92,7 @@ export default function CityPage({ city }) {
           src={netlifyImg(hero, { w: 1600, q: 82 })}
           alt={`ROGETjames laser cut work in ${name}`}
           className="absolute inset-0 w-full h-full object-contain"
-          fetchpriority="high"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-matt-black pointer-events-none" />
 

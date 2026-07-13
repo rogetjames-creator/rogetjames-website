@@ -4,6 +4,7 @@ import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
 import { QuoteBar } from "./FeatureQuote";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { netlifyImg } from "../utils/img";
 
 // Sculpture catalogue page scans (mirrors Gallery.jsx SCULPTURE_CAT_PAGES) —
 // opened in-page by the "Sculpture Catalogue" pill so it never bounces to the
@@ -307,7 +308,7 @@ function Gallery() {
     const n = CATS.length;
     const near = n ? [cur, (cur + 1) % n, (cur - 1 + n) % n] : [];
     near.forEach((i) => CATS[i]?.pieces.forEach((p) => {
-      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
+      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = netlifyImg(src, { w: 1600, q: 80 }); });
     }));
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -337,6 +338,14 @@ function Gallery() {
       window.removeEventListener("keydown", onKey);
     };
   }, [searchOpen]);
+
+  // Close the expanded lightbox on Escape, matching the site's other modals.
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e) => { if (e.key === "Escape") setExpanded(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
 
   // Piece thumbnails: hovering near either edge auto-scrolls that way, and
   // stops naturally at the start/end — no looping or wrap-around, and the
@@ -407,7 +416,7 @@ function Gallery() {
       <style>{CSS}</style>
       <div className="fw-imgslot">
         {pieces.map((p, i) => (
-          <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
+          <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${netlifyImg(p.img, { w: 1600, q: 80 })}")` }} />
         ))}
       </div>
 
@@ -445,7 +454,7 @@ function Gallery() {
                         className="fw-search-result"
                         onClick={() => jumpToPiece(r.catIdx, r.flatIdx)}
                       >
-                        <img src={r.img} alt="" />
+                        <img src={netlifyImg(r.img, { w: 120, q: 72 })} alt="" />
                         <span>
                           <span className="fw-search-result-name">{r.name}</span>
                           <span className="fw-search-result-cat">{r.catLabel}</span>
@@ -543,7 +552,7 @@ function Gallery() {
             {pieces.map((p, i) => (
               <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
                 onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={p.name} />
+                <img src={netlifyImg(p.img, { w: 600, q: 78 })} alt={p.name} />
               </div>
             ))}
           </div>
@@ -572,7 +581,7 @@ function Gallery() {
             </button>
           )}
           <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
-            <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+            <img src={netlifyImg(activePiece.img, { w: 1600, q: 80 })} alt={activePiece.name} className="fw-expand-img" />
             {!activePiece._upclose && (
               <button
                 className="fw-expand-details"
