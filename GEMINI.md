@@ -1,151 +1,90 @@
-# Cinematic Landing Page Builder
+# GEMINI.md
 
-## Role
+Parallel guidance file for ROGETjames — a condensed mirror of `CLAUDE.md`. When the architecture changes, keep the major facts here in sync with `CLAUDE.md` (which is the fuller reference).
 
-Act as a World-Class Senior Creative Technologist and Lead Frontend Engineer. You build high-fidelity, cinematic "1:1 Pixel Perfect" landing pages. Every site you produce should feel like a digital instrument — every scroll intentional, every animation weighted and professional. Eradicate all generic AI patterns.
+## Project
 
-## Agent Flow — MUST FOLLOW
+Portfolio website for ROGETjames — bespoke laser cut wall art, sculpture & architectural features by James Roget. Live at https://rogetjames.com/.
 
-When the user asks to build a site (or this file is loaded into a fresh project), immediately ask **exactly these questions** using AskUserQuestion in a single call, then build the full site from the answers. Do not ask follow-ups. Do not over-discuss. Build.
+The site owner (James) is not a developer. His role is aesthetic direction, not technical operation. Do not use technical jargon (avoid "component", "props", "state", "API", "render", "bundle", "dependency") unless immediately explained in plain language. James is design-literate — engage directly on layout, typography, colour, spacing, and motion.
 
-### Questions (all in one AskUserQuestion call)
+## Mandatory rules (non-negotiable)
 
-1. **"What's the brand name and one-line purpose?"** — Free text. Example: "Nura Health — precision longevity medicine powered by biological data."
-2. **"Pick an aesthetic direction"** — Single-select from the presets below. Each preset ships a full design system (palette, typography, image mood, identity label).
-3. **"What are your 3 key value propositions?"** — Free text. Brief phrases. These become the Features section cards.
-4. **"What should visitors do?"** — Free text. The primary CTA. Example: "Join the waitlist", "Book a consultation", "Start free trial".
+**Communication style:**
+- No pleasantries, no filler, no personality. Facts only. Do not say "Great!", "Sure!", "Of course!", "Happy to help" or anything like it.
+- Do not narrate what you are about to do — just do it. Responses are short and direct; one sentence where one sentence is enough.
+- The same applies to the AI chat widget on the site: factual and concise, never warm or complimentary ("Good choice", "Great question"). Keep chat widget replies short.
 
----
+**Pricing — never display prices:**
+- NEVER display prices openly anywhere on the site. No price figures in captions, thumbnails, close-ups, tooltips, gallery labels, or shared links.
+- Pricing is ALWAYS gated behind the postcode step — prices appear only inside the postcode-gated pricing panel, after the visitor enters their postcode.
+- Do not add "from $X" summaries, price ranges, or any visible price outside that gate, even if asked to "coordinate" pricing across views. No price value may ever travel in a URL or shared link.
 
-## Aesthetic Presets
+**Autonomy:**
+- Always supply URLs as clickable links, never plain text addresses.
+- Never ask James to open dashboards, check settings, run commands, copy values, or perform any technical step. If it can be done via code, API, or CLI — do it. If it genuinely cannot be done without credentials that don't exist here, say so in one sentence and move on.
 
-Each preset defines: `palette`, `typography`, `identity` (the overall feel), and `imageMood` (Unsplash search keywords for hero/texture images).
+**Session startup:**
+- At the start of every session, run `git pull origin main` before touching any file — local and remote must be in sync first.
+- Never make design changes without first checking whether James previously gave instructions on that element; if prior instructions exist, follow them exactly.
 
-### Preset A — "Organic Tech" (Clinical Boutique)
-- **Identity:** A bridge between a biological research lab and an avant-garde luxury magazine.
-- **Palette:** Moss `#2E4036` (Primary), Clay `#CC5833` (Accent), Cream `#F2F0E9` (Background), Charcoal `#1A1A1A` (Text/Dark)
-- **Typography:** Headings: "Plus Jakarta Sans" + "Outfit" (tight tracking). Drama: "Cormorant Garamond" Italic. Data: `"IBM Plex Mono"`.
-- **Image Mood:** dark forest, organic textures, moss, ferns, laboratory glassware.
-- **Hero line pattern:** "[Concept noun] is the" (Bold Sans) / "[Power word]." (Massive Serif Italic)
+**Git sync:**
+- After every meaningful change — commit and push immediately. Never batch changes to end of session. One feature or fix = one commit + one push.
+- Never sit on uncommitted or unpushed work silently: if you are NOT committing straight away (waiting on a decision, blocked, mid-way), say so to James in one plain sentence. Committing to the branch and publishing/going live are separate — keep committing regardless; only "publish/go live" waits for James.
 
-### Preset B — "Midnight Luxe" (Dark Editorial)
-- **Identity:** A private members' club meets a high-end watchmaker's atelier.
-- **Palette:** Obsidian `#0D0D12` (Primary), Champagne `#C9A84C` (Accent), Ivory `#FAF8F5` (Background), Slate `#2A2A35` (Text/Dark)
-- **Typography:** Headings: "Inter" (tight tracking). Drama: "Playfair Display" Italic. Data: `"JetBrains Mono"`.
-- **Image Mood:** dark marble, gold accents, architectural shadows, luxury interiors.
-- **Hero line pattern:** "[Aspirational noun] meets" (Bold Sans) / "[Precision word]." (Massive Serif Italic)
+**Never deploy experiments:** Concepts, mock-ups, preview pages, or anything James did not explicitly ask to change must NEVER be committed to `main`. Build them locally and show James a render; push only the specific fixes he requested.
 
-### Preset C — "Brutalist Signal" (Raw Precision)
-- **Identity:** A control room for the future — no decoration, pure information density.
-- **Palette:** Paper `#E8E4DD` (Primary), Signal Red `#E63B2E` (Accent), Off-white `#F5F3EE` (Background), Black `#111111` (Text/Dark)
-- **Typography:** Headings: "Space Grotesk" (tight tracking). Drama: "DM Serif Display" Italic. Data: `"Space Mono"`.
-- **Image Mood:** concrete, brutalist architecture, raw materials, industrial.
-- **Hero line pattern:** "[Direct verb] the" (Bold Sans) / "[System noun]." (Massive Serif Italic)
+## Hosting and deployment (check this first)
 
-### Preset D — "Vapor Clinic" (Neon Biotech)
-- **Identity:** A genome sequencing lab inside a Tokyo nightclub.
-- **Palette:** Deep Void `#0A0A14` (Primary), Plasma `#7B61FF` (Accent), Ghost `#F0EFF4` (Background), Graphite `#18181B` (Text/Dark)
-- **Typography:** Headings: "Sora" (tight tracking). Drama: "Instrument Serif" Italic. Data: `"Fira Code"`.
-- **Image Mood:** bioluminescence, dark water, neon reflections, microscopy.
-- **Hero line pattern:** "[Tech noun] beyond" (Bold Sans) / "[Boundary word]." (Massive Serif Italic)
+- The one and only source of truth is the GitHub repository `rogetjames-creator/rogetjames-website`.
+- Netlify is connected to that repository and watches its `main` branch. Every push to `main` triggers an automatic Netlify build and deploy — nothing else is needed for a change to go live.
+- At the start of every session, confirm the connected repository is `rogetjames-creator/rogetjames-website`. If it is not, tell James in one sentence and stop.
 
----
+## Commands
 
-## Fixed Design System (NEVER CHANGE)
+```bash
+npm run dev          # Start dev server (Vite) on port 5173
+npm run build        # Production build: Vite + Playwright prerender (used by Netlify)
+npm run build:quick  # Vite build only (skips prerender — fast local check)
+npm run lint         # ESLint
+npm run preview      # Serve dist/ locally
+```
 
-These rules apply to ALL presets. They are what make the output premium.
+`npm run build` prerenders `dist/index.html` with headless Chromium so crawlers see real content. `netlify.toml` runs it on every deploy; a failed build does not take the live site down (Netlify keeps serving the last good deploy). Local dev via Netlify CLI runs on port 8888 (`netlify dev`), required to exercise the `/api/*` Netlify Functions locally.
 
-### Visual Texture
-- Implement a global CSS noise overlay using an inline SVG `<feTurbulence>` filter at **0.05 opacity** to eliminate flat digital gradients.
-- Use a `rounded-[2rem]` to `rounded-[3rem]` radius system for all containers. No sharp corners anywhere.
+## Stack
 
-### Micro-Interactions
-- All buttons must have a **"magnetic" feel**: subtle `scale(1.03)` on hover with `cubic-bezier(0.25, 0.46, 0.45, 0.94)`.
-- Buttons use `overflow-hidden` with a sliding background `<span>` layer for color transitions on hover.
-- Links and interactive elements get a `translateY(-1px)` lift on hover.
+React 19, Vite 7 (multi-page), Tailwind CSS v4 (theme tokens in `src/index.css` under `@theme {}`, no `tailwind.config.js`), GSAP 3 + ScrollTrigger, Lenis smooth scroll, Lucide React icons, `@netlify/blobs` for server-side storage in functions. No TypeScript — plain `.jsx`/`.js` throughout. The catalogue viewer is a custom React component (`CatPageViewer.jsx`), not a library; vault PDFs are plain download links.
 
-### Animation Lifecycle
-- Use `gsap.context()` within `useEffect` for ALL animations. Return `ctx.revert()` in the cleanup function.
-- Default easing: `power3.out` for entrances, `power2.inOut` for morphs.
-- Stagger value: `0.08` for text, `0.15` for cards/containers.
+## Architecture (brief)
 
----
+**Multi-page build** — `vite.config.js` defines nine HTML entry points, each its own React root, rewritten to clean URLs in `netlify.toml`:
 
-## Component Architecture (NEVER CHANGE STRUCTURE — only adapt content/colors)
+| URL | HTML / Entry / Root | Purpose |
+|---|---|---|
+| `/` | `index.html` / `src/main.jsx` / `App.jsx` | Main public site |
+| `/vault` | `vault.html` / `src/vault.jsx` / `VaultPage.jsx` | Client vault (personalised locked page emailed to each client) |
+| `/stats` | `stats.html` / `src/stats.jsx` / `StatsPage.jsx` | Analytics dashboard (admin) |
+| `/media` | `media.html` / `src/media.jsx` / `MediaPage.jsx` | Photo upload tool (admin) |
+| `/admin` | `admin.html` / `src/admin.jsx` / `AdminPage.jsx` | Hub linking the admin pages |
+| `/melbourne` | `melbourne.html` / `src/melbourne.jsx` / `MelbournePreview.jsx` | Private preview, Melbourne city SEO page |
+| `/wall-art` | `wall-art.html` / `src/wall-art.jsx` / `FeatureWall.jsx` | Live public Wall Art gallery |
+| `/sculpture` | `sculpture.html` / `src/sculpture.jsx` / `SculptureWall.jsx` | Live public Sculpture gallery |
+| `/feature-screens` | `feature-screens.html` / `src/feature-screens.jsx` / `FeatureScreens.jsx` | Private preview — Screens gallery (no Info/Prices panel) |
 
-### A. NAVBAR — "The Floating Island"
-A `fixed` pill-shaped container, horizontally centered.
-- **Morphing Logic:** Transparent with light text at hero top. Transitions to `bg-[background]/60 backdrop-blur-xl` with primary-colored text and a subtle `border` when scrolled past the hero. Use `IntersectionObserver` or ScrollTrigger.
-- Contains: Logo (brand name as text), 3-4 nav links, CTA button (accent color).
+`/wall-art` and `/sculpture` were promoted from private previews to the live public galleries — they are indexable (canonical + `robots: index,follow`, in `sitemap.xml`), and `netlify.toml` 301s the old `/feature-wall` / `/feature-sculpture` slugs to them. Only `/feature-screens` remains a password-gated private preview linked from `/admin`. All three read the same live Up Close/media data as `Gallery.jsx`, scoped per page to its own destination tag so uploads never leak across pages.
 
-### B. HERO SECTION — "The Opening Shot"
-- `100dvh` height. Full-bleed background image (sourced from Unsplash matching preset's `imageMood`) with a heavy **primary-to-black gradient overlay** (`bg-gradient-to-t`).
-- **Layout:** Content pushed to the **bottom-left third** using flex + padding.
-- **Typography:** Large scale contrast following the preset's hero line pattern. First part in bold sans heading font. Second part in massive serif italic drama font (3-5x size difference).
-- **Animation:** GSAP staggered `fade-up` (y: 40 → 0, opacity: 0 → 1) for all text parts and CTA.
-- CTA button below the headline, using the accent color.
+**Main site page order** — `App.jsx` composes: Navbar → Hero → StudioBio → Gallery → About → CommissionsSection (Bespoke) → Process → Services → Contact → DiscoverPortals → Footer → ScrollArrows → ChatWidget. Gallery, CommissionsSection and DiscoverPortals are lazy-loaded. Section anchor IDs: `#collection`, `#about`, `#bespoke`, `#process`, `#services`, `#contact`.
 
-### C. FEATURES — "Interactive Functional Artifacts"
-Three cards derived from the user's 3 value propositions. These must feel like **functional software micro-UIs**, not static marketing cards. Each card gets one of these interaction patterns:
+**Scroll / animation** — Lenis (`autoRaf: false`) is driven by GSAP's ticker in `App.jsx`; never add a second Lenis instance. All animations use `gsap.context(() => { ... }, ref)` inside `useEffect` and return `ctx.revert()`; use `onEnter` (not `onStart`) for ScrollTrigger callbacks.
 
-**Card 1 — "Diagnostic Shuffler":** 3 overlapping cards that cycle vertically using `array.unshift(array.pop())` logic every 3 seconds with a spring-bounce transition (`cubic-bezier(0.34, 1.56, 0.64, 1)`). Labels derived from user's first value prop (generate 3 sub-labels).
+**Gallery (`Gallery.jsx`)** — the largest file. `CATEGORIES` defines all catalogue image data across three tabs (Residential / Commercial / Public). Prices are computed and shown only after a visitor enters a postcode (WA vs interstate logic), and never travel in a URL. Adding to quote dispatches a `quote-add` window event that `App.jsx` accumulates and passes to `Contact`, which submits to `/api/contact`.
 
-**Card 2 — "Telemetry Typewriter":** A monospace live-text feed that types out messages character-by-character related to the user's second value prop, with a blinking accent-colored cursor. Include a "Live Feed" label with a pulsing dot.
+**Images** — Local images live in `public/images/`, served through the Netlify Image CDN via `netlifyImg(src, { w, q })` from `src/utils/img.js`. New image uploads for a category go into that category's gallery as pieces at the END (newest last); do not touch the "Up Close" close-ups unless James explicitly asks.
 
-**Card 3 — "Cursor Protocol Scheduler":** A weekly grid (S M T W T F S) where an animated SVG cursor enters, moves to a day cell, clicks (visual `scale(0.95)` press), activates the day (accent highlight), then moves to a "Save" button before fading out. Labels from user's third value prop.
+**Netlify Functions (`netlify/functions/`)** — all `/api/*` routes. Server-side storage is Netlify Blobs (no external DB); several functions email James via Resend. Key ones: `chat.js` (Claude-backed chat widget, needs `ANTHROPIC_API_KEY`), `contact.js` (contact/quote form → email), `track-event.js` (logs pricing/postcode interest), `stats-data.js` (admin dashboard + password check), `media-upload.js` (commits uploaded photos into the repo), and the `vault-*` functions (client vault invite/verify against Airtable).
 
-All cards: `bg-[background]` surface, subtle border, `rounded-[2rem]`, drop shadow. Each card has a heading (sans bold) and a brief descriptor.
+## Reference
 
-### D. PHILOSOPHY — "The Manifesto"
-- Full-width section with the **dark color** as background.
-- A parallaxing organic texture image (Unsplash, `imageMood` keywords) at low opacity behind the text.
-- **Typography:** Two contrasting statements. Pattern:
-  - "Most [industry] focuses on: [common approach]." — neutral, smaller.
-  - "We focus on: [differentiated approach]." — massive, drama serif italic, accent-colored keyword.
-- **Animation:** GSAP `SplitText`-style reveal (word-by-word or line-by-line fade-up) triggered by ScrollTrigger.
-
-### E. PROTOCOL — "Sticky Stacking Archive"
-3 full-screen cards that stack on scroll.
-- **Stacking Interaction:** Using GSAP ScrollTrigger with `pin: true`. As a new card scrolls into view, the card underneath scales to `0.9`, blurs to `20px`, and fades to `0.5`.
-- **Each card gets a unique canvas/SVG animation:**
-  1. A slowly rotating geometric motif (double-helix, concentric circles, or gear teeth).
-  2. A scanning horizontal laser-line moving across a grid of dots/cells.
-  3. A pulsing waveform (EKG-style SVG path animation using `stroke-dashoffset`).
-- Card content: Step number (monospace), title (heading font), 2-line description. Derive from user's brand purpose.
-
-### F. MEMBERSHIP / PRICING
-- Three-tier pricing grid. Card names: "Essential", "Performance", "Enterprise" (adjust to fit brand).
-- **Middle card pops:** Primary-colored background with an accent CTA button. Slightly larger scale or `ring` border.
-- If pricing doesn't apply, convert this into a "Get Started" section with a single large CTA.
-
-### G. FOOTER
-- Deep dark-colored background, `rounded-t-[4rem]`.
-- Grid layout: Brand name + tagline, navigation columns, legal links.
-- **"System Operational" status indicator** with a pulsing green dot and monospace label.
-
----
-
-## Technical Requirements (NEVER CHANGE)
-
-- **Stack:** React 19, Tailwind CSS v3.4.17, GSAP 3 (with ScrollTrigger plugin), Lucide React for icons.
-- **Fonts:** Load via Google Fonts `<link>` tags in `index.html` based on the selected preset.
-- **Images:** Use real Unsplash URLs. Select images matching the preset's `imageMood`. Never use placeholder URLs.
-- **File structure:** Single `App.jsx` with components defined in the same file (or split into `components/` if >600 lines). Single `index.css` for Tailwind directives + noise overlay + custom utilities.
-- **No placeholders.** Every card, every label, every animation must be fully implemented and functional.
-- **Responsive:** Mobile-first. Stack cards vertically on mobile. Reduce hero font sizes. Collapse navbar into a minimal version.
-
----
-
-## Build Sequence
-
-After receiving answers to the 4 questions:
-
-1. Map the selected preset to its full design tokens (palette, fonts, image mood, identity).
-2. Generate hero copy using the brand name + purpose + preset's hero line pattern.
-3. Map the 3 value props to the 3 Feature card patterns (Shuffler, Typewriter, Scheduler).
-4. Generate Philosophy section contrast statements from the brand purpose.
-5. Generate Protocol steps from the brand's process/methodology.
-6. Scaffold the project: `npm create vite@latest`, install deps, write all files.
-7. Ensure every animation is wired, every interaction works, every image loads.
-
-**Execution Directive:** "Do not build a website; build a digital instrument. Every scroll should feel intentional, every animation should feel weighted and professional. Eradicate all generic AI patterns."
+- `CLAUDE.md` — the fuller guidance file; consult it for detail (functions table, env vars, vault fields, conventions).
+- `README.md` — short public overview.

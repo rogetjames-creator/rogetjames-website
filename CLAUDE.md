@@ -63,7 +63,7 @@ Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite
 
 ## Architecture
 
-**Stack:** React 19, Vite 7 (multi-page), Tailwind CSS v4, GSAP 3 + ScrollTrigger, Lenis smooth scroll, Lottie React, Lucide React icons. `react-pageflip` (catalogue flipbook), `react-pdf` (PDF viewing), `@netlify/blobs` (server-side storage in functions).
+**Stack:** React 19, Vite 7 (multi-page), Tailwind CSS v4, GSAP 3 + ScrollTrigger, Lenis smooth scroll, Lucide React icons, `@netlify/blobs` (server-side storage in functions). The catalogue viewer is a custom React component (`CatPageViewer.jsx`), not a library; vault PDFs are plain download links.
 
 **Multi-page build** — `vite.config.js` defines nine HTML entry points, each its own React root:
 
@@ -75,13 +75,13 @@ Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite
 | `/media` | `media.html` | `src/media.jsx` | `MediaPage.jsx` | Photo upload tool (admin) |
 | `/admin` | `admin.html` | `src/admin.jsx` | `AdminPage.jsx` | Hub linking to the admin pages |
 | `/melbourne` | `melbourne.html` | `src/melbourne.jsx` | `MelbournePreview.jsx` | Private preview, Melbourne city SEO page |
-| `/feature-wall` | `feature-wall.html` | `src/feature-wall.jsx` | `FeatureWall.jsx` | Private preview — alternative Wall Art gallery (see below) |
-| `/feature-sculpture` | `feature-sculpture.html` | `src/feature-sculpture.jsx` | `SculptureWall.jsx` | Same model as Feature Wall, retargeted at Sculpture |
-| `/feature-screens` | `feature-screens.html` | `src/feature-screens.jsx` | `FeatureScreens.jsx` | Same model, retargeted at Screens — no design Info/Prices panel |
+| `/wall-art` | `wall-art.html` | `src/wall-art.jsx` | `FeatureWall.jsx` | Live public Wall Art gallery (see below) |
+| `/sculpture` | `sculpture.html` | `src/sculpture.jsx` | `SculptureWall.jsx` | Live public Sculpture gallery — same model as Wall Art, retargeted at Sculpture |
+| `/feature-screens` | `feature-screens.html` | `src/feature-screens.jsx` | `FeatureScreens.jsx` | Private preview — same model, retargeted at Screens; no design Info/Prices panel |
 
 `vite.config.js` also runs a `critical-css` plugin (Critters) at build end that inlines above-the-fold CSS into each of the nine HTML files.
 
-**Feature Wall / Feature Sculpture / Feature Screens (private previews)** — password-gated (same admin password as `/stats`/`/media`) previews of an alternative gallery template, linked only from `/admin`. James plans to eventually say "go" to promote Feature Wall to the official live Wall Art gallery — treat every request on these pages as pre-launch QA, not just cosmetic tweaks. All three read the same live Up Close/media data as `Gallery.jsx` (`/api/up-close-list`, `/api/media-list`, `media-manifest.json`), scoped per page to its own destination tag (`sculpture` / `screens`) so uploads never leak across pages. Feature Wall/Sculpture reuse `Gallery.jsx`'s `DetailCard` directly, so pricing/postcode-gating always matches the live site by construction — Feature Screens has no Info/Prices panel at all (Screens has no per-piece pricing here), its bottom pill just says "Expand". `WALL_ART_COVERS`/`SCULPTURE_COVERS` (from `Gallery.jsx`) and `SCREEN_COVERS` (from `BespokeCommissions.jsx`) are the self-maintaining per-category data sources for each page — add a wall-art series, a sculpture `cat` tag, or a screen design, and it appears automatically, no other change needed.
+**Wall Art / Sculpture (live public galleries) + Feature Screens (private preview)** — `/wall-art` (`FeatureWall.jsx`) and `/sculpture` (`SculptureWall.jsx`) were promoted from private previews to the live, public Wall Art and Sculpture galleries: they are indexable (canonical tag + `robots: index,follow`, listed in `sitemap.xml`), and `netlify.toml` 301s the old `/feature-wall` and `/feature-sculpture` slugs to them. `/feature-screens` (`FeatureScreens.jsx`) is still a password-gated (same admin password as `/stats`/`/media`) private preview, linked only from `/admin` — treat requests on it as pre-launch QA. All three read the same live Up Close/media data as `Gallery.jsx` (`/api/up-close-list`, `/api/media-list`, `media-manifest.json`), scoped per page to its own destination tag (`sculpture` / `screens`) so uploads never leak across pages. Wall Art/Sculpture reuse `Gallery.jsx`'s `DetailCard` directly, so pricing/postcode-gating always matches the live site by construction — Feature Screens has no Info/Prices panel at all (Screens has no per-piece pricing here), its bottom pill just says "Expand". `WALL_ART_COVERS`/`SCULPTURE_COVERS` (from `Gallery.jsx`) and `SCREEN_COVERS` (from `BespokeCommissions.jsx`) are the self-maintaining per-category data sources for each page — add a wall-art series, a sculpture `cat` tag, or a screen design, and it appears automatically, no other change needed.
 
 **Page order (main site)** — `App.jsx` composes: Navbar → Hero → StudioBio → Gallery → About → CommissionsSection → Process → Services → Contact → DiscoverPortals → Footer → ScrollArrows → ChatWidget. Gallery, CommissionsSection, and DiscoverPortals are lazy-loaded (`lazy` + `Suspense`). `CommissionsSection` (the **Bespoke section**) is exported from `BespokePortals.jsx`, which composes portal tiles over `BespokeCommissions.jsx` and `DiscoverPortals.jsx` modals.
 
@@ -93,11 +93,9 @@ Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite
 
 **Images** — Local images live in `public/images/` (organised by series/category subfolders). They are served through the **Netlify Image CDN** for automatic WebP + resizing: use `netlifyImg(src, { w, q })` from `src/utils/img.js`, which rewrites a local path to `/.netlify/images?url=…&fm=webp`. External `http(s)`/`data:` URLs pass through unchanged. Videos are in `public/videos/`, PDFs in `public/pdfs/`.
 
-**Lottie animations** — JSON files live in `public/lottie/`. Use `lottie-react` with `autoplay={false}` and a `lottieRef` for manual `.play()/.stop()/.setSpeed()`. The "secret garden" stroke-draw technique: fetch via `path=` prop (no bundle cost), trigger after text settles, loop at ~60% opacity.
-
 ## Key systems
 
-**Gallery (`Gallery.jsx`)** — the largest file. `CATEGORIES` defines all catalogue image data: tabs (Residential/Commercial/Public), series, names, sizes, and per-piece pricing in `PIECE_SIZES`. `MATERIAL_OPTIONS` and `SIZE_TIERS` define the quote builder. `MEDIA_DESTINATIONS` (exported) is derived from the categories and drives the `/media` upload picker. On mount, Gallery also fetches `/api/media-list` and `/api/up-close-list` to merge in James's uploaded photos by exact destination key. The detail panel, `SearchModal`, flipbook, colour catalogue, `CatPageViewer`, and `ClientPreview` are wired in around this file.
+**Gallery (`Gallery.jsx`)** — the largest file. `CATEGORIES` defines all catalogue image data: tabs (Residential/Commercial/Public), series, names, sizes, and per-piece pricing in `PIECE_SIZES`. `MATERIAL_OPTIONS` and `SIZE_TIERS` define the quote builder. `MEDIA_DESTINATIONS` (exported) is derived from the categories and drives the `/media` upload picker. On mount, Gallery also fetches `/api/media-list` and `/api/up-close-list` to merge in James's uploaded photos by exact destination key. The detail panel, `SearchModal`, colour catalogue, `CatPageViewer` (the custom catalogue viewer — no third-party flipbook library), and `ClientPreview` are wired in around this file.
 
 **Postcode / pricing gate** — prices are computed and shown only after a visitor enters a postcode (WA vs interstate logic in `Gallery.jsx`). Entering a postcode fires an analytics event (see below) and never puts a price in the URL.
 
@@ -189,7 +187,7 @@ A personalised, locked page sent to each client by email. Entry point `/vault`.
 
 ## SEO / redirects
 
-`netlify.toml` 301s the auto-generated `rogetjames-new.netlify.app` host and every stale old-site path (`/about`, `/sculpture`, `/landscape-design`, etc.) to the matching section on the single-page site, so Google drops dead links. It also sets strict security headers, a tight Content-Security-Policy (self + Google Fonts + `cdn.myportfolio.com` images), and long-lived caching for hashed assets/images/videos/fonts. `robots.txt` and `sitemap.xml` are in `public/`.
+`netlify.toml` 301s the auto-generated `rogetjames-new.netlify.app` host and every stale old-site path (`/about`, `/contact`, `/landscape-design`, etc.) to the matching section on the single-page site, so Google drops dead links. `/wall-art` and `/sculpture` are live 200 rewrites (to `wall-art.html` / `sculpture.html`), and the old preview slugs `/feature-wall` / `/feature-sculpture` 301 to them. It also sets strict security headers, a tight Content-Security-Policy (self + Google Fonts + `cdn.myportfolio.com` images), and long-lived caching for hashed assets/images/videos/fonts. `robots.txt` and `sitemap.xml` are in `public/`.
 
 ## Key conventions
 
@@ -201,7 +199,7 @@ A personalised, locked page sent to each client by email. Entry point `/vault`.
 - Section anchor IDs: `#collection`, `#about`, `#bespoke`, `#process`, `#services`, `#contact`.
 - `window.__galleryModalBody` is a ref attached by Gallery's lightbox so `ScrollArrows` in `App.jsx` can redirect scroll into the modal instead of the page. Gallery also fires `gallery-modal-open` / `gallery-modal-close` window events that `ScrollArrows` listens for.
 - Gate animation pattern (Gallery + BespokeCommissions strips): two black `position:absolute` panels at `z-20` slide apart on `start:"top bottom"` over 8s linear; the portal sits at `z-30 relative` above them.
-- `NoiseOverlay` is a fixed SVG grain texture at `z-index: 9999` — never put UI above it without a higher z-index.
+- `NoiseOverlay.jsx` is defined but not mounted anywhere (dead component) — there is no active grain overlay on the site; don't assume one exists or plan z-index around it.
 - `App.jsx` contains an unused `Reveal` blind-reveal helper; the Bespoke and Discover sections currently render inline (not hidden behind a reveal button). Do not assume they are collapsed.
 
 ## Design concepts (reference only — never deployed)

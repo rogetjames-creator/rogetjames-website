@@ -2,7 +2,7 @@
 
 Portfolio website for ROGETjames — original bespoke laser cut wall art, sculpture & architectural features.
 
-**Live site:** https://rogetjames.netlify.app
+**Live site:** https://rogetjames.com/
 
 ---
 
@@ -94,7 +94,7 @@ This runs Vite build followed by a Playwright prerender step that generates stat
 src/
   components/
     Hero.jsx          # Full-screen hero with h1 heading
-    Gallery.jsx       # 5-category tabbed gallery with lightbox
+    Gallery.jsx       # 3-tab gallery (Residential/Commercial/Public) with lightbox
     About.jsx         # Dark section with philosophy + bio
     Process.jsx       # 4-step ordering process
     Services.jsx      # 3-tier service cards
