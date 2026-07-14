@@ -335,35 +335,45 @@ export default async function handler(req, context) {
     await store.set(`${uploadId}/${index}`, buf);
     if (index < total - 1) return json({ ok: true, received: index });
 
-    // Last chunk — reassemble in order, commit the video + manifest, clean up.
-    const parts = [];
-    let totalBytes = 0;
-    for (let i = 0; i < total; i++) {
-      const ab = await store.get(`${uploadId}/${i}`, { type: "arrayBuffer" }).catch(() => null);
-      if (!ab) return json({ error: `Lost part ${i + 1} of ${total} — please try again.` }, 400);
-      const b = Buffer.from(ab);
-      totalBytes += b.length;
-      if (totalBytes > MAX_REEL_BYTES) return json({ error: "Video exceeds the 25MB limit." }, 400);
-      parts.push(b);
-    }
-    const videoPath = REEL_SLOTS[id] ? REEL_SLOTS[id] : `public/videos/reels/${id}.mp4`;
+    // Last chunk — reassemble in order, commit the video + manifest, then clean
+    // up the stashed chunks. The cleanup runs in `finally` so a failed
+    // reassembly or a failed commit can't leak this upload's chunk blobs
+    // forever. Only the final chunk reaches here (earlier chunks return above),
+    // so this fires exactly once the upload terminates — success or hard failure
+    // — never mid-way through a partial upload that's still receiving parts.
     try {
-      const manifest = await getManifest();
-      const addFiles = [{ path: videoPath, base64: Buffer.concat(parts).toString("base64") }];
-      // Built-in reels already render themselves; only newly-named reels need a
-      // manifest entry so the portals know to show them.
-      if (!REEL_SLOTS[id]) {
-        const reels = await getReelsManifest();
-        const entry = { id, title, detail: title, video: `/videos/reels/${id}.mp4`, poster: "", targets, createdTime: new Date().toISOString() };
-        const next = [...reels.filter((r) => r && r.id !== id), entry];
-        addFiles.push({ path: "public/reels-manifest.json", base64: Buffer.from(JSON.stringify(next, null, 2), "utf8").toString("base64") });
+      const parts = [];
+      let totalBytes = 0;
+      for (let i = 0; i < total; i++) {
+        const ab = await store.get(`${uploadId}/${i}`, { type: "arrayBuffer" }).catch(() => null);
+        if (!ab) return json({ error: `Lost part ${i + 1} of ${total} — please try again.` }, 400);
+        const b = Buffer.from(ab);
+        totalBytes += b.length;
+        if (totalBytes > MAX_REEL_BYTES) return json({ error: "Video exceeds the 25MB limit." }, 400);
+        parts.push(b);
       }
-      await commitBatch({ addFiles, manifest, message: `Reel upload: ${id}` });
-    } catch (e) {
-      return json({ error: "Reel commit failed: " + e.message }, 500);
+      const videoPath = REEL_SLOTS[id] ? REEL_SLOTS[id] : `public/videos/reels/${id}.mp4`;
+      try {
+        const manifest = await getManifest();
+        const addFiles = [{ path: videoPath, base64: Buffer.concat(parts).toString("base64") }];
+        // Built-in reels already render themselves; only newly-named reels need a
+        // manifest entry so the portals know to show them.
+        if (!REEL_SLOTS[id]) {
+          const reels = await getReelsManifest();
+          const entry = { id, title, detail: title, video: `/videos/reels/${id}.mp4`, poster: "", targets, createdTime: new Date().toISOString() };
+          const next = [...reels.filter((r) => r && r.id !== id), entry];
+          addFiles.push({ path: "public/reels-manifest.json", base64: Buffer.from(JSON.stringify(next, null, 2), "utf8").toString("base64") });
+        }
+        await commitBatch({ addFiles, manifest, message: `Reel upload: ${id}` });
+      } catch (e) {
+        return json({ error: "Reel commit failed: " + e.message }, 500);
+      }
+      return json({ ok: true, id });
+    } finally {
+      // Whether we committed, hit a hard error, or bailed on a bad/oversized
+      // part, drop this upload's chunk blobs so nothing is orphaned in the store.
+      for (let i = 0; i < total; i++) await store.delete(`${uploadId}/${i}`).catch(() => {});
     }
-    for (let i = 0; i < total; i++) await store.delete(`${uploadId}/${i}`).catch(() => {});
-    return json({ ok: true, id });
   }
 
   // Upload — new photos are committed straight to git.

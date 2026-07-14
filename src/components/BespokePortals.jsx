@@ -4,15 +4,6 @@ import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, Conce
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
-const COMMISSIONS_GALLERY = [
-  { src: "/images/villa-leaf/villa-leaf-trio-pool.jpg" },
-  { src: "/images/hero/hero-cottesloe-patio.jpg" },
-  { src: "/images/marakesh/marakesh-cassie.jpg" },
-  { src: "/images/hex/lalarook-2.jpg" },
-  { src: "/images/hero/hero-homebase-dusk.jpg" },
-  { src: "/images/hero/hero-cottesloe-gate.jpg" },
-];
-
 const COMMISSIONS_PORTAL = {
   id: "commissions",
   label: "Commissions",
@@ -22,7 +13,6 @@ const COMMISSIONS_PORTAL = {
     { src: "/videos/natives-collage-2.mp4", title: "CUSTOM Natives — Collage", detail: "A commission in our native botanicals series — hand-composed and laser cut to order.", poster: "/images/concept-4-natives.jpg" },
     { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "", poster: "/images/reels/waroona-thumb.jpg" },
   ],
-  commissionImages: COMMISSIONS_GALLERY,
   popupType: "commissions-gallery",
 };
 
