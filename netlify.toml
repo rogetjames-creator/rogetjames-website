@@ -141,6 +141,21 @@
   status = 200
 
 [[redirects]]
+  from = "/perth"
+  to = "/perth.html"
+  status = 200
+
+[[redirects]]
+  from = "/gold-coast"
+  to = "/gold-coast.html"
+  status = 200
+
+[[redirects]]
+  from = "/sydney"
+  to = "/sydney.html"
+  status = 200
+
+[[redirects]]
   from = "/wall-art"
   to = "/wall-art.html"
   status = 200

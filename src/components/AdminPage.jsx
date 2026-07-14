@@ -84,6 +84,9 @@ export default function AdminPage() {
     { href: "/sculpture", title: "Sculpture gallery", desc: "The live Sculpture gallery." },
     { href: "/feature-screens", title: "Screens preview", desc: "Private preview of the Screens gallery style — not yet live." },
     { href: "/melbourne", title: "Melbourne page preview", desc: "Private preview of the Melbourne city page — placeholder content, not yet public." },
+    { href: "/perth", title: "Perth page preview", desc: "Private preview of the Perth city page — placeholder content, not yet public." },
+    { href: "/gold-coast", title: "Gold Coast page preview", desc: "Private preview of the Gold Coast city page — placeholder content, not yet public." },
+    { href: "/sydney", title: "Sydney page preview", desc: "Private preview of the Sydney city page — placeholder content, not yet public." },
   ];
 
   return (
