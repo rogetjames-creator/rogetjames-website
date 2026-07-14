@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
@@ -7,13 +7,22 @@ import CatPageViewer from "./CatPageViewer";
 import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
 import { ScreensGalleryModal } from "./BespokeCommissions";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { netlifyImg } from "../utils/img";
+import {
+  REELS, PORTAL_REELS, SCULPTURE_PORTAL, SCREENS_PORTAL,
+  WALL_ART_SERIES, OTHER_CATEGORIES,
+  SEED_UPCLOSE, ALL_TABS, PIECE_SIZES, NAME_TO_IMAGES,
+  SEARCH_ALIASES, SEARCH_SUGGESTIONS, ALL_SEARCHABLE,
+  WALL_ART_CAT_PAGES, SCULPTURE_CAT_PAGES,
+  DECK_SERIES, WALL_ART_IDS, byUploadTime, UP_CLOSE_IMAGES,
+} from "./galleryData";
+export { WALL_ART_COVERS, SCULPTURE_COVERS, MEDIA_DESTINATIONS } from "./galleryData";
+import { SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "../utils/pricing";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // ── Regional Pricing Gate ─────────────────────────────────────────────────
 const ADMIN_CODE = "1966";
-const TEMP_SHOW_ALL_PRICES = false;
-const checkWA = (pc) => { const n = parseInt(pc, 10); return n >= 6000 && n <= 6999; };
 const trackEvent = (payload) => {
   fetch("/api/track-event", {
     method: "POST",
@@ -21,114 +30,8 @@ const trackEvent = (payload) => {
     body: JSON.stringify(payload),
   }).catch(() => {});
 };
-const getState = (pc) => {
-  const n = parseInt(pc, 10);
-  if (n >= 200 && n <= 299) return "ACT";
-  if (n >= 800 && n <= 999) return "NT";
-  if (n >= 1000 && n <= 1999) return "NSW";
-  if (n >= 2000 && n <= 2599) return "NSW";
-  if (n >= 2600 && n <= 2618) return "ACT";
-  if (n >= 2900 && n <= 2920) return "ACT";
-  if (n >= 2619 && n <= 2999) return "NSW";
-  if (n >= 3000 && n <= 3999) return "VIC";
-  if (n >= 8000 && n <= 8999) return "VIC";
-  if (n >= 4000 && n <= 4999) return "QLD";
-  if (n >= 9000 && n <= 9999) return "QLD";
-  if (n >= 5000 && n <= 5999) return "SA";
-  if (n >= 6000 && n <= 6999) return "WA";
-  if (n >= 7000 && n <= 7999) return "TAS";
-  return null;
-};
-const STATE_NAMES = {
-  NSW: "New South Wales", VIC: "Victoria", QLD: "Queensland",
-  SA: "South Australia", WA: "Western Australia", TAS: "Tasmania",
-  NT: "Northern Territory", ACT: "Australian Capital Territory",
-};
 // ─────────────────────────────────────────────────────────────────────────
 
-const REELS = [
-  {
-    id: "gren-free",
-    title: "GREN Free",
-    thumb: "/images/reels/gren-free-thumb.jpg",
-    video: "/videos/reels/gren-free.mp4",
-    detail: "GREN Free — Branches design.",
-  },
-  {
-    id: "branches",
-    title: "Branches",
-    thumb: "/images/reels/branches-thumb.jpg",
-    video: "/videos/reels/branches.mp4",
-    detail: "A close-up reel of the Branches laser-cut design — birds perched on delicate steel branches.",
-  },
-  {
-    id: "rue",
-    title: "Rue",
-    thumb: "/images/reels/rue-thumb.jpg",
-    video: "/videos/reels/rue.mp4",
-    detail: "Rue — a ROGETjames reel.",
-  },
-  {
-    id: "banksia",
-    title: "Banksia",
-    thumb: "/images/reels/banksia-thumb.jpg",
-    video: "/videos/reels/banksia.mp4",
-    detail: "Banksia — a ROGETjames reel.",
-  },
-  {
-    id: "b-editions",
-    title: "B Editions",
-    thumb: "/images/reels/b-editions-thumb.jpg",
-    video: "/videos/reels/b-editions.mp4",
-    detail: "B Editions — a curated collection reel.",
-  },
-  {
-    id: "obliationes",
-    title: "Obliationes",
-    thumb: "/images/reels/obliationes-thumb.jpg",
-    video: "/videos/reels/obliationes.mp4",
-    detail: "Obliationes — a ROGETjames reel.",
-  },
-  {
-    id: "waroona",
-    title: "Waroona",
-    thumb: "/images/reels/waroona-thumb.jpg",
-    video: "/videos/waroona.mp4",
-    detail: "Waroona — a ROGETjames reel.",
-    noPortal: true,
-  },
-];
-
-const PORTAL_REELS = REELS.filter(r => !r.noPortal);
-
-const SCULPTURE_PORTAL = {
-  id: "gallery-sculpture",
-  label: "Sculpture",
-  sublabel: "",
-  slides: [
-    "/images/marakesh/marakesh-1.jpg",
-    "/images/autumn-leaf/leaf-fire.jpg",
-    "/images/sculptures/medina.jpg",
-    "/images/halo/pavia-1.jpg",
-    "/images/sculptures/bon-bon.jpg",
-    "/images/villa-leaf/villa-leaf-trio-pool.jpg",
-  ],
-};
-
-const SCREENS_PORTAL = {
-  id: "gallery-screens",
-  label: "Screens",
-  sublabel: "",
-  slides: [
-    { src: "/images/screens/orian-wall-decor.jpg", pos: "5% 5%", scale: 1.5 },
-    "/images/screens/strip/ferlie-close.jpg",
-    "/images/screens/strip/grail-close.jpg",
-    "/images/screens/wattle-close-tdl.jpg",
-    "/images/screens/viasi-close-up.jpg",
-    "/images/screens/elle-corten.jpg",
-    { src: "/images/bloom/bloom-closeup.jpg", pos: "center top" },
-  ],
-};
 
 function ReelsPortal({ onOpen }) {
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -276,758 +179,9 @@ function ReelsPortal({ onOpen }) {
   );
 }
 
-const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
-// Wall Art series — display order
-const CDN_G = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
-const WALL_ART_SERIES = [
-  // ── AUSTRALIAN NATIVES ───────────────────
-  {
-    id: "australian-natives",
-    label: "AUSTRALIAN NATIVES",
-    items: [
-      { name: "BANKSIA Card",              img: "/images/banksia/banksia-card-1.jpg" },
-      { name: "BANKSIA Oldmanis",          img: "/images/banksia/banksia-oldmanis-bronze.jpg", slides: ["/images/banksia/banksia-oldmanis-bronze.jpg", "/images/banksia/banksia-oldmanis-black.jpg", "/images/banksia/banksia-oldmanis-framed.jpg"] },
-      { name: "WANDOO",                    img: "/images/australian-natives/wandoo-1.jpg" },
-      { name: "BANKSIA Free Range",        img: "/images/banksia/banksia-main.jpg" },
-      { name: "BANKSIA Rec Landscape",     img: "/images/banksia/banksia-rec-rust.jpg", slides: ["/images/banksia/banksia-rec-rust.jpg", "/images/banksia/banksia-rec-framed.jpg", "/images/banksia/banksia-rec-landscape.jpg"] },
-      { name: "BANKSIA Rec Portrait",      img: "/images/banksia/banksia-framed-rust.jpg" },
-      { name: "BANKSIA Free Range — Custom", img: "/images/banksia/banksia-free-2.jpg" },
-      { name: "BANKSIA Round",             img: "/images/banksia/banksia-round.jpg", slides: ["/images/banksia/banksia-round.jpg", "/images/banksia/banksia-round-2.jpg", "/images/banksia/banksia-framed-circle.jpg"] },
-      { name: "BANKSIA Deco",              img: "/images/banksia/banksia-deco-2.jpg", slides: ["/images/banksia/banksia-deco-2.jpg", "/images/banksia/banksia-deco.jpg"] },
-      { name: "WATTLE",                    img: "/images/australian-natives/wattle-1.jpg" },
-      { name: "BANKSIA Diamond",           img: "/images/placeholder.svg" },
-      { name: "WANDOO DIAMOND",            img: "/images/placeholder.svg" },
-      { name: "NATIVE COLLAGE",            img: "/images/placeholder.svg" },
-    ],
-  },
-  // ── CREEPING FIG SERIES ──────────────────
-  {
-    id: "creeping-fig",
-    label: "CREEPING FIGS",
-    items: [
-      { name: "AUTUMN",  img: "/images/creeping-fig/autumn-2.jpg", slides: ["/images/creeping-fig/autumn-2.jpg", "/images/creeping-fig/autumn-1.jpg", "/images/creeping-fig/autumn-3.jpg"], singleInAll: true },
-      { name: "GRANDE",  img: "/images/creeping-fig/grande-1.jpg", slides: ["/images/creeping-fig/grande-1.jpg", "/images/creeping-fig/grande-2.jpg"] },
-      { name: "SPRING",  img: "/images/creeping-fig/spring-1.jpg" },
-      { name: "FIGARO",  img: "/images/creeping-fig/figaro-1.jpg" },
-      { name: "ONTIO",   img: "/images/creeping-fig/ontio-1.jpg", slides: ["/images/creeping-fig/ontio-1.jpg", "/images/creeping-fig/ontio-2.jpg"] },
-      { name: "NUVINE",    img: "/images/creeping-fig/nuvine-1.jpg" },
-      { name: "BUTTERFLY", img: "/images/creeping-fig/butterfly-1.jpg" },
-    ],
-  },
-  // ── BRANCHES SERIES ──────────────────────
-  {
-    id: "branches",
-    label: "BRANCHES",
-    items: [
-      { name: "GREN Edge", img: "/images/branches/gren-edge-1.jpg", slides: ["/images/branches/gren-edge-1.jpg", "/images/branches/gren-edge-3.jpg"] },
-      { name: "GREN Tao",  img: "/images/branches/gren-tao-2.jpg", slides: ["/images/branches/gren-tao-2.jpg", "/images/branches/gren-tao-1.jpg"] },
-      { name: "GREN Free", img: "/images/branches/gren-free-1.jpg" },
-      { name: "GREN X",    img: "/images/branches/gren-x-1.jpg" },
-      { name: "VITAE — GREN", img: "/images/vitae/vitae-gren-1.jpg" },
-    ],
-  },
-  // ── FLOWERS & BLOOMS ─────────────────────
-  {
-    id: "blooms",
-    label: "FLOWERS & BLOOMS",
-    items: [
-      { name: "RUE",          img: "/images/flowers/rue-original.jpg", slides: ["/images/flowers/rue-original.jpg", "/images/flowers/rue-office.jpg"], focus: "center top" },
-      { name: "RUE the 3rd", img: "/images/flowers/rue-the-3rd.jpg" },
-      { name: "OLIN",         img: "/images/flowers/olin.jpg" },
-      { name: "PETUNIA",      img: "/images/flowers/petunia.jpg" },
-      { name: "DIAMOND BLOOM",img: `${CDN}/5f33d76a-d731-4265-904f-87e0f5a7eb22_rw_1200.jpg` },
-      { name: "FUEILLES",     img: "/images/flowers/fuelles.jpg" },
-      { name: "FERLICE",      img: "/images/flowers/ferlice.jpg" },
-      { name: "PALM RAJA",    img: "/images/flowers/palm-raja.jpg" },
-      { name: "DANDELIONS",   img: `${CDN}/03980b30-48fd-48a3-8027-741f35a87421_rw_1200.jpg` },
-      { name: "BLOOM",        img: "/images/placeholder.svg" },
-    ],
-  },
-  // ── PLUME COLLECTION ─────────────────────
-  {
-    id: "plume",
-    label: "PLUMES",
-    items: [
-      { name: "PLUME DECO Black",    img: "/images/plume/plume-deco-black.jpg", priceKey: "PLUME DECO" },
-      { name: "PLUME DECO",          img: "/images/plume/plume-deco-rust2.jpg" },
-      { name: "PLUME DECO Pink",     img: "/images/plume/plume-deco-pink.jpg", priceKey: "PLUME DECO" },
-      { name: "FEATHER",             img: "/images/plume/feather.jpg" },
-      { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
-      { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO Rust",     img: "/images/uploads/1783237275228_qn3ggo.jpg", priceKey: "PLUME DECO", _new: true },
-      { name: "PLUME DECO Rust II",  img: "/images/uploads/1783237275228_3bixg9.jpg", priceKey: "PLUME DECO", _new: true },
-    ],
-  },
-  // ── JUNGLE COLLECTION ────────────────────
-  {
-    id: "jungle",
-    label: "JUNGLE",
-    items: [
-      { name: "BAMBU",          img: "/images/jungle/bambu-insitu-1.jpg", slides: ["/images/jungle/bambu-insitu-1.jpg", "/images/jungle/bambu-insitu-2.jpg"] },
-      { name: "UBUD Round",     img: "/images/jungle/ubud-round-1.jpg", slides: ["/images/jungle/ubud-round-1.jpg", "/images/jungle/ubud-round-2.jpg"] },
-      { name: "UBUD Rectangle", img: "/images/jungle/ubud-rec.jpg" },
-    ],
-  },
-  // ── B EDITIONS ───────────────────────────
-  {
-    id: "b-editions",
-    label: "B EDITIONS",
-    items: [
-      { name: "HALSTON B", img: "/images/b-editions/halston-b.jpg", focus: "center 85%" },
-      { name: "PAVIA B",   img: "/images/b-editions/pavia-b.jpg" },
-      { name: "ZED B",     img: "/images/b-editions/zed-b.jpg" },
-    ],
-  },
-  // ── THERUS ───────────────────────────────
-  {
-    id: "therus",
-    label: "THERUS",
-    items: [
-      { name: "SEAWEED", img: "/images/therus/seaweed-1.jpg", slides: ["/images/therus/seaweed-1.jpg", "/images/therus/seaweed-2.jpg"] },
-      { name: "ZON ZEE", img: "/images/neazar/zon-zee-1.jpg", slides: ["/images/neazar/zon-zee-1.jpg", "/images/neazar/zon-zee-2.jpg", "/images/zon-zee-rust2.jpg"] },
-      { name: "NEA",     img: "/images/neazar/nea-2.jpg", slides: ["/images/neazar/nea-2.jpg", "/images/neazar/nea-1.jpg"] },
-      { name: "ASLYIAM CLASSIC",       img: "/images/placeholder.svg" },
-      { name: "THE SUM OF EVERYTHING", img: "/images/placeholder.svg" },
-    ],
-  },
-  // ── IKONA ────────────────────────────────
-  {
-    id: "ikona",
-    label: "IKONA",
-    items: [
-      { name: "VASUKI",   img: "/images/vasuki/vasuki-sabi.jpg", slides: ["/images/vasuki/vasuki-sabi.jpg", "/images/ikona/vasuka.jpg"] },
-      { name: "MAHOLA",   img: "/images/ikona/mahola-1.jpg", slides: ["/images/ikona/mahola-1.jpg", "/images/ikona/mahola-2.jpg"], focus: "center top" },
-      { name: "GEO LEAF", img: "/images/ikona/geo-leaf-1.jpg", focus: "center top" },
-    ],
-  },
-  // ── PENDANT SERIES ───────────────────────
-  {
-    id: "pendant",
-    label: "PENDANTS",
-    items: [
-      { name: "LIBERATUM", img: "/images/pendant/liberatum-1.jpg" },
-      { name: "METROPOLIS", img: "/images/neazar/metropolis-1.jpg" },
-      { name: "BENIN", img: "/images/pendant/benin-horizontal.jpg", slides: ["/images/pendant/benin-horizontal.jpg", "/images/pendant/benin-vertical.jpg"], focus: "30% top" },
-      { name: "SANUR",     img: "/images/pendant/sanur-1.jpg", focus: "center top" },
-      { name: "SALAMANKA",  img: "/images/neazar/salamanka-1.jpg" },
-    ],
-  },
-  // ── OBLIATIONES SERIES ───────────────────
-  {
-    id: "obliationes",
-    label: "OBLIATIONES",
-    items: [
-      { name: "OBLIATIONES",         img: "/images/obliationes/obliationes-1.jpg" },
-      { name: "OBLIATIONES — Large", img: "/images/obliationes/obliationes-2.jpg" },
-      { name: "OBLIATIONES TIBETAN — Patha", img: "/images/obliationes/obliationes-tibetan-patha.jpg" },
-      { name: "OKO", img: "/images/obliationes/oko-1.jpg", slides: ["/images/obliationes/oko-1.jpg", "/images/obliationes/oko-2.jpg", "/images/obliationes/oko-3.jpg"] },
-    ],
-  },
-  // ── THE BIRDS ────────────────────────────
-  {
-    id: "birds",
-    label: "BIRDS",
-    items: [
-      { name: "BIRDY NUM NUM",              img: "/images/birds/birdy-num-num-1.jpg" },
-      { name: "SWALLOWS",                   img: "/images/birds/swallows-install-1.jpg", slides: ["/images/birds/swallows-install-1.jpg", "/images/birds/swallows-free2fly-1.jpg"] },
-      { name: "WREN",                       img: "/images/birds/wren-1.jpg" },
-      { name: "BIRDY NUM NUM (Free range)", img: "/images/placeholder.svg" },
-      { name: "SAVANAH",                    img: "/images/placeholder.svg" },
-    ],
-  },
-  // ── RETRO ────────────────────────────────
-  {
-    id: "retro",
-    label: "RETRO",
-    items: [
-      { name: "JEAGER",       img: "/images/retro/jeager-insitu.jpg", slides: ["/images/retro/jeager-insitu.jpg", "/images/retro/jeager-2.jpg"] },
-      { name: "HALSTON Tall", img: "/images/retro/halston-tall-1.jpg" },
-      { name: "ZED O",        img: "/images/retro/zed-o-1.jpg" },
-      { name: "ZED",          img: "/images/retro/zed-rec-1.jpg", focus: "right center" },
-      { name: "HALSTON",      img: "/images/placeholder.svg" },
-      { name: "ORIGINS",      img: "/images/placeholder.svg" },
-    ],
-  },
-  // ── VITAE SERIES ─────────────────────────
-  {
-    id: "vitae",
-    label: "VITAE",
-    items: [
-      { name: "VITAE — GREN",   img: "/images/vitae/vitae-gren-1.jpg",   slides: ["/images/vitae/vitae-gren-1.jpg", "/images/vitae/vitae-gren-2.jpg"] },
-      { name: "VITAE — SHIOGI", img: "/images/vitae/vitae-shiogi-1.jpg", focus: "center top" },
-    ],
-  },
-  // ── NEAZAR ───────────────────────────────
-  {
-    id: "neazar",
-    label: "NEAZAR",
-    items: [
-      { name: "TRIBE", img: "/images/placeholder.svg" },
-      { name: "RAVI",  img: "/images/placeholder.svg" },
-      { name: "RYE",   img: "/images/placeholder.svg" },
-    ],
-  },
-  // ── CLIENT IMAGES ─────────────────────────
-  {
-    id: "client-images",
-    label: "CLIENT IMAGES",
-    items: [
-      { name: "LIBRATUM",   img: "/images/libratum-1.jpg" },
-      { name: "METROPOLIS",     img: "/images/metropolis-client-1.jpg" },
-      { name: "BENIN Inspired",  img: "/images/benin-inspired-1.jpg" },
-      { name: "OMARE — Marion", img: "/images/omare-marion-front.jpg" },
-    ],
-  },
-];
 
-// Other categories (flat grid — more to be structured later)
-const OTHER_CATEGORIES = [
-  {
-    id: "sculpture",
-    label: "Sculpture",
-    description: "",
-    items: [
-      { name: "MARAKESH",   cat: "classics", img: "/images/marakesh/marakesh-promo.jpg", slides: ["/images/marakesh/marakesh-promo.jpg", "/images/marakesh/marakesh-1.jpg", "/images/marakesh/marakesh-cassie.jpg"], materials: ["corten"] },
-      { name: "PAVIA",      cat: "classics", img: "/images/halo/pavia-1.jpg" },
-      { name: "MOWHITI",    cat: "classics", img: "/images/sculptures/mowhiti.jpg" },
-      { name: "OMARE",      cat: "classics", img: "/images/sculptures/omare.jpg", materials: ["corten"] },
-      { name: "BON BON",    cat: "bonbons",  img: "/images/sculptures/bon-bon.jpg" },
-      { name: "MEDINA",     cat: "bonbons",  img: "/images/sculptures/medina.jpg" },
-      { name: "AUTUMN LEAF",cat: "leafs",    img: "/images/autumn-leaf/leaf-bali-1.jpg", slides: ["/images/autumn-leaf/leaf-bali-1.jpg", "/images/autumn-leaf/leaf-fire.jpg", "/images/autumn-leaf/leaf-bali-2.jpg", "/images/autumn-leaf/leafs-wg-copper.jpg", "/images/autumn-leaf/leafs-wg-a.jpg", "/images/autumn-leaf/leafs-wg-black.jpg"] },
-      { name: "VILLA LEAF", cat: "leafs",    img: "/images/villa-leaf/villa-leaf-trio-pool.jpg", slides: ["/images/villa-leaf/villa-leaf-trio-pool.jpg", "/images/villa-leaf/villa-leaf-black.jpg", `${CDN}/362f312d-4a16-4ba4-ab9d-8d199041a8cb_rw_1200.jpg`] },
-    ],
-  },
-];
-
-// Self-maintaining wall-art category covers for the Wall Art gallery page (/wall-art).
-// One representative image per wall-art category (first real, non-placeholder
-// piece), plus that category's own pieces for the sub-thumb row. Add a
-// category to the catalogue and it appears here automatically.
-export const WALL_ART_COVERS = WALL_ART_SERIES
-  .map((s) => {
-    const pieces = s.items.filter((it) => it.img && !it.img.includes("placeholder"));
-    if (!pieces.length) return null;
-    return { id: s.id, label: s.label, img: pieces[0].img, pieces };
-  })
-  .filter(Boolean);
-
-// Same idea as WALL_ART_COVERS, but for the Sculpture page: the single
-// "sculpture" series has no sub-series of its own, just a flat item list
-// tagged by `cat` (classics/bonbons/leafs — same ids as SCULPTURE_CATS in
-// CardDeckOverlay). Group those into cover cards instead.
-const SCULPTURE_SUBCATS = [
-  { id: "classics", label: "The Classics" },
-  { id: "leafs",    label: "Leaf Sculptures" },
-  { id: "bonbons",  label: "Bon Bons & Genie Bottles" },
-];
-export const SCULPTURE_COVERS = SCULPTURE_SUBCATS
-  .map(({ id, label }) => {
-    const allItems = OTHER_CATEGORIES.find((s) => s.id === "sculpture")?.items || [];
-    const pieces = allItems.filter((it) => it.cat === id && it.img && !it.img.includes("placeholder"));
-    if (!pieces.length) return null;
-    return { id, label, img: pieces[0].img, pieces };
-  })
-  .filter(Boolean);
-
-// Self-maintaining media destinations: every catalogue category is
-// automatically an upload target (used by /media). Add a category to the
-// catalogue and it appears in the uploader with no other change. Each category
-// gets an auto "Up Close" tile (see filteredSeries) that shows its uploads.
-export const MEDIA_DESTINATIONS = [...WALL_ART_SERIES, ...OTHER_CATEGORIES]
-  .map((s) => ({ key: s.id, label: s.label }));
-
-// Existing on-disk detail shots seeded into a category's Up Close tile so they
-// keep showing alongside any uploaded ones.
-const SEED_UPCLOSE = {
-  plume: ["/images/details/plume-deco-rust-1.jpg", "/images/details/plume-deco-rust-2.jpg"],
-};
-
-const ALL_TABS = [
-  { id: "wall-art", label: "Wall Art" },
-  ...OTHER_CATEGORIES.map((c) => ({ id: c.id, label: c.label })),
-];
-
-// Size tiers shown in the detail popup — edit these to match actual offerings
-const SIZE_TIERS = [
-  { id: "s", label: "Small",  dims: "600 × 400 mm" },
-  { id: "m", label: "Medium", dims: "900 × 600 mm" },
-  { id: "l", label: "Large",  dims: "1200 × 800 mm" },
-];
-
-const MATERIAL_OPTIONS = [
-  { id: "aluminium", label: "Aluminium Powder Coated" },
-  { id: "corten",    label: "Natural Corten Steel" },
-];
-
-// Single source of truth for a size tier's price.
-// The four price fields form a 2×2 matrix of material × region:
-//   price          → aluminium, WA            priceCorten    → corten, WA
-//   pricePC        → aluminium, interstate     priceCortenPC  → corten, interstate
-// "PC" means PostCode (interstate), NOT powder-coat. Both the lightbox pricing
-// popup and the card-deck pricing must go through this so they can never disagree.
-// Returns null when the relevant price is unset (caller shows POA / "Enquire").
-const priceFor = (tier, material, isWA) => {
-  if (!tier) return null;
-  const corten = material === "corten";
-  const val = isWA
-    ? (corten ? tier.priceCorten : tier.price)
-    : (corten ? tier.priceCortenPC : tier.pricePC);
-  return val ?? null;
-};
-
-// Per-piece size tiers — sourced from ROGETjames 2024 catalogue
-const PIECE_SIZES = {
-  // ── Flowers & Blooms ──────────────────────
-  "RUE": [
-    { id: "s", label: "Small",  dims: "Ø 900 mm",  fixings: "4–6", price: 780,   pricePC: 1190 },
-    { id: "m", label: "Medium", dims: "Ø 1100 mm", fixings: "4–6", price: 910,   pricePC: 1320 },
-    { id: "l", label: "Large",  dims: "Ø 1500 mm", fixings: "4–6", price: 1240,  pricePC: 1610 },
-  ],
-  "RUE the 3rd": [
-    { id: "s", label: "Small",  dims: "Ø 900 mm",  fixings: "4–6", price: 780,   pricePC: 1190 },
-    { id: "m", label: "Medium", dims: "Ø 1100 mm", fixings: "4–6", price: 910,   pricePC: 1320 },
-    { id: "l", label: "Large",  dims: "Ø 1500 mm", fixings: "4–6", price: 1240,  pricePC: 1610 },
-  ],
-  "BLOOM": [
-    { id: "l", label: "Standard", dims: "Ø 1800 mm", fixings: 4 },
-  ],
-  "OLIN": [
-    { id: "l", label: "Standard", dims: "Ø 1100 mm", fixings: 4 },
-  ],
-  "PETUNIA": [
-    { id: "s", label: "Small", dims: "1100 mm", fixings: 0 },
-    { id: "l", label: "Large", dims: "1700 mm", fixings: 0 },
-  ],
-  "DIAMOND BLOOM": [
-    { id: "m", label: "Medium", dims: "1410 × 1597 mm", fixings: 4, price: 1145, pricePC: 1450, priceCorten: 1145, priceCortenPC: 1250 },
-    { id: "l", label: "Large",  dims: "1814 × 2055 mm", fixings: 4, price: 1650, pricePC: 2150, priceCorten: 1650, priceCortenPC: 1650 },
-  ],
-  "FUEILLES": [
-    { id: "s", label: "Small", dims: "Ø 1100 mm", fixings: 4, price: 850,  pricePC: 1400, priceCorten: 850,  priceCortenPC: 1100 },
-    { id: "l", label: "Large", dims: "Ø 1490 mm", fixings: 4, price: 1350, pricePC: 1750, priceCorten: 1350, priceCortenPC: 1350 },
-  ],
-  "FERLICE": [
-    { id: "s", label: "Standard", dims: "Ø 1000 mm", fixings: 4, price: 780, pricePC: 780 },
-  ],
-  "PALM RAJA": [
-    { id: "s", label: "Small", dims: "1280 × 1190 mm", fixings: 6 },
-    { id: "l", label: "Large", dims: "1600 × 1490 mm", fixings: 6 },
-  ],
-  "DANDELIONS": [
-    { id: "s", label: "Square",   dims: "1200 × 1200 mm", price: 1630, pricePC: 1630 },
-    { id: "l", label: "Portrait", dims: "1200 × 2400 mm", price: 2180, pricePC: 2180 },
-  ],
-  // ── Plume Collection ──────────────────────
-  "PLUME DECO": [
-    { id: "s", label: "Small",  dims: "1800 × 638 mm",  fixings: 4, price: 895,  priceCorten: 895,  pricePC: 1600, priceCortenPC: 1200 },
-    { id: "m", label: "Medium", dims: "2100 × 745 mm",  fixings: 4, price: 1030, priceCorten: 1030, pricePC: 1800, priceCortenPC: 1300 },
-    { id: "l", label: "Large",  dims: "2400 × 851 mm",  fixings: 4, price: 1270, priceCorten: 1270, pricePC: 2200, priceCortenPC: 1400 },
-  ],
-  "FLOCK O FEATHERS": [
-    { id: "s", label: "Small",  dims: "1800 mm", fixings: 3, price: 910,  pricePC: 1050 },
-    { id: "m", label: "Medium", dims: "2100 mm", fixings: 3, price: 990,  pricePC: 1300 },
-    { id: "l", label: "Large",  dims: "2400 mm", fixings: 3, price: 1090, pricePC: 1550 },
-  ],
-  "FEATHER — Toivottaa": [
-    { id: "s", label: "Small",  dims: "1800 mm", fixings: 3, price: 910,  pricePC: 1050 },
-    { id: "m", label: "Medium", dims: "2100 mm", fixings: 3, price: 990,  pricePC: 1300 },
-    { id: "l", label: "Large",  dims: "2400 mm", fixings: 3, price: 1090, pricePC: 1550 },
-  ],
-  // ── Jungle Collection ─────────────────────
-  "BAMBU": [
-    { id: "s", label: "Small",  dims: "750 × 1800 mm",  fixings: 8,  price: 990,  pricePC: 990,  priceCorten: 690,  priceCortenPC: 690  },
-    { id: "m", label: "Medium", dims: "950 × 2390 mm",  fixings: 10, price: 1285, pricePC: 1285, priceCorten: 970,  priceCortenPC: 970  },
-    { id: "l", label: "Large",  dims: "1190 × 2990 mm", fixings: 10, price: 1615, pricePC: 1615, priceCorten: 1175, priceCortenPC: 1175 },
-  ],
-  "UBUD Round": [
-    { id: "s", label: "Small", dims: "Ø 1195 mm", fixings: 4 },
-    { id: "l", label: "Large", dims: "Ø 3495 mm", fixings: 4 },
-  ],
-  "UBUD Rectangle": [
-    { id: "s", label: "Small", dims: "2195 × 850 mm",  fixings: 6 },
-    { id: "l", label: "Large", dims: "2995 × 1060 mm", fixings: 6 },
-  ],
-  // ── IKONA ─────────────────────────────────
-  "MAHOLA": [
-    { id: "xs", label: "XS",     dims: "463 × 1490 mm", fixings: 4 },
-    { id: "s",  label: "Small",  dims: "563 × 1800 mm", fixings: 4 },
-    { id: "m",  label: "Medium", dims: "660 × 2100 mm", fixings: 4 },
-    { id: "l",  label: "Large",  dims: "775 × 2390 mm", fixings: 4 },
-  ],
-  "VASUKI": [
-    { id: "s",  label: "S",  dims: "1190 × 1683 mm" },
-    { id: "m",  label: "M",  dims: "1490 × 2107 mm" },
-    { id: "l",  label: "L",  dims: "2120 × 2990 mm (2 parts)" },
-    { id: "xl", label: "XL", dims: "2990 × 4230 mm (5 parts)" },
-  ],
-  "GEO LEAF": [
-    { id: "xs", label: "XS",     dims: "528 × 1490 mm", fixings: 4 },
-    { id: "s",  label: "Small",  dims: "637 × 1800 mm", fixings: 4 },
-    { id: "m",  label: "Medium", dims: "784 × 2100 mm", fixings: 4 },
-    { id: "l",  label: "Large",  dims: "846 × 2390 mm", fixings: 4 },
-  ],
-  // ── Obliationes Series ────────────────────
-  "OBLIATIONES": [
-    { id: "xs", label: "Mini",   dims: "Ø 550 mm",   fixings: 4 },
-    { id: "s",  label: "Small",  dims: "Ø 820 mm",   fixings: 4 },
-    { id: "m",  label: "Medium", dims: "Ø 1190 mm",  fixings: 4 },
-    { id: "l",  label: "Large",  dims: "Ø 1490 mm",  fixings: 4 },
-  ],
-  "OBLIATIONES — Large": [
-    { id: "s", label: "Small",  dims: "Ø 820 mm",  fixings: 4 },
-    { id: "m", label: "Medium", dims: "Ø 1190 mm", fixings: 4 },
-    { id: "l", label: "Large",  dims: "Ø 1490 mm", fixings: 4 },
-  ],
-  "OBLIATIONES TIBETAN — Patha": [
-    { id: "l", label: "Standard", dims: "Ø 1450 mm", fixings: 4 },
-  ],
-  "OKO": [
-    { id: "s", label: "Small", dims: "1490 × 2060 mm", fixings: 4 },
-    { id: "l", label: "Large", dims: "1990 × 1646 mm", fixings: 4 },
-  ],
-  // ── Branches Series ───────────────────────
-  "GREN Edge": [
-    { id: "s", label: "Small",  dims: "1418 × 950 mm",  fixings: 8, price: 1420, pricePC: 1820 },
-    { id: "m", label: "Medium", dims: "1780 × 1190 mm", fixings: 8, price: 1640, pricePC: 2430 },
-    { id: "l", label: "Large",  dims: "2248 × 1490 mm", fixings: 9, price: 1980, pricePC: 2830 },
-  ],
-  "GREN Tao": [
-    { id: "s", label: "Small",  dims: "1490 × 950 mm",  fixings: 9, price: 1420, pricePC: 1820 },
-    { id: "m", label: "Medium", dims: "1800 × 1146 mm", fixings: 9, price: 1640, pricePC: 2430 },
-    { id: "l", label: "Large",  dims: "2340 × 1490 mm", fixings: 9, price: 1980, pricePC: 2830 },
-  ],
-  "GREN Free": [
-    { id: "s", label: "Small",  dims: "1660 × 950 mm",  fixings: 8, price: 1420, pricePC: 1820 },
-    { id: "m", label: "Medium", dims: "2079 × 1190 mm", fixings: 9, price: 1640, pricePC: 2430 },
-    { id: "l", label: "Large",  dims: "2390 × 1368 mm", fixings: 9, price: 1980, pricePC: 2830 },
-  ],
-  "GREN X": [
-    { id: "s", label: "Small", dims: "1810 × 1190 mm", fixings: 10, price: 1420, pricePC: 1820 },
-    { id: "l", label: "Large", dims: "2267 × 1490 mm", fixings: 11, price: 1980, pricePC: 2830 },
-  ],
-  // ── Australian Natives ────────────────────
-  "WANDOO": [
-    { id: "s", label: "Small", dims: "1100 × 1260 mm", fixings: 4, price: 850,  pricePC: 1300, priceCorten: 850,  priceCortenPC: 1050 },
-    { id: "l", label: "Large", dims: "1495 × 1713 mm", fixings: 4, price: 1390, pricePC: 1700, priceCorten: 1390, priceCortenPC: 1350 },
-  ],
-  "WANDOO DIAMOND": [
-    { id: "s", label: "Small", dims: "1089 × 977 mm",  fixings: 4 },
-    { id: "l", label: "Large", dims: "1508 × 1353 mm", fixings: 4 },
-  ],
-  "WATTLE": [
-    { id: "s", label: "Small", dims: "Ø 1200 mm", fixings: 4, price: 850,  pricePC: 1350, priceCorten: 850,  priceCortenPC: 1100 },
-    { id: "l", label: "Large", dims: "Ø 1490 mm", fixings: 4, price: 1300, pricePC: 1700, priceCorten: 1300, priceCortenPC: 1450 },
-  ],
-  "NATIVE COLLAGE": [
-    { id: "s", label: "Small", dims: "1200 × 592 mm" },
-    { id: "l", label: "Large", dims: "2390 × 1180 mm" },
-  ],
-  // ── Banksia Collection ────────────────────
-  "BANKSIA Card": [
-    { id: "s", label: "Small", dims: "900 × 1800 mm",  fixings: 6, price: 1200, priceCorten: 1200, pricePC: 1500, priceCortenPC: 1400 },
-    { id: "l", label: "Large", dims: "1184 × 2386 mm", fixings: 6, price: 1930, priceCorten: 1930, pricePC: 2230, priceCortenPC: 2130 },
-  ],
-  "BANKSIA Free Range": [
-    { id: "s", label: "Small", dims: "890 mm",  fixings: 4 },
-    { id: "l", label: "Large", dims: "1490 mm", fixings: 4 },
-  ],
-  "BANKSIA Free Range 2": [
-    { id: "l", label: "Standard", dims: "2225 × 1466 mm", fixings: 12 },
-  ],
-  "BANKSIA Free Range — Custom": [
-    { id: "l", label: "Custom", dims: "Custom sizes available", fixings: 0 },
-  ],
-  "BANKSIA Round": [
-    { id: "s", label: "Small", dims: "1100 × 1200 mm", fixings: 4, price: 1200, priceCorten: 1200, pricePC: 1350, priceCortenPC: 1200 },
-    { id: "l", label: "Large", dims: "1495 × 1631 mm", fixings: 4, price: 1750, priceCorten: 1750, pricePC: 1850, priceCortenPC: 1750 },
-  ],
-  "BANKSIA Rec Portrait": [
-    { id: "s", label: "Small", dims: "1100 × 1200 mm",  fixings: 4, price: 1200, pricePC: 1200 },
-    { id: "l", label: "Large", dims: "1495 × 1631 mm",  fixings: 4, price: 1750, pricePC: 1750 },
-  ],
-  "BANKSIA Rec Landscape": [
-    { id: "s", label: "Small", dims: "1100 × 1200 mm",  fixings: 4, price: 1200, pricePC: 1200 },
-    { id: "l", label: "Large", dims: "1495 × 1631 mm",  fixings: 4, price: 1750, pricePC: 1750 },
-  ],
-  "BANKSIA Oldmanis": [
-    { id: "s", label: "Medium", dims: "1190 × 1911 mm", fixings: 6, price: 2650, pricePC: 2650, priceCorten: 1900, priceCortenPC: 1900 },
-    { id: "l", label: "Large",  dims: "1488 × 2390 mm", fixings: 6, price: 3150, pricePC: 3150, priceCorten: 2200, priceCortenPC: 2200 },
-  ],
-  "BANKSIA Deco": [
-    { id: "s", label: "Small", dims: "1142 × 1495 mm", fixings: 4, price: 1630, pricePC: 1630 },
-    { id: "l", label: "Large", dims: "1956 × 1495 mm", fixings: 4, price: 2295, pricePC: 2295 },
-  ],
-  "BANKSIA Diamond": [
-    { id: "s", label: "Small",  dims: "1200 × 1200 mm", fixings: 4 },
-    { id: "m", label: "Medium", dims: "1590 × 1590 mm", fixings: 4 },
-    { id: "l", label: "Large",  dims: "1990 × 1990 mm", fixings: 4 },
-  ],
-  "BANKSIA Free Range 4": [
-    { id: "s", label: "Small", dims: "2780 × 1190 mm", fixings: 10 },
-    { id: "l", label: "Large", dims: "2854 × 1490 mm", fixings: 10 },
-  ],
-  "BANKSIA Free Range 5": [
-    { id: "s", label: "Small",  dims: "1378 × 882 mm",  fixings: 7 },
-    { id: "m", label: "Medium", dims: "1490 × 1190 mm", fixings: 7 },
-    { id: "l", label: "Large",  dims: "1866 × 1490 mm", fixings: 7 },
-  ],
-  // ── Neazar ────────────────────────────────
-  "SALAMANKA": [
-    { id: "s", label: "Small", dims: "700 × 1200 mm",  fixings: 2 },
-    { id: "l", label: "Large", dims: "2020 × 1093 mm", fixings: 2 },
-  ],
-  "TRIBE": [
-    { id: "l", label: "Standard", dims: "Ø 1100 mm", fixings: 4 },
-  ],
-  "RAVI": [
-    { id: "l", label: "Standard", dims: "Ø 1200 mm" },
-  ],
-  "RYE": [
-    { id: "l", label: "Standard", dims: "Ø 800 mm", fixings: 4 },
-  ],
-  "ZON ZEE": [
-    { id: "s", label: "Small", dims: "1490 × 1578 mm", fixings: 4, price: 2000, pricePC: 2000, priceCorten: 1450, priceCortenPC: 1450 },
-    { id: "l", label: "Large", dims: "2212 × 2327 mm", fixings: 4, price: 2650, pricePC: 2650, priceCorten: 1900, priceCortenPC: 1900 },
-  ],
-  "NEA": [
-    { id: "s", label: "Small", dims: "820 × 1880 mm",  fixings: 6 },
-    { id: "l", label: "Large", dims: "1185 × 1700 mm", fixings: 6, price: 1630, pricePC: 2020 },
-  ],
-  "METROPOLIS": [
-    { id: "s", label: "Small", dims: "1800 × 990 mm",  fixings: 6 },
-    { id: "l", label: "Large", dims: "2100 × 1155 mm", fixings: 6 },
-  ],
-  // ── Pendant Series ────────────────────────
-  "BENIN": [
-    { id: "s", label: "Small",  dims: "276 × 1800 mm", fixings: 4 },
-    { id: "m", label: "Medium", dims: "362 × 2390 mm", fixings: 4 },
-    { id: "l", label: "Large",  dims: "460 × 2990 mm", fixings: 4 },
-  ],
-  "LIBERATUM": [
-    { id: "s", label: "Small",  dims: "276 × 1800 mm", fixings: 4 },
-    { id: "m", label: "Medium", dims: "362 × 2390 mm", fixings: 4 },
-    { id: "l", label: "Large",  dims: "460 × 2990 mm", fixings: 4 },
-  ],
-  "SANUR": [
-    { id: "s", label: "Small",  dims: "276 × 1800 mm" },
-    { id: "m", label: "Medium", dims: "362 × 2390 mm" },
-    { id: "l", label: "Large",  dims: "460 × 2990 mm" },
-  ],
-  // ── The Birds ─────────────────────────────
-  "BIRDY NUM NUM": [
-    { id: "s", label: "Small", dims: "1077 × 1190 mm", fixings: 4 },
-    { id: "l", label: "Large", dims: "1490 × 1664 mm", fixings: 4 },
-  ],
-  "WREN": [
-    { id: "l", label: "Custom", dims: "Custom sizes", fixings: 4 },
-  ],
-  "BIRDY NUM NUM (Free range)": [
-    { id: "l", label: "Standard", dims: "812 × 1490 mm", fixings: 4 },
-  ],
-  "SAVANAH": [
-    { id: "s", label: "Small",  dims: "1200 × 523 mm",  fixings: "4–6" },
-    { id: "m", label: "Medium", dims: "1800 × 785 mm",  fixings: "4–6" },
-    { id: "l", label: "Large",  dims: "2400 × 1045 mm", fixings: "4–6" },
-  ],
-  // ── Centis ────────────────────────────────
-  "URCHIN": [
-    { id: "l", label: "Standard", dims: "Ø 1800 mm", fixings: 4 },
-  ],
-  "VIASI O": [
-    { id: "s", label: "Small", dims: "Ø 1490 mm", fixings: 4 },
-    { id: "l", label: "Large", dims: "Ø 1800 mm", fixings: 4 },
-  ],
-  "ASLYIAM O": [
-    { id: "xs", label: "Small",  dims: "Ø 1100 mm", fixings: 4, pricePC: 1250, priceCortenPC: 750 },
-    { id: "s",  label: "Medium", dims: "Ø 1490 mm", fixings: 4, pricePC: 1450, priceCortenPC: 950 },
-    { id: "l",  label: "Large",  dims: "Ø 1800 mm", fixings: 4 },
-  ],
-  "CENTENNIAL": [
-    { id: "l", label: "Standard", dims: "Ø 1100 mm", fixings: 4 },
-  ],
-  "LUMIER": [
-    { id: "l", label: "Standard", dims: "Ø 1200 mm", fixings: 4 },
-  ],
-  // ── Therus ────────────────────────────────
-  "ASLYIAM CLASSIC": [
-    { id: "s", label: "Small", dims: "1495 × 1142 mm", fixings: 6 },
-    { id: "l", label: "Large", dims: "1956 × 1495 mm", fixings: 6 },
-  ],
-  "THE SUM OF EVERYTHING": [
-    { id: "l", label: "Standard", dims: "1200 × 1200 mm", fixings: 4 },
-  ],
-  "SEAWEED": [
-    { id: "l", label: "Standard", dims: "1860 × 995 mm" },
-  ],
-  // ── Retro ─────────────────────────────────
-  "HALSTON B": [
-    { id: "l", label: "Standard", dims: "990 × 2380 mm", fixings: 6 },
-  ],
-  "ZED B": [
-    { id: "l", label: "Standard", dims: "Ø 1627 mm", fixings: 4 },
-  ],
-  "PAVIA B": [
-    { id: "l", label: "Standard", dims: "TBC" },
-  ],
-  "HALSTON Tall": [
-    { id: "s", label: "Small", dims: "979 × 1878 mm",  fixings: 6, price: 1750, pricePC: 1750, priceCorten: 1500, priceCortenPC: 1500 },
-    { id: "l", label: "Large", dims: "1190 × 2381 mm", fixings: 6, price: 2400, pricePC: 2400, priceCorten: 2050, priceCortenPC: 2050 },
-  ],
-  "HALSTON": [
-    { id: "l", label: "Standard", dims: "Ø 1100 mm / 1100 × 1100 mm", fixings: 4 },
-  ],
-  "ZED O": [
-    { id: "l", label: "Standard", dims: "Ø 1627 mm", fixings: 4 },
-  ],
-  "ZED O SCREEN": [
-    { id: "l", label: "Standard", dims: "990 × 2358 mm", fixings: 6 },
-  ],
-  "ORIGINS": [
-    { id: "l", label: "Standard", dims: "Ø 1800 mm", fixings: 4 },
-  ],
-  // ── Creeping Fig Series ────────────────────
-  "AUTUMN": [
-    { id: "s", label: "Small",  dims: "1800 × 1000 mm", price: 1150, priceCorten: 1150 },
-    { id: "m", label: "Medium", dims: "2315 × 1195 mm", price: 1870, priceCorten: 1870 },
-    { id: "l", label: "Large",  dims: "2870 × 1490 mm", price: 2350, pricePC: 2550, priceCorten: 2350, priceCortenPC: 1900 },
-  ],
-  "FIGARO": [
-    { id: "s", label: "Small", dims: "2395 × 1330 mm", price: 1870, pricePC: 1870 },
-    { id: "l", label: "Large", dims: "2685 × 1490 mm", price: 2200, pricePC: 2200 },
-  ],
-  "GRANDE": [
-    { id: "l", label: "Standard", dims: "4150 × 1465 mm", price: 3200, pricePC: 3150, priceCortenPC: 2400 },
-  ],
-  "SPRING": [
-    { id: "l", label: "Standard", dims: "900 × 2400 mm" },
-  ],
-  "ONTIO": [
-    { id: "s", label: "Small", dims: "800 × 1000 mm" },
-    { id: "l", label: "Large", dims: "1420 × 1733 mm" },
-  ],
-  "NUVINE": [
-    { id: "s", label: "Small", dims: "479 × 2390 mm",  fixings: 4, pricePC: 1250, priceCortenPC: 600 },
-    { id: "l", label: "Large", dims: "600 × 2990 mm",  fixings: 4, pricePC: 1500, priceCortenPC: 800 },
-  ],
-  "BUTTERFLY": [
-    { id: "l", label: "Standard", dims: "4371 × 1377 mm", price: 3900, pricePC: 3900 },
-  ],
-  // ── Screens ───────────────────────────────
-  "JEAGER": [
-    { id: "l", label: "Standard", dims: "2395 × 540 mm", priceCorten: 1100, priceCortenPC: 1100, price: 1150, pricePC: 1150 },
-  ],
-  // ── Sculpture — The Classics ───────────────
-  "MARAKESH": [
-    { id: "s",  label: "1500mm", dims: "H 1500 mm", price: 3000, priceCorten: 3000, pricePC: 3245, priceCortenPC: 3245 },
-    { id: "m",  label: "1800mm", dims: "H 1800 mm", price: 3500, priceCorten: 3500, pricePC: 3795, priceCortenPC: 3795 },
-    { id: "l",  label: "2100mm", dims: "H 2100 mm", price: 4150, priceCorten: 4150, pricePC: 4345, priceCortenPC: 4345 },
-  ],
-  "OMARE": [
-    { id: "s",  label: "1500mm", dims: "H 1500 mm" },
-    { id: "m",  label: "1800mm", dims: "H 1800 mm" },
-    { id: "l",  label: "2100mm", dims: "H 2100 mm" },
-    { id: "xl", label: "2400mm", dims: "H 2400 mm" },
-  ],
-  // ── Sculpture — Bon Bons ───────────────────
-  "BON BON": [
-    { id: "x", label: "BON BON X", dims: "H 1800 mm" },
-    { id: "e", label: "BON BON E", dims: "H 3000 mm" },
-  ],
-  // ── Sculpture — Leaf Sculptures ───────────
-  "AUTUMN LEAF": [
-    { id: "m",  label: "1500mm", dims: "680 × 1500 mm", price: 1495, priceCorten: 1495, pricePC: 1695, priceCortenPC: 1695 },
-    { id: "l",  label: "1800mm", dims: "785 × 1800 mm", price: 1795, priceCorten: 1795, pricePC: 1995, priceCortenPC: 1995 },
-    { id: "xl", label: "2100mm", dims: "915 × 2100 mm", price: 2100, priceCorten: 2100, pricePC: 2300, priceCortenPC: 2300 },
-    { id: "2x", label: "2400mm", dims: "935 × 2400 mm", price: 2350, priceCorten: 2350, pricePC: 2550, priceCortenPC: 2550 },
-  ],
-  "VILLA LEAF": [
-    { id: "m",  label: "1500mm", dims: "428 × 1500 mm", price: 1150, priceCorten: 1150, pricePC: 1350, priceCortenPC: 1350 },
-    { id: "l",  label: "1800mm", dims: "512 × 1800 mm", price: 1270, priceCorten: 1270, pricePC: 1470, priceCortenPC: 1470 },
-    { id: "xl", label: "2100mm", dims: "598 × 2100 mm", price: 1390, priceCorten: 1390, pricePC: 1590, priceCortenPC: 1590 },
-    { id: "2x", label: "2400mm", dims: "684 × 2400 mm", price: 1630, priceCorten: 1630, pricePC: 1830, priceCortenPC: 1830 },
-  ],
-};
-
-// Dimensions lookup — edit these values to match actual piece measurements
-const DIMENSIONS = {
-  // Branches Series
-  "GREN Edge":          "1200 × 900 mm",
-  "GREN Tao":           "1200 × 900 mm",
-  "WANDOO":             "900 × 600 mm",
-  "KYRA LEAF":          "800 × 600 mm",
-  "AUTUMN LEAF":        "1000 × 700 mm",
-  "VILLA LEAF":         "1500 × 900 mm",
-  // Banksia Collection
-  "BANKSIA Free Range":     "900 × 900 mm",
-  "BANKSIA Rec Landscape":  "1200 × 800 mm",
-  "BANKSIA Rec Portrait":   "800 × 1200 mm",
-  "BANKSIA Frame":      "1200 × 900 mm",
-  "RUE the 3rd":        "800 × 800 mm",
-  "UBUD Round":         "Ø 800 mm",
-  "DANDELIONS":         "1200 × 600 mm",
-  "DIAMOND BLOOM":      "1410 × 1597 mm",
-  // Creeping Fig Series
-  "Creeping Fig I":     "1800 × 1200 mm",
-  "Creeping Fig II":    "1800 × 1200 mm",
-  "Creeping Fig III":   "1800 × 1200 mm",
-  "Creeping Fig IV":    "1800 × 1200 mm",
-  "Creeping Fig V":     "1800 × 1200 mm",
-  // Plume Collection
-  "PLUME DECO":         "1000 × 1200 mm",
-  "FEATHER":            "600 × 1200 mm",
-  "BIRDY NUM NUM":      "800 × 600 mm",
-  "FERLICI":            "900 × 900 mm",
-  "BAMBU":              "1200 × 400 mm",
-  // Screens & Gates
-  "ERGO":               "2400 × 1200 mm",
-  "GRAIL":              "2800 × 1600 mm",
-  "FERLIE":             "2000 × 1000 mm",
-  "LUCARIO":            "1800 × 900 mm",
-  "LUMIER":             "2200 × 1100 mm",
-  "XAVIER":             "2400 × 1800 mm",
-  // Geometric Series
-  "VUELTA":             "1200 × 900 mm",
-  "ASLYIAM":            "1800 × 1200 mm",
-  "WATTLE":             "600 × 600 mm",
-  "VAYA":               "1200 × 800 mm",
-  // Cultural Patterns
-  "BENIN Inspired":     "1500 × 1200 mm",
-  "RAVI Inspired":      "1800 × 1200 mm",
-  "MARAKESH TRIO":      "3 × 600 × 900 mm",
-  "Unity in Diversity": "2400 × 1200 mm",
-  // Fire & Light
-  "REEDS of UNGARO":    "1800 × 600 mm",
-  "EQUISETTI":          "1800 × 600 mm",
-  "URCHIN":             "Ø 600 mm",
-  "HOMEBASE Fire Pit":  "1200 × 600 mm",
-  "YAZAD Fire":         "1200 × 800 mm",
-  "TOTEMS":             "H 2400 mm",
-  // Sculpture
-  "ORIAN Totem":        "H 1800 mm",
-  "DANDELIONS Totems":  "H 2200 mm",
-  "HOMEBASE":           "2400 × 1200 mm",
-  "HUE":                "1800 × 1200 mm",
-  "Centennial Park":    "Site-specific",
-  "Fiona Stanley":      "Site-specific",
-};
-
-// Build a lookup: design name → all unique image URLs across every series/category
-const NAME_TO_IMAGES = (() => {
-  const map = {};
-  const add = (name, img) => {
-    if (!map[name]) map[name] = [];
-    if (!map[name].includes(img)) map[name].push(img);
-  };
-  const addItem = (i) => {
-    if (i.slides) i.slides.forEach(src => add(i.name, src));
-    else add(i.name, i.img);
-  };
-  WALL_ART_SERIES.forEach((s) => s.items.forEach(addItem));
-  OTHER_CATEGORIES.forEach((c) => c.items.forEach(addItem));
-  return map;
-})();
 
 function SlidingThumb({ slides, alt, active, focus }) {
   const [cur, setCur] = useState(0);
@@ -1044,7 +198,7 @@ function SlidingThumb({ slides, alt, active, focus }) {
   return (
     <div className="w-full h-full relative">
       {slides.map((src, i) => (
-        <img key={src} src={src} alt={alt} loading="lazy" decoding="async"
+        <img key={src} src={netlifyImg(src, { w: 800, q: 80 })} alt={alt} loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ opacity: i === cur ? 1 : 0, transition: 'opacity 0.8s ease', objectPosition: focus || 'center center' }}
         />
@@ -1127,7 +281,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
   const tier = sizeTiers.find(t => t.id === selectedSize);
   const price = priceFor(tier, selectedMaterial, effWA);
   const showPOA = !price && (isWAUser || isAdmin);
-  const showPrice = TEMP_SHOW_ALL_PRICES || !showPOA;
+  const showPrice = !showPOA;
   const matLabel = MATERIAL_OPTIONS.find(m => m.id === selectedMaterial)?.label;
   const canAdd = selectedSize && selectedMaterial && !added;
 
@@ -1136,7 +290,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
       id: `${item.name}-${Date.now()}`,
       name: item.name,
       series: item._series || "",
-      size: tier,
+      size: tier && { id: tier.id, label: tier.label, dims: tier.dims },
       material: MATERIAL_OPTIONS.find(m => m.id === selectedMaterial),
       img: item.img,
     }}));
@@ -1263,30 +417,43 @@ export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPost
 
   const slides = NAME_TO_IMAGES[item.name] || [item.img];
 
-  // Auto-advance slideshow every 2 seconds when there are multiple images
+  // Component-scoped GSAP context — every imperative tween registers here and is
+  // reverted on unmount (mandatory repo pattern), so no tween or setState fires
+  // after the card is gone.
+  const ctxRef = useRef(null);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "power2.out" });
+      gsap.fromTo(cardRef.current, { y: 14, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.15, ease: "power3.out" });
+    }, overlayRef);
+    ctxRef.current = ctx;
+    return () => { ctx.revert(); ctxRef.current = null; };
+  }, []);
+
+  // Auto-advance slideshow when there are multiple images
   useEffect(() => {
     if (slides.length < 2) return;
     const timer = setInterval(() => {
       if (!imgRef.current) return;
-      gsap.to(imgRef.current, {
-        opacity: 0, duration: 1.2, ease: "power2.inOut",
-        onComplete: () => {
-          setSlideIndex((i) => (i + 1) % slides.length);
-          gsap.to(imgRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
-        },
+      ctxRef.current?.add(() => {
+        gsap.to(imgRef.current, {
+          opacity: 0, duration: 1.2, ease: "power2.inOut",
+          onComplete: () => {
+            setSlideIndex((i) => (i + 1) % slides.length);
+            gsap.to(imgRef.current, { opacity: 1, duration: 1.2, ease: "power2.inOut" });
+          },
+        });
       });
     }, 4000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  useEffect(() => {
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "power2.out" });
-    gsap.fromTo(cardRef.current, { y: 14, opacity: 0, scale: 0.97 }, { y: 0, opacity: 1, scale: 1, duration: 0.15, ease: "power3.out" });
-  }, []);
-
   const handleClose = useCallback(() => {
-    gsap.to(cardRef.current, { y: 14, opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.in" });
-    gsap.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in", delay: 0.05, onComplete: onClose });
+    const run = () => {
+      gsap.to(cardRef.current, { y: 14, opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.in" });
+      gsap.to(overlayRef.current, { opacity: 0, duration: 0.25, ease: "power2.in", delay: 0.05, onComplete: onClose });
+    };
+    if (ctxRef.current) ctxRef.current.add(run); else run();
   }, [onClose]);
 
   useEffect(() => {
@@ -1325,7 +492,7 @@ export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPost
         <div className="aspect-[4/3] overflow-hidden relative bg-charcoal flex items-center justify-center">
           <img
             ref={imgRef}
-            src={slides[slideIndex]}
+            src={netlifyImg(slides[slideIndex], { w: 800, q: 82 })}
             alt={item.name}
             className="w-full h-full object-contain"
           />
@@ -1416,36 +583,49 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setSlideIdx(0); setShowPricingPopup(false); setImgExpanded(false); }, [index]);
 
+  // Component-scoped GSAP context for imperative tweens (index change, close,
+  // crossfade) — reverted on unmount so no tween or setState fires after close.
+  const ctxRef = useRef(null);
+  useEffect(() => {
+    const ctx = gsap.context(() => {}, overlayRef);
+    ctxRef.current = ctx;
+    return () => { ctx.revert(); ctxRef.current = null; };
+  }, []);
+
   useEffect(() => {
     lenis?.stop();
     const ctx = gsap.context(() => {
       gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
       gsap.fromTo(contentRef.current, { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" });
-    });
+    }, overlayRef);
     return () => { ctx.revert(); lenis?.start(); };
   }, [lenis]);
 
   const prevIndex = useRef(index);
   useEffect(() => {
     if (prevIndex.current !== index && contentRef.current) {
-      gsap.fromTo(contentRef.current, { scale: 0.96, opacity: 0.3 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" });
+      ctxRef.current?.add(() => gsap.fromTo(contentRef.current, { scale: 0.96, opacity: 0.3 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" }));
     }
     prevIndex.current = index;
   }, [index]);
 
   const handleClose = useCallback(() => {
     setPlaying(false);
-    const tl = gsap.timeline({ onComplete: onClose });
-    tl.to(contentRef.current, { scale: 0.92, opacity: 0, duration: 0.3, ease: "power2.in" });
-    tl.to(overlayRef.current, { opacity: 0, duration: 0.3, ease: "power2.in" }, "-=0.15");
+    const run = () => {
+      const tl = gsap.timeline({ onComplete: onClose });
+      tl.to(contentRef.current, { scale: 0.92, opacity: 0, duration: 0.3, ease: "power2.in" });
+      tl.to(overlayRef.current, { opacity: 0, duration: 0.3, ease: "power2.in" }, "-=0.15");
+    };
+    if (ctxRef.current) ctxRef.current.add(run); else run();
   }, [onClose]);
 
   const crossfadeTo = useCallback((fn) => {
     if (!imgRef.current) { fn(); return; }
-    gsap.to(imgRef.current, {
+    const run = () => gsap.to(imgRef.current, {
       opacity: 0, duration: 0.35, ease: "power2.inOut",
       onComplete: () => { fn(); gsap.to(imgRef.current, { opacity: 1, duration: 0.35, ease: "power2.inOut" }); },
     });
+    if (ctxRef.current) ctxRef.current.add(run); else run();
   }, []);
 
   const handleLeft = useCallback(() => {
@@ -1491,7 +671,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
       {/* Image + info */}
       <div ref={contentRef} className="flex flex-col items-center justify-center px-14 md:px-20 w-full max-w-5xl gap-3" style={{ height: "calc(100vh - 96px)", marginTop: "72px" }} onClick={(e) => e.stopPropagation()}>
         <div className="w-full flex items-center justify-center relative flex-none group/img">
-          <img ref={imgRef} src={slides[slideIdx]} alt={item.name} className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
+          <img ref={imgRef} src={netlifyImg(slides[slideIdx], { w: 1600, q: 82 })} alt={item.name} className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
           <button
             onClick={(e) => { e.stopPropagation(); setImgExpanded(true); }}
             className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/55 text-cream/60 hover:bg-black/80 hover:text-cream transition-all duration-200 opacity-0 group-hover/img:opacity-100"
@@ -1582,7 +762,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
           onClick={(e) => { e.stopPropagation(); setImgExpanded(false); }}
         >
           <img
-            src={slides[slideIdx]}
+            src={netlifyImg(slides[slideIdx], { w: 2000, q: 85 })}
             alt={item.name}
             className="max-w-[95vw] max-h-[95vh] object-contain"
           />
@@ -1615,18 +795,15 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
 }
 
 function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
-  const [_hovered, setHovered] = useState(false);
   return (
     <div
       className="gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
       onClick={() => onDrill ? onDrill(item, cat.label) : onOpen(cat.items, idx, cat.label)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       {item.slides ? (
         <SlidingThumb slides={item.slides} alt={`${item.name} — ROGETjames`} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
+        <img src={netlifyImg(item.img, { w: 800, q: 80 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1645,18 +822,15 @@ function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
 }
 
 function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }) {
-  const [_hovered, setHovered] = useState(false);
   return (
     <div
       className="gallery-card group cursor-pointer rounded-2xl overflow-hidden relative flex-none h-full aspect-square"
       onClick={() => onDrill ? onDrill(item, series.label) : onOpen(series.items, idx, series.label)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
       {item.slides ? (
         <SlidingThumb slides={item.slides} alt={`${item.name} — ROGETjames`} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
+        <img src={netlifyImg(item.img, { w: 800, q: 80 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1671,44 +845,6 @@ function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }
       >
         details
       </button>
-    </div>
-  );
-}
-
-const SCREENS_STRIP_IMGS = [
-  "/images/screens/strip/aslyiam.jpg",
-  "/images/screens/strip/ferlie-close.jpg",
-  "/images/screens/strip/grail-close.jpg",
-  "/images/screens/strip/marakesh-fdl.jpg",
-  "/images/screens/strip/orian.jpg",
-  "/images/screens/strip/viasi.jpg",
-  "/images/screens/strip/wattle-urn.jpg",
-  "/images/screens/strip/wattle.jpg",
-  "/images/screens/strip/xavier-close.jpg",
-];
-
-function ScreensStrip() {
-  const tiles = [...SCREENS_STRIP_IMGS, ...SCREENS_STRIP_IMGS];
-  return (
-    <div className="w-full overflow-hidden my-4" style={{ height: "120px" }} aria-hidden="true">
-      <div
-        className="flex gap-2 h-full"
-        style={{
-          width: "max-content",
-          animation: "marquee-scroll 40s linear infinite",
-          willChange: "transform",
-        }}
-      >
-        {tiles.map((src, i) => (
-          <img
-            key={i}
-            src={src}
-            alt=""
-            className="h-full w-auto object-cover rounded"
-            style={{ aspectRatio: "4/3", flexShrink: 0 }}
-          />
-        ))}
-      </div>
     </div>
   );
 }
@@ -1778,69 +914,6 @@ function SeriesRow({ series, openLightbox, setDetailItem, onDrill }) {
   );
 }
 
-// Search aliases — maps a keyword to items that should appear in results.
-// Each entry is either a name string (matches any series) or {name, series} (exact series match).
-const ROUND_ITEMS = [
-  "OBLIATIONES",
-  "OBLIATIONES — Large",
-  "OBLIATIONES TIBETAN — Patha",
-  "WANDOO",
-  { name: "WATTLE", series: "AUSTRALIAN NATIVES" },
-  "BIRDY NUM NUM",
-  "FERLICE",
-  "OLIN",
-  "FUEILLES",
-  "DANDELIONS",
-];
-const SEARCH_ALIASES = {
-  round:    ROUND_ITEMS,
-  circle:   ROUND_ITEMS,
-  circular: ROUND_ITEMS,
-  floral: [
-    "RUE", "RUE the 3rd", "OLIN", "FERLICE", "FUEILLES", "DANDELIONS",
-    "BANKSIA Free Range", "BANKSIA Round", "BANKSIA Rec Landscape", "BANKSIA Rec Portrait",
-    "BANKSIA Oldmanis", "BANKSIA Deco", "BANKSIA Diamond",
-    { name: "WATTLE", series: "AUSTRALIAN NATIVES" }, "WANDOO", "BIRDY NUM NUM",
-    "GREN Edge", "GREN Tao", "GREN Free", "GREN X",
-  ],
-  organic: [
-    "RUE", "RUE the 3rd", "OLIN", "FERLICE", "FUEILLES", "DANDELIONS",
-    "BANKSIA Free Range", "BANKSIA Round", "BANKSIA Rec Landscape", "BANKSIA Rec Portrait", "BANKSIA Oldmanis", "BANKSIA Deco",
-    "GREN Edge", "GREN Tao", "GREN Free", "GREN X",
-    { name: "WATTLE", series: "AUSTRALIAN NATIVES" }, "WANDOO", "BIRDY NUM NUM",
-    "CREEPING FIG", "GRANDE CF", "OASIS CF", "BANKSIA CF",
-    "VITAE — GREN", "VITAE — SHIOGI",
-  ],
-  geometric: [
-    "OBLIATIONES", "OBLIATIONES — Large", "OBLIATIONES TIBETAN — Patha", "OKO",
-    "SALAMANKA", "METROPOLIS", "NEA", "ZON ZEE",
-    "JEAGER", "ZED O", "ORIGINS",
-    "PLUME", "PLUME FERN",
-  ],
-  abstract: [
-    "SALAMANKA", "METROPOLIS", "NEA", "ZON ZEE", "OKO",
-    "JEAGER", "ZED O",
-    "PLUME", "PLUME FERN",
-  ],
-};
-
-// Suggestion groups shown when search is focused but empty
-const SEARCH_SUGGESTIONS = [
-  {
-    label: "By Style",
-    items: ["round", "floral", "organic", "geometric", "abstract", "sculptural"],
-  },
-  {
-    label: "By Series",
-    items: ["flowers", "plume", "branches", "australian natives", "creeping fig", "jungle", "b editions", "therus", "ikona", "obliationes", "neazar", "pendant", "birds", "centis", "retro", "vitae", "sculpture", "screens", "fire & light"],
-  },
-];
-
-// Flat list of every item across all series/categories for search
-const ALL_SEARCHABLE = [
-  ...WALL_ART_SERIES.flatMap(s => s.items.map(item => ({ ...item, _series: s.label }))),
-  ...OTHER_CATEGORIES.flatMap(c => c.items.map(item => ({ ...item, _series: c.label }))),
-];
 
 function GridSection({ cat, openLightbox, setDetailItem, onDrill }) {
   const [rowActive, setRowActive] = useState(false);
@@ -1857,17 +930,9 @@ function GridSection({ cat, openLightbox, setDetailItem, onDrill }) {
   );
 }
 
-// Wall Art catalogue: pages 1–20 covers the section up to and including Creeping Fig.
-// Adjust the 20 if the cutoff page changes.
-const WALL_ART_CAT_PAGES = Array.from({ length: 26 }, (_, i) =>
-  `/images/catalogues/cat1/page-${String(i + 4).padStart(2, "0")}.jpg`
-);
-const SCULPTURE_CAT_PAGES = [1, 5, 4, 6, 7].map(n =>
-  `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`
-);
 
 function DrillView({ item, seriesLabel, onClose, onExpand }) {
-  const images = [...new Set([...(item.slides ?? [item.img]), ...(item.detailSlides ?? [])].filter(Boolean))];
+  const images = [...new Set((item.slides ?? [item.img]).filter(Boolean))];
   return (
     <div className="fixed inset-0 z-[9992] bg-jet flex flex-col">
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
@@ -1886,7 +951,7 @@ function DrillView({ item, seriesLabel, onClose, onExpand }) {
             <div key={i} onClick={onExpand}
               className="group cursor-pointer aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
               style={{ opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-              <img src={src} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <img src={netlifyImg(src, { w: 800, q: 80 })} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
           ))}
         </div>
@@ -1908,6 +973,8 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
   const gridRef = useRef(null);
   const searchRowRef = useRef(null);
   const isAnimating = useRef(false);
+  const sweepTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(sweepTimerRef.current), []);
 
   useEffect(() => {
     const handler = (e) => { if (e.detail) setActiveTab(e.detail); };
@@ -1915,20 +982,22 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
     return () => window.removeEventListener("open-gallery-tab", handler);
   }, []);
 
-  const searchResults = query.trim().length > 0
-    ? ALL_SEARCHABLE.filter(item => {
-        const q = query.trim().toLowerCase();
-        const nameMatch = item.name.toLowerCase().includes(q) || item._series.toLowerCase().includes(q);
-        const aliasMatch = Object.entries(SEARCH_ALIASES).some(([keyword, entries]) =>
-          keyword.includes(q) && entries.some(e =>
-            typeof e === "string"
-              ? e === item.name
-              : e.name === item.name && item._series.includes(e.series)
-          )
-        );
-        return (nameMatch || aliasMatch) && !item.img.includes("placeholder");
-      })
-    : null;
+  const searchResults = useMemo(() => (
+    query.trim().length > 0
+      ? ALL_SEARCHABLE.filter(item => {
+          const q = query.trim().toLowerCase();
+          const nameMatch = item.name.toLowerCase().includes(q) || item._series.toLowerCase().includes(q);
+          const aliasMatch = Object.entries(SEARCH_ALIASES).some(([keyword, entries]) =>
+            keyword.includes(q) && entries.some(e =>
+              typeof e === "string"
+                ? e === item.name
+                : e.name === item.name && item._series.includes(e.series)
+            )
+          );
+          return (nameMatch || aliasMatch) && !item.img.includes("placeholder");
+        })
+      : null
+  ), [query]);
 
   // Reset catalogue panel when switching tabs
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -1981,6 +1050,8 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
     const rowEls = Array.from(container.querySelectorAll(".series-scroll"));
     if (!rowEls.length) return;
 
+    const timers = [];
+
     // Set all cards invisible
     rowEls.forEach(row => {
       gsap.set(Array.from(row.children), { opacity: 0 });
@@ -2000,7 +1071,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
       });
       // Start next row after the 3rd card begins fading
       const triggerAfter = Math.min(2, cards.length - 1) * STAGGER;
-      setTimeout(() => onDone?.(), triggerAfter * 1000);
+      timers.push(setTimeout(() => onDone?.(), triggerAfter * 1000));
     }
 
     function chainRows(idx) {
@@ -2016,7 +1087,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
     }, { threshold: 0.1, root: container });
 
     observer.observe(rowEls[0]);
-    return () => observer.disconnect();
+    return () => { observer.disconnect(); timers.forEach(clearTimeout); };
   }, [activeTab, containerRef]);
 
   // Horizontal scroll + edge-scroll on hover
@@ -2170,13 +1241,13 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
           </p>
           {searchResults.length > 0 && (
             <div ref={searchRowRef} className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2" data-lenis-prevent>
-              {searchResults.map((item, idx) => (
+              {searchResults.map((item) => (
                 <div
-                  key={idx}
+                  key={`${item._series}-${item.img}`}
                   className="gallery-card group cursor-pointer rounded-xl overflow-hidden bg-cream-dark relative aspect-square"
                   onClick={() => openLightbox([item], 0, item._series)}
                 >
-                  <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                  <img src={netlifyImg(item.img, { w: 800, q: 80 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                     <p className="text-cream font-heading font-semibold text-xs" style={{ wordSpacing: "-0.05em" }}>{item.name}</p>
@@ -2206,7 +1277,8 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
             onClick={() => {
               if (tab.id === activeTab || sweepingId) return;
               setSweepingId(tab.id);
-              setTimeout(() => { setSweepingId(null); switchTab(tab.id); }, 700);
+              clearTimeout(sweepTimerRef.current);
+              sweepTimerRef.current = setTimeout(() => { setSweepingId(null); switchTab(tab.id); }, 700);
             }}
             className={`filter-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
               sweepingId === tab.id ? "filter-btn-sweeping" :
@@ -2438,37 +1510,9 @@ function GalleryModal({ onClose, initialTab }) {
   );
 }
 
-// ── Card Deck Overlay ─────────────────────────────────────────────────────
-const DECK_SERIES = [...WALL_ART_SERIES, ...OTHER_CATEGORIES].map(s => ({
-  id: s.id,
-  label: s.label,
-  items: s.items.filter(i => i.img && !i.img.includes("placeholder")),
-})).filter(s => s.items.length > 0);
-
-// Stamp every item with a stable numeric ID for reliable navigation
-let _uidCounter = 0;
-DECK_SERIES.forEach(s => s.items.forEach(it => { it._uid = ++_uidCounter; }));
-
-const DECK_ALL_ITEMS = (() => {
-  const arr = DECK_SERIES.flatMap(s => s.items.flatMap(it => {
-    const imgs = it.singleInAll ? [it.img] : (it.slides && it.slides.length > 1) ? it.slides : [it.img];
-    return imgs.map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _seriesLabel: s.label, _slideIdx: sIdx }));
-  }));
-  for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
-  return arr;
-})();
-
-// ── "Up Close" gallery ────────────────────────────────────────────────────
-// Images for the "Up Close" pill (sits next to Slideshow in the wall art
-// catalogue). Add close-up / detail shots here, one per line.
-const UP_CLOSE_IMAGES = [
-  { src: "/images/details/plume-deco-rust-1.jpg", name: "Plume Deco — Corten detail" },
-  { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
-];
 
 function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue, onSwitchCategory, initialPiece = null }) {
   const [tab, setTab] = useState("all");
-  const [pillsOpen, setPillsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [collectionInfoOpen, setCollectionInfoOpen] = useState(false);
@@ -2531,9 +1575,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   // all appear here too, alongside their own design tile. Curated seed shots
   // stay first; everything uploaded is ordered oldest→newest by upload time, so
   // a newly placed close-up always lands at the END rather than jumping around.
-  const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
-  const mediaUpClose = mediaImages.filter(m => m.destinations.length > 0);
-  const upCloseImages = (() => {
+  const upCloseImages = useMemo(() => {
+    const mediaUpClose = mediaImages.filter(m => m.destinations.length > 0);
     const seedSrcs = new Set(UP_CLOSE_IMAGES.map(u => u.src));
     const uploads = [
       ...uploadedUpClose.map(u => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
@@ -2542,7 +1585,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     const seen = new Set();
     const ordered = uploads.filter(u => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
     return [...UP_CLOSE_IMAGES, ...ordered];
-  })();
+  }, [uploadedUpClose, mediaImages]);
   const slideshowSnapshotRef = useRef([]);
   const slideshowFlatIdxRef = useRef(0);
   const slideshowTimerRef = useRef(null);
@@ -2566,10 +1609,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     }
   }, [categoryFilter]);
 
-  const wallArtIds = new Set(WALL_ART_SERIES.map(s => s.id));
   // Images for a category's auto "Up Close" tile: seeded on-disk shots + any
   // media-library uploads tagged with that category id.
-  const upCloseForSeries = (id) => {
+  const upCloseForSeries = useCallback((id) => {
     const seed = SEED_UPCLOSE[id] || [];
     // Seed shots first; placed uploads appended oldest→newest so new ones end up last.
     const uploads = [
@@ -2579,17 +1621,17 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     const out = [...seed];
     for (const u of uploads) if (!out.includes(u.src)) out.push(u.src);
     return out;
-  };
+  }, [mediaImages, uploadedUpClose]);
 
-  const filteredSeries = (() => {
+  const filteredSeries = useMemo(() => {
     const raw = categoryFilter === "sculpture"
-      ? DECK_SERIES.filter(s => !wallArtIds.has(s.id))
-      : DECK_SERIES.filter(s => wallArtIds.has(s.id));
+      ? DECK_SERIES.filter(s => !WALL_ART_IDS.has(s.id))
+      : DECK_SERIES.filter(s => WALL_ART_IDS.has(s.id));
     // Append an auto Up Close tile to any category that has close-up images.
     const base = raw.map(s => {
       const imgs = upCloseForSeries(s.id);
       if (!imgs.length) return s;
-      const tile = { name: `${s.label} — Up Close`, img: imgs[0], slides: imgs, _uid: `uc-${s.id}`, _autoUpClose: true };
+      const tile = { name: `${s.label} — Up Close`, img: imgs[0], slides: imgs };
       // Freshly uploaded pieces (_new) sit AFTER the Up Close tile so they are the very last cards.
       const normal = s.items.filter(it => !it._new);
       const fresh = s.items.filter(it => it._new);
@@ -2597,12 +1639,12 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     });
     if (categoryFilter !== "sculpture" || sculptureCat === "all") return base;
     return base.map(s => ({ ...s, items: s.items.filter(it => it.cat === sculptureCat) })).filter(s => s.items.length > 0);
-  })();
+  }, [categoryFilter, sculptureCat, upCloseForSeries]);
 
   // Every close-up / detail shot across all series, plus the combined Up Close
   // list — gathered so they sit together at the END of the All grid instead of
   // being scattered through the shuffle.
-  const closeupItems = (() => {
+  const closeupItems = useMemo(() => {
     const map = new Map();
     for (const s of filteredSeries) {
       for (const src of upCloseForSeries(s.id)) {
@@ -2615,45 +1657,29 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       }
     }
     return [...map.values()];
-  })();
-  const closeupSrcs = new Set(closeupItems.map(c => c.img));
+  }, [filteredSeries, categoryFilter, upCloseImages, upCloseForSeries]);
+  const closeupSrcs = useMemo(() => new Set(closeupItems.map(c => c.img)), [closeupItems]);
 
-  const filteredAllItems = (() => {
+  const filteredAllItems = useMemo(() => {
     const seen = new Set();
     const arr = filteredSeries.flatMap(s => s.items.flatMap(it => {
       const imgs = it.singleInAll ? [it.img] : (it.slides && it.slides.length > 1 ? it.slides : [it.img]);
       return imgs
         .filter(img => { if (seen.has(img) || closeupSrcs.has(img)) return false; seen.add(img); return true; })
-        .map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _seriesLabel: s.label, _slideIdx: sIdx }));
+        .map((img, sIdx) => ({ ...it, img, _seriesId: s.id, _slideIdx: sIdx }));
     }));
     arr.forEach((_, i) => { if (i > 0) { const j = ((i * 2654435769) >>> 0) % (i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; } });
     // Close-up images last, as a block.
     return [...arr, ...closeupItems];
-  })();
+  }, [filteredSeries, closeupSrcs, closeupItems]);
 
   const isAll = tab === "all";
   const series = isAll ? null : filteredSeries.find(s => s.id === tab);
   const items = isAll ? [] : (series?.items || []);
   const item = isAll ? null : items[cardIdx];
-  const itemSlides = item ? (() => {
-    let base = item.slides && item.slides.length > 1 ? [...item.slides] : [item.img];
-    // Pull in the uploaded Up Close shots so they also appear here (e.g. Plumes).
-    if (item.includeUploadedUpClose && uploadedUpClose.length) {
-      base = [...base, ...uploadedUpClose.map(u => u.src).filter(src => !base.includes(src))];
-    }
-    // Route media-library uploads to this design via exact destination key(s)
-    // set on the item (see MediaPage.jsx DESTINATIONS for the fixed key list).
-    if (item.mediaKeys) {
-      const matched = mediaImages
-        .filter(m => item.mediaKeys.some(k => m.destinations.includes(k)))
-        .map(m => m.src);
-      // A pure "upload me" tile has no real slides of its own — once uploads
-      // exist, drop the placeholder cover so only the real photos show.
-      if (!item.slides && matched.length) base = matched;
-      else base = [...base, ...matched.filter(src => !base.includes(src))];
-    }
-    return base;
-  })() : [];
+  const itemSlides = item
+    ? (item.slides && item.slides.length > 1 ? [...item.slides] : [item.img])
+    : [];
   const displayImg = itemSlides[slideIdx] ?? item?.img;
   const [detailZoom, setDetailZoom] = useState(null);
 
@@ -2794,9 +1820,9 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
             ) : (
               <div className="flex flex-wrap justify-center gap-2">
                 {upCloseImages.map((item, i) => (
-                  <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
+                  <div key={item.src} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80 }}>
-                    <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={netlifyImg(item.src, { w: 700, q: 80 })} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                 ))}
               </div>
@@ -2955,7 +1981,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Search results */}
       {searchQuery && (() => {
         const q = searchQuery.trim().toLowerCase();
-        const results = filteredSeries.flatMap(s => s.items.filter(it => it.name.toLowerCase().includes(q)).map(it => ({ ...it, _seriesId: s.id, _seriesLabel: s.label })));
+        const results = filteredSeries.flatMap(s => s.items.filter(it => it.name.toLowerCase().includes(q)).map(it => ({ ...it, _seriesId: s.id })));
         return (
           <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
             {results.length === 0
@@ -2965,10 +1991,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     const sIdx = filteredSeries.findIndex(s => s.id === it._seriesId);
                     const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
                     return (
-                      <div key={i} onClick={() => { setSearchQuery(""); jumpToItem(it._seriesId, iIdx, 0); }}
+                      <div key={`${it._seriesId}-${it.img}`} onClick={() => { setSearchQuery(""); jumpToItem(it._seriesId, iIdx, 0); }}
                         className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 transition-all duration-200"
                         style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.4s ease forwards", animationDelay: `${(i * 0.04).toFixed(2)}s` }}>
-                        <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img src={netlifyImg(it.img, { w: 700, q: 80 })} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                           <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                         </div>
@@ -2990,10 +2016,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
               const iIdx = (() => { const ser = filteredSeries[sIdx]; if (!ser) return 0; let i = ser.items.findIndex(x => x.img === it.img || (x.slides && x.slides.includes(it.img))); return i === -1 ? Math.max(0, ser.items.findIndex(x => x.name === it.name)) : i; })();
               const delay = (((i * 0.618) % 1) * 2.2).toFixed(2);
               return (
-                <div key={i} onClick={() => { if (it._closeup) { setDetailZoom(it.img); return; } const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
+                <div key={it.img} onClick={() => { if (it._closeup) { setDetailZoom(it.img); return; } const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: `fadeIn 0.6s ease forwards`, animationDelay: `${delay}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={netlifyImg(it.img, { w: 700, q: 80 })} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-end p-1.5">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                   </div>
@@ -3031,7 +2057,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
 
               {/* Card image */}
               <div style={{ transition: "opacity 0.7s ease", opacity: animDir ? 0 : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: isMobile ? "16px 20px" : "16px 64px", width: "100%" }}>
-                <img src={displayImg} alt={item.name}
+                <img src={netlifyImg(displayImg, { w: 1600, q: 82 })} alt={item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)", transition: "opacity 0.7s ease" }} />
                 {/* Title + Details directly under image */}
                 <div className="flex items-center gap-4">
@@ -3195,7 +2221,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           </p>
                           {/* Add to Quote */}
                           {item && (() => {
-                            const p = priceFor(selectedSize, selectedMat, postcodeInfo.isWA);
+                            const p = priceFor(selectedSize, selectedMat, postcodeInfo.isAdmin ? adminWA : postcodeInfo.isWA);
                             const canAdd = !!selectedSize;
                             return (
                               <button
@@ -3205,7 +2231,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                                     name: item.name,
                                     img: displayImg,
                                     material: MATERIAL_OPTIONS.find(m => m.id === selectedMat),
-                                    size: selectedSize,
+                                    size: selectedSize && { id: selectedSize.id, label: selectedSize.label, dims: selectedSize.dims },
                                     price: p,
                                   }}));
                                   if (!postcodeInfo?.isAdmin) {
@@ -3263,7 +2289,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                         onClick={() => { setCardIdx(iIdx); setSlideIdx(sIdx); setShowDetails(false); }}
                         className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                         style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === cardIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                        <img src={img} alt={it.name} className="w-full h-full object-cover" />
+                        <img src={netlifyImg(img, { w: 160, q: 78 })} alt={it.name} className="w-full h-full object-cover" />
                       </div>
                     );
                   });
@@ -3273,24 +2299,6 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     );
                   }
                   return thumbs;
-                });
-                // Append detail slides for any item at the very end
-                items.forEach((it, iIdx) => {
-                  if (it.detailSlides && it.detailSlides.length > 0) {
-                    allThumbs.push(
-                      <div key={`detail-sep-${iIdx}`} style={{ width: 1, height: 34, background: "rgba(242,240,233,0.15)", flexShrink: 0, borderRadius: 1, margin: "0 3px" }} />
-                    );
-                    it.detailSlides.forEach((img, dIdx) => {
-                      allThumbs.push(
-                        <div key={`${iIdx}-d${dIdx}`}
-                          onClick={() => { setCardIdx(iIdx); setDetailZoom(img); }}
-                          className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
-                          style={{ width: 52, height: 52, border: "1.5px solid transparent", opacity: 0.6, transition: "all 0.2s" }}>
-                          <img src={img} alt={`${it.name} detail`} className="w-full h-full object-cover" />
-                        </div>
-                      );
-                    });
-                  }
                 });
                 return allThumbs;
               })()}
@@ -3342,10 +2350,10 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 const slides = (it.slides && it.slides.length > 1) ? it.slides : [it.img];
                 return slides.map((img, sIdx) => ({ img, name: it.name, designIdx, sIdx }));
               }).map((thumb, i) => (
-                <div key={i} onClick={() => { openSeries(drilledSeries.id, thumb.designIdx, thumb.sIdx); setDrilledSeries(null); }}
+                <div key={`${thumb.designIdx}-${thumb.sIdx}`} onClick={() => { openSeries(drilledSeries.id, thumb.designIdx, thumb.sIdx); setDrilledSeries(null); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-                  <img src={thumb.img} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={netlifyImg(thumb.img, { w: 700, q: 80 })} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5 pointer-events-none">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{thumb.name}</p>
                   </div>
@@ -3359,7 +2367,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Detail image zoom overlay */}
       {detailZoom && (
         <div className="fixed inset-0 z-[10004] flex items-center justify-center bg-black/90" onClick={() => setDetailZoom(null)}>
-          <img src={detailZoom} alt="detail" className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain" />
+          <img src={netlifyImg(detailZoom, { w: 1600, q: 82 })} alt="detail" className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain" />
         </div>
       )}
 
@@ -3382,17 +2390,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
     </div>
   );
 }
-function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, setScreensOpen }) {
-  const [hovered, setHovered] = useState(false);
-  const browseColor = hovered
-    ? "rgba(242,240,233,0.95)"
-    : inSection
-      ? "rgba(242,240,233,0.75)"
-      : "rgba(242,240,233,0.35)";
-  const dotBg     = inSection ? "#9e7134" : "transparent";
-  const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
-
-  const GoldDot = () => (
+function GoldDot({ dotBg, dotBorder, inSection }) {
+  return (
     <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
       <span style={{ width: 5, height: 5, borderRadius: "50%", background: dotBg, border: `1px solid ${dotBorder}`, display: "block", transition: "background 0.4s, border-color 0.4s", flexShrink: 0 }} />
       {inSection && (
@@ -3406,6 +2405,17 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
       <style>{`@keyframes bcl-ripple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; } 100% { transform: translate(-50%,-50%) scale(8); opacity: 0; } }`}</style>
     </span>
   );
+}
+
+function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, setScreensOpen }) {
+  const [hovered, setHovered] = useState(false);
+  const browseColor = hovered
+    ? "rgba(242,240,233,0.95)"
+    : inSection
+      ? "rgba(242,240,233,0.75)"
+      : "rgba(242,240,233,0.35)";
+  const dotBg     = inSection ? "#9e7134" : "transparent";
+  const dotBorder = inSection ? "#9e7134" : "rgba(242,240,233,0.35)";
 
   const pills = [
     { id: "sculpture", label: "Sculpture", onOpen: () => { window.location.assign("/sculpture"); } },
@@ -3437,7 +2447,7 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
           ); })()}
         </div>
         {/* Col 2 — left dot */}
-        <GoldDot />
+        <GoldDot dotBg={dotBg} dotBorder={dotBorder} inSection={inSection} />
         {/* Col 3 — Wall Art, centred */}
         {(() => { const { id, label, onOpen } = pills[1]; const isActive = categoryClicked && selectedCategory === id; return (
           <button onClick={onOpen}
@@ -3449,7 +2459,7 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
           </button>
         ); })()}
         {/* Col 4 — right dot */}
-        <GoldDot />
+        <GoldDot dotBg={dotBg} dotBorder={dotBorder} inSection={inSection} />
         {/* Col 5 — Sculpture, flush left */}
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           {(() => { const { id, label, onOpen } = pills[2]; const isActive = categoryClicked && selectedCategory === id; return (
@@ -3478,7 +2488,6 @@ export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("wall-art");
   const [categoryClicked, setCategoryClicked] = useState(false);
   const [inSection, setInSection] = useState(false);
-  const [stripPaused, _setStripPaused] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
   const sectionRef      = useRef(null);
   const gateLeftRef     = useRef(null);
@@ -3635,10 +2644,10 @@ export default function Gallery() {
 
             {/* Left strip */}
             <div className="flex-1 overflow-hidden" aria-hidden="true">
-              <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
+              <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={netlifyImg(src, { w: 600, q: 78 })} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3649,10 +2658,10 @@ export default function Gallery() {
 
             {/* Right strip */}
             <div className="flex-1 overflow-hidden" aria-hidden="true">
-              <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
+              <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={netlifyImg(src, { w: 600, q: 78 })} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3679,10 +2688,10 @@ export default function Gallery() {
 
           {/* Top strip */}
           <div className="relative h-28 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
+            <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/wall-art"); }}>
-                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, { w: 600, q: 78 })} alt="" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>

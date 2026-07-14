@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+// The cached admin password ("stats_key") expires after 30 days, so a lost or
+// old device cannot stay signed in indefinitely.
+const STATS_KEY_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
 function CountTable({ title, data }) {
   const entries = Object.entries(data || {}).sort((a, b) => b[1] - a[1]);
   if (!entries.length) return null;
@@ -120,13 +124,13 @@ export default function StatsPage() {
         setError(json.error || "Failed to load stats.");
         setAuthed(false);
         // A stale/wrong saved key would loop forever — clear it.
-        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+        try { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); } catch { /* ignore */ }
       } else {
         setAuthed(true);
         setData(json);
         setSecret(adminSecret);
         // Remember on this device so future visits are one-tap.
-        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        try { localStorage.setItem("stats_key", adminSecret); localStorage.setItem("stats_key_t", String(Date.now())); } catch { /* ignore */ }
       }
     } catch {
       setError("Request failed. Check your connection.");
@@ -139,7 +143,16 @@ export default function StatsPage() {
   // remembered on this device, and sign in automatically.
   useEffect(() => {
     const urlKey = new URLSearchParams(window.location.search).get("key");
-    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
+    const saved = urlKey || (() => {
+      try {
+        const k = localStorage.getItem("stats_key");
+        const t = Number(localStorage.getItem("stats_key_t"));
+        if (k && t && Date.now() - t < STATS_KEY_MAX_AGE_MS) return k;
+        localStorage.removeItem("stats_key");
+        localStorage.removeItem("stats_key_t");
+        return null;
+      } catch { return null; }
+    })();
     if (urlKey) window.history.replaceState({}, "", "/stats"); // hide the key from the address bar
     if (saved) load(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps

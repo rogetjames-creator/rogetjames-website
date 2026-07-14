@@ -1,5 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
-import { ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import FeatureGallery from "./FeatureGallery";
 import { SCREEN_COVERS } from "./BespokeCommissions";
 
 // Private, password-gated preview of an ALTERNATIVE gallery design for
@@ -18,7 +18,8 @@ const CSS = `
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(.75);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:flex-start;justify-content:space-between;padding:28px 46px}
-.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px}
+.fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
+.fw-logo:hover{color:#c08c46}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
@@ -63,259 +64,29 @@ const CSS = `
 @media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-subrail{display:none}}
 `;
 
-function Gallery() {
-  const [cur, setCur] = useState(0);
-  const [pieceIdx, setPieceIdx] = useState(0);
-  const busy = useRef(false);
-  const [pieceFlash, setPieceFlash] = useState(-1);
-  const pillRef = useRef(null);
-  const [pillCenter, setPillCenter] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuWrapRef = useRef(null);
-  const subrailRef = useRef(null);
-  const hoverDirRef = useRef(0);
-
-  // Same three Up Close / media sources Gallery.jsx reads: the dedicated
-  // Up Close uploader (Blobs), the older media-library uploader (Blobs),
-  // and the git-committed manifest (fast static file). A category's close-up
-  // tile is anything tagged with that category's own id — matching
-  // Gallery.jsx's upCloseForSeries exactly, not a separate "up-close" tag.
-  const [uploadedUpClose, setUploadedUpClose] = useState([]);
-  const [mediaImages, setMediaImages] = useState([]);
-  useEffect(() => {
-    let alive = true;
-    fetch("/api/up-close-list")
-      .then((r) => r.json())
-      .then((d) => {
-        if (alive && Array.isArray(d.images)) {
-          setUploadedUpClose(d.images.map((i) => ({ src: i.src, name: i.name, destinations: i.destinations || [], createdTime: i.createdTime || "" })));
-        }
-      })
-      .catch(() => {});
-    Promise.all([
-      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
-      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
-    ]).then(([manifest, legacy]) => {
-      if (!alive) return;
-      const fromManifest = Array.isArray(manifest)
-        ? manifest.map((e) => ({ src: `/${e.path}`, destinations: e.destinations || [], createdTime: e.createdTime || "" }))
-        : [];
-      const fromLegacy = Array.isArray(legacy.images)
-        ? legacy.images.map((i) => ({ src: i.src, destinations: i.destinations || [], createdTime: i.createdTime || "" }))
-        : [];
-      setMediaImages([...fromManifest, ...fromLegacy]);
-    });
-    return () => { alive = false; };
-  }, []);
-
-  const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
-  const upCloseForSeries = useCallback((id) => {
-    const seed = SEED_UPCLOSE[id] || [];
-    const uploads = [
-      ...mediaImages.filter((m) => m.destinations.includes(id)).map((m) => ({ src: m.src, createdTime: m.createdTime || "" })),
-      ...uploadedUpClose.filter((u) => (u.destinations || []).includes(id)).map((u) => ({ src: u.src, createdTime: u.createdTime || "" })),
-    ].sort(byUploadTime);
-    const out = [...seed];
-    for (const u of uploads) if (!out.includes(u.src)) out.push(u.src);
-    return out;
-  }, [mediaImages, uploadedUpClose]);
-
-  // Every collection gets its seeded + uploaded close-up shots appended as
-  // its own "— Up Close" piece, and every close-up also collects into its
-  // own "Up Close" category — mirroring the live gallery's Up Close pill.
-  const CATS = useMemo(() => {
-    const withUpClose = SCREEN_COVERS.map((cat) => {
-      const imgs = upCloseForSeries(cat.id);
-      if (!imgs.length) return cat;
-      const upClosePiece = { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true };
-      return { ...cat, pieces: [...cat.pieces, upClosePiece] };
-    });
-
-    // Scoped to "screens" specifically — mediaImages/uploadedUpClose are
-    // shared stores across the whole site, so an unfiltered "any tag" match
-    // would pull wall-art/sculpture close-ups in here too.
-    const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
-    const mediaUpClose = mediaImages.filter((m) => m.destinations.includes("screens"));
-    const uploads = [
-      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("screens")).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
-      ...mediaUpClose.map((m) => ({ src: m.src, name: "", createdTime: m.createdTime || "" })),
-    ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime);
-    const seen = new Set();
-    const ordered = uploads.filter((u) => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
-    const allUpClose = [...UP_CLOSE_IMAGES, ...ordered].map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true }));
-
-    if (allUpClose.length) {
-      withUpClose.push({ id: "up-close", label: "UP CLOSE", img: allUpClose[0].img, pieces: allUpClose });
-    }
-    return withUpClose;
-  }, [mediaImages, uploadedUpClose, upCloseForSeries]);
-
-  const go = useCallback((i) => {
-    if (busy.current) return;
-    const n = (i + CATS.length) % CATS.length;
-    if (n === cur) return;
-    busy.current = true;
-    setCur(n);
-    setPieceIdx(0);
-    setMenuOpen(false);
-    setTimeout(() => { busy.current = false; }, 1100);
-  }, [cur, CATS]);
-
-  const goPiece = useCallback((i) => {
-    setPieceIdx(i);
-    setPieceFlash(i);
-    setTimeout(() => setPieceFlash(-1), 1100);
-  }, []);
-
-  useEffect(() => {
-    CATS.forEach((cat) => cat.pieces.forEach((p) => {
-      (p.slides && p.slides.length > 1 ? p.slides : [p.img]).forEach((src) => { const im = new Image(); im.src = src; });
-    }));
-    const onKey = (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [cur, go, CATS]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onDocClick = (e) => { if (!menuWrapRef.current?.contains(e.target)) setMenuOpen(false); };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [menuOpen]);
-
-  // Piece thumbnails: hovering near either edge auto-scrolls that way, and
-  // stops naturally at the start/end — no looping or wrap-around, and the
-  // row renders once (not doubled), so nothing is ever shown twice at once.
-  useEffect(() => {
-    const el = subrailRef.current;
-    if (!el) return;
-    const ZONE = 70;
-    const MAX_SPEED = 7;
-
-    const onMove = (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      if (x < ZONE) hoverDirRef.current = -((ZONE - x) / ZONE);
-      else if (x > rect.width - ZONE) hoverDirRef.current = (x - (rect.width - ZONE)) / ZONE;
-      else hoverDirRef.current = 0;
-    };
-    const onLeave = () => { hoverDirRef.current = 0; };
-    el.addEventListener("mousemove", onMove);
-    el.addEventListener("mouseleave", onLeave);
-
-    let raf;
-    const tick = () => {
-      const node = subrailRef.current;
-      if (node && hoverDirRef.current !== 0) {
-        node.scrollLeft = Math.max(0, Math.min(node.scrollWidth - node.clientWidth, node.scrollLeft + hoverDirRef.current * MAX_SPEED));
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    return () => {
-      el.removeEventListener("mousemove", onMove);
-      el.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(raf);
-    };
-  }, [cur]);
-
-  // Measured once, on first mount, and never again — the arrows/label/
-  // progress line lock to that position permanently instead of re-centring
-  // under the pill (and shifting) every time the category changes.
-  useLayoutEffect(() => {
-    const el = pillRef.current;
-    if (!el || pillCenter != null) return;
-    const r = el.getBoundingClientRect();
-    setPillCenter(r.left + r.width / 2);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const c = CATS[cur];
-  // A design can have several photos of the same piece (BespokeCommissions.jsx
-  // "slides") — show every one as its own thumb, sharing the piece's name,
-  // instead of collapsing each design down to a single cover shot.
-  const pieces = c.pieces.flatMap((p) =>
-    p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
-  );
-  const activePiece = pieces[pieceIdx] || pieces[0];
-  // Title breaks right before " & " if the label has one, otherwise after
-  // the first word — never wherever the container width happens to allow.
-  const titleSpace = c.label.includes(" & ") ? c.label.indexOf(" & ") : c.label.indexOf(" ");
-  const titleFirst = titleSpace === -1 ? c.label : c.label.slice(0, titleSpace);
-  const titleRest = titleSpace === -1 ? "" : c.label.slice(titleSpace + 1);
-
-  return (
-    <div className="fw-wrap">
-      <style>{CSS}</style>
-      {pieces.map((p, i) => (
-        <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
-      ))}
-
-      <header className="fw-top">
-        <div className="fw-logo">ROGET<i>james</i></div>
-        <a className="fw-catalogue-link" href="/?bespoke=screenscat" target="_blank" rel="noopener noreferrer">
-          Screens Catalogue
-        </a>
-        <div className="fw-top-right">
-          <div className="fw-menu-wrap" ref={menuWrapRef}>
-            <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen((v) => !v)}>
-              Collection Menu <ChevronDown size={12} />
-            </button>
-            {menuOpen && (
-              <div className="fw-menu-panel">
-                {CATS.map((cat, i) => (
-                  <button
-                    key={cat.id}
-                    className={`fw-menu-item ${i === cur ? "active" : ""}`}
-                    onClick={() => go(i)}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="fw-lead" key={cur}>
-        <div className="fw-kick fw-anim"><span className="bar" />Screens</div>
-        <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
-        <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
-        <div className="fw-cta fw-anim d3">
-          <div className="fw-pill" ref={pillRef}>
-            View the {c.label.toLowerCase()} collection
-          </div>
-        </div>
-      </div>
-
-      <div className="fw-bottomrow">
-        {pieces.length > 1 && (
-          <div className="fw-subrail" ref={subrailRef} key={c.id}>
-            {pieces.map((p, i) => (
-              <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
-                onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={p.name} />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="fw-ctrls" style={pillCenter != null ? { left: `${pillCenter}px` } : undefined}>
-        <div className="fw-ctrls-label">Collections</div>
-        <div className="fw-arrows">
-          <button className="fw-nav" aria-label="Previous" onClick={() => go(cur - 1)}>&#8592;</button>
-          <button className="fw-nav" aria-label="Next" onClick={() => go(cur + 1)}>&#8594;</button>
-        </div>
-        <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
-        <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
-      </div>
-
-    </div>
-  );
-}
+const config = {
+  kicker: "Screens",
+  covers: SCREEN_COVERS,
+  css: CSS,
+  seedUpClose: SEED_UPCLOSE,
+  upCloseImages: UP_CLOSE_IMAGES,
+  mediaTag: "screens",            // scoped — shared media stores are site-wide
+  // No DetailCard / QuoteBar / CatPageViewer and hasExpand:false — Screens has
+  // no per-piece pricing here, so there is no Info/Prices panel and no prices
+  // ever show; the lead pill is non-interactive text only.
+  catalogue: { type: "link", href: "/?bespoke=screenscat", label: "Screens Catalogue" },
+  showSearch: false,
+  showMobileMenu: false,
+  showInfoPill: false,
+  showCollectionCount: false,
+  hasExpand: false,
+  showExpandProgress: false,
+  showExit: false,
+  wrapImgSlot: false,
+  navIcons: false,
+  pillStripThe: false,
+  goDelay: 1100,
+};
 
 export default function FeatureScreens() {
   const [secret, setSecret] = useState("");
@@ -333,19 +104,32 @@ export default function FeatureScreens() {
       const json = await res.json();
       if (!res.ok || json.error) {
         setError(json.error || "Failed."); setAuthed(false);
-        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+        try { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); } catch { /* ignore */ }
       } else {
         setAuthed(true);
-        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        try { localStorage.setItem("stats_key", adminSecret); localStorage.setItem("stats_key_t", String(Date.now())); } catch { /* ignore */ }
       }
     } catch { setError("Request failed. Check your connection."); }
     finally { setLoading(false); }
   };
 
   useEffect(() => {
+    // Cached admin password expires after 30 days — before trusting it, check
+    // the timestamp written alongside it; if it's missing or stale, clear both
+    // and fall back to the password form. A ?key= in the URL still works as
+    // before and refreshes the timestamp on a successful login.
+    const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
     const urlKey = new URLSearchParams(window.location.search).get("key");
-    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", "/feature-screens");
+    let saved = urlKey || null;
+    if (!saved) {
+      try {
+        const cached = localStorage.getItem("stats_key");
+        const t = Number(localStorage.getItem("stats_key_t") || 0);
+        if (cached && t && Date.now() - t < MAX_AGE) saved = cached;
+        else { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); }
+      } catch { /* ignore */ }
+    }
     if (saved) login(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -378,5 +162,5 @@ export default function FeatureScreens() {
     );
   }
 
-  return <Gallery />;
+  return <FeatureGallery config={config} />;
 }

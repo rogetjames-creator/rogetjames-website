@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Path data extracted from ROJ Logo A–E SVGs
 // Each path represents one element of the logo build

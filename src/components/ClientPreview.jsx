@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
-import { X, ChevronLeft, ChevronRight, Trash2, Eye, EyeOff } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
 //  CLIENT DATA
@@ -69,7 +69,10 @@ function ImageLightbox({ items, startIndex, onClose }) {
   const total = items.length;
 
   useEffect(() => {
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" });
+    const ctx = gsap.context(() => {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" });
+    }, overlayRef);
+    return () => ctx.revert();
   }, []);
 
   const close = useCallback(() => {
@@ -159,7 +162,10 @@ function ClientPage({ clientCode, project, onBack, onClose }) {
   const visibleItems = project.items.filter((_, i) => !isHidden(clientCode, i));
 
   useEffect(() => {
-    gsap.fromTo(pageRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
+    const ctx = gsap.context(() => {
+      gsap.fromTo(pageRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
+    }, pageRef);
+    return () => ctx.revert();
   }, []);
 
   return (
@@ -247,10 +253,11 @@ function AdminPage({ onBack, onClose }) {
   const pageRef = useRef(null);
   const [hidden, setHidden] = useState(getHidden);
   const [lightbox, setLightbox] = useState(null); // { items, startIndex }
-  const [_confirmDelete, _setConfirmDelete] = useState(null); // { code, idx }
-
   useEffect(() => {
-    gsap.fromTo(pageRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
+    const ctx = gsap.context(() => {
+      gsap.fromTo(pageRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
+    }, pageRef);
+    return () => ctx.revert();
   }, []);
 
   const toggle = (code, idx) => {
@@ -302,7 +309,6 @@ function AdminPage({ onBack, onClose }) {
                     {/* Thumbnail */}
                     <button
                       onClick={() => {
-                        const _visibleUpToHere = project.items.slice(0, idx + 1).filter((_, i) => !isHidden(code, i));
                         const lightboxItems = project.items.filter((_, i) => !isHidden(code, i));
                         const lightboxStart = lightboxItems.indexOf(item);
                         if (lightboxStart >= 0) setLightbox({ items: lightboxItems, startIndex: lightboxStart });
@@ -376,11 +382,13 @@ export default function ClientPreview({ onClose }) {
   const [view, setView] = useState(null); // null | { type: "client", code, project } | { type: "admin" }
 
   useEffect(() => {
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
-    gsap.fromTo(cardRef.current, { scale: 0.94, y: 20 }, { scale: 1, y: 0, duration: 0.45, ease: "power3.out" });
+    const ctx = gsap.context(() => {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
+      gsap.fromTo(cardRef.current, { scale: 0.94, y: 20 }, { scale: 1, y: 0, duration: 0.45, ease: "power3.out" });
+    }, overlayRef);
     document.body.style.overflow = "hidden";
     setTimeout(() => inputRef.current?.focus(), 450);
-    return () => { document.body.style.overflow = ""; };
+    return () => { document.body.style.overflow = ""; ctx.revert(); };
   }, []);
 
   const close = useCallback(() => {
@@ -419,6 +427,9 @@ export default function ClientPreview({ onClose }) {
   return (
     <div
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Client preview"
       className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-jet/96 backdrop-blur-xl"
       onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >

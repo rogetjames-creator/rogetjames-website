@@ -4,6 +4,12 @@
 import { getStore } from "@netlify/blobs";
 
 const STORE_NAME = "pricing-interest";
+// Keys are ISO-timestamp-prefixed (track-event.js), so a descending string sort
+// puts the newest first. Only the past week is ever reported, so cap the
+// fan-out at the newest MAX_SCAN keys before fetching — a pathologically large
+// store never loads entirely into memory. A normal week is far below the cap,
+// so the digest is unchanged at real volumes.
+const MAX_SCAN = 500;
 
 export default async function handler() {
   const resendKey = process.env.RESEND_API_KEY;
@@ -18,8 +24,9 @@ export default async function handler() {
   try {
     const store = getStore({ name: STORE_NAME, consistency: "strong" });
     const { blobs } = await store.list();
+    const recent = [...blobs].sort((a, b) => (a.key < b.key ? 1 : a.key > b.key ? -1 : 0)).slice(0, MAX_SCAN);
     const entries = await Promise.all(
-      blobs.map((b) => store.get(b.key, { type: "json" }).catch(() => null))
+      recent.map((b) => store.get(b.key, { type: "json" }).catch(() => null))
     );
     records = entries.filter(Boolean).filter((r) => new Date(r.createdTime).getTime() >= sinceTs);
   } catch {

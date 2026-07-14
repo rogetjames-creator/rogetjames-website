@@ -61,7 +61,31 @@ export default function Navbar({ quoteCount = 0 }) {
   const [clientPreviewOpen, setClientPreviewOpen] = useState(false);
   const navBarRef = useRef(null);
   const menuRef = useRef(null);
+  const menuCtxRef = useRef(null);
+  const collectionRef = useRef(null);
+  const bespokeRef = useRef(null);
+  const catRef = useRef(null);
   const lenis = useLenis();
+
+  // Close any open desktop dropdown on Escape or an outside click. Hover still
+  // opens them for mouse users; this adds keyboard/touch dismissal.
+  useEffect(() => {
+    if (!collectionOpen && !bespokeOpen && !catOpen) return;
+    const onDocPointer = (e) => {
+      if (collectionRef.current && !collectionRef.current.contains(e.target)) setCollectionOpen(false);
+      if (bespokeRef.current && !bespokeRef.current.contains(e.target)) setBespokeOpen(false);
+      if (catRef.current && !catRef.current.contains(e.target)) setCatOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") { setCollectionOpen(false); setBespokeOpen(false); setCatOpen(false); }
+    };
+    document.addEventListener("mousedown", onDocPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [collectionOpen, bespokeOpen, catOpen]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -102,22 +126,30 @@ export default function Navbar({ quoteCount = 0 }) {
     if (entry) setTimeout(() => setOpenCat(entry), 300);
   }, []);
 
-  // Mobile menu open/close
+  // Mobile menu open/close — animations run inside a persistent gsap.context so
+  // they are killed on unmount (reverted in the effect below), without reverting
+  // mid-life, which would cut the fade-out short.
   useEffect(() => {
     const menu = menuRef.current;
     if (!menu) return;
-    if (mobileOpen) {
-      lenis?.stop();
-      gsap.set(menu, { visibility: "visible" });
-      gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
-      const links = menu.querySelectorAll(".mobile-link");
-      gsap.fromTo(links, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, stagger: 0.07, ease: "power3.out", delay: 0.1 });
-    } else {
-      gsap.to(menu, { opacity: 0, duration: 0.25, ease: "power2.in", onComplete: () => { gsap.set(menu, { visibility: "hidden" }); lenis?.start(); } });
-    }
+    if (!menuCtxRef.current) menuCtxRef.current = gsap.context(() => {}, menuRef);
+    menuCtxRef.current.add(() => {
+      if (mobileOpen) {
+        lenis?.stop();
+        gsap.set(menu, { visibility: "visible" });
+        gsap.fromTo(menu, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
+        const links = menu.querySelectorAll(".mobile-link");
+        gsap.fromTo(links, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, stagger: 0.07, ease: "power3.out", delay: 0.1 });
+      } else {
+        gsap.to(menu, { opacity: 0, duration: 0.25, ease: "power2.in", onComplete: () => { gsap.set(menu, { visibility: "hidden" }); lenis?.start(); } });
+      }
+    });
     // Unmounting while the menu is open would otherwise leave scroll locked.
     return () => { lenis?.start(); };
   }, [mobileOpen, lenis]);
+
+  // Revert the mobile-menu context only on unmount, killing any live tweens.
+  useEffect(() => () => { menuCtxRef.current?.revert(); menuCtxRef.current = null; }, []);
 
   const closeMenu = useCallback(() => { setMobileOpen(false); lenis?.start(); }, [lenis]);
 
@@ -210,13 +242,20 @@ export default function Navbar({ quoteCount = 0 }) {
           {/* Centre nav links */}
           <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
             {/* Collection dropdown */}
-            <div className="relative" onMouseEnter={() => setCollectionOpen(true)} onMouseLeave={() => setCollectionOpen(false)}>
-              <button className="lift-hover text-sm font-medium px-3 py-1.5 flex items-center gap-1 nav-link-glow text-cream/70">
+            <div className="relative" ref={collectionRef}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") setCollectionOpen(true); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") setCollectionOpen(false); }}>
+              <button
+                onClick={() => setCollectionOpen((v) => !v)}
+                aria-haspopup="true"
+                aria-expanded={collectionOpen}
+                aria-controls="nav-collection-menu"
+                className="lift-hover text-sm font-medium px-3 py-1.5 flex items-center gap-1 nav-link-glow text-cream/70">
                 Collection
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${collectionOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {collectionOpen && (
-                <div className="absolute top-full left-0 pt-2 min-w-[150px]">
+                <div id="nav-collection-menu" className="absolute top-full left-0 pt-2 min-w-[150px]">
                   <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
                   {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
                     <button key={tab} onClick={() => { setCollectionOpen(false); if (href) { window.location.href = href; return; } window.dispatchEvent(new CustomEvent("open-collection-category", { detail: tab })); setTimeout(() => { const el = document.querySelector("#collection"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
@@ -230,13 +269,20 @@ export default function Navbar({ quoteCount = 0 }) {
             </div>
 
             {/* Bespoke dropdown */}
-            <div className="relative" onMouseEnter={() => setBespokeOpen(true)} onMouseLeave={() => setBespokeOpen(false)}>
-              <button onClick={scrollTo("#bespoke")} className="lift-hover text-sm font-medium px-3 py-1.5 flex items-center gap-1 nav-link-glow text-cream/70">
+            <div className="relative" ref={bespokeRef}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") setBespokeOpen(true); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") setBespokeOpen(false); }}>
+              <button
+                onClick={() => setBespokeOpen((v) => !v)}
+                aria-haspopup="true"
+                aria-expanded={bespokeOpen}
+                aria-controls="nav-bespoke-menu"
+                className="lift-hover text-sm font-medium px-3 py-1.5 flex items-center gap-1 nav-link-glow text-cream/70">
                 Bespoke
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${bespokeOpen ? "rotate-180" : ""}`}><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {bespokeOpen && (
-                <div className="absolute top-full left-0 pt-2 min-w-[150px]">
+                <div id="nav-bespoke-menu" className="absolute top-full left-0 pt-2 min-w-[150px]">
                   <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
                   {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
                     const locked = LOCKED_BESPOKE_CATS.includes(cat);
@@ -257,15 +303,22 @@ export default function Navbar({ quoteCount = 0 }) {
             <a href="#process" onClick={scrollTo("#process")} className="lift-hover text-sm font-medium px-3 py-1.5 nav-link-glow text-cream/70">Process</a>
 
             {/* Catalogues dropdown */}
-            <div className="relative" onMouseEnter={() => setCatOpen(true)} onMouseLeave={() => setCatOpen(false)}>
-              <button className="lift-hover text-sm font-medium px-3 py-1.5 flex items-center gap-1 nav-link-glow text-cream/70">
+            <div className="relative" ref={catRef}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") setCatOpen(true); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") setCatOpen(false); }}>
+              <button
+                onClick={() => setCatOpen((v) => !v)}
+                aria-haspopup="true"
+                aria-expanded={catOpen}
+                aria-controls="nav-catalogues-menu"
+                className="lift-hover text-sm font-medium px-3 py-1.5 flex items-center gap-1 nav-link-glow text-cream/70">
                 Catalogues
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform duration-200 ${catOpen ? "rotate-180" : ""}`}>
                   <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
               {catOpen && (
-                <div className="absolute top-full left-0 pt-2 min-w-[200px]">
+                <div id="nav-catalogues-menu" className="absolute top-full left-0 pt-2 min-w-[200px]">
                   <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
                   {CATALOGUES.map((cat) => (
                     <button key={cat.label} onClick={() => { setOpenCat(cat); setCatOpen(false); }}

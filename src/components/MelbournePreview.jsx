@@ -54,19 +54,32 @@ export default function MelbournePreview() {
       const json = await res.json();
       if (!res.ok || json.error) {
         setError(json.error || "Failed."); setAuthed(false);
-        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+        try { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); } catch { /* ignore */ }
       } else {
         setAuthed(true);
-        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        try { localStorage.setItem("stats_key", adminSecret); localStorage.setItem("stats_key_t", String(Date.now())); } catch { /* ignore */ }
       }
     } catch { setError("Request failed. Check your connection."); }
     finally { setLoading(false); }
   };
 
   useEffect(() => {
+    // Cached admin password expires after 30 days — before trusting it, check
+    // the timestamp written alongside it; if it's missing or stale, clear both
+    // and fall back to the password form. A ?key= in the URL still works as
+    // before and refreshes the timestamp on a successful login.
+    const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
     const urlKey = new URLSearchParams(window.location.search).get("key");
-    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", "/melbourne");
+    let saved = urlKey || null;
+    if (!saved) {
+      try {
+        const cached = localStorage.getItem("stats_key");
+        const t = Number(localStorage.getItem("stats_key_t") || 0);
+        if (cached && t && Date.now() - t < MAX_AGE) saved = cached;
+        else { localStorage.removeItem("stats_key"); localStorage.removeItem("stats_key_t"); }
+      } catch { /* ignore */ }
+    }
     if (saved) login(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

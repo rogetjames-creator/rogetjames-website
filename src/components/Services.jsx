@@ -65,7 +65,6 @@ const openCatalogue = (label) =>
 
 export default function Services() {
   const sectionRef = useRef(null);
-  const cardsRef = useRef(null);
   const [catPopover, setCatPopover] = useState(false);
 
   useEffect(() => {
@@ -133,7 +132,7 @@ export default function Services() {
         </div>
 
         {/* Cards */}
-        <div ref={cardsRef} className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
           {SERVICES.map((service) => {
             const Icon = service.icon;
             return (
@@ -207,7 +206,7 @@ export default function Services() {
                     href="#contact"
                     className="btn-magnetic btn-service-cta inline-flex items-center justify-center py-3 px-6 rounded-full text-sm font-semibold tracking-wide text-cream shadow-[0_2px_12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.3)]" style={{ background: "#0d0d0d" }}
                   >
-                    <span className={`btn-bg rounded-full ${service.featured ? "bg-black/30" : "bg-black/30"}`} />
+                    <span className="btn-bg rounded-full bg-black/30" />
                     <span className="relative z-10 text-cream/45">{service.cta}</span>
                   </a>
                 )}

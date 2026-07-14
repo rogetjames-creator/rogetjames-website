@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Mail, Phone, MapPin, Instagram, Youtube, Upload, X } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Upload, X } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -9,6 +9,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
   const sectionRef = useRef(null);
   const formRef = useRef(null);
   const successRef = useRef(null);
+  const uploadedFilesRef = useRef([]);
   const [submitted, setSubmitted] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [sending, setSending] = useState(false);
@@ -38,6 +39,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
   const fileToCompressedAttachment = (file) =>
     new Promise((resolve, reject) => {
       const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
       img.onload = () => {
         const maxDim = 1600;
         const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
@@ -46,15 +48,22 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         canvas.height = img.height * scale;
         canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        URL.revokeObjectURL(objectUrl);
         resolve({
           filename: file.name.replace(/\.[^.]+$/, "") + ".jpg",
           content: dataUrl.split(",")[1],
         });
-        URL.revokeObjectURL(img.src);
       };
-      img.onerror = reject;
-      img.src = URL.createObjectURL(file);
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Image failed to load")); };
+      img.src = objectUrl;
     });
+
+  // Keep a live handle on the current previews so the unmount cleanup can revoke
+  // every outstanding object URL (removeFile handles per-item removal).
+  useEffect(() => { uploadedFilesRef.current = uploadedFiles; }, [uploadedFiles]);
+  useEffect(() => () => {
+    uploadedFilesRef.current.forEach((f) => URL.revokeObjectURL(f.url));
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -224,7 +233,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                 </p>
                 <button
                   type="button"
-                  onClick={() => { setSubmitted(false); setUploadedFiles([]); setError(null); }}
+                  onClick={() => { setSubmitted(false); uploadedFiles.forEach((f) => URL.revokeObjectURL(f.url)); setUploadedFiles([]); setError(null); }}
                   className="mt-6 font-detail text-xs text-clay uppercase tracking-[0.2em] underline underline-offset-4 hover:text-cream transition-colors"
                 >
                   Send another enquiry

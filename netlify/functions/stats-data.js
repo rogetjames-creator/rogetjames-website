@@ -2,8 +2,19 @@
 // Netlify Blobs (written by track-event.js) and returns the raw recent events
 // plus rollup counts. Gated by the VAULT_ADMIN_SECRET admin password.
 import { getStore } from "@netlify/blobs";
+import crypto from "node:crypto";
 
 const STORE_NAME = "pricing-interest";
+// Blob keys are ISO-timestamp-prefixed (see track-event.js / chat-transcript.js),
+// so a descending string sort puts the newest first. We only ever surface the
+// most recent couple hundred, so cap the fan-out at the newest MAX_SCAN keys
+// before fetching — a pathologically large store never loads entirely into
+// memory on every call. Well above the 200/100 the dashboard shows, so normal
+// volumes are unaffected.
+const MAX_SCAN = 500;
+
+const newestFirst = (blobs) =>
+  [...blobs].sort((a, b) => (a.key < b.key ? 1 : a.key > b.key ? -1 : 0)).slice(0, MAX_SCAN);
 
 export default async function handler(req, context) {
   if (req.method !== "POST") {
@@ -30,7 +41,7 @@ export default async function handler(req, context) {
     const store = getStore({ name: STORE_NAME, consistency: "strong" });
     const { blobs } = await store.list();
     const entries = await Promise.all(
-      blobs.map(async (b) => {
+      newestFirst(blobs).map(async (b) => {
         const v = await store.get(b.key, { type: "json" }).catch(() => null);
         return v ? { id: b.key, ...v } : null;
       })
@@ -57,7 +68,7 @@ export default async function handler(req, context) {
     const chatStore = getStore({ name: "chat-transcripts", consistency: "strong" });
     const { blobs } = await chatStore.list();
     const entries = await Promise.all(
-      blobs.map(async (b) => {
+      newestFirst(blobs).map(async (b) => {
         const v = await chatStore.get(b.key, { type: "json" }).catch(() => null);
         return v ? { id: b.key, ...v } : null;
       })
@@ -88,12 +99,13 @@ async function tooManyAttempts(ip) {
   }
 }
 
-// Constant-time string comparison — avoids leaking the admin secret via response timing.
+// Constant-time comparison via fixed-length SHA-256 digests — avoids leaking
+// the admin secret's length or content through response timing.
 function safeEqual(a, b) {
-  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return mismatch === 0;
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const ha = crypto.createHash("sha256").update(a).digest();
+  const hb = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(ha, hb);
 }
 
 function json(data, status) {

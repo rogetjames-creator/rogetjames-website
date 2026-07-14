@@ -1,17 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
-
-const COMMISSIONS_GALLERY = [
-  { src: "/images/villa-leaf/villa-leaf-trio-pool.jpg" },
-  { src: "/images/hero/hero-cottesloe-patio.jpg" },
-  { src: "/images/marakesh/marakesh-cassie.jpg" },
-  { src: "/images/hex/lalarook-2.jpg" },
-  { src: "/images/hero/hero-homebase-dusk.jpg" },
-  { src: "/images/hero/hero-cottesloe-gate.jpg" },
-];
 
 const COMMISSIONS_PORTAL = {
   id: "commissions",
@@ -22,7 +13,6 @@ const COMMISSIONS_PORTAL = {
     { src: "/videos/natives-collage-2.mp4", title: "CUSTOM Natives — Collage", detail: "A commission in our native botanicals series — hand-composed and laser cut to order.", poster: "/images/concept-4-natives.jpg" },
     { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "", poster: "/images/reels/waroona-thumb.jpg" },
   ],
-  commissionImages: COMMISSIONS_GALLERY,
   popupType: "commissions-gallery",
 };
 
@@ -130,7 +120,11 @@ export function CommissionsSection() {
   const [initialScreensCat, setInitialScreensCat] = useState(false);
 
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
+  const didMountRef = useRef(false);
   useEffect(() => {
+    // Skip the mount pass so we don't fire a spurious "close" before any modal
+    // has ever opened; only dispatch when the open/closed state actually flips.
+    if (!didMountRef.current) { didMountRef.current = true; return; }
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
 

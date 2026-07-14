@@ -1,7 +1,8 @@
-// Block only when an Origin/Referer is present and clearly not ours, so a real
-// customer's browser (which sends the correct Origin) always gets through.
+// Require an Origin/Referer that is ours. A real customer's browser always
+// sends the correct Origin on POST, so this only blocks foreign or origin-less
+// (scripted) submissions.
 function originAllowed(origin) {
-  if (!origin) return true;
+  if (!origin) return false;
   try {
     const h = new URL(origin).hostname;
     return h === "rogetjames.com" || h === "www.rogetjames.com" || h.endsWith(".netlify.app");

@@ -1,8 +1,12 @@
 /**
  * Post-build prerender script.
- * Serves the dist/ folder, renders it with Playwright, and replaces
- * dist/index.html with the fully-rendered HTML so crawlers see content
- * without needing JavaScript execution.
+ * Serves the dist/ folder, renders each indexable page with Playwright, and
+ * overwrites its HTML with the fully-rendered markup so crawlers see real
+ * content without executing JavaScript.
+ *
+ * Pages: the homepage (/) and the two live, indexable galleries (/wall-art,
+ * /sculpture). The private preview pages (melbourne, feature-screens) are
+ * noindex and deliberately not prerendered.
  */
 import { createServer } from "http";
 import { readFileSync, writeFileSync, existsSync } from "fs";
@@ -24,6 +28,14 @@ const MIME_TYPES = {
   ".txt": "text/plain",
   ".xml": "application/xml",
 };
+
+// Pages to prerender. `url` is what we navigate to (the built .html entry);
+// `file` is the dist file we overwrite; `hero` selects the homepage-only resets.
+const PAGES = [
+  { url: "/", file: "index.html", hero: true },
+  { url: "/wall-art.html", file: "wall-art.html", hero: false },
+  { url: "/sculpture.html", file: "sculpture.html", hero: false },
+];
 
 // Simple static file server
 function serve() {
@@ -47,29 +59,13 @@ function serve() {
   });
 }
 
-async function prerender() {
-  console.log("Starting prerender...");
-
-  const server = await serve();
-  console.log(`Serving dist/ on http://localhost:${PORT}`);
-
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
-
-  await page.goto(`http://localhost:${PORT}/`, { waitUntil: "networkidle" });
-
-  // Wait for content/images to be present in the DOM (for crawlers).
-  await page.waitForTimeout(2000);
-
-  // Reset the hero entrance-animated elements to their INITIAL hidden state
-  // before snapshotting. GSAP leaves them baked in at opacity:1 (or a random
-  // mid-animation value), but React's first client render has them at
-  // opacity:0 — the mismatch made the visible prerendered text snap to
-  // invisible on hydration and re-animate, i.e. the "glitchy text then the
-  // site appears" flash on every load. Matching the initial state removes it;
-  // the text is still in the DOM (opacity:0) so crawlers/SEO are unaffected,
-  // and the drift-in intro then plays once, cleanly, on the client.
-  await page.evaluate(() => {
+// Reset entrance-animated elements to their INITIAL hidden state before we
+// snapshot, so the client's first render matches the baked HTML and the
+// intro plays once cleanly instead of the "glitchy flash then it appears"
+// on load. The elements stay in the DOM (opacity:0), so crawlers/SEO still
+// see the full content. Runs inside the page (browser context).
+function resetForSnapshot(isHero) {
+  if (isHero) {
     const sel = [
       ".hero-line-1", ".hero-line-2", ".hero-sub",
       ".hero-loc-1", ".hero-loc-2", ".hero-loc-3", ".hero-loc-4",
@@ -82,39 +78,53 @@ async function prerender() {
       el.style.rotate = "";
       el.style.scale = "";
     });
-
-    // Same fix for the two hero slideshow images. By snapshot time the intro
-    // has played (slideshowReady flips ~2.8s in) so GSAP/React bake the first
-    // image in at opacity:1 — but React's first CLIENT render has it at
-    // opacity:0 (slideshowReady starts false). The mismatch made the baked
-    // image paint, blank out the instant React mounts, then fade back in: a
-    // brief image "flash" when landing on "/" (e.g. clicking the top-left logo
-    // from a Feature/Vault page). Reset to the initial hidden state so first
-    // paint matches the client; the image src stays in the DOM for crawlers and
-    // the intro fade then plays once, cleanly.
     document.querySelectorAll("[data-prerender-hero]").forEach((el) => {
       el.style.opacity = "0";
     });
-
-    // Remove decorative nodes that React portals into <body>/<html> (the ROJ
-    // logo and its glass fog). They live OUTSIDE React's root, so if their
-    // mid-animation snapshot is baked into index.html, React can't reconcile
-    // it away on hydration — you get a frozen "ghost" logo layered under the
-    // live one (wrong size on mobile, never hides on scroll). Crawlers don't
-    // need them; strip them so only the client-rendered logo ever exists.
+    // Strip decorative nodes React portals outside its root (the ROJ logo and
+    // its glass fog); a baked mid-animation snapshot of them can't reconcile on
+    // hydration and leaves a frozen ghost. Crawlers don't need them.
     document.querySelectorAll("[data-prerender-strip]").forEach((el) => el.remove());
+    return;
+  }
+  // Feature galleries (/wall-art, /sculpture): the hero-text region animates in
+  // via the CSS class `.fw-anim` (opacity:0 -> forwards). Reset those to their
+  // pre-animation state so the baked HTML matches the client's first paint and
+  // the intro replays once, cleanly, instead of flashing. Content stays in the
+  // DOM at opacity:0 for crawlers.
+  document.querySelectorAll(".fw-anim").forEach((el) => {
+    el.style.opacity = "0";
+    el.style.animation = "none";
+    el.style.transform = "";
   });
+}
 
-  // Extract the rendered HTML
+async function prerenderPage(page, { url, file, hero }) {
+  await page.goto(`http://localhost:${PORT}${url}`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(2000); // let content/images settle in the DOM
+  await page.evaluate(resetForSnapshot, hero);
   const html = await page.content();
+  writeFileSync(join(DIST, file), html, "utf-8");
+  console.log(`Prerendered dist/${file}`);
+}
+
+async function prerender() {
+  console.log("Starting prerender...");
+
+  const server = await serve();
+  console.log(`Serving dist/ on http://localhost:${PORT}`);
+
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  for (const p of PAGES) {
+    await prerenderPage(page, p);
+  }
 
   await browser.close();
   server.close();
 
-  // Write the prerendered HTML back to dist/index.html
-  writeFileSync(join(DIST, "index.html"), html, "utf-8");
-
-  console.log("Prerendered dist/index.html with full page content.");
+  console.log("Prerender complete.");
 }
 
 prerender().catch((err) => {

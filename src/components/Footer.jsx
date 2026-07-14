@@ -1,4 +1,4 @@
-import { Instagram, Youtube, Mail } from "lucide-react";
+import { Instagram, Mail } from "lucide-react";
 
 const NAV_COLS = [
   {

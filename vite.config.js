@@ -24,7 +24,6 @@ export default defineConfig({
           'vendor-gsap':   ['gsap'],
           'vendor-lenis':  ['lenis'],
           'vendor-lucide': ['lucide-react'],
-          'vendor-lottie': ['lottie-react'],
         },
       },
     },

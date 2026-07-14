@@ -12,7 +12,7 @@ export default async function handler(req, context) {
   }
 
   // Only accept events from our own site; never block the visitor on failure.
-  if (!originAllowed(req.headers.get("origin"))) return json({ ok: true }, 200);
+  if (!originAllowed(req.headers.get("origin") || req.headers.get("referer"))) return json({ ok: true }, 200);
 
   let body;
   try { body = await req.json(); } catch { return json({ ok: true }, 200); }
@@ -52,8 +52,10 @@ export default async function handler(req, context) {
   return json({ ok: true }, 200);
 }
 
+// Require an Origin/Referer that is ours; a missing one is rejected (a real
+// browser always sends one on POST).
 function originAllowed(origin) {
-  if (!origin) return true;
+  if (!origin) return false;
   try {
     const h = new URL(origin).hostname;
     return h === "rogetjames.com" || h === "www.rogetjames.com" || h.endsWith(".netlify.app");
