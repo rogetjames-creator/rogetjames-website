@@ -11,6 +11,8 @@ import { X } from "lucide-react";
 const CSS = `
 .fq-fab{position:fixed;bottom:24px;left:24px;z-index:9998;display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:30px;background:#9E7134;border:1px solid #c08c46;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.5);transition:.25s}
 .fq-fab:hover{background:#b5843f;border-color:#d6a45a}
+.fq-fab-pop{animation:fqPop .5s ease}
+@keyframes fqPop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
 .fq-fab-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:12px;background:rgba(0,0,0,.35);font-variant-numeric:tabular-nums}
 .fq-overlay{position:fixed;inset:0;z-index:10001;background:rgba(6,6,6,.72);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .fq-card{width:100%;max-width:440px;max-height:88vh;overflow-y:auto;background:#141414;border:1px solid rgba(242,240,233,.12);border-radius:22px;padding:26px 24px;color:#F2F0E9;position:relative;box-shadow:0 40px 90px rgba(0,0,0,.6)}
@@ -51,6 +53,8 @@ export function QuoteBar() {
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
 
+  const [justAdded, setJustAdded] = useState(false);
+
   useEffect(() => {
     const handler = (e) => {
       setItems((prev) => {
@@ -59,11 +63,22 @@ export function QuoteBar() {
         );
         return exists ? prev : [...prev, e.detail];
       });
-      setOpen(true); // surface the basket the moment a piece is added
+      // Do NOT open the send form here. Adding a piece drops it into the
+      // basket and shows the floating "Request a Quote · N" button; the
+      // visitor keeps browsing, adds more works, and opens the form only when
+      // ready — so one quote can cover several pieces, not just the first.
+      setJustAdded(true);
     };
     window.addEventListener("quote-add", handler);
     return () => window.removeEventListener("quote-add", handler);
   }, []);
+
+  // Clear the FAB "pop" highlight shortly after each add.
+  useEffect(() => {
+    if (!justAdded) return;
+    const t = setTimeout(() => setJustAdded(false), 1200);
+    return () => clearTimeout(t);
+  }, [justAdded, items.length]);
 
   const onRemove = useCallback((id) => setItems((prev) => prev.filter((i) => i.id !== id)), []);
   const onClear = useCallback(() => setItems([]), []);
@@ -108,7 +123,7 @@ export function QuoteBar() {
     <>
       <style>{CSS}</style>
       {!open && (
-        <button className="fq-fab" onClick={() => setOpen(true)}>
+        <button className={`fq-fab ${justAdded ? "fq-fab-pop" : ""}`} onClick={() => setOpen(true)}>
           Request a Quote <span className="fq-fab-count">{items.length}</span>
         </button>
       )}
