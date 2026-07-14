@@ -31,6 +31,9 @@ const CSS = `
 .fw-logo{font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
 .fw-logo:hover{color:#c08c46}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
+.fw-brandgroup{display:flex;align-items:center;gap:14px}
+.fw-studio-link{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.5);text-decoration:none;padding-left:14px;border-left:1px solid rgba(242,240,233,.22);transition:color .25s,border-color .25s;white-space:nowrap}
+.fw-studio-link:hover{color:#c08c46;border-color:#c08c46}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-top-actions{display:flex;align-items:center;gap:10px}
 .fw-exit{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.42);color:#F2F0E9;cursor:pointer;text-decoration:none;backdrop-filter:blur(4px);transition:.25s}
@@ -118,7 +121,7 @@ const CSS = `
   .fw-imgslot{position:relative;height:42vh;min-height:240px}
   .fw-top{padding:16px 16px}
   .fw-logo{font-size:16px}
-  .fw-catalogue-link,.fw-top-right{display:none}
+  .fw-catalogue-link,.fw-top-right,.fw-studio-link{display:none}
   .fw-hamburger{display:flex}
   .fw-lead{position:static;max-width:100%;left:auto;bottom:auto;padding:24px 20px 0}
   .fw-bottomrow{position:static;right:auto;bottom:auto;justify-content:center;padding:18px 20px 0}
@@ -411,7 +414,10 @@ function Gallery() {
       </div>
 
       <header className="fw-top">
-        <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
+        <div className="fw-brandgroup">
+          <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
+          <a className="fw-studio-link" href="/" title="Explore the full ROGETjames studio — wall art, screens, bespoke &amp; public art">Explore the full studio <span aria-hidden="true">→</span></a>
+        </div>
         <button className="fw-catalogue-link" onClick={() => setCatOpen(true)}>
           Sculpture Catalogue
         </button>
