@@ -1,12 +1,20 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, lazy, Suspense } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
-import { CommissionsGalleryPopup, MiniPortal } from "./DiscoverPortals";
-import { ScreensGalleryModal } from "./BespokeCommissions";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+
+// Lazy — these three are only used inside the homepage's #collection portal
+// cluster (never by FeatureWall.jsx, which imports WALL_ART_COVERS/DetailCard
+// from this file directly). Static imports here would pull BespokeCommissions
+// and DiscoverPortals' full bundles into every page that touches Gallery.jsx,
+// including the standalone /wall-art and /sculpture pages that never render
+// them — that was measured adding ~35kB gzip of dead JS to their cold load.
+const CommissionsGalleryPopup = lazy(() => import("./DiscoverPortals").then((m) => ({ default: m.CommissionsGalleryPopup })));
+const MiniPortal = lazy(() => import("./DiscoverPortals").then((m) => ({ default: m.MiniPortal })));
+const ScreensGalleryModal = lazy(() => import("./BespokeCommissions").then((m) => ({ default: m.ScreensGalleryModal })));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -267,10 +275,12 @@ function ReelsPortal({ onOpen }) {
 
       {/* Reels gallery modal */}
       {galleryOpen && (
-        <CommissionsGalleryPopup
-          videos={allReels.map(r => ({ src: r.video, title: r.title, detail: r.detail, poster: r.thumb }))}
-          onClose={() => setGalleryOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <CommissionsGalleryPopup
+            videos={allReels.map(r => ({ src: r.video, title: r.title, detail: r.detail, poster: r.thumb }))}
+            onClose={() => setGalleryOpen(false)}
+          />
+        </Suspense>
       )}
     </>
   );
@@ -3666,8 +3676,10 @@ export default function Gallery() {
               Negative margin pulls Wall Art up to float in the strip centre. */}
           <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
             <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
-            <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+            <Suspense fallback={null}>
+              <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
+              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+            </Suspense>
           </div>
 
         </div>
@@ -3693,8 +3705,10 @@ export default function Gallery() {
           {/* All three portals in one column — equal gap guaranteed. */}
           <div className="flex flex-col items-center gap-10 py-8">
             <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
-            <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
-            <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+            <Suspense fallback={null}>
+              <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
+              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+            </Suspense>
           </div>
 
         </div>
@@ -3709,7 +3723,11 @@ export default function Gallery() {
           onClose={() => { setCatFlipOpen(false); setCardDeckOpen(false); }}
         />
       )}
-      {screensOpen && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
+      {screensOpen && (
+        <Suspense fallback={null}>
+          <ScreensGalleryModal onClose={() => setScreensOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 }
