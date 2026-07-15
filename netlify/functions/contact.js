@@ -56,7 +56,10 @@ exports.handler = async function(event) {
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
 
-  const { name, email, phone, postcode, message, selections, attachments } = body;
+  const { name, email, phone, postcode, message, selections, attachments, failedAttachments } = body;
+
+  const attachCount = Array.isArray(attachments) ? attachments.length : 0;
+  const failed = Array.isArray(failedAttachments) ? failedAttachments.filter(Boolean) : [];
 
   const lines = [
     `Name: ${name || "—"}`,
@@ -64,6 +67,8 @@ exports.handler = async function(event) {
     `Phone: ${phone || "—"}`,
     postcode ? `Postcode: ${postcode}` : null,
     selections ? `Selections: ${selections}` : null,
+    `Images attached: ${attachCount}`,
+    failed.length ? `⚠ Could NOT attach ${failed.length} image(s): ${failed.join(", ")} — ask the customer to email ${failed.length === 1 ? "it" : "them"} directly.` : null,
     ``,
     `Message:`,
     message || "—",

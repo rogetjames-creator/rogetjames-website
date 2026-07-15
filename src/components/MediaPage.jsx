@@ -19,20 +19,30 @@ const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || (ke
 // in seconds instead of timing out.
 const MAX_DIM = 2000;
 function compressToDataUrl(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
+    // Never reject — resolve a { failed } marker instead, so one unreadable
+    // photo (typically an iPhone HEIC the browser can't decode) doesn't take
+    // the whole batch down with it. The caller reports which ones failed.
+    const fail = () => resolve({ name: file.name, failed: true });
     const reader = new FileReader();
-    reader.onerror = reject;
+    reader.onerror = fail;
     reader.onload = () => {
       const img = new Image();
-      img.onerror = reject;
+      img.onerror = fail;
       img.onload = () => {
-        const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
-        const w = Math.round(img.width * scale);
-        const h = Math.round(img.height * scale);
-        const canvas = document.createElement("canvas");
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        resolve({ name: file.name, dataUrl: canvas.toDataURL("image/jpeg", 0.82) });
+        try {
+          const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          // A blank/failed canvas yields a tiny string — treat as a failure so
+          // it is never staged as a blank gallery image.
+          if (dataUrl.length > 1000) resolve({ name: file.name, dataUrl });
+          else fail();
+        } catch { fail(); }
       };
       img.src = reader.result;
     };
@@ -112,11 +122,17 @@ export default function MediaPage() {
     if (!files.length) return;
     setNote("Preparing photos…");
     try {
-      const added = await Promise.all(files.map(compressToDataUrl));
-      setStaged(prev => [...prev, ...added]);
-      setNote("");
+      const results = await Promise.all(files.map(compressToDataUrl));
+      const ok = results.filter(r => !r.failed);
+      const failed = results.filter(r => r.failed);
+      setStaged(prev => [...prev, ...ok]);
+      setNote(
+        failed.length
+          ? `Couldn't read ${failed.length} photo${failed.length === 1 ? "" : "s"} (${failed.map(f => f.name).join(", ")}) — likely an iPhone HEIC. Open ${failed.length === 1 ? "it" : "them"} and share/save as JPEG, then add again. The rest are ready.`
+          : ""
+      );
     } catch {
-      setNote("Couldn't read one of those photos — try again.");
+      setNote("Couldn't read those photos — try again.");
     }
   };
 
@@ -305,7 +321,7 @@ export default function MediaPage() {
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
               + Choose photos from iCloud
-              <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
+              <input type="file" accept="image/*,.heic,.heif" multiple onChange={onPick} className="hidden" />
             </label>
 
             {staged.length > 0 && (
