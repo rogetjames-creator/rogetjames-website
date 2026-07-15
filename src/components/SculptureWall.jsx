@@ -33,10 +33,10 @@ const CSS = `
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-top-actions{display:flex;align-items:center;gap:10px}
-.fw-exit{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.42);color:#F2F0E9;cursor:pointer;text-decoration:none;backdrop-filter:blur(4px);transition:.25s}
+.fw-exit{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.42);color:#F2F0E9;cursor:pointer;text-decoration:none;backdrop-filter:blur(4px);transition:.25s}
 .fw-exit:hover{background:rgba(158,113,52,.32);border-color:#c08c46;color:#F2F0E9}
 .fw-imgslot{position:absolute;inset:0}
-.fw-icon-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.85);cursor:pointer;backdrop-filter:blur(4px);transition:.25s}
+.fw-icon-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.85);cursor:pointer;backdrop-filter:blur(4px);transition:.25s}
 .fw-icon-btn:hover,.fw-icon-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-hamburger{display:none}
 .fw-mobile-menu{position:fixed;inset:0;z-index:40;background:rgba(6,5,4,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);display:flex;flex-direction:column}
@@ -57,11 +57,11 @@ const CSS = `
 .fw-search-result-name{display:block}
 .fw-search-result-cat{display:block;color:rgba(242,240,233,.4);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
 .fw-search-empty{padding:14px 8px;text-align:center;color:rgba(242,240,233,.4);font-size:11px;letter-spacing:.06em}
-.fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
+.fw-catalogue-link{position:absolute;top:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
 .fw-menu-wrap{position:relative}
-.fw-menu-btn{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
+.fw-menu-btn{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
 .fw-menu-btn:hover,.fw-menu-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-menu-btn svg{transition:transform .25s}
 .fw-menu-btn.open svg{transform:rotate(180deg)}
@@ -94,7 +94,7 @@ const CSS = `
 @keyframes fwUp{to{opacity:1;transform:none}}
 @keyframes fwFlash{0%{transform:scale(1)}45%{transform:scale(1.5)}100%{transform:scale(1.08)}}
 .fw-bottomrow{position:absolute;right:44px;bottom:36px;z-index:5;display:flex;align-items:center;gap:16px}
-.fw-infopill{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.4);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;flex:0 0 auto;white-space:nowrap}
+.fw-infopill{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;flex:0 0 auto;white-space:nowrap}
 .fw-infopill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-subrail{display:flex;gap:10px;align-items:flex-end;max-width:min(60vw,calc(100vw - 620px));overflow-x:auto;scrollbar-width:none;padding:8px 4px 4px}
 .fw-subrail::-webkit-scrollbar{display:none}
@@ -106,7 +106,7 @@ const CSS = `
 .fw-ctrls{position:absolute;left:50%;bottom:44px;z-index:6;display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateX(-50%)}
 .fw-ctrls-label{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.45)}
 .fw-arrows{display:flex;align-items:center;gap:14px}
-.fw-nav{width:52px;height:52px;border-radius:50%;border:1.5px solid rgba(242,240,233,.4);background:rgba(20,20,20,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s}
+.fw-nav{width:52px;height:52px;border-radius:50%;border:1.5px solid rgba(242,240,233,.4);background:rgba(20,20,20,.68);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#F2F0E9;display:grid;place-items:center;cursor:pointer;transition:.3s}
 .fw-nav:hover{border-color:#9E7134;color:#c08c46;background:rgba(20,20,20,.6)}
 .fw-nav:active{transform:scale(.92);background:#9E7134;border-color:#9E7134;color:#F2F0E9}
 .fw-prog{width:130px;height:2px;background:rgba(242,240,233,.18);position:relative;border-radius:2px}
