@@ -299,7 +299,7 @@ export default function Navbar({ quoteCount = 0 }) {
             </button>
             <div className="relative ml-1">
               {quoteCount > 0 ? (
-                <a href="#contact" className="nav-quote-pending px-5 py-2 rounded-full text-cream text-sm font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
+                <a href="#contact" className="btn-quote nav-quote-pending px-5 py-2 text-cream text-sm font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
                   Pending Quotes
                   <span className="min-w-[18px] h-[18px] rounded-full bg-black/35 text-cream text-[10px] font-bold flex items-center justify-center px-1.5 leading-none tabular-nums">{quoteCount}</span>
                 </a>
@@ -386,7 +386,7 @@ export default function Navbar({ quoteCount = 0 }) {
 
           <div className="mobile-link relative mt-4 inline-block">
             {quoteCount > 0 ? (
-              <a href="#contact" onClick={scrollTo("#contact", true)} className="nav-quote-pending px-8 py-3 rounded-full text-cream font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
+              <a href="#contact" onClick={scrollTo("#contact", true)} className="btn-quote nav-quote-pending px-8 py-3 text-cream font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
                 Pending Quotes
                 <span className="min-w-[20px] h-[20px] rounded-full bg-black/35 text-cream text-[11px] font-bold flex items-center justify-center px-1.5 leading-none tabular-nums">{quoteCount}</span>
               </a>
