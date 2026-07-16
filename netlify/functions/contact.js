@@ -82,7 +82,10 @@ exports.handler = async function(event) {
     },
     body: JSON.stringify({
       from: process.env.CONTACT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>",
-      to: "rogetjames@gmail.com",
+      // Deliver to the branded address shown on the site. The Gmail is kept as
+      // a safety-net copy until james@rogetjames.com is confirmed receiving —
+      // remove it once that's verified.
+      to: ["james@rogetjames.com", "rogetjames@gmail.com"],
       reply_to: email || undefined,
       subject: `New enquiry from ${name || "website visitor"}`,
       text: `New enquiry from rogetjames.com\n\n${lines}`,
