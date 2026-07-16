@@ -59,10 +59,10 @@ const CSS = `
 .fw-search-empty{padding:14px 8px;text-align:center;color:rgba(242,240,233,.4);font-size:11px;letter-spacing:.06em}
 .fw-catalogue-link{flex:0 0 auto;display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
-.fw-quote-pill{display:inline-flex;align-items:center;gap:9px;background:#9E7134;border-color:#c08c46;color:#F2F0E9;animation:fwQuotePulse 2.2s ease-in-out infinite}
-.fw-quote-pill:hover{background:#b5843f;border-color:#d6a45a;color:#F2F0E9;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:none}
-.fw-quote-num{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:11px;background:rgba(0,0,0,.35);font-size:11px;font-variant-numeric:tabular-nums;font-weight:700}
-@keyframes fwQuotePulse{0%,100%{box-shadow:0 0 0 0 rgba(192,140,70,.5)}50%{box-shadow:0 0 0 8px rgba(192,140,70,0)}}
+.fw-quote-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:30px;border:1px solid #c08c46;background:#9E7134;color:#F2F0E9;font-family:inherit;font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:background .25s,border-color .25s;animation:fwQuotePulse 2.2s ease-in-out infinite}
+.fw-quote-pill:hover{background:#b5843f;border-color:#d6a45a;color:#F2F0E9;animation:none}
+.fw-quote-num{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:10px;background:rgba(0,0,0,.35);font-size:10px;font-variant-numeric:tabular-nums;font-weight:700}
+@keyframes fwQuotePulse{0%,100%{box-shadow:0 0 0 0 rgba(192,140,70,.5)}50%{box-shadow:0 0 0 7px rgba(192,140,70,0)}}
 @media (prefers-reduced-motion:reduce){.fw-quote-pill{animation:none}}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
 .fw-menu-wrap{position:relative}
@@ -91,7 +91,7 @@ const CSS = `
 .fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(28px,4vw,58px);text-transform:uppercase;color:rgba(242,240,233,.45) !important;text-shadow:0 2px 10px rgba(0,0,0,.3)}
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
-.fw-cta{margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
 .fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(20,20,20,.68);color:inherit;font-family:inherit;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.35s}
 .fw-pill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1)}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
@@ -553,15 +553,6 @@ function Gallery() {
           <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
             View Collection
           </button>
-          {quoteCount > 0 && (
-            <button
-              className="fw-pill fw-quote-pill"
-              onClick={() => { window.location.href = "/#contact"; }}
-              aria-label={`Pending quotes: ${quoteCount} — go to contact`}
-            >
-              Pending Quotes <span className="fw-quote-num">{quoteCount}</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -589,6 +580,15 @@ function Gallery() {
         </div>
         <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
         <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
+        {quoteCount > 0 && (
+          <button
+            className="fw-quote-pill"
+            onClick={() => { window.location.href = "/#contact"; }}
+            aria-label={`Pending quotes: ${quoteCount} — go to contact`}
+          >
+            Pending Quotes <span className="fw-quote-num">{quoteCount}</span>
+          </button>
+        )}
       </div>
 
       {expanded && (
