@@ -221,6 +221,43 @@
   to = "/.netlify/functions/media-list"
   status = 200
 
+# Old myPortfolio pages Google still lists as sitelinks but which have no page
+# on the new site ("Pricing & Ordering", "LUMIER", etc.) — send them to the
+# closest relevant section so a stale Google result never lands on a 404.
+[[redirects]]
+  from = "/lumier"
+  to = "/#collection"
+  status = 301
+
+[[redirects]]
+  from = "/pricing-ordering"
+  to = "/#process"
+  status = 301
+
+[[redirects]]
+  from = "/pricing-and-ordering"
+  to = "/#process"
+  status = 301
+
+[[redirects]]
+  from = "/pricing"
+  to = "/#process"
+  status = 301
+
+[[redirects]]
+  from = "/ordering"
+  to = "/#process"
+  status = 301
+
+# Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
+# and isn't matched by a rule above 301s to the homepage instead of hitting
+# Netlify's default 404. Real files (assets, images, the .html pages) are
+# served first, so this only ever fires for paths that would otherwise 404.
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 301
+
 # Security headers — applied to every route. The CSP allows only the sources
 # the site actually uses (self, Google Fonts, the myportfolio image CDN); there
 # are no iframes, workers or eval in the site, so this does not break anything.
