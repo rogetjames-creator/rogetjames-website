@@ -224,29 +224,31 @@
 # Old myPortfolio pages Google still lists as sitelinks but which have no page
 # on the new site ("Pricing & Ordering", "LUMIER", etc.) — send them to the
 # closest relevant section so a stale Google result never lands on a 404.
+# Exact old myPortfolio slugs still indexed by Google (from Search Console) —
+# forward each to the closest live section.
+[[redirects]]
+  from = "/process-ordering"
+  to = "/#process"
+  status = 301
+
 [[redirects]]
   from = "/lumier"
   to = "/#collection"
   status = 301
 
 [[redirects]]
-  from = "/pricing-ordering"
-  to = "/#process"
+  from = "/branches-gren"
+  to = "/#collection"
   status = 301
 
 [[redirects]]
-  from = "/pricing-and-ordering"
-  to = "/#process"
+  from = "/sabu"
+  to = "/#collection"
   status = 301
 
 [[redirects]]
-  from = "/pricing"
-  to = "/#process"
-  status = 301
-
-[[redirects]]
-  from = "/ordering"
-  to = "/#process"
+  from = "/wattle"
+  to = "/#collection"
   status = 301
 
 # Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
