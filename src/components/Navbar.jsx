@@ -189,6 +189,13 @@ export default function Navbar({ quoteCount = 0 }) {
         </a>
       </div>
 
+      <style>{`
+        .nav-quote-pending{background:#9E7134;border:1px solid #c08c46;animation:navQuotePulse 2.2s ease-in-out infinite}
+        .nav-quote-pending:hover{background:#b5843f;border-color:#d6a45a;animation:none}
+        @keyframes navQuotePulse{0%,100%{box-shadow:0 0 0 0 rgba(192,140,70,.5)}50%{box-shadow:0 0 0 7px rgba(192,140,70,0)}}
+        @media (prefers-reduced-motion:reduce){.nav-quote-pending{animation:none}}
+      `}</style>
+
       {/* ── Glass fog nav bar — slides in/out ── */}
       <nav
         ref={navBarRef}
@@ -291,13 +298,15 @@ export default function Navbar({ quoteCount = 0 }) {
               <Lock size={15} />
             </button>
             <div className="relative ml-1">
-              <a href="#contact" className="btn-quote px-5 py-2 text-cream/80 text-sm font-semibold whitespace-nowrap select-none">
-                Request a Quote
-              </a>
-              {quoteCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 z-20 min-w-[18px] h-[18px] rounded-full bg-moss text-cream text-[10px] font-bold flex items-center justify-center px-1 leading-none pointer-events-none">
-                  {quoteCount}
-                </span>
+              {quoteCount > 0 ? (
+                <a href="#contact" className="nav-quote-pending px-5 py-2 rounded-full text-cream text-sm font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
+                  Pending Quotes
+                  <span className="min-w-[18px] h-[18px] rounded-full bg-black/35 text-cream text-[10px] font-bold flex items-center justify-center px-1.5 leading-none tabular-nums">{quoteCount}</span>
+                </a>
+              ) : (
+                <a href="#contact" className="btn-quote px-5 py-2 text-cream/80 text-sm font-semibold whitespace-nowrap select-none">
+                  Request a Quote
+                </a>
               )}
             </div>
           </div>
@@ -376,13 +385,15 @@ export default function Navbar({ quoteCount = 0 }) {
           </button>
 
           <div className="mobile-link relative mt-4 inline-block">
-            <a href="#contact" onClick={scrollTo("#contact", true)} className="btn-quote px-8 py-3 text-cream/80 font-semibold whitespace-nowrap select-none">
-              Request a Quote
-            </a>
-            {quoteCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 z-20 min-w-[20px] h-[20px] rounded-full bg-moss text-cream text-[11px] font-bold flex items-center justify-center px-1 leading-none pointer-events-none">
-                {quoteCount}
-              </span>
+            {quoteCount > 0 ? (
+              <a href="#contact" onClick={scrollTo("#contact", true)} className="nav-quote-pending px-8 py-3 rounded-full text-cream font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
+                Pending Quotes
+                <span className="min-w-[20px] h-[20px] rounded-full bg-black/35 text-cream text-[11px] font-bold flex items-center justify-center px-1.5 leading-none tabular-nums">{quoteCount}</span>
+              </a>
+            ) : (
+              <a href="#contact" onClick={scrollTo("#contact", true)} className="btn-quote px-8 py-3 text-cream/80 font-semibold whitespace-nowrap select-none">
+                Request a Quote
+              </a>
             )}
           </div>
         </div>

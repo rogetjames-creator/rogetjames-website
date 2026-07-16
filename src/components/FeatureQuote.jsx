@@ -2,18 +2,17 @@ import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 
 // Self-contained quote basket + request form for the standalone Wall Art /
-// Sculpture / Screens gallery pages. Those pages have no Contact section of
-// their own, so "Add to Quote" (dispatched as a "quote-add" window event by
-// Gallery.jsx's PricingPopup) had nothing listening and vanished. This wires
-// that event to a real basket and submits to the same /api/contact endpoint
-// the main site's contact form uses.
+// Sculpture gallery pages. Those pages have no Contact section of their own, so
+// "Add to Quote" (dispatched as a "quote-add" window event by Gallery.jsx's
+// PricingPopup) had nothing listening and vanished. This wires that event to a
+// real basket and submits to the same /api/contact endpoint the main site's
+// contact form uses.
+//
+// The basket count is broadcast as a "quote-count" event so each gallery's top
+// bar can show the gold "Pending Quotes (N)" pill; that pill opens this form by
+// dispatching "quote-open". (The old floating bottom-left button was removed.)
 
 const CSS = `
-.fq-fab{position:fixed;bottom:24px;left:24px;z-index:9998;display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:30px;background:#9E7134;border:1px solid #c08c46;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.5);transition:.25s}
-.fq-fab:hover{background:#b5843f;border-color:#d6a45a}
-.fq-fab-pop{animation:fqPop .5s ease}
-@keyframes fqPop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
-.fq-fab-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:12px;background:rgba(0,0,0,.35);font-variant-numeric:tabular-nums}
 .fq-overlay{position:fixed;inset:0;z-index:10001;background:rgba(6,6,6,.72);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .fq-card{width:100%;max-width:440px;max-height:88vh;overflow-y:auto;background:#141414;border:1px solid rgba(242,240,233,.12);border-radius:22px;padding:26px 24px;color:#F2F0E9;position:relative;box-shadow:0 40px 90px rgba(0,0,0,.6)}
 .fq-close{position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:rgba(242,240,233,.7);display:grid;place-items:center;cursor:pointer;transition:.2s}
@@ -44,41 +43,41 @@ const CSS = `
 `;
 
 export function QuoteBar() {
-  // Basket lives here — the only consumer is this component. Listens for the
-  // "quote-add" window event dispatched by Gallery.jsx's PricingPopup and
-  // dedupes exactly like App.jsx does on the main site.
+  // Basket lives here. Listens for the "quote-add" window event dispatched by
+  // Gallery.jsx's PricingPopup and dedupes exactly like App.jsx does on the
+  // main site. The gold top-bar pill (in FeatureWall/SculptureWall) opens this
+  // form via a "quote-open" event.
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
 
-  const [justAdded, setJustAdded] = useState(false);
-
   useEffect(() => {
-    const handler = (e) => {
+    const onAdd = (e) => {
       setItems((prev) => {
         const exists = prev.some(
           (p) => p.name === e.detail.name && p.size?.id === e.detail.size?.id && p.material?.id === e.detail.material?.id
         );
         return exists ? prev : [...prev, e.detail];
       });
-      // Do NOT open the send form here. Adding a piece drops it into the
-      // basket and shows the floating "Request a Quote · N" button; the
-      // visitor keeps browsing, adds more works, and opens the form only when
-      // ready — so one quote can cover several pieces, not just the first.
-      setJustAdded(true);
+      // Adding a piece drops it into the basket and lights the "Pending Quotes"
+      // pill in the top bar; the visitor keeps browsing and opens the form only
+      // when ready — so one quote can cover several pieces.
     };
-    window.addEventListener("quote-add", handler);
-    return () => window.removeEventListener("quote-add", handler);
+    const onOpen = () => setOpen(true);
+    window.addEventListener("quote-add", onAdd);
+    window.addEventListener("quote-open", onOpen);
+    return () => {
+      window.removeEventListener("quote-add", onAdd);
+      window.removeEventListener("quote-open", onOpen);
+    };
   }, []);
 
-  // Clear the FAB "pop" highlight shortly after each add.
+  // Broadcast the basket count so the top-bar "Pending Quotes" pill updates.
   useEffect(() => {
-    if (!justAdded) return;
-    const t = setTimeout(() => setJustAdded(false), 1200);
-    return () => clearTimeout(t);
-  }, [justAdded, items.length]);
+    window.dispatchEvent(new CustomEvent("quote-count", { detail: items.length }));
+  }, [items.length]);
 
   const onRemove = useCallback((id) => setItems((prev) => prev.filter((i) => i.id !== id)), []);
   const onClear = useCallback(() => setItems([]), []);
@@ -117,72 +116,65 @@ export function QuoteBar() {
 
   const close = () => { setOpen(false); if (done) setDone(false); };
 
-  if (items.length === 0 && !open) return null;
+  if (!open) return null;
 
   return (
     <>
       <style>{CSS}</style>
-      {!open && (
-        <button className={`fq-fab ${justAdded ? "fq-fab-pop" : ""}`} onClick={() => setOpen(true)}>
-          Request a Quote <span className="fq-fab-count">{items.length}</span>
-        </button>
-      )}
-      {open && (
-        <div className="fq-overlay" onClick={close}>
-          <div className="fq-card" onClick={(e) => e.stopPropagation()}>
-            <button className="fq-close" onClick={close} aria-label="Close"><X size={15} /></button>
-            {done ? (
-              <div className="fq-success">
-                <div className="fq-success-mark">✓</div>
-                <p>Thank you — your quote request has been sent. James will be in touch shortly.</p>
-              </div>
-            ) : (
-              <>
-                <p className="fq-heading">Your Quote Request</p>
-                <div className="fq-items">
-                  {items.length === 0 ? (
-                    <div className="fq-empty">No pieces added yet.</div>
-                  ) : items.map((qi) => (
-                    <div className="fq-item" key={qi.id}>
-                      {qi.img && <img src={qi.img} alt="" />}
-                      <div className="fq-item-info">
-                        <div className="fq-item-name">{qi.name}</div>
-                        <div className="fq-item-meta">
-                          {[qi.size?.dims, qi.material?.label].filter(Boolean).join(" · ") || "—"}
-                        </div>
+      <div className="fq-overlay" onClick={close}>
+        <div className="fq-card" onClick={(e) => e.stopPropagation()}>
+          <button className="fq-close" onClick={close} aria-label="Close"><X size={15} /></button>
+          {done ? (
+            <div className="fq-success">
+              <div className="fq-success-mark">✓</div>
+              <p>Thank you — your quote request has been sent. James will be in touch shortly.</p>
+            </div>
+          ) : (
+            <>
+              <p className="fq-heading">Your Quote Request</p>
+              <div className="fq-items">
+                {items.length === 0 ? (
+                  <div className="fq-empty">No pieces added yet.</div>
+                ) : items.map((qi) => (
+                  <div className="fq-item" key={qi.id}>
+                    {qi.img && <img src={qi.img} alt="" />}
+                    <div className="fq-item-info">
+                      <div className="fq-item-name">{qi.name}</div>
+                      <div className="fq-item-meta">
+                        {[qi.size?.dims, qi.material?.label].filter(Boolean).join(" · ") || "—"}
                       </div>
-                      <button className="fq-item-remove" onClick={() => onRemove(qi.id)} aria-label="Remove"><X size={13} /></button>
                     </div>
-                  ))}
+                    <button className="fq-item-remove" onClick={() => onRemove(qi.id)} aria-label="Remove"><X size={13} /></button>
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={submit}>
+                <input className="fq-hp" type="text" name="company" tabIndex={-1} autoComplete="off" />
+                <div className="fq-field">
+                  <label htmlFor="fq-name">Name *</label>
+                  <input id="fq-name" name="name" required autoComplete="name" />
                 </div>
-                <form onSubmit={submit}>
-                  <input className="fq-hp" type="text" name="company" tabIndex={-1} autoComplete="off" />
-                  <div className="fq-field">
-                    <label htmlFor="fq-name">Name *</label>
-                    <input id="fq-name" name="name" required autoComplete="name" />
-                  </div>
-                  <div className="fq-field">
-                    <label htmlFor="fq-email">Email *</label>
-                    <input id="fq-email" name="email" type="email" required autoComplete="email" />
-                  </div>
-                  <div className="fq-field">
-                    <label htmlFor="fq-phone">Phone</label>
-                    <input id="fq-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" />
-                  </div>
-                  <div className="fq-field">
-                    <label htmlFor="fq-message">Message</label>
-                    <textarea id="fq-message" name="message" placeholder="Tell us about your space or project…" />
-                  </div>
-                  <button className="fq-submit" type="submit" disabled={sending || items.length === 0}>
-                    {sending ? "Sending…" : "Send Quote Request"}
-                  </button>
-                  {error && <p className="fq-err">{error}</p>}
-                </form>
-              </>
-            )}
-          </div>
+                <div className="fq-field">
+                  <label htmlFor="fq-email">Email *</label>
+                  <input id="fq-email" name="email" type="email" required autoComplete="email" />
+                </div>
+                <div className="fq-field">
+                  <label htmlFor="fq-phone">Phone</label>
+                  <input id="fq-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" />
+                </div>
+                <div className="fq-field">
+                  <label htmlFor="fq-message">Message</label>
+                  <textarea id="fq-message" name="message" placeholder="Tell us about your space or project…" />
+                </div>
+                <button className="fq-submit" type="submit" disabled={sending || items.length === 0}>
+                  {sending ? "Sending…" : "Send Quote Request"}
+                </button>
+                {error && <p className="fq-err">{error}</p>}
+              </form>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 }

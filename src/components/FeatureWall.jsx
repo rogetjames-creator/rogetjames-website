@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ChevronDown, Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { WALL_ART_COVERS, DetailCard } from "./Gallery";
-import { QuoteBar } from "./FeatureQuote";
+import { loadBasket, saveBasket } from "../utils/quoteBasket";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 
@@ -74,6 +74,11 @@ const CSS = `
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{flex:0 0 auto;display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-quote-pill{display:inline-flex;align-items:center;gap:9px;background:#9E7134;border-color:#c08c46;color:#F2F0E9;animation:fwQuotePulse 2.2s ease-in-out infinite}
+.fw-quote-pill:hover{background:#b5843f;border-color:#d6a45a;color:#F2F0E9;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:none}
+.fw-quote-num{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:11px;background:rgba(0,0,0,.35);font-size:11px;font-variant-numeric:tabular-nums;font-weight:700}
+@keyframes fwQuotePulse{0%,100%{box-shadow:0 0 0 0 rgba(192,140,70,.5)}50%{box-shadow:0 0 0 8px rgba(192,140,70,0)}}
+@media (prefers-reduced-motion:reduce){.fw-quote-pill{animation:none}}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
 .fw-menu-wrap{position:relative}
 .fw-menu-btn{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit}
@@ -105,7 +110,7 @@ const CSS = `
 .fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(28px,4vw,58px);text-transform:uppercase;color:rgba(242,240,233,.45) !important;text-shadow:0 2px 10px rgba(0,0,0,.3)}
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
-.fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
+.fw-cta{margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
 .fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(20,20,20,.68);color:inherit;font-family:inherit;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.35s}
 .fw-pill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1)}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
@@ -210,6 +215,25 @@ function Gallery() {
   // Gallery.jsx's upCloseForSeries exactly, not a separate "up-close" tag.
   const [uploadedUpClose, setUploadedUpClose] = useState([]);
   const [mediaImages, setMediaImages] = useState([]);
+
+  // Pending-quote basket for this gallery. Seeded from and saved to the shared
+  // localStorage basket so pieces carry over to the home Contact section. Shown
+  // as the gold pulsing "Pending Quotes" pill beside "View Collection".
+  const [quoteItems, setQuoteItems] = useState(() => loadBasket());
+  useEffect(() => {
+    const onAdd = (e) => {
+      setQuoteItems((prev) => {
+        const exists = prev.some(
+          (p) => p.name === e.detail.name && p.size?.id === e.detail.size?.id && p.material?.id === e.detail.material?.id
+        );
+        return exists ? prev : [...prev, e.detail];
+      });
+    };
+    window.addEventListener("quote-add", onAdd);
+    return () => window.removeEventListener("quote-add", onAdd);
+  }, []);
+  useEffect(() => { saveBasket(quoteItems); }, [quoteItems]);
+  const quoteCount = quoteItems.length;
   useEffect(() => {
     let alive = true;
     fetch("/api/up-close-list")
@@ -588,6 +612,15 @@ function Gallery() {
           <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
             View Collection
           </button>
+          {quoteCount > 0 && (
+            <button
+              className="fw-pill fw-quote-pill"
+              onClick={() => { window.location.href = "/#contact"; }}
+              aria-label={`Pending quotes: ${quoteCount} — go to contact`}
+            >
+              Pending Quotes <span className="fw-quote-num">{quoteCount}</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -681,8 +714,6 @@ function Gallery() {
       {catOpen && (
         <CatPageViewer pages={WALL_ART_CAT_PAGES} label="Wall Art Catalogue" onClose={() => setCatOpen(false)} />
       )}
-
-      <QuoteBar />
     </div>
   );
 }

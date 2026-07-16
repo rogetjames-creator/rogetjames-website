@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ReactLenis, useLenis } from "lenis/react";
 import { ChevronUp, ChevronDown } from "lucide-react";
+import { loadBasket, saveBasket, clearBasket } from "./utils/quoteBasket";
 
 function Reveal({ children, label }) {
   const [open, setOpen] = useState(false);
@@ -186,7 +187,9 @@ function ScrollArrows() {
 
 export default function App() {
   const lenisRef = useRef();
-  const [quoteItems, setQuoteItems] = useState([]);
+  // Seed from the shared basket so pieces added on the /wall-art or /sculpture
+  // gallery pages are already here when the visitor lands on #contact.
+  const [quoteItems, setQuoteItems] = useState(() => loadBasket());
 
   useEffect(() => {
     const handler = (e) => {
@@ -201,12 +204,17 @@ export default function App() {
     return () => window.removeEventListener("quote-add", handler);
   }, []);
 
+  // Keep the shared basket in sync so it survives navigation between the home
+  // page and the standalone gallery pages.
+  useEffect(() => { saveBasket(quoteItems); }, [quoteItems]);
+
   const removeQuoteItem = useCallback((id) => {
     setQuoteItems((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
   const clearQuoteItems = useCallback(() => {
     setQuoteItems([]);
+    clearBasket();
   }, []);
 
   useEffect(() => {
