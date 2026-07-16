@@ -1250,7 +1250,7 @@ function PricingPopup({ item, postcodeInfo, onClose, onCloseAll }) {
 
           {showPrice && (
             <button onClick={canAdd ? handleAdd : undefined}
-              className={`w-full py-3 rounded-xl font-heading font-semibold text-sm tracking-wide transition-all duration-300 ${added ? "bg-moss text-cream cursor-default" : canAdd ? "bg-clay text-cream hover:bg-clay-dark" : "bg-white/5 text-cream/25 cursor-not-allowed"}`}>
+              className={`w-full py-3 rounded-xl font-heading font-semibold text-sm tracking-wide transition-all duration-300 ${added ? "bg-clay text-cream cursor-default ring-2 ring-cream/50" : canAdd ? "bg-clay text-cream hover:bg-clay-dark" : "bg-white/5 text-cream/25 cursor-not-allowed"}`}>
               {added ? "Added to Quote ✓" : "Add to Quote →"}
             </button>
           )}

@@ -76,7 +76,7 @@ const CSS = `
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-quote-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:30px;border:1px solid #c08c46;background:#9E7134;color:#F2F0E9;font-family:inherit;font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;white-space:nowrap;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);transition:background .25s,border-color .25s;animation:fwQuotePulse 2.2s ease-in-out infinite}
 .fw-quote-pill:hover{background:#b5843f;border-color:#d6a45a;color:#F2F0E9;animation:none}
-.fw-quote-num{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:10px;background:rgba(0,0,0,.35);font-size:10px;font-variant-numeric:tabular-nums;font-weight:700}
+.fw-quote-num{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:10px;background:rgba(0,0,0,.35);font-size:10px;line-height:1;font-variant-numeric:tabular-nums;font-weight:700}
 @keyframes fwQuotePulse{0%,100%{box-shadow:0 0 0 0 rgba(192,140,70,.5)}50%{box-shadow:0 0 0 7px rgba(192,140,70,0)}}
 @media (prefers-reduced-motion:reduce){.fw-quote-pill{animation:none}}
 .fw-count{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,240,233,.4);font-variant-numeric:tabular-nums}
