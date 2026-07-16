@@ -13,9 +13,14 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
+  const [warning, setWarning] = useState(null);
 
   const MAX_FILES = 6;
   const MAX_FILE_MB = 15;
+  // Netlify Functions cap a request body at ~6MB and base64 inflates bytes by
+  // ~1.37x, so keep all images together well under that.
+  const MAX_ATTACH_PAYLOAD = 5 * 1024 * 1024; // total base64 across all photos
+  const MAX_RAW_FILE_BYTES = 4 * 1024 * 1024; // biggest ORIGINAL we'll send un-shrunk
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -35,25 +40,40 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
     });
   };
 
-  const fileToCompressedAttachment = (file) =>
+  // Read any file as base64 (no data: prefix). This is the fallback so a photo
+  // the browser can't shrink — most often an iPhone HEIC — is still sent whole
+  // instead of being silently dropped.
+  const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onerror = () => reject(new Error("read failed"));
+      r.onload = () => resolve(String(r.result).split(",")[1] || "");
+      r.readAsDataURL(file);
+    });
+
+  // Try to shrink a photo to a small JPEG in the browser. Resolves null (never
+  // throws) when the browser can't decode it, so the caller falls back to the
+  // original file rather than losing it. A blank/failed canvas (e.g. iOS's
+  // memory limit on very large photos) also counts as a failure.
+  const compressImage = (file) =>
+    new Promise((resolve) => {
       const img = new Image();
+      const url = URL.createObjectURL(file);
+      const done = (val) => { URL.revokeObjectURL(url); resolve(val); };
       img.onload = () => {
-        const maxDim = 1600;
-        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
-        resolve({
-          filename: file.name.replace(/\.[^.]+$/, "") + ".jpg",
-          content: dataUrl.split(",")[1],
-        });
-        URL.revokeObjectURL(img.src);
+        try {
+          const maxDim = 1600;
+          const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          const base64 = canvas.toDataURL("image/jpeg", 0.75).split(",")[1] || "";
+          done(base64.length > 1000 ? base64 : null);
+        } catch { done(null); }
       };
-      img.onerror = reject;
-      img.src = URL.createObjectURL(file);
+      img.onerror = () => done(null);
+      img.src = url;
     });
 
   useEffect(() => {
@@ -84,11 +104,31 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
 
     const formData = new FormData(formRef.current);
     setSending(true);
+    setWarning(null);
     try {
-      // A single unreadable image must not block the whole enquiry — skip it.
-      const attachments = (await Promise.all(
-        uploadedFiles.map((f) => fileToCompressedAttachment(f.file).catch(() => null))
-      )).filter(Boolean);
+      // Build one attachment per photo: shrunk if we can, otherwise the original
+      // file so it is never silently dropped. Anything we genuinely can't fit is
+      // recorded so both the visitor and James are told — never lost in silence.
+      const attachments = [];
+      const failedAttachments = [];
+      let payloadBytes = 0;
+      for (const f of uploadedFiles) {
+        const compressed = await compressImage(f.file);
+        let content = null;
+        let filename = f.file.name;
+        if (compressed) {
+          content = compressed;
+          filename = f.file.name.replace(/\.[^.]+$/, "") + ".jpg";
+        } else if (f.file.size <= MAX_RAW_FILE_BYTES) {
+          content = await fileToBase64(f.file).catch(() => null);
+        }
+        if (content && payloadBytes + content.length <= MAX_ATTACH_PAYLOAD) {
+          attachments.push({ filename, content });
+          payloadBytes += content.length;
+        } else {
+          failedAttachments.push(f.file.name);
+        }
+      }
 
       const payload = {
         name: formData.get("name"),
@@ -100,6 +140,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         selections: formData.get("design_interest"),
         company: formData.get("company"), // honeypot — should always be empty
         attachments,
+        failedAttachments,
       };
 
       const res = await fetch("/api/contact", {
@@ -108,6 +149,12 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Request failed");
+
+      setWarning(
+        failedAttachments.length
+          ? `Your enquiry was sent, but ${failedAttachments.length === 1 ? "one photo" : `${failedAttachments.length} photos`} couldn't be attached (too large or an unsupported format). Please email ${failedAttachments.length === 1 ? "it" : "them"} to james@rogetjames.com so we don't miss it.`
+          : null
+      );
 
       gsap.to(formRef.current, {
         opacity: 0, scale: 0.96, y: -20, duration: 0.35, ease: "power2.in",
@@ -222,9 +269,14 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                 <p className="text-warm-gray text-sm">
                   We shall endeavour to get back to you shortly.
                 </p>
+                {warning && (
+                  <p className="mt-4 text-xs text-amber-300/90 font-detail leading-relaxed">
+                    {warning}
+                  </p>
+                )}
                 <button
                   type="button"
-                  onClick={() => { setSubmitted(false); setUploadedFiles([]); setError(null); }}
+                  onClick={() => { setSubmitted(false); setUploadedFiles([]); setError(null); setWarning(null); }}
                   className="mt-6 font-detail text-xs text-clay uppercase tracking-[0.2em] underline underline-offset-4 hover:text-cream transition-colors"
                 >
                   Send another enquiry
@@ -367,7 +419,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                       <span className="text-sm text-cream/70">Up to {MAX_FILES} images, max {MAX_FILE_MB}MB each — your space, a sketch, or inspiration</span>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*,.heic,.heif"
                         multiple
                         className="hidden"
                         onChange={handleFileChange}
