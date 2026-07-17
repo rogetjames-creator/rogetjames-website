@@ -134,6 +134,8 @@ const COMMISSIONS = {
         { name: "FIONA STANLEY TOTEMS",           img: `${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg` },
         { name: "ORIAN Totem",                    img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
         { name: "REVO Planter",                   img: `${CDN}/65b28727-1582-4a73-9cef-d8da2edcf885_rw_1200.jpg` },
+        { name: "EVO Planters",                   img: `${CDN}/181378db-3310-4b32-8704-00836f3e0cc8_rw_1200.jpg` },
+        { name: "EVO Planters",                   img: `${CDN}/3826640c-6476-446d-b49c-ba7d1e312544_rw_1200.jpg` },
       ],
     },
     {
