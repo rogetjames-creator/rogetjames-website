@@ -180,8 +180,9 @@ const CSS = `
   .fw-imgslot{position:relative;height:42vh;min-height:240px}
   .fw-top{padding:16px 16px}
   .fw-logo{font-size:16px}
-  .fw-catalogue-link,.fw-top-right,.fw-sitenav{display:none}
-  .fw-hamburger{display:flex}
+  .fw-catalogue-link,.fw-top-right{display:none}
+  /* Gold, so the collection menu reads apart from the site menu under the logo. */
+  .fw-hamburger{display:flex;border-color:#c08c46;color:#c08c46}
   .fw-lead{position:static;max-width:100%;left:auto;bottom:auto;padding:24px 20px 0}
   .fw-bottomrow{position:static;right:auto;bottom:auto;justify-content:center;padding:18px 20px 0}
   .fw-ctrls{position:static !important;left:auto !important;transform:none !important;width:100%;padding:18px 20px 36px;gap:16px}
