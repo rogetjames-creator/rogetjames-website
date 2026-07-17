@@ -11,8 +11,9 @@ const CAT2 = [1, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `/images/catalogues/cat2/page
 const DULUX_PAGES    = Array.from({ length: 8 }, (_, i) => `/images/catalogues/dulux/page-${String(i + 1).padStart(2, "0")}.jpg`);
 const INTERPON_PAGES = Array.from({ length: 8 }, (_, i) => `/images/catalogues/interpon/page-${String(i + 1).padStart(2, "0")}.jpg`);
 
-// Bespoke portals locked as "under construction" in production (Screens stays open).
-const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["sculpture", "projects", "commissions", "concepts"] : [];
+// Bespoke portals locked as "under construction" in production.
+// Sculpture and Concepts are public; Screens stays open.
+const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions"] : [];
 
 const CATALOGUES = [
   { label: "Wall Art & Screens",                pages: CAT1 },

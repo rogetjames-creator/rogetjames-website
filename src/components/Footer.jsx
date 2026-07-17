@@ -47,7 +47,8 @@ function scrollTo(href) {
 
 // Bespoke categories locked as "under construction" in production — their
 // footer links only scroll to the section, never open a locked gallery.
-const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["sculpture", "projects", "commissions", "concepts"] : [];
+// Sculpture and Concepts are public.
+const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions"] : [];
 
 function handleLink(link) {
   // Real path (e.g. the Wall Art / Sculpture galleries at /wall-art) —
