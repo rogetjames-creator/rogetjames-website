@@ -4,6 +4,48 @@ import { MessageCircle, X, Send, Loader } from "lucide-react";
 const GREETING = "I'm Jai. Ask me about designs, materials, process or commissions.";
 const CONVO_CAP = 20; // max questions per conversation before directing to email
 
+// Jai answers in plain text, so its rogetjames.com URLs and the studio email
+// arrive as bare strings. Turn those into real links; the rest stays literal.
+// Markdown link syntax is matched too, in case a reply ever uses it.
+const LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<>]+)|([\w.+-]+@[\w-]+\.[\w.-]+)/g;
+
+function linkify(text) {
+  if (typeof text !== "string") return text;
+  const out = [];
+  let last = 0;
+  let m;
+  LINK_RE.lastIndex = 0;
+  while ((m = LINK_RE.exec(text)) !== null) {
+    const [full, mdLabel, mdUrl, rawUrl, email] = m;
+    if (m.index > last) out.push(text.slice(last, m.index));
+    let href, label, trail = "";
+    if (mdUrl) {
+      href = mdUrl; label = mdLabel;
+    } else {
+      // A link ending a sentence swallows the punctuation — hand it back,
+      // otherwise the trailing "." lands inside the href.
+      const raw = rawUrl || email;
+      label = raw.replace(/[.,;:!?'")\]]+$/, "");
+      trail = raw.slice(label.length);
+      href = rawUrl ? label : `mailto:${label}`;
+    }
+    out.push(
+      <a
+        key={m.index}
+        href={href}
+        className="text-clay hover:text-clay-light underline underline-offset-2 break-words"
+      >
+        {label}
+      </a>
+    );
+    if (trail) out.push(trail);
+    last = m.index + full.length;
+  }
+  if (!out.length) return text;
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([{ role: "assistant", content: GREETING }]);
@@ -125,7 +167,7 @@ export default function ChatWidget() {
                     : "bg-white/6 text-cream/75 rounded-bl-sm border border-white/8"
                 }`}
               >
-                {m.content}
+                {m.role === "assistant" ? linkify(m.content) : m.content}
               </div>
             </div>
           ))}
