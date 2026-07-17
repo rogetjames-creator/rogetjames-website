@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageCircle, X, Send, Loader } from "lucide-react";
 
 const GREETING = "I'm Jai. Ask me about designs, materials, process or commissions.";
@@ -55,6 +55,18 @@ export default function ChatWidget() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Every flush of this conversation carries the same id so the server keeps
+  // one record for it rather than one per flush.
+  const convoIdRef = useRef(null);
+  if (!convoIdRef.current) {
+    convoIdRef.current = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+  // The page-leave listeners are bound once, so they need a live handle on the
+  // messages rather than the ones captured when they were bound.
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
+  const flushedRef = useRef({ questions: 0, final: false });
+
   useEffect(() => {
     const show = () => setModalOpen(true);
     const hide = () => { setModalOpen(false); setOpen(false); };
@@ -65,6 +77,40 @@ export default function ChatWidget() {
       window.removeEventListener("gallery-modal-close", hide);
     };
   }, []);
+
+  // Send the conversation to /api/chat-transcript. A visitor who just shuts the
+  // tab never clicks the X, so this also runs as the page goes away — and
+  // fetch() doesn't survive an unload, hence sendBeacon. `final` marks a real
+  // ending (chat closed, page gone); a hidden tab may still come back, so it
+  // only stores. The server keys on the id, so extra flushes are harmless.
+  const flushTranscript = useCallback((final) => {
+    const msgs = messagesRef.current;
+    const questions = msgs.filter(m => m.role === "user").length;
+    if (!questions) return;
+    const sent = flushedRef.current;
+    if (questions <= sent.questions && (!final || sent.final)) return;
+    flushedRef.current = { questions, final: final || sent.final };
+
+    const body = JSON.stringify({ id: convoIdRef.current, messages: msgs, final });
+    if (navigator.sendBeacon?.("/api/chat-transcript", new Blob([body], { type: "application/json" }))) return;
+    fetch("/api/chat-transcript", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const onVisibility = () => { if (document.visibilityState === "hidden") flushTranscript(false); };
+    const onPageHide = () => flushTranscript(true);
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", onPageHide);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", onPageHide);
+    };
+  }, [flushTranscript]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -113,14 +159,7 @@ export default function ChatWidget() {
   };
 
   const closeChat = () => {
-    const userMessages = messages.filter(m => m.role === "user");
-    if (userMessages.length > 0) {
-      fetch("/api/chat-transcript", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages }),
-      }).catch(() => {});
-    }
+    flushTranscript(true);
     setOpen(false);
   };
 
