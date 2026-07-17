@@ -68,9 +68,21 @@ const CSS = `
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity .5s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;gap:16px;padding:28px 46px}
-.fw-logo{flex:1 1 0;min-width:0;font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
+.fw-brand{flex:1 1 0;min-width:0;position:relative;display:inline-flex;flex-direction:column;align-items:flex-start}
+.fw-logo{min-width:0;font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .25s}
 .fw-logo:hover{color:#c08c46}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
+/* Site menu, sitting under the logo. Absolutely placed so opening it never
+   nudges the controls on the other side of the header. */
+.fw-sitenav{position:absolute;top:calc(100% + 8px);left:-5px;z-index:8}
+.fw-sitenav-btn{display:grid;place-items:center;width:30px;height:24px;padding:0;border-radius:7px;background:transparent;border:none;color:rgba(242,240,233,.7);cursor:pointer;transition:.25s}
+.fw-sitenav-btn:hover,.fw-sitenav-btn.open{color:#c08c46}
+.fw-sitenav-panel{position:absolute;top:calc(100% + 8px);left:0;z-index:20;width:205px;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px);animation:fwNavDrop .22s ease}
+@keyframes fwNavDrop{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
+.fw-sitenav-item{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;font-family:inherit;transition:.2s}
+.fw-sitenav-item:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
+.fw-sitenav-item.current{color:#c08c46;background:rgba(158,113,52,.12)}
+.fw-sitenav-divider{height:1px;background:rgba(242,240,233,.12);margin:6px 8px}
 .fw-top-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{flex:0 0 auto;display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
 .fw-catalogue-link:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
@@ -168,7 +180,7 @@ const CSS = `
   .fw-imgslot{position:relative;height:42vh;min-height:240px}
   .fw-top{padding:16px 16px}
   .fw-logo{font-size:16px}
-  .fw-catalogue-link,.fw-top-right{display:none}
+  .fw-catalogue-link,.fw-top-right,.fw-sitenav{display:none}
   .fw-hamburger{display:flex}
   .fw-lead{position:static;max-width:100%;left:auto;bottom:auto;padding:24px 20px 0}
   .fw-bottomrow{position:static;right:auto;bottom:auto;justify-content:center;padding:18px 20px 0}
@@ -180,6 +192,22 @@ const CSS = `
   .fw-ctrls-label{font-size:11px}
 }
 `;
+
+// This page is its own URL, so a search result can drop someone straight into
+// the gallery with no way onward but the logo and the X. These are the rest of
+// the site, reachable from under the logo.
+const SITE_NAV = [
+  { label: "Home", href: "/" },
+  { label: "Wall Art", href: "/wall-art" },
+  { label: "Sculpture", href: "/sculpture" },
+  { divider: true },
+  { label: "Bespoke", href: "/#bespoke" },
+  { label: "Process", href: "/#process" },
+  { label: "Services", href: "/#services" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
+];
+const SITE_NAV_CURRENT = "/wall-art";
 
 function Gallery() {
   const [cur, setCur] = useState(0);
@@ -199,10 +227,12 @@ function Gallery() {
   const pillRef = useRef(null);
   const [pillCenter, setPillCenter] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [siteNavOpen, setSiteNavOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const menuWrapRef = useRef(null);
+  const siteNavRef = useRef(null);
   const searchWrapRef = useRef(null);
   const searchInputRef = useRef(null);
   const subrailRef = useRef(null);
@@ -397,6 +427,18 @@ function Gallery() {
   }, [menuOpen]);
 
   useEffect(() => {
+    if (!siteNavOpen) return;
+    const onDocClick = (e) => { if (!siteNavRef.current?.contains(e.target)) setSiteNavOpen(false); };
+    const onKey = (e) => { if (e.key === "Escape") setSiteNavOpen(false); };
+    document.addEventListener("mousedown", onDocClick);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [siteNavOpen]);
+
+  useEffect(() => {
     if (!searchOpen) return;
     searchInputRef.current?.focus();
     const onDocClick = (e) => { if (!searchWrapRef.current?.contains(e.target)) setSearchOpen(false); };
@@ -493,7 +535,30 @@ function Gallery() {
       </div>
 
       <header className="fw-top">
-        <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
+        <div className="fw-brand" ref={siteNavRef}>
+          <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
+          <div className="fw-sitenav">
+            <button
+              className={`fw-sitenav-btn ${siteNavOpen ? "open" : ""}`}
+              aria-label="Site menu"
+              aria-expanded={siteNavOpen}
+              onClick={() => { setSearchOpen(false); setMenuOpen(false); setSiteNavOpen((v) => !v); }}
+            >
+              <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                <line x1="3" y1="6" x2="19" y2="6" /><line x1="3" y1="11" x2="19" y2="11" /><line x1="3" y1="16" x2="19" y2="16" />
+              </svg>
+            </button>
+            {siteNavOpen && (
+              <div className="fw-sitenav-panel">
+                {SITE_NAV.map((l, i) => (
+                  l.divider
+                    ? <div key={`d${i}`} className="fw-sitenav-divider" />
+                    : <a key={l.href} className={`fw-sitenav-item ${l.href === SITE_NAV_CURRENT ? "current" : ""}`} href={l.href}>{l.label}</a>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
         <button className="fw-catalogue-link" onClick={() => setCatOpen(true)}>
           Wall Art Catalogue
         </button>
