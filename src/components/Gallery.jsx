@@ -1409,6 +1409,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
   const imgRef = useRef(null);
+  const touchStartX = useRef(0);
   const lenis = useLenis();
   const [slideIdx, setSlideIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -1487,7 +1488,10 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
   }, [handleClose, handleLeft, handleRight]);
 
   return (
-    <div ref={overlayRef} className="lightbox-overlay" onClick={handleClose}>
+    <div ref={overlayRef} className="lightbox-overlay" onClick={handleClose}
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50) (dx < 0 ? handleRight() : handleLeft()); }}
+    >
       {/* Left arrow */}
       <button
         onClick={(e) => { e.stopPropagation(); handleLeft(); }}
