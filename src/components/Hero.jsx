@@ -35,9 +35,10 @@ const FADE_DURATION = 1.6;
 // gently rather than snapping on.
 const INITIAL_FADE = 2.8;
 const INITIAL_EASE = "cubic-bezier(0.33, 0, 0.2, 1)";
-// How long the opening image is held before the slideshow starts advancing —
-// long enough for the full ART meets design entrance to play over it.
-const INTRO_HOLD = 9500;
+// How long the opening image is held before the slideshow starts advancing.
+// The entrance finishes around 8.9s, so this leaves the completed mark sitting
+// still on the opening picture for a good few seconds before the first change.
+const INTRO_HOLD = 15000;
 
 // ART meets design mark — paths lifted verbatim from James's Illustrator SVGs
 // (symbol: "…symbol with O no words"; words: "Meets design outlines"), all on
