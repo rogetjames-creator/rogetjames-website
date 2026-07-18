@@ -63,7 +63,7 @@ function serve() {
 // into the serialized HTML, so they hydrate cleanly without this).
 function resetIntro() {
   const sel = [
-    ".hero-line-1", ".hero-line-2", ".hero-sub",
+    ".hero-mark", ".hero-sub",
     ".hero-loc-1", ".hero-loc-2", ".hero-loc-3", ".hero-loc-4",
     ".hero-eyebrow",
   ].join(",");
