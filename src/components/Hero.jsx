@@ -61,11 +61,14 @@ const SYMBOL_FILL = "rgba(237,232,223,0.44)";
 // Fine bevel (light top edge, dark bottom edge) + a distinct, tighter cast
 // shadow (dropped further, less blur). Values in SVG user units — the mark is
 // ~342px over a 1098-unit box (~0.31 scale).
+// One cast shadow for the whole mark, applied to the wrapping group — so the
+// shadow is thrown by the combined silhouette onto the photo behind and can
+// never fall across ART, MEETS or DESIGN themselves. Positions and layer order
+// are unchanged.
 const CAST_SHADOW = "drop-shadow(0 42px 8px rgba(0,0,0,0.7))";
+// Symbol keeps only its fine bevel; the cast shadow lives on the group.
 const SYMBOL_FILTER =
-  `${CAST_SHADOW} drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))`;
-// MEETS/DESIGN carry the same cast shadow as the ART symbol.
-const WORD_FILTER = CAST_SHADOW;
+  "drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))";
 
 const DRIFT = [
   { el: ".hero-sub",     x: 40,   y: 30,  delay: 5.0  },
@@ -197,16 +200,18 @@ export default function Hero() {
             aria-label="ART meets design"
             role="img"
           >
-            <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
-            <g id="hero-meets" style={{ fill: WORD_FILL, filter: WORD_FILTER, opacity: 0 }}>
-              {MEETS_PATHS.map((d, i) => <path key={i} d={d} />)}
-            </g>
-            <g id="hero-design" style={{ fill: WORD_FILL, filter: WORD_FILTER, opacity: 0 }}>
-              {DESIGN_PATHS.map((d, i) => <path key={i} d={d} />)}
+            <g style={{ filter: CAST_SHADOW }}>
+              <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
+              <g id="hero-meets" style={{ fill: WORD_FILL, opacity: 0 }}>
+                {MEETS_PATHS.map((d, i) => <path key={i} d={d} />)}
+              </g>
+              <g id="hero-design" style={{ fill: WORD_FILL, opacity: 0 }}>
+                {DESIGN_PATHS.map((d, i) => <path key={i} d={d} />)}
+              </g>
             </g>
           </svg>
 
-          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 5px 2px rgba(0,0,0,0.7)" }}>
+          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 2px rgba(0,0,0,0.7)" }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
           </p>
         </div>
