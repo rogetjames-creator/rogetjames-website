@@ -197,18 +197,16 @@ export default function Hero() {
             aria-label="ART meets design"
             role="img"
           >
-            {/* MEETS is drawn first so it sits BEHIND the ART symbol — otherwise
-                it overlaps the symbol and casts its shadow across it. */}
+            <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
             <g id="hero-meets" style={{ fill: WORD_FILL, filter: WORD_FILTER, opacity: 0 }}>
               {MEETS_PATHS.map((d, i) => <path key={i} d={d} />)}
             </g>
-            <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
             <g id="hero-design" style={{ fill: WORD_FILL, filter: WORD_FILTER, opacity: 0 }}>
               {DESIGN_PATHS.map((d, i) => <path key={i} d={d} />)}
             </g>
           </svg>
 
-          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 2px rgba(0,0,0,0.7)" }}>
+          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 5px 2px rgba(0,0,0,0.7)" }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
           </p>
         </div>
