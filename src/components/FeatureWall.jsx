@@ -214,6 +214,8 @@ function Gallery() {
   const [cur, setCur] = useState(0);
   const [pieceIdx, setPieceIdx] = useState(0);
   const busy = useRef(false);
+  const expandTouchX = useRef(0);
+  const expandSwiped = useRef(false);
   const [pieceFlash, setPieceFlash] = useState(-1);
   const [expanded, setExpanded] = useState(false);
   const [detailItem, setDetailItem] = useState(null);
@@ -717,7 +719,11 @@ function Gallery() {
       </div>
 
       {expanded && (
-        <div className="fw-expand-overlay" onClick={() => setExpanded(false)}>
+        <div className="fw-expand-overlay"
+          onClick={() => { if (expandSwiped.current) { expandSwiped.current = false; return; } setExpanded(false); }}
+          onTouchStart={(e) => { expandTouchX.current = e.touches[0].clientX; expandSwiped.current = false; }}
+          onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - expandTouchX.current; if (Math.abs(dx) > 50) { expandSwiped.current = true; if (pieces.length > 1) expandNav(dx < 0 ? 1 : -1); } }}
+        >
           {pieces.length > 1 && (
             <button
               className="fw-expand-nav prev"
