@@ -1,0 +1,75 @@
+import { useState, useEffect } from "react";
+import HeroClassic from "./HeroClassic";
+
+// Private preview of the ORIGINAL "Art meets design" hero (the first hero, with
+// the animated ROJ logo). Reachable only at /hero behind the same admin password
+// as Stats/Media/Feature previews. This is the workspace for reworking the hero
+// before the new "Art meets design" replaces the live one — the live site stays
+// untouched until James says go. NOT public (noindex).
+export default function HeroPreview() {
+  const [secret, setSecret] = useState("");
+  const [authed, setAuthed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const login = async (adminSecret) => {
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/stats-data", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminSecret }),
+      });
+      const json = await res.json();
+      if (!res.ok || json.error) {
+        setError(json.error || "Failed."); setAuthed(false);
+        try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+      } else {
+        setAuthed(true);
+        try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+      }
+    } catch { setError("Request failed. Check your connection."); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => {
+    const urlKey = new URLSearchParams(window.location.search).get("key");
+    const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
+    if (urlKey) window.history.replaceState({}, "", "/hero");
+    if (saved) login(saved);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-jet flex items-center justify-center px-6">
+        <div className="w-full max-w-sm">
+          <div className="bg-white/8 border border-white/18 rounded-[2rem] p-8">
+            <div className="text-center mb-8">
+              <span className="inline-block font-heading font-bold text-cream text-xl tracking-tight">
+                ROGET<span className="font-normal italic font-drama">james</span>
+              </span>
+              <div className="w-8 h-px bg-clay/60 mx-auto mt-3 mb-4" />
+              <p className="font-detail text-[10px] text-cream/85 uppercase tracking-[0.25em]">Hero — Private Preview</p>
+            </div>
+            <form onSubmit={e => { e.preventDefault(); if (secret.trim()) login(secret.trim()); }} className="space-y-4">
+              <input type="password" value={secret} onChange={e => setSecret(e.target.value)} placeholder="Admin password"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-heading text-cream tracking-[0.15em] placeholder:text-cream/30 placeholder:font-detail placeholder:text-sm outline-none transition-colors"
+                style={{ caretColor: "#9E7134" }} />
+              <button type="submit" disabled={!secret.trim() || loading}
+                className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 transition-all">
+                {loading ? "Loading…" : "Enter"}
+              </button>
+            </form>
+            {error && <p className="font-detail text-[11px] text-red-300 text-center mt-4">{error}</p>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="bg-charcoal">
+      <HeroClassic />
+    </main>
+  );
+}

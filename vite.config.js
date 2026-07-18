@@ -13,6 +13,7 @@ export default defineConfig({
         stats: resolve(__dirname, 'stats.html'),
         media: resolve(__dirname, 'media.html'),
         admin: resolve(__dirname, 'admin.html'),
+        hero:  resolve(__dirname, 'hero.html'),
         melbourne: resolve(__dirname, 'melbourne.html'),
         perth: resolve(__dirname, 'perth.html'),
         'gold-coast': resolve(__dirname, 'gold-coast.html'),

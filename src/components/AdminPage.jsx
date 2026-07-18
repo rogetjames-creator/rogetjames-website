@@ -80,6 +80,7 @@ export default function AdminPage() {
     { href: "/stats", title: "Stats", desc: "Visitor pricing enquiries, postcodes, Q&Ai chats." },
     { href: "/media", title: "Media upload", desc: "Add images from iCloud for any part of the site." },
     { href: "/vault?admin=1", title: "Client Vault", desc: "Send a private locked page to a client." },
+    { href: "/hero", title: "Hero preview (Art meets design)", desc: "The original hero with the animated logo — workspace for the new hero before it goes live." },
     { href: "/wall-art", title: "Wall Art gallery", desc: "The live Wall Art gallery." },
     { href: "/sculpture", title: "Sculpture gallery", desc: "The live Sculpture gallery." },
     { href: "/feature-screens", title: "Screens preview", desc: "Private preview of the Screens gallery style — not yet live." },

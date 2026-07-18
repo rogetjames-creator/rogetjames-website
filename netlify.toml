@@ -136,6 +136,11 @@
   status = 200
 
 [[redirects]]
+  from = "/hero"
+  to = "/hero.html"
+  status = 200
+
+[[redirects]]
   from = "/melbourne"
   to = "/melbourne.html"
   status = 200
