@@ -195,11 +195,11 @@ export default function Hero() {
             aria-label="ART meets design"
             role="img"
           >
-            <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER }} />
-            <g id="hero-meets" style={{ fill: WORD_FILL, filter: WORD_FILTER }}>
+            <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
+            <g id="hero-meets" style={{ fill: WORD_FILL, filter: WORD_FILTER, opacity: 0 }}>
               {MEETS_PATHS.map((d, i) => <path key={i} d={d} />)}
             </g>
-            <g id="hero-design" style={{ fill: WORD_FILL, filter: WORD_FILTER }}>
+            <g id="hero-design" style={{ fill: WORD_FILL, filter: WORD_FILTER, opacity: 0 }}>
               {DESIGN_PATHS.map((d, i) => <path key={i} d={d} />)}
             </g>
           </svg>
