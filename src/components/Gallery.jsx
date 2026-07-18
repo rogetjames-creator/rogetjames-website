@@ -301,7 +301,7 @@ const WALL_ART_SERIES = [
       { name: "BANKSIA Oldmanis",          img: "/images/banksia/banksia-oldmanis-bronze.jpg", slides: ["/images/banksia/banksia-oldmanis-bronze.jpg", "/images/banksia/banksia-oldmanis-black.jpg", "/images/banksia/banksia-oldmanis-framed.jpg"] },
       { name: "WANDOO",                    img: "/images/australian-natives/wandoo-1.jpg" },
       { name: "BANKSIA Free Range",        img: "/images/banksia/banksia-main.jpg" },
-      { name: "BANKSIA Rec Landscape",     img: "/images/banksia/banksia-rec-rust.jpg", slides: ["/images/banksia/banksia-rec-rust.jpg", "/images/banksia/banksia-rec-framed.jpg", "/images/banksia/banksia-rec-landscape.jpg"] },
+      { name: "BANKSIA Rec Landscape",     img: "/images/banksia/banksia-rec-rust.jpg", slides: ["/images/banksia/banksia-rec-rust.jpg", "/images/banksia/banksia-rec-framed.jpg"] },
       { name: "BANKSIA Rec Portrait",      img: "/images/banksia/banksia-framed-rust.jpg" },
       { name: "BANKSIA Free Range — Custom", img: "/images/banksia/banksia-free-2.jpg" },
       { name: "BANKSIA Round",             img: "/images/banksia/banksia-round.jpg", slides: ["/images/banksia/banksia-round.jpg", "/images/banksia/banksia-round-2.jpg", "/images/banksia/banksia-framed-circle.jpg"] },
