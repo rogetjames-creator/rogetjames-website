@@ -14,7 +14,7 @@ import { netlifyImg } from "../utils/img";
 gsap.registerPlugin(ScrollTrigger);
 
 const SLIDES = [
-  "/images/hero/hero-banksia-oldmanis.jpg",
+  "/images/hero/hero-rue-1.jpg",
   "/images/hero/hero-bambu.jpg",
   "/images/hero/hero-creeping-fig-autumn-1.jpg",
   "/images/hero/hero-creeping-fig-autumn-2.jpg",
@@ -22,11 +22,11 @@ const SLIDES = [
   "/images/hero/hero-gren-wide.jpg",
   "/images/hero/hero-gren-free.jpg",
   "/images/hero/hero-obliationes.jpg",
-  "/images/hero/hero-rue-1.jpg",
   "/images/hero/hero-rue-3rd.jpg",
   "/images/hero/hero-seaweed.jpg",
   "/images/hero/hero-vasuki.jpg",
   "/images/marakesh/marakesh-promo.jpg",
+  "/images/hero/hero-banksia-oldmanis.jpg",
 ];
 
 const INTERVAL = 5500;
@@ -57,11 +57,12 @@ const DESIGN_PATHS = [
 // Words: light grey/white, a fraction transparent. Symbol: translucent glass
 // like the old "Art", a little more solid than before.
 const WORD_FILL = "rgba(237,234,227,0.88)";
-const SYMBOL_FILL = "rgba(237,232,223,0.30)";
-// Fine bevel (light top edge, dark bottom edge) + a clear soft cast shadow.
-// Values in SVG user units — the mark is ~380px over a 1098-unit box (~0.35).
+const SYMBOL_FILL = "rgba(237,232,223,0.44)";
+// Fine bevel (light top edge, dark bottom edge) + a distinct, tighter cast
+// shadow (dropped further, less blur). Values in SVG user units — the mark is
+// ~342px over a 1098-unit box (~0.31 scale).
 const SYMBOL_FILTER =
-  "drop-shadow(0 24px 38px rgba(0,0,0,0.6)) drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))";
+  "drop-shadow(0 42px 20px rgba(0,0,0,0.6)) drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))";
 const WORD_FILTER = "drop-shadow(0 3px 6px rgba(0,0,0,0.55))";
 
 const DRIFT = [
@@ -188,7 +189,7 @@ export default function Hero() {
               viewBox cropped to the drawn content (+ headroom for the shadow). */}
           <svg
             className="hero-mark block"
-            style={{ width: "clamp(240px, 30vw, 380px)", height: "auto", overflow: "visible", marginBottom: "1.75rem" }}
+            style={{ width: "clamp(216px, 27vw, 342px)", height: "auto", overflow: "visible", marginBottom: "1.75rem" }}
             viewBox="18 150 1098 880"
             xmlns="http://www.w3.org/2000/svg"
             aria-label="ART meets design"
