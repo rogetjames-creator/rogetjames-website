@@ -31,6 +31,13 @@ const SLIDES = [
 
 const INTERVAL = 5500;
 const FADE_DURATION = 1.6;
+// The opening fade of the first photo — slower and eased, so the hero arrives
+// gently rather than snapping on.
+const INITIAL_FADE = 2.8;
+const INITIAL_EASE = "cubic-bezier(0.33, 0, 0.2, 1)";
+// How long the opening image is held before the slideshow starts advancing —
+// long enough for the full ART meets design entrance to play over it.
+const INTRO_HOLD = 9500;
 
 // ART meets design mark — paths lifted verbatim from James's Illustrator SVGs
 // (symbol: "…symbol with O no words"; words: "Meets design outlines"), all on
@@ -70,13 +77,16 @@ const CAST_SHADOW = "drop-shadow(0 42px 8px rgba(0,0,0,0.7))";
 const SYMBOL_FILTER =
   "drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))";
 
+// Delays are measured from the moment the first hero photo arrives, not from
+// page load — the whole intro is triggered by the image, so the mark always
+// materialises over the picture rather than over black.
 const DRIFT = [
-  { el: ".hero-sub",     x: 40,   y: 30,  delay: 5.0  },
-  { el: ".hero-loc-1",   x: -50,  y: 20,  delay: 5.3  },
-  { el: ".hero-loc-2",   x: 30,   y: -15, delay: 5.45 },
-  { el: ".hero-loc-3",   x: -20,  y: 35,  delay: 5.6  },
-  { el: ".hero-loc-4",   x: 50,   y: -25, delay: 5.75 },
-  { el: ".hero-eyebrow", x: 0,    y: 12,  delay: 6.1  },
+  { el: ".hero-sub",     x: 40,   y: 30,  delay: 6.2  },
+  { el: ".hero-loc-1",   x: -50,  y: 20,  delay: 6.5  },
+  { el: ".hero-loc-2",   x: 30,   y: -15, delay: 6.65 },
+  { el: ".hero-loc-3",   x: -20,  y: 35,  delay: 6.8  },
+  { el: ".hero-loc-4",   x: 50,   y: -25, delay: 6.95 },
+  { el: ".hero-eyebrow", x: 0,    y: 12,  delay: 7.3  },
 ];
 
 export default function Hero() {
@@ -85,20 +95,46 @@ export default function Hero() {
   const [active, setActive] = useState(0);
   const idxRef = useRef(0);
   const layerRefs = useRef([null, null]);
-  const [slideshowReady, setSlideshowReady] = useState(false);
+  // False until the slideshow has advanced past the opening image.
+  const advancedRef = useRef(false);
+  // Guards the intro so it plays once per entry, whichever trigger gets there
+  // first — the direct call on image-ready or the IntersectionObserver.
+  const playedRef = useRef(false);
+  // True once the FIRST hero photo has actually arrived. This — not a timer —
+  // is what fades the picture up and triggers the ART meets design entrance.
+  const [heroImageReady, setHeroImageReady] = useState(false);
+  // The very first reveal fades slower and on a soft curve; later slide-to-slide
+  // crossfades go back to the quicker linear fade.
+  const [firstFadeDone, setFirstFadeDone] = useState(false);
   const lenis = useLenis();
 
-  // Reveal the slideshow once the intro has settled.
+  // Catch the first photo landing. onLoad covers the normal case; this covers a
+  // cached image (already complete before onLoad could attach), and the second
+  // timer is a fallback so a slow/failed image can never leave the hero empty.
   useEffect(() => {
-    const t = setTimeout(() => setSlideshowReady(true), 2800);
-    return () => clearTimeout(t);
+    const cached = setTimeout(() => {
+      if (layerRefs.current[0]?.complete) setHeroImageReady(true);
+    }, 0);
+    const fallback = setTimeout(() => setHeroImageReady(true), 6000);
+    return () => { clearTimeout(cached); clearTimeout(fallback); };
   }, []);
 
-  // Crossfade using only two decode-gated image layers (see the old hero notes).
+  // Once the photo is up, let the slow opening fade finish before handing over
+  // to the quicker linear crossfade used between slides.
   useEffect(() => {
-    if (!slideshowReady) return;
+    if (!heroImageReady) return;
+    const t = setTimeout(() => setFirstFadeDone(true), INITIAL_FADE * 1000);
+    return () => clearTimeout(t);
+  }, [heroImageReady]);
+
+  // Crossfade using only two decode-gated image layers (see the old hero notes).
+  // The opening image is held until the mark has finished arriving, so the whole
+  // entrance plays over the first photo instead of being cut off by a slide change.
+  useEffect(() => {
+    if (!heroImageReady) return;
     let cancelled = false;
     const id = setTimeout(async () => {
+      advancedRef.current = true;
       const nextSlide = (idxRef.current + 1) % SLIDES.length;
       const incoming = active === 0 ? 1 : 0;
       flushSync(() => setLayerIdx((prev) => { const n = [...prev]; n[incoming] = nextSlide; return n; }));
@@ -107,9 +143,9 @@ export default function Hero() {
       if (cancelled) return;
       idxRef.current = nextSlide;
       setActive(incoming);
-    }, INTERVAL);
+    }, advancedRef.current ? INTERVAL : INTRO_HOLD);
     return () => { cancelled = true; clearTimeout(id); };
-  }, [active, slideshowReady]);
+  }, [active, heroImageReady]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -123,31 +159,46 @@ export default function Hero() {
     };
 
     const runDrift = () => {
+      if (playedRef.current) return;
+      playedRef.current = true;
       DRIFT.forEach(({ el, x, y, delay }) => {
         gsap.fromTo(el, { x, y, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 1.6, delay, ease: "power2.out" });
       });
 
       // The mark sequence: ART glass fades in, MEETS flies in, then DESIGN.
-      // Slow and deliberate — the symbol materialises before the words arrive.
+      // The opening fade is long and eased on a gentle sine so the symbol
+      // emerges with the photo rather than appearing on it.
       parkMark();
       const tl = gsap.timeline();
-      tl.to("#hero-art-symbol", { opacity: 1, duration: 2.6, ease: "power2.out" }, 0.5);
-      tl.to("#hero-meets",  { opacity: 1, x: 0,        duration: 1.5, ease: "power3.out" }, 2.9);
-      tl.to("#hero-design", { opacity: 1, x: 0, y: 0,  duration: 1.5, ease: "power3.out" }, 4.4);
+      tl.to("#hero-art-symbol", { opacity: 1, duration: 4.2, ease: "sine.out" }, 0.6);
+      tl.to("#hero-meets",  { opacity: 1, x: 0,        duration: 1.5, ease: "power3.out" }, 3.9);
+      tl.to("#hero-design", { opacity: 1, x: 0, y: 0,  duration: 1.5, ease: "power3.out" }, 5.4);
     };
 
     const resetDrift = () => {
+      playedRef.current = false;
       DRIFT.forEach(({ el, x, y }) => gsap.set(el, { x, y, opacity: 0 }));
       parkMark();
     };
 
     resetDrift();
 
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) runDrift(); else resetDrift(); },
-      { threshold: 0.3 }
-    );
-    observer.observe(section);
+    // Hold everything hidden until the first photo has landed — the image
+    // arriving is what triggers the entrance.
+    let observer;
+    if (heroImageReady) {
+      // Play straight away if the hero is on screen. Don't rely on the observer's
+      // first callback for this — if it were ever missed the hero would sit blank.
+      const r = section.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.7 && r.bottom > 0) runDrift();
+
+      // The observer then only handles scrolling away and back.
+      observer = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) runDrift(); else resetDrift(); },
+        { threshold: 0.3 }
+      );
+      observer.observe(section);
+    }
 
     const ctx = gsap.context(() => {
       ScrollTrigger.matchMedia({
@@ -160,8 +211,8 @@ export default function Hero() {
       });
     }, sectionRef);
 
-    return () => { observer.disconnect(); ctx.revert(); };
-  }, []);
+    return () => { observer?.disconnect(); ctx.revert(); };
+  }, [heroImageReady]);
 
   return (
     <section ref={sectionRef} className="relative h-dvh w-full overflow-hidden flex items-end">
@@ -177,7 +228,14 @@ export default function Hero() {
             alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={layer !== 0}
             className="absolute inset-0 w-full h-full object-contain"
-            style={{ opacity: slideshowReady && active === layer ? 1 : 0, transition: `opacity ${FADE_DURATION}s linear`, willChange: "opacity", transform: "translateZ(0)", backfaceVisibility: "hidden" }}
+            style={{
+              opacity: heroImageReady && active === layer ? 1 : 0,
+              transition: firstFadeDone
+                ? `opacity ${FADE_DURATION}s linear`
+                : `opacity ${INITIAL_FADE}s ${INITIAL_EASE}`,
+              willChange: "opacity", transform: "translateZ(0)", backfaceVisibility: "hidden",
+            }}
+            onLoad={layer === 0 ? () => setHeroImageReady(true) : undefined}
             loading={layer === 0 ? "eager" : "lazy"}
             decoding="async"
             fetchPriority={layer === 0 ? "high" : "auto"}
