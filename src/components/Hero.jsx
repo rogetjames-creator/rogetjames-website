@@ -61,9 +61,11 @@ const SYMBOL_FILL = "rgba(237,232,223,0.44)";
 // Fine bevel (light top edge, dark bottom edge) + a distinct, tighter cast
 // shadow (dropped further, less blur). Values in SVG user units — the mark is
 // ~342px over a 1098-unit box (~0.31 scale).
+const CAST_SHADOW = "drop-shadow(0 42px 8px rgba(0,0,0,0.7))";
 const SYMBOL_FILTER =
-  "drop-shadow(0 42px 20px rgba(0,0,0,0.6)) drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))";
-const WORD_FILTER = "drop-shadow(0 3px 6px rgba(0,0,0,0.55))";
+  `${CAST_SHADOW} drop-shadow(0 -2.5px 1.5px rgba(255,253,248,0.5)) drop-shadow(0 3px 2px rgba(0,0,0,0.65))`;
+// MEETS/DESIGN carry the same cast shadow as the ART symbol.
+const WORD_FILTER = CAST_SHADOW;
 
 const DRIFT = [
   { el: ".hero-sub",     x: 40,   y: 30,  delay: 5.0  },
@@ -204,7 +206,7 @@ export default function Hero() {
             </g>
           </svg>
 
-          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 2px 10px rgba(0,0,0,0.8)" }}>
+          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 5px 2px rgba(0,0,0,0.7)" }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works, crafted in Australia.
           </p>
         </div>

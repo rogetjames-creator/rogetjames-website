@@ -1,24 +1,6 @@
 export default function StudioBio() {
   return (
-    <section className="relative bg-charcoal py-12 md:py-20 overflow-hidden">
-
-      {/* Limewash — tonal wash patches (subtle) */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: [
-          "radial-gradient(ellipse 90% 55% at 10% 15%, rgba(255,255,255,0.05) 0%, transparent 65%)",
-          "radial-gradient(ellipse 60% 80% at 90% 70%, rgba(255,255,255,0.04) 0%, transparent 60%)",
-          "radial-gradient(ellipse 50% 50% at 55% 5%,  rgba(0,0,0,0.06) 0%, transparent 55%)",
-          "radial-gradient(ellipse 70% 40% at 22% 90%, rgba(255,255,255,0.04) 0%, transparent 52%)",
-          "radial-gradient(ellipse 45% 65% at 75% 30%, rgba(0,0,0,0.05) 0%, transparent 50%)",
-        ].join(", "),
-      }} />
-      {/* Limewash — chalky grain (subtle) */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.68' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        backgroundSize: "200px 200px",
-        mixBlendMode: "soft-light",
-        opacity: 0.15,
-      }} />
+    <section className="relative bg-ink py-12 md:py-20 overflow-hidden">
 
       <div className="relative z-10 max-w-2xl mx-auto px-6 md:px-12 text-center">
         <div className="studio-bio-inner flex flex-col items-center gap-0">
