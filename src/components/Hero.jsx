@@ -102,7 +102,6 @@ const SEQUENCE = [
   ["LIVE",  "INSPIRED"],
   ["GOOD",  "MATTERS"],
   ["IDEAS", "FORMED"],
-  ["THOU",  "THAT"],
   ["SEE",   "DIFFERENTLY"],
   ["SEEK",  "DESIGN"],
   ["METAL", "FORMS"],
