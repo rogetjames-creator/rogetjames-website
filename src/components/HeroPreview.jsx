@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Hero from "./Hero";
+import HeroFlip from "./HeroFlip";
 
 // Private preview of the ORIGINAL "Art meets design" hero (the first hero, with
 // the animated ROJ logo). Reachable only at /hero behind the same admin password
@@ -69,7 +69,7 @@ export default function HeroPreview() {
 
   return (
     <main className="bg-charcoal">
-      <Hero />
+      <HeroFlip />
     </main>
   );
 }
