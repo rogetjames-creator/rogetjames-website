@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { netlifyImg } from "../utils/img";
+import { WORDS } from "./heroWords";
 
 // Homepage hero. James's "ART meets design" vector mark replaces the old "Art
 // meets design." text + centred-top animated ROJ logo: the glass ART symbol
@@ -82,16 +83,44 @@ const SYMBOL_FILTER =
 // page load — the whole intro is triggered by the image, so the mark always
 // materialises over the picture rather than over black.
 // ── Flip-board word sets ──────────────────────────────────────────────
-// Each slot holds a list of words; every FLIP_EVERY the slot flips to the next
-// one, letter by letter, like an analogue departure board. Each word is an
-// array of outlined letter paths on the shared 1133.86 artboard — drop a new
-// word in by pasting its outlined paths as another array entry. Letters are
-// matched by index, so keep each word's letters in left-to-right order.
-const MEETS_WORDS  = [MEETS_PATHS];
-const DESIGN_WORDS = [DESIGN_PATHS];
-// Most letters any word in each slot has — that many flip cells get rendered.
-const MEETS_CELLS  = Math.max(...MEETS_WORDS.map((w) => w.length));
-const DESIGN_CELLS = Math.max(...DESIGN_WORDS.map((w) => w.length));
+// Every FLIP_EVERY seconds both slots flip to the next pair, letter by letter,
+// like an analogue departure board. Words come from heroWords.js (James's
+// outlined SVG), each normalised to left edge x=0 and baseline y=0.
+//
+// Anchoring — both words grow OUTWARD from the ART symbol:
+//   MEETS slot  — right-aligned: every word ENDS where the S of MEETS ends.
+//   DESIGN slot — left-aligned:  every word STARTS where the D of DESIGN starts.
+const SLOTS = {
+  meets:  { id: "hero-meets",  baseline: 449.17, align: "right", anchor: 299.7 },
+  design: { id: "hero-design", baseline: 700.39, align: "left",  anchor: 802.5 },
+};
+
+// The pairs shown, in order. Left word sits above-left of the symbol, right word
+// below-right, so each line reads ART <left> <right>. James sets the sequence —
+// this is the pairing as the words were laid out in his artboard.
+const SEQUENCE = [
+  ["MEETS",  "DESIGN"],
+  ["SEEKS",  "FORMS"],
+  ["SEE",    "INSPIRED"],
+  ["IDEAS",  "DIFFERENTLY"],
+  ["MAKE",   "MATTERS"],
+  ["LIVE",   "REIMAGINED"],
+  ["LIGHT",  "FORMED"],
+  ["SEEK",   "MOVES"],
+  ["WHEN",   "MATTER"],
+  ["THOU",   "GOOD"],
+];
+
+// Resolve a word to positioned cells: each letter's glyph plus its x on the
+// artboard, honouring the slot's anchor.
+function cellsFor(slot, key) {
+  const w = WORDS[key];
+  if (!w) return [];
+  const left = slot.align === "right" ? slot.anchor - w.width : slot.anchor;
+  return w.glyphs.map((g) => ({ d: g.d, x: left + g.x }));
+}
+const MEETS_CELLS  = Math.max(...SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
+const DESIGN_CELLS = Math.max(...SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
 
 const FLIP_EVERY = 6;      // seconds between word changes
 const FLIP_STAGGER = 0.07; // delay between consecutive letters
@@ -152,32 +181,39 @@ export default function HeroFlip() {
   // closed point, then opens again, staggered left-to-right across the word.
   useEffect(() => {
     if (!heroImageReady) return;
-    const slots = [
-      { id: "hero-meets",  words: MEETS_WORDS,  at: { i: 0 } },
-      { id: "hero-design", words: DESIGN_WORDS, at: { i: 0 } },
-    ];
+    const at = { i: 0 };
 
-    const flip = (slot) => {
+    const flipSlot = (slot, key) => {
       const host = document.getElementById(slot.id);
       if (!host) return;
       const cells = [...host.querySelectorAll(".flip-cell")];
-      slot.at.i = (slot.at.i + 1) % slot.words.length;
-      const next = slot.words[slot.at.i];
+      const next = cellsFor(slot, key);
       cells.forEach((cell, i) => {
         const path = cell.querySelector("path");
+        const pos = cell.parentNode; // outer group carries the position
+        const target = next[i];
         gsap.timeline({ delay: i * FLIP_STAGGER })
           .to(cell, { scaleY: 0, duration: FLIP_DOWN, ease: "power2.in", transformOrigin: "50% 50%" })
           // darken at the closed point, the way a flap catches shadow mid-turn
           .to(cell, { opacity: 0.55, duration: 0.01 }, "<0.14")
-          .add(() => path.setAttribute("d", next[i] || ""))
-          .to(cell, { scaleY: 1, duration: FLIP_UP, ease: "power2.out" })
-          .to(cell, { opacity: 1, duration: FLIP_UP * 0.6 }, "<");
+          .add(() => {
+            // swapped while the flap is shut, so the move is never seen
+            path.setAttribute("d", target ? target.d : "");
+            if (target) pos.setAttribute("transform", `translate(${target.x} ${slot.baseline})`);
+          })
+          .to(cell, { scaleY: target ? 1 : 0, duration: FLIP_UP, ease: "power2.out" })
+          .to(cell, { opacity: target ? 1 : 0, duration: FLIP_UP * 0.6 }, "<");
       });
     };
 
     let interval;
     const start = setTimeout(() => {
-      interval = setInterval(() => slots.forEach(flip), FLIP_EVERY * 1000);
+      interval = setInterval(() => {
+        at.i = (at.i + 1) % SEQUENCE.length;
+        const [l, r] = SEQUENCE[at.i];
+        flipSlot(SLOTS.meets, l);
+        flipSlot(SLOTS.design, r);
+      }, FLIP_EVERY * 1000);
     }, FLIP_START_DELAY * 1000);
     return () => { clearTimeout(start); clearInterval(interval); };
   }, [heroImageReady]);
@@ -316,18 +352,26 @@ export default function HeroFlip() {
             <g style={{ filter: CAST_SHADOW }}>
               <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
               <g id="hero-meets" style={{ fill: WORD_FILL, opacity: 0 }}>
-                {Array.from({ length: MEETS_CELLS }, (_, i) => (
-                  <g key={i} className="flip-cell">
-                    <path d={MEETS_WORDS[0][i] || ""} />
-                  </g>
-                ))}
+                {Array.from({ length: MEETS_CELLS }, (_, i) => {
+                  const c = cellsFor(SLOTS.meets, SEQUENCE[0][0])[i];
+                  return (
+                    <g key={i} transform={`translate(${c ? c.x : 0} ${SLOTS.meets.baseline})`}>
+                      <g className="flip-cell"><path d={c ? c.d : ""} /></g>
+                    </g>
+                  );
+                })}
               </g>
               <g id="hero-design" style={{ fill: WORD_FILL, opacity: 0 }}>
-                {Array.from({ length: DESIGN_CELLS }, (_, i) => (
-                  <g key={i} className="flip-cell">
-                    <path d={DESIGN_WORDS[0][i] || ""} />
-                  </g>
-                ))}
+                {Array.from({ length: DESIGN_CELLS }, (_, i) => {
+                  const c = cellsFor(SLOTS.design, SEQUENCE[0][1])[i];
+                  return (
+                    <g key={i} transform={`translate(${c ? c.x : 0} ${SLOTS.design.baseline})`}>
+                      <g className="flip-cell" style={c ? undefined : { opacity: 0 }}>
+                        <path d={c ? c.d : ""} />
+                      </g>
+                    </g>
+                  );
+                })}
               </g>
             </g>
           </svg>
