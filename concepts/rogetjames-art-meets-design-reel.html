@@ -211,15 +211,19 @@ function flipTo(slotKey, word, startAt) {
   cells[slotKey].forEach((cell, i) => {
     const target = ls[i];
     const begin  = startAt + i * CFG.letterStagger;
-    const x0     = parseFloat(cell.dataset.x || 0);
+    // The whole pass is scheduled up front, so the letter's position must be
+    // read LIVE — never captured here. Capturing it would make a letter snap to
+    // wherever it sat when the pass was scheduled, so it closes in the wrong
+    // place and half appears out of position.
     tween(begin, CFG.flipShut, ease.inCubic, p => {
-      place(cell, x0, s.baseline, 1 - p);
+      place(cell, parseFloat(cell.dataset.x || 0), s.baseline, 1 - p);
       if (p > 0.85) cell.style.opacity = 0.55;     // flap catches shadow mid-turn
     });
     at(begin + CFG.flipShut, () => {               // glyph swapped while shut
+      const prevX = parseFloat(cell.dataset.x || 0);
       cell.firstChild.setAttribute('d', target ? target.d : '');
-      cell.dataset.x = target ? target.x : x0;
-      place(cell, target ? target.x : x0, s.baseline, 0);
+      cell.dataset.x = target ? target.x : prevX;
+      place(cell, parseFloat(cell.dataset.x || 0), s.baseline, 0);
     });
     tween(begin + CFG.flipShut, CFG.flipOpen, ease.outCubic, p => {
       place(cell, parseFloat(cell.dataset.x || 0), s.baseline, target ? p : 0);
