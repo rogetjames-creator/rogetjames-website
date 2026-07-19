@@ -101,11 +101,11 @@ const SEQUENCE = [
   ["MEETS", "DESIGN"],      // the resting pair the mark opens on
   ["LIVE",  "INSPIRED"],
   ["GOOD",  "MATTERS"],
-  ["MAKE",  "MATTER"],
   ["IDEAS", "FORMED"],
   ["THOU",  "THAT"],
   ["SEE",   "DIFFERENTLY"],
   ["SEEK",  "DESIGN"],
+  ["MAKE",  "MATTER"],      // last before it loops back to MEETS/DESIGN
 ];
 
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
