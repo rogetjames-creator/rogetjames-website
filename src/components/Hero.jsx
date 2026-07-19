@@ -4,12 +4,13 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { netlifyImg } from "../utils/img";
+import { WORDS } from "./heroWords";
 
-// Homepage hero. James's "ART meets design" vector mark replaces the old "Art
-// meets design." text + centred-top animated ROJ logo: the glass ART symbol
-// fades in, MEETS flies in, then DESIGN. All three share the original 1133.86
-// artboard so the symbol's small circle lands as the dot over the "i" in DESIGN.
-// The frozen original lives in HeroClassic.jsx (rollback reference).
+// Homepage hero. James's "ART meets design" vector mark: the glass ART symbol
+// fades in, MEETS flies in, then DESIGN, all on the original 1133.86 artboard so
+// the symbol's small circle lands as the dot over the "i" in DESIGN. After the
+// entrance the two words run as a split-flap board, changing every 6s through
+// SEQUENCE. The frozen pre-mark hero lives in HeroClassic.jsx (rollback).
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,6 +82,50 @@ const SYMBOL_FILTER =
 // Delays are measured from the moment the first hero photo arrives, not from
 // page load — the whole intro is triggered by the image, so the mark always
 // materialises over the picture rather than over black.
+// ── Flip-board word sets ──────────────────────────────────────────────
+// Every FLIP_EVERY seconds both slots flip to the next pair, letter by letter,
+// like an analogue departure board. Words come from heroWords.js (James's
+// outlined SVG), each normalised to left edge x=0 and baseline y=0.
+//
+// Anchoring — both words grow OUTWARD from the ART symbol:
+//   MEETS slot  — right-aligned: every word ENDS where the S of MEETS ends.
+//   DESIGN slot — left-aligned:  every word STARTS where the D of DESIGN starts.
+const SLOTS = {
+  meets:  { id: "hero-meets",  baseline: 449.17, align: "right", anchor: 299.7 },
+  design: { id: "hero-design", baseline: 700.39, align: "left",  anchor: 802.5 },
+};
+
+// The pairs shown, in order — James's sequence, exactly as given. Left word sits
+// above-left of the symbol, right word below-right, so each reads ART <l> <r>.
+const SEQUENCE = [
+  ["MEETS", "DESIGN"],      // the resting pair the mark opens on
+  ["LIVE",  "INSPIRED"],
+  ["GOOD",  "MATTERS"],
+  ["IDEAS", "FORMED"],
+  ["THOU",  "THAT"],
+  ["SEE",   "DIFFERENTLY"],
+  ["SEEK",  "DESIGN"],
+  ["MAKE",  "MATTER"],      // last before it loops back to MEETS/DESIGN
+];
+
+// Resolve a word to positioned cells: each letter's glyph plus its x on the
+// artboard, honouring the slot's anchor.
+function cellsFor(slot, key) {
+  const w = WORDS[key];
+  if (!w) return [];
+  const left = slot.align === "right" ? slot.anchor - w.width : slot.anchor;
+  return w.glyphs.map((g) => ({ d: g.d, x: left + g.x }));
+}
+const MEETS_CELLS  = Math.max(...SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
+const DESIGN_CELLS = Math.max(...SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
+
+const FLIP_EVERY = 6;      // seconds between word changes
+const FLIP_STAGGER = 0.07; // delay between consecutive letters
+const FLIP_DOWN = 0.16;    // collapse half of the flip
+const FLIP_UP = 0.2;       // open half of the flip
+// The whole entrance runs ~8.9s; start flipping after it has settled.
+const FLIP_START_DELAY = 9.5;
+
 const DRIFT = [
   { el: ".hero-sub",     x: 40,   y: 30,  delay: 6.2  },
   { el: ".hero-loc-1",   x: -50,  y: 20,  delay: 6.5  },
@@ -126,6 +171,56 @@ export default function Hero() {
     if (!heroImageReady) return;
     const t = setTimeout(() => setFirstFadeDone(true), INITIAL_FADE * 1000);
     return () => clearTimeout(t);
+  }, [heroImageReady]);
+
+  // Flip board — every FLIP_EVERY seconds each word changes letter by letter.
+  // A cell collapses on its own centre line (the seam), swaps its glyph at the
+  // closed point, then opens again, staggered left-to-right across the word.
+  useEffect(() => {
+    if (!heroImageReady) return;
+    const at = { i: 0 };
+
+    const flipSlot = (slot, key) => {
+      const host = document.getElementById(slot.id);
+      if (!host) return;
+      const cells = [...host.querySelectorAll(".flip-cell")];
+      const next = cellsFor(slot, key);
+      cells.forEach((cell, i) => {
+        const path = cell.querySelector("path");
+        const target = next[i];
+        // The transform is written by hand rather than through GSAP's transform
+        // system: glyphs are normalised so the baseline sits at local y=0, so
+        // scale(1, sy) collapses the letter straight down onto the line and back.
+        // GSAP's own scaleY caches a bbox-derived origin, which goes stale the
+        // moment the glyph changes — that is what made letters wander.
+        const st = { sy: 1, x: parseFloat(cell.dataset.x || "0") };
+        const write = () => cell.setAttribute(
+          "transform", `translate(${st.x} ${slot.baseline}) scale(1 ${st.sy})`);
+        gsap.timeline({ delay: i * FLIP_STAGGER })
+          .to(st, { sy: 0, duration: FLIP_DOWN, ease: "power2.in", onUpdate: write })
+          // darken at the closed point, the way a flap catches shadow mid-turn
+          .to(cell, { opacity: 0.55, duration: 0.01 }, "<0.14")
+          .add(() => {
+            // swapped while the flap is shut, so the move is never seen
+            path.setAttribute("d", target ? target.d : "");
+            if (target) { st.x = target.x; cell.dataset.x = target.x; }
+            write();
+          })
+          .to(st, { sy: target ? 1 : 0, duration: FLIP_UP, ease: "power2.out", onUpdate: write })
+          .to(cell, { opacity: target ? 1 : 0, duration: FLIP_UP * 0.6 }, "<");
+      });
+    };
+
+    let interval;
+    const start = setTimeout(() => {
+      interval = setInterval(() => {
+        at.i = (at.i + 1) % SEQUENCE.length;
+        const [l, r] = SEQUENCE[at.i];
+        flipSlot(SLOTS.meets, l);
+        flipSlot(SLOTS.design, r);
+      }, FLIP_EVERY * 1000);
+    }, FLIP_START_DELAY * 1000);
+    return () => { clearTimeout(start); clearInterval(interval); };
   }, [heroImageReady]);
 
   // Crossfade using only two decode-gated image layers (see the old hero notes).
@@ -262,10 +357,28 @@ export default function Hero() {
             <g style={{ filter: CAST_SHADOW }}>
               <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
               <g id="hero-meets" style={{ fill: WORD_FILL, opacity: 0 }}>
-                {MEETS_PATHS.map((d, i) => <path key={i} d={d} />)}
+                {Array.from({ length: MEETS_CELLS }, (_, i) => {
+                  const c = cellsFor(SLOTS.meets, SEQUENCE[0][0])[i];
+                  return (
+                    <g key={i} className="flip-cell" data-x={c ? c.x : 0}
+                       transform={`translate(${c ? c.x : 0} ${SLOTS.meets.baseline}) scale(1 1)`}
+                       style={c ? undefined : { opacity: 0 }}>
+                      <path d={c ? c.d : ""} />
+                    </g>
+                  );
+                })}
               </g>
               <g id="hero-design" style={{ fill: WORD_FILL, opacity: 0 }}>
-                {DESIGN_PATHS.map((d, i) => <path key={i} d={d} />)}
+                {Array.from({ length: DESIGN_CELLS }, (_, i) => {
+                  const c = cellsFor(SLOTS.design, SEQUENCE[0][1])[i];
+                  return (
+                    <g key={i} className="flip-cell" data-x={c ? c.x : 0}
+                       transform={`translate(${c ? c.x : 0} ${SLOTS.design.baseline}) scale(1 1)`}
+                       style={c ? undefined : { opacity: 0 }}>
+                      <path d={c ? c.d : ""} />
+                    </g>
+                  );
+                })}
               </g>
             </g>
           </svg>
