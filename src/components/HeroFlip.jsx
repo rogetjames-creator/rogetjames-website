@@ -95,20 +95,17 @@ const SLOTS = {
   design: { id: "hero-design", baseline: 700.39, align: "left",  anchor: 802.5 },
 };
 
-// The pairs shown, in order. Left word sits above-left of the symbol, right word
-// below-right, so each line reads ART <left> <right>. James sets the sequence —
-// this is the pairing as the words were laid out in his artboard.
+// The pairs shown, in order — James's sequence, exactly as given. Left word sits
+// above-left of the symbol, right word below-right, so each reads ART <l> <r>.
 const SEQUENCE = [
-  ["MEETS",  "DESIGN"],
-  ["SEEKS",  "FORMS"],
-  ["SEE",    "INSPIRED"],
-  ["IDEAS",  "DIFFERENTLY"],
-  ["MAKE",   "MATTERS"],
-  ["LIVE",   "REIMAGINED"],
-  ["LIGHT",  "FORMED"],
-  ["SEEK",   "MOVES"],
-  ["WHEN",   "MATTER"],
-  ["THOU",   "GOOD"],
+  ["MEETS", "DESIGN"],      // the resting pair the mark opens on
+  ["LIVE",  "INSPIRED"],
+  ["GOOD",  "MATTERS"],
+  ["MAKE",  "MATTER"],
+  ["IDEAS", "FORMED"],
+  ["THOU",  "THAT"],
+  ["SEE",   "DIFFERENTLY"],
+  ["SEEK",  "DESIGN"],
 ];
 
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
@@ -190,18 +187,26 @@ export default function HeroFlip() {
       const next = cellsFor(slot, key);
       cells.forEach((cell, i) => {
         const path = cell.querySelector("path");
-        const pos = cell.parentNode; // outer group carries the position
         const target = next[i];
+        // The transform is written by hand rather than through GSAP's transform
+        // system: glyphs are normalised so the baseline sits at local y=0, so
+        // scale(1, sy) collapses the letter straight down onto the line and back.
+        // GSAP's own scaleY caches a bbox-derived origin, which goes stale the
+        // moment the glyph changes — that is what made letters wander.
+        const st = { sy: 1, x: parseFloat(cell.dataset.x || "0") };
+        const write = () => cell.setAttribute(
+          "transform", `translate(${st.x} ${slot.baseline}) scale(1 ${st.sy})`);
         gsap.timeline({ delay: i * FLIP_STAGGER })
-          .to(cell, { scaleY: 0, duration: FLIP_DOWN, ease: "power2.in", transformOrigin: "50% 50%" })
+          .to(st, { sy: 0, duration: FLIP_DOWN, ease: "power2.in", onUpdate: write })
           // darken at the closed point, the way a flap catches shadow mid-turn
           .to(cell, { opacity: 0.55, duration: 0.01 }, "<0.14")
           .add(() => {
             // swapped while the flap is shut, so the move is never seen
             path.setAttribute("d", target ? target.d : "");
-            if (target) pos.setAttribute("transform", `translate(${target.x} ${slot.baseline})`);
+            if (target) { st.x = target.x; cell.dataset.x = target.x; }
+            write();
           })
-          .to(cell, { scaleY: target ? 1 : 0, duration: FLIP_UP, ease: "power2.out" })
+          .to(st, { sy: target ? 1 : 0, duration: FLIP_UP, ease: "power2.out", onUpdate: write })
           .to(cell, { opacity: target ? 1 : 0, duration: FLIP_UP * 0.6 }, "<");
       });
     };
@@ -355,8 +360,10 @@ export default function HeroFlip() {
                 {Array.from({ length: MEETS_CELLS }, (_, i) => {
                   const c = cellsFor(SLOTS.meets, SEQUENCE[0][0])[i];
                   return (
-                    <g key={i} transform={`translate(${c ? c.x : 0} ${SLOTS.meets.baseline})`}>
-                      <g className="flip-cell"><path d={c ? c.d : ""} /></g>
+                    <g key={i} className="flip-cell" data-x={c ? c.x : 0}
+                       transform={`translate(${c ? c.x : 0} ${SLOTS.meets.baseline}) scale(1 1)`}
+                       style={c ? undefined : { opacity: 0 }}>
+                      <path d={c ? c.d : ""} />
                     </g>
                   );
                 })}
@@ -365,10 +372,10 @@ export default function HeroFlip() {
                 {Array.from({ length: DESIGN_CELLS }, (_, i) => {
                   const c = cellsFor(SLOTS.design, SEQUENCE[0][1])[i];
                   return (
-                    <g key={i} transform={`translate(${c ? c.x : 0} ${SLOTS.design.baseline})`}>
-                      <g className="flip-cell" style={c ? undefined : { opacity: 0 }}>
-                        <path d={c ? c.d : ""} />
-                      </g>
+                    <g key={i} className="flip-cell" data-x={c ? c.x : 0}
+                       transform={`translate(${c ? c.x : 0} ${SLOTS.design.baseline}) scale(1 1)`}
+                       style={c ? undefined : { opacity: 0 }}>
+                      <path d={c ? c.d : ""} />
                     </g>
                   );
                 })}
