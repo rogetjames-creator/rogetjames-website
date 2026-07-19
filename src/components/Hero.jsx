@@ -211,10 +211,42 @@ export default function Hero() {
       });
     };
 
+    // Drop a word into a slot instantly, with no flip — used while the words are
+    // hidden, just before they fly back in.
+    const setSlot = (slot, key) => {
+      const host = document.getElementById(slot.id);
+      if (!host) return;
+      const cells = [...host.querySelectorAll(".flip-cell")];
+      const next = cellsFor(slot, key);
+      cells.forEach((cell, i) => {
+        const t = next[i];
+        cell.querySelector("path").setAttribute("d", t ? t.d : "");
+        if (t) cell.dataset.x = t.x;
+        cell.setAttribute("transform", `translate(${t ? t.x : 0} ${slot.baseline}) scale(1 1)`);
+        cell.style.opacity = t ? 1 : 0;
+      });
+    };
+
+    // "ART MEETS DESIGN" only reads if you watch it assemble — ART, then MEETS,
+    // then DESIGN. So when the loop comes back to it, the pair is not flipped
+    // into place: the words clear, then fly in one after the other exactly as
+    // they do on first load. ART stays put throughout.
+    const flyInOpening = () => {
+      const [l, r] = SEQUENCE[0];
+      gsap.timeline()
+        .to(["#hero-meets", "#hero-design"], { opacity: 0, duration: 0.5, ease: "power2.in" })
+        .add(() => { setSlot(SLOTS.meets, l); setSlot(SLOTS.design, r); })
+        .set("#hero-meets",  { x: -150 })
+        .set("#hero-design", { x: 150, y: 90 })
+        .to("#hero-meets",  { opacity: 1, x: 0,       duration: 1.5, ease: "power3.out" })
+        .to("#hero-design", { opacity: 1, x: 0, y: 0, duration: 1.5, ease: "power3.out" });
+    };
+
     let interval;
     const start = setTimeout(() => {
       interval = setInterval(() => {
         at.i = (at.i + 1) % SEQUENCE.length;
+        if (at.i === 0) { flyInOpening(); return; }
         const [l, r] = SEQUENCE[at.i];
         flipSlot(SLOTS.meets, l);
         flipSlot(SLOTS.design, r);
