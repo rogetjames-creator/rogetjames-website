@@ -103,7 +103,6 @@ const SEQUENCE = [
   ["GOOD",  "MATTERS"],
   ["IDEAS", "FORMED"],
   ["SEE",   "DIFFERENTLY"],
-  ["SEEK",  "DESIGN"],
   ["METAL", "FORMS"],
   ["MAKE",  "MATTER"],      // last before it loops back to MEETS/DESIGN
 ];
