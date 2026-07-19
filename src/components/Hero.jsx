@@ -99,11 +99,11 @@ const SLOTS = {
 // above-left of the symbol, right word below-right, so each reads ART <l> <r>.
 const SEQUENCE = [
   ["MEETS", "DESIGN"],      // the resting pair the mark opens on
-  ["LIVE",  "INSPIRED"],
+  ["METAL", "FORMS"],
   ["GOOD",  "MATTERS"],
   ["IDEAS", "FORMED"],
   ["SEE",   "DIFFERENTLY"],
-  ["METAL", "FORMS"],
+  ["LIVE",  "INSPIRED"],
   ["MAKE",  "MATTER"],      // last before it loops back to MEETS/DESIGN
 ];
 
