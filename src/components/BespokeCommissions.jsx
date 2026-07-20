@@ -2141,17 +2141,41 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
     }, { passive: true });
   }, []);
 
+  // "Light Features" is a cross-cutting use, not a real design section, so its
+  // tab shows every image tagged as a light feature (matching the refine-search
+  // filter) instead of only the couple of designs formally filed under it.
+  const TAG_TAB_MATCH = { "light-features": "light features" };
+  const tagForTab = TAG_TAB_MATCH[tab];
+  const _designHasTag = (d, tagStr) => {
+    const hasItemTags = d.items.some(it => (it.tags ?? []).length > 0);
+    return hasItemTags
+      ? d.items.some(it => (it.tags ?? []).some(t => t.includes(tagStr)))
+      : (d.tags ?? []).some(t => t.includes(tagStr));
+  };
+  const _itemHasTag = (d, it, tagStr) => {
+    if ((it.tags ?? []).length > 0) return it.tags.some(t => t.includes(tagStr));
+    const hasItemTags = d.items.some(x => (x.tags ?? []).length > 0);
+    return !hasItemTags && (d.tags ?? []).some(t => t.includes(tagStr));
+  };
+
   const tabDesigns = tab === "all"
     ? SCREEN_DESIGNS_SECTIONED
-    : SCREEN_DESIGNS_SECTIONED.filter(d => d._sections.includes(tab));
+    : tagForTab
+      ? SCREEN_DESIGNS_SECTIONED.filter(d => _designHasTag(d, tagForTab))
+      : SCREEN_DESIGNS_SECTIONED.filter(d => d._sections.includes(tab));
   const visibleDesigns = activeDesign
     ? tabDesigns.filter(d => d.name === activeDesign)
     : tabDesigns;
   const activeDrillDesign = activeDesign ? tabDesigns.find(d => d.name === activeDesign) : null;
 
-  // One entry per image across all visible designs
+  // One entry per image across all visible designs. For a tag-tab, keep only the
+  // images carrying the tag (a design-level tag falls through to all its images,
+  // exactly like refine-search).
   const gridItems = visibleDesigns.flatMap((d, dIdx) =>
-    d.items.map((it, iIdx) => ({ img: it.img, pos: it.pos, name: d.name, section: d._section, dIdx, iIdx }))
+    d.items
+      .map((it, iIdx) => ({ it, iIdx }))
+      .filter(({ it }) => !tagForTab || _itemHasTag(d, it, tagForTab))
+      .map(({ it, iIdx }) => ({ img: it.img, pos: it.pos, name: d.name, section: d._section, dIdx, iIdx }))
   );
 
   // Current image in expanded view
