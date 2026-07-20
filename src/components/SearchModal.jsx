@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
@@ -130,7 +130,46 @@ function fuzzySearch(query, items) {
 
 export default function SearchModal({ open, onClose }) {
   const [query, setQuery] = useState("");
-  const results = fuzzySearch(query, SEARCH_INDEX);
+  // Bespoke gallery works (screens like DOTTI, sculpture, concepts) are derived
+  // from the live data so search stays complete as designs are added. That data
+  // lives in the heavy, lazy-loaded BespokeCommissions file, so we pull it in on
+  // demand the first time search opens — it never touches initial page load.
+  const [bespokeIndex, setBespokeIndex] = useState([]);
+  useEffect(() => {
+    if (!open || bespokeIndex.length) return;
+    let cancelled = false;
+    import("./BespokeCommissions").then(({ SCREEN_COVERS, SCULPTURE_ITEMS, CONCEPTS_ITEMS }) => {
+      if (cancelled) return;
+      const entries = [
+        ...SCREEN_COVERS.flatMap((sec) => sec.pieces.map((p) => (
+          { name: p.name, category: "Screens", section: "#bespoke", tab: "screens", img: p.img }
+        ))),
+        ...SCULPTURE_ITEMS.filter((it) => it && it.name && it.img).map((it) => (
+          { name: it.name, category: "Sculpture", section: "#bespoke", tab: "sculpture", img: it.img }
+        )),
+        ...CONCEPTS_ITEMS.filter((it) => it && it.name && it.img).map((it) => (
+          { name: it.name, category: "Concepts", section: "#bespoke", tab: "concepts", img: it.img }
+        )),
+      ];
+      setBespokeIndex(entries);
+    }).catch(() => { /* search still works over the static index */ });
+    return () => { cancelled = true; };
+  }, [open, bespokeIndex.length]);
+
+  // Curated index + derived bespoke works, de-duped by name (curated wins).
+  const fullIndex = useMemo(() => {
+    const seen = new Set(SEARCH_INDEX.map((i) => i.name.toLowerCase()));
+    const merged = [...SEARCH_INDEX];
+    for (const item of bespokeIndex) {
+      const key = item.name.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(item);
+    }
+    return merged;
+  }, [bespokeIndex]);
+
+  const results = fuzzySearch(query, fullIndex);
   const overlayRef = useRef(null);
   const cardRef = useRef(null);
   const inputRef = useRef(null);
