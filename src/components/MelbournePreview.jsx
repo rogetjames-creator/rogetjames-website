@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CityPage from "./CityPage";
+import MelbourneWordmark from "./MelbourneWordmark";
 
 // ── Melbourne page data ───────────────────────────────────────
 // PLACEHOLDER content + images — a working template. James replaces
@@ -8,6 +9,9 @@ import CityPage from "./CityPage";
 const MELBOURNE = {
   name: "Melbourne",
   region: "VIC",
+  // Hero wordmark in the supplied Ethnocentric font (SVG), replacing the
+  // italic Playfair word. Colour/size are set on the wrapper in CityPage.
+  heroMark: <MelbourneWordmark className="w-full h-auto" />,
   // Optional bold line under the big italic "Melbourne." — left empty so the
   // hero reads: "Melbourne." + the flowing subhead below.
   displayLine: "",

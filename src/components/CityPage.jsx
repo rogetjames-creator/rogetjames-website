@@ -47,7 +47,7 @@ function SectionTitle({ children }) {
 
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero,
+    name, region, displayLine, intro, hero, heroMark,
     projects = [], suburbs = [], services = [],
   } = city;
 
@@ -102,12 +102,18 @@ export default function CityPage({ city }) {
               {name}, {region} · Australia-wide studio
             </p>
             <h1 className="flex flex-col">
-              <span
-                className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
-                style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
-              >
-                {name}
-              </span>
+              {heroMark ? (
+                <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
+                  {heroMark}
+                </span>
+              ) : (
+                <span
+                  className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
+                  style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
+                >
+                  {name}
+                </span>
+              )}
               {displayLine && (
                 <span
                   className="city-h-2 font-heading font-semibold text-cream/70 text-base md:text-xl leading-snug mt-4 max-w-xl"
