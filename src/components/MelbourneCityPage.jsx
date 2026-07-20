@@ -43,7 +43,10 @@ export default function MelbourneCityPage({ city }) {
     projects = [], suburbs = [], services = [],
   } = city;
 
-  const rootRef = useRef(null);
+  const rootRef       = useRef(null);
+  const markRef       = useRef(null);
+  const lineLeftRef   = useRef(null);
+  const lineRightRef  = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -58,6 +61,19 @@ export default function MelbourneCityPage({ city }) {
           y: 0, opacity: 1, duration: 1.2, ease: "power2.out",
           scrollTrigger: { trigger: el, start: "top 85%" },
         });
+      });
+
+      // "The Practice" mark above the intro — flanking lines draw out from the
+      // logo when the intro scrolls in (same feel as About.jsx on the main site).
+      gsap.set([lineLeftRef.current, lineRightRef.current], { scaleX: 0 });
+      ScrollTrigger.create({
+        trigger: markRef.current,
+        start: "top 85%",
+        once: true,
+        onEnter: () => {
+          gsap.to(lineLeftRef.current,  { scaleX: 1, duration: 1.1, ease: "power3.out" });
+          gsap.to(lineRightRef.current, { scaleX: 1, duration: 1.1, ease: "power3.out" });
+        },
       });
     }, rootRef);
     return () => ctx.revert();
@@ -128,6 +144,25 @@ export default function MelbourneCityPage({ city }) {
       {/* ── Intro — centered, like the About section ─────── */}
       <section className="bg-jet py-20 md:py-32">
         <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
+          {/* Logo + flanking lines — mirrors the About "The Practice" mark */}
+          <div ref={markRef} className="relative flex items-center justify-center overflow-visible mb-6" style={{ width: "80px", height: "80px" }}>
+            <span ref={lineLeftRef} style={{
+              position: "absolute", right: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
+              width: "90px", height: "1.5px",
+              background: "rgba(242,240,233,0.35)",
+              transformOrigin: "right center",
+              transform: "scaleX(0)",
+            }} />
+            <span ref={lineRightRef} style={{
+              position: "absolute", left: "calc(100% + 10px)", top: "50%", marginTop: "-0.75px",
+              width: "90px", height: "1.5px",
+              background: "rgba(242,240,233,0.35)",
+              transformOrigin: "left center",
+              transform: "scaleX(0)",
+            }} />
+            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035"
+              style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
+          </div>
           <Eyebrow>{madeLabel || `Made for ${name}`}</Eyebrow>
           <div className="space-y-6 mt-8">
             {intro.slice(1).map((para, i) => (
