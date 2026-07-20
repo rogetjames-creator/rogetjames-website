@@ -494,7 +494,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
               {centerLabel && (
                 <div className="absolute inset-0 z-[14] flex items-center justify-center pointer-events-none transition-opacity duration-150 opacity-100 group-hover:opacity-0">
-                  <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>{centerLabel}</span>
+                  <span className="font-detail font-bold text-white uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize, textShadow: "0 1px 12px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.35)" }}>{centerLabel}</span>
                 </div>
               )}
               {!hideLabel && (
