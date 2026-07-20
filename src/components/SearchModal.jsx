@@ -206,7 +206,18 @@ export default function SearchModal({ open, onClose }) {
   const handleSelect = useCallback((item) => {
     lenis?.start(); // unlock scroll immediately, synchronously
     onClose();
-    window.dispatchEvent(new CustomEvent("search-navigate", { detail: { tab: item.tab } }));
+
+    // Take the visitor to the actual work, not just the section. Bespoke works
+    // open their gallery modal; collection works switch the gallery to the right
+    // tab. (Projects stays out — it's the under-construction bespoke category.)
+    const BESPOKE_MODAL_CATS = ["screens", "sculpture", "concepts"];
+    const GALLERY_TABS = ["wall-art", "sculpture"];
+    if (item.section === "#bespoke" && BESPOKE_MODAL_CATS.includes(item.tab)) {
+      window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: item.tab }));
+    } else if (item.section === "#collection" && GALLERY_TABS.includes(item.tab)) {
+      window.dispatchEvent(new CustomEvent("open-gallery-tab", { detail: item.tab }));
+    }
+
     setTimeout(() => {
       const el = document.querySelector(item.section);
       if (!el) return;
