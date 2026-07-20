@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import CityPage from "./CityPage";
+import MelbourneCityPage from "./MelbourneCityPage";
 import MelbourneWordmark from "./MelbourneWordmark";
 
 // ── Melbourne page data ───────────────────────────────────────
@@ -15,10 +15,15 @@ const MELBOURNE = {
   // Optional bold line under the big italic "Melbourne." — left empty so the
   // hero reads: "Melbourne." + the flowing subhead below.
   displayLine: "",
+  // Intro-section eyebrow — "Made in Melbourne" (works are now fabricated locally).
+  madeLabel: "Made in Melbourne",
+  // intro[0] = hero subhead (under the wordmark); intro[1..] = the spiel shown
+  // in the intro section below the "Made in Melbourne" eyebrow.
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — curated catalogues and bespoke works, crafted in Melbourne for Architects, Designers and discerning clients.",
-    "Over years of commissions across Victoria, our Corten steel and powdercoated aluminium pieces have been made to suit Melbourne's mix of heritage terraces, contemporary builds and landmark public spaces — each cut to order for its exact wall, courtyard or facade.",
-    "Every piece is drawn, cut and finished to the site. We work directly with Melbourne designers and homeowners from concept through to installation, and deliver Australia-wide from the studio.",
+    "Melbourne represents an important chapter in James Roget's design journey. It was here that his early work in architectural features evolved alongside an original collection of artistic products, exhibited through a number of Melbourne's leading designer retailers. This formative period established the design philosophy that continues to define his work today—where art, architecture and landscape exist as a seamless expression of one another.",
+    "Relocating to Perth marked the next stage, with the establishment of Q Design Architectural Features and the creation of an extensive body of architectural artworks, sculptural forms and bespoke commissions for residential, commercial and public spaces throughout Australia.",
+    "As appreciation for James' work continued to grow in Victoria, fabrication naturally returned to Melbourne. Today, selected works are produced locally to the same exacting standards, preserving the integrity of the original design while providing Victorian collectors, architects and designers with locally fabricated pieces backed by more than three decades of creative practice.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
   projects: [
@@ -103,5 +108,5 @@ export default function MelbournePreview() {
     );
   }
 
-  return <CityPage city={MELBOURNE} />;
+  return <MelbourneCityPage city={MELBOURNE} />;
 }

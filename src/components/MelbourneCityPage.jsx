@@ -7,20 +7,12 @@ import { netlifyImg } from "../utils/img";
 gsap.registerPlugin(ScrollTrigger);
 
 // ─────────────────────────────────────────────────────────────
-//  Reusable city / location page. Duplicates the main site's exact
-//  design tokens so it reads as the same website:
-//   • hero          — object-contain, font-drama italic word +
-//                     font-heading line (mirrors the homepage hero)
-//   • section eyebrow — font-detail text-xs text-warm-gray uppercase tracking-[0.2em]
-//   • section title   — font-syne font-bold text-2xl/4xl/5xl text-cream/60
-//   • thumbnails      — aspect-square rounded-2xl bg-cream-dark, object-cover,
-//                       duration-700 group-hover:scale-105, name on hover
-//                       (identical to Gallery.jsx GridCard)
-//   • footer          — charcoal rounded-top ROGETjames footer
-//
-//  One data object per city (see src/melbourne.jsx). Perth / Gold Coast reuse it.
-//  SEO note: every city MUST carry real, distinct copy, projects and suburbs —
-//  placeholder text here is a template for James to replace.
+//  MELBOURNE-ONLY page layout. Split out from the shared CityPage so
+//  Melbourne can be built up as its own distinct page without touching
+//  Perth / Gold Coast / Sydney (which still share CityPage.jsx and will
+//  each get their own distinct layout later). Edit this file freely for
+//  Melbourne — nothing here affects the other city pages.
+//  Data comes from the MELBOURNE object in src/components/MelbournePreview.jsx.
 // ─────────────────────────────────────────────────────────────
 
 const HEADING_SHADOW = { textShadow: "0 4px 14px rgba(0,0,0,0.55)" };
@@ -45,9 +37,9 @@ function SectionTitle({ children }) {
   );
 }
 
-export default function CityPage({ city }) {
+export default function MelbourneCityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero,
+    name, region, displayLine, intro, hero, heroMark, madeLabel,
     projects = [], suburbs = [], services = [],
   } = city;
 
@@ -102,12 +94,18 @@ export default function CityPage({ city }) {
               {name}, {region} · Australia-wide studio
             </p>
             <h1 className="flex flex-col">
-              <span
-                className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
-                style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
-              >
-                {name}
-              </span>
+              {heroMark ? (
+                <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
+                  {heroMark}
+                </span>
+              ) : (
+                <span
+                  className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
+                  style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
+                >
+                  {name}
+                </span>
+              )}
               {displayLine && (
                 <span
                   className="city-h-2 font-heading font-semibold text-cream/70 text-base md:text-xl leading-snug mt-4 max-w-xl"
@@ -130,7 +128,7 @@ export default function CityPage({ city }) {
       {/* ── Intro — centered, like the About section ─────── */}
       <section className="bg-jet py-20 md:py-32">
         <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
-          <Eyebrow>Made for {name}</Eyebrow>
+          <Eyebrow>{madeLabel || `Made for ${name}`}</Eyebrow>
           <div className="space-y-6 mt-8">
             {intro.slice(1).map((para, i) => (
               <p key={i} className="font-body text-base text-cream/70 leading-relaxed">{para}</p>
