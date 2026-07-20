@@ -876,6 +876,12 @@ const SCREEN_DESIGNS = [
 
   // ── THE MIRRORS ───────────────────────────────────────────────────────────
   { name: "SABAH", sectionStart: "THE MIRRORS", items: [{ name: "SABAH", img: "/images/mirrors/sabah-1.jpg" }] },
+
+  // Cross-listed from Fire & Light (Wall Art) so it also surfaces under the
+  // Light Features tab. _crossListed keeps it out of the "All" screens view and
+  // the section covers — here it's a light feature, not a general screen design.
+  { name: "REEDS of UNGARO", tabs: ["light-features"], tags: ["light features"], _crossListed: true,
+    items: [{ name: "REEDS of UNGARO", img: `${CDN}/b03ec13b-fba3-432f-9723-3f646b508054_rw_1920.jpg` }] },
 ];
 
 const ALL_BESPOKE_SEARCHABLE = (() => {
@@ -1963,7 +1969,7 @@ const SCREEN_SECTION_LABELS = {
 };
 export const SCREEN_COVERS = Object.entries(SCREEN_SECTION_LABELS)
   .map(([id, label]) => {
-    const designs = SCREEN_DESIGNS_SECTIONED.filter((d) => d._section === id);
+    const designs = SCREEN_DESIGNS_SECTIONED.filter((d) => d._section === id && !d._crossListed);
     const pieces = designs
       .map((d) => {
         const imgs = d.items.map((it) => it.img).filter(Boolean);
@@ -2159,7 +2165,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   };
 
   const tabDesigns = tab === "all"
-    ? SCREEN_DESIGNS_SECTIONED
+    ? SCREEN_DESIGNS_SECTIONED.filter(d => !d._crossListed)
     : tagForTab
       ? SCREEN_DESIGNS_SECTIONED.filter(d => _designHasTag(d, tagForTab))
       : SCREEN_DESIGNS_SECTIONED.filter(d => d._sections.includes(tab));
