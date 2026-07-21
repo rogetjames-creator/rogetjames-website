@@ -38,6 +38,19 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
   const go = (dir) => setPage(p => Math.max(0, Math.min(total - 1, p + dir)));
   const goTo = (i) => setPage(i);
 
+  // Hover-scroll the thumbnail strip — cursor position across the strip maps to
+  // scroll position, so you can glide through every page when the thumbs
+  // overflow the width (a small dead-zone at each edge makes the ends reachable).
+  const onThumbHover = (e) => {
+    const strip = thumbsRef.current;
+    if (!strip) return;
+    const max = strip.scrollWidth - strip.clientWidth;
+    if (max <= 0) return;
+    const rect = strip.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    strip.scrollLeft = Math.max(0, Math.min(1, (ratio - 0.06) / 0.88)) * max;
+  };
+
   // Scroll active thumb into view
   useEffect(() => {
     const strip = thumbsRef.current;
@@ -112,7 +125,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
         </div>
 
         {/* Thumbnail strip — large, ~6 visible, scrollable */}
-        <div ref={thumbsRef} className="flex-none px-4 py-3 flex gap-2 overflow-x-auto bg-black/30"
+        <div ref={thumbsRef} onMouseMove={onThumbHover} className="flex-none px-4 py-3 flex gap-2 overflow-x-auto bg-black/30"
           style={{ scrollbarWidth: "none", height: 110 }}>
           {pages.map((src, i) => (
             <button key={i} onClick={() => goTo(i)}
