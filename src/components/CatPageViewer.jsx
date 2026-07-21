@@ -38,18 +38,38 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
   const go = (dir) => setPage(p => Math.max(0, Math.min(total - 1, p + dir)));
   const goTo = (i) => setPage(i);
 
-  // Hover-scroll the thumbnail strip — cursor position across the strip maps to
-  // scroll position, so you can glide through every page when the thumbs
-  // overflow the width (a small dead-zone at each edge makes the ends reachable).
+  // Hover-scroll the thumbnail strip: the middle is a dead zone, and as the
+  // cursor nears an edge the strip scrolls that way continuously — speed ramps
+  // up the closer you get to the edge. Gentle and gradual, never a jump.
+  const hoverVelRef = useRef(0);
+  const rafRef = useRef(null);
+  const stopHoverScroll = () => {
+    hoverVelRef.current = 0;
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+  };
   const onThumbHover = (e) => {
     const strip = thumbsRef.current;
-    if (!strip) return;
-    const max = strip.scrollWidth - strip.clientWidth;
-    if (max <= 0) return;
+    if (!strip || strip.scrollWidth - strip.clientWidth <= 0) { stopHoverScroll(); return; }
     const rect = strip.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
-    strip.scrollLeft = Math.max(0, Math.min(1, (ratio - 0.06) / 0.88)) * max;
+    const ratio = (e.clientX - rect.left) / rect.width; // 0..1
+    const EDGE = 0.3;      // outer 30% each side is the active zone
+    const MAX_SPEED = 8;   // px per frame at the very edge
+    let vel = 0;
+    if (ratio < EDGE)          vel = -MAX_SPEED * (EDGE - ratio) / EDGE;
+    else if (ratio > 1 - EDGE) vel =  MAX_SPEED * (ratio - (1 - EDGE)) / EDGE;
+    hoverVelRef.current = vel;
+    if (vel && !rafRef.current) {
+      const tick = () => {
+        const s = thumbsRef.current;
+        if (!s || !hoverVelRef.current) { rafRef.current = null; return; }
+        const m = s.scrollWidth - s.clientWidth;
+        s.scrollLeft = Math.max(0, Math.min(m, s.scrollLeft + hoverVelRef.current));
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    }
   };
+  useEffect(() => stopHoverScroll, []);
 
   // Scroll active thumb into view
   useEffect(() => {
@@ -125,7 +145,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
         </div>
 
         {/* Thumbnail strip — large, ~6 visible, scrollable */}
-        <div ref={thumbsRef} onMouseMove={onThumbHover} className="flex-none px-4 py-3 flex gap-2 overflow-x-auto bg-black/30"
+        <div ref={thumbsRef} onMouseMove={onThumbHover} onMouseLeave={stopHoverScroll} className="flex-none px-4 py-3 flex gap-2 overflow-x-auto bg-black/30"
           style={{ scrollbarWidth: "none", height: 110 }}>
           {pages.map((src, i) => (
             <button key={i} onClick={() => goTo(i)}
