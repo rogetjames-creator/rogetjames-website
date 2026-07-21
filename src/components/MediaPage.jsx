@@ -10,6 +10,9 @@ const API = "/api/media-upload";
 // isn't a category so Claude can place it.
 const DESTINATIONS = [
   { key: "up-close", label: "Up Close (all, combined)" },
+  // New category, gallery not built yet — James uploads here first, then the
+  // "concrete"-tagged photos get fabricated into their own gallery on request.
+  { key: "concrete", label: "Concrete (new gallery — upload here)" },
   ...MEDIA_DESTINATIONS,
 ];
 const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || (key === "other" ? "Other (see note)" : key);
