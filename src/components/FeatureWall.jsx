@@ -332,25 +332,30 @@ function Gallery() {
     return withUpClose;
   }, [mediaImages, uploadedUpClose, upCloseForSeries]);
 
-  // Flat, searchable index of every named design across all collections —
-  // excludes the synthetic "— Up Close" cards (they're detail shots of an
-  // already-indexed design, not designs of their own). flatIdx matches the
-  // per-category "pieces" array each render builds below (slides expanded
-  // into their own entries), so a result can jump straight to the right
-  // thumbnail, not just the right collection.
+  // One flattened + ordered piece list per collection — the SINGLE source of
+  // truth for both the search index and the on-screen gallery. Australian
+  // Natives is shuffled for display; the search index must use that exact same
+  // shuffled array, or a result's index lands on a different piece.
+  const flatByCat = useMemo(() => CATS.map((cat) => {
+    const flat = cat.pieces.flatMap((p) =>
+      p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
+    );
+    return cat.id === "australian-natives" ? orderAustralianNatives(flat) : flat;
+  }), [CATS]);
+
+  // Flat, searchable index of every named design — excludes the synthetic
+  // "— Up Close" cards. flatIdx is the piece's index within flatByCat[catIdx],
+  // the exact array the gallery renders, so a result jumps to the right thumb.
   const searchIndex = useMemo(() => {
     const idx = [];
-    CATS.forEach((cat, catIdx) => {
-      const flat = cat.pieces.flatMap((p) =>
-        p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
-      );
+    flatByCat.forEach((flat, catIdx) => {
       flat.forEach((p, flatIdx) => {
         if (p._upclose) return;
-        idx.push({ name: p.name, catIdx, catLabel: cat.label, img: p.img, flatIdx });
+        idx.push({ name: p.name, catIdx, catLabel: CATS[catIdx].label, img: p.img, flatIdx });
       });
     });
     return idx;
-  }, [CATS]);
+  }, [flatByCat, CATS]);
 
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -508,12 +513,7 @@ function Gallery() {
   // collapsing each design down to a single cover shot.
   // Stable per collection (reshuffles only when the collection or its media
   // changes) so thumbs don't jump around on every render.
-  const pieces = useMemo(() => {
-    const flat = c.pieces.flatMap((p) =>
-      p.slides && p.slides.length > 1 ? p.slides.map((img) => ({ ...p, img })) : [p]
-    );
-    return c.id === "australian-natives" ? orderAustralianNatives(flat) : flat;
-  }, [c.id, c.pieces]);
+  const pieces = flatByCat[cur] || [];
   const expandNav = (dir) => goPiece((pieceIdx + dir + pieces.length) % pieces.length);
   const activePiece = pieces[pieceIdx] || pieces[0];
   // Real design count for this collection — excludes the synthetic "Up
