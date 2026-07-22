@@ -9,7 +9,7 @@ import { IVY_WORDS } from "./ivyModeWords";
 // light grey at 85% transparency, anchored bottom-LEFT so it stays left when a
 // panel expands. Fixed letter size (STRIP_PX) so every name reads the same size.
 const NAME_COLOR = "rgba(194,194,194,0.15)"; // light grey, 85% transparent
-const STRIP_PX = 25;                          // letter thickness — all names equal
+const STRIP_PX = 12;                          // letter thickness — all names equal
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
