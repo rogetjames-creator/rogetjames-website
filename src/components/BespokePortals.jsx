@@ -166,6 +166,29 @@ export function CommissionsSection() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Deep-link from other pages (e.g. the Melbourne page's gallery panels):
+  // ?open=<cat> opens that gallery directly. Public: screens / sculpture /
+  // concepts. Owner-only: projects / commissions (still under construction),
+  // matching the portal locks.
+  useEffect(() => {
+    const which = new URLSearchParams(window.location.search).get("open");
+    if (!which) return;
+    window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+    const opener = {
+      screens:     () => setScreensOpen(true),
+      sculpture:   () => setSculptureOpen(true),
+      concepts:    () => setConceptsOpen(true),
+      projects:    () => { if (IS_DEV) setProjectsOpen(true); },
+      commissions: () => { if (IS_DEV) setReelsOpen(true); },
+    }[which];
+    if (!opener) return;
+    const timer = setTimeout(() => {
+      opener();
+      document.querySelector("#bespoke")?.scrollIntoView({ behavior: "smooth" });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section id="bespoke" className="bg-graphite">
       <div className="px-8 pt-12 pb-10 text-center">

@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Instagram, Mail } from "lucide-react";
 import { netlifyImg } from "../utils/img";
+import MelbourneGalleryPanels from "./MelbourneGalleryPanels";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,7 +41,7 @@ function SectionTitle({ children }) {
 export default function MelbourneCityPage({ city }) {
   const {
     name, region, displayLine, intro, hero, heroMark, madeLabel,
-    projects = [], suburbs = [], services = [],
+    suburbs = [], services = [],
   } = city;
 
   const rootRef       = useRef(null);
@@ -172,38 +173,8 @@ export default function MelbourneCityPage({ city }) {
         </div>
       </section>
 
-      {/* ── Selected work — duplicates Gallery GridCard exactly ── */}
-      {projects.length > 0 && (
-        <section className="py-20 md:py-32">
-          <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div className="city-reveal mb-10">
-              <Eyebrow>Selected work</Eyebrow>
-              <SectionTitle>Pieces in {name}</SectionTitle>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {projects.map((p, i) => (
-                <div
-                  key={i}
-                  className="city-reveal gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
-                >
-                  <img
-                    src={netlifyImg(p.src, { w: 800, q: 78 })}
-                    alt={`${p.title} — ROGETjames`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-                    <p className="text-cream font-heading font-semibold text-sm" style={{ wordSpacing: "-0.05em" }}>{p.title}</p>
-                    {p.detail && <p className="text-cream/60 font-detail text-[9px] uppercase tracking-[0.12em] mt-0.5">{p.detail}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* ── Browse every gallery — expanding vertical panels (below the spiel) ── */}
+      <MelbourneGalleryPanels />
 
       {/* ── Services ─────────────────────────────────────── */}
       {services.length > 0 && (
