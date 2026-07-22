@@ -6,9 +6,10 @@ import { IVY_WORDS } from "./ivyModeWords";
 // Slim vertical rectangles, one per gallery. Hover expands a panel out to reveal
 // its image; click goes to that gallery on the live site. Gallery name runs
 // vertically (bottom→top) in IVY MODE (assembled from the supplied alphabet),
-// light grey at 85% transparency, anchored bottom-LEFT so it stays left when a
-// panel expands. Fixed letter size (STRIP_PX) so every name reads the same size.
-const NAME_COLOR = "rgba(194,194,194,0.15)"; // light grey, 85% transparent
+// light grey, 85% opaque (15% transparent), anchored bottom-LEFT so it stays
+// left when a panel expands. Fixed letter size (STRIP_PX) so every name reads
+// the same size.
+const NAME_COLOR = "rgba(194,194,194,0.85)"; // light grey, 85% opaque
 const STRIP_PX = 12;                          // letter thickness — all names equal
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
