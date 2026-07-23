@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Search } from "lucide-react";
-import { SCULPTURE_COVERS, DetailCard } from "./Gallery";
+import { SCULPTURE_COVERS, DetailCard, pieceAlt } from "./Gallery";
 import { loadBasket, saveBasket } from "../utils/quoteBasket";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
@@ -633,7 +633,7 @@ function Gallery() {
             {pieces.map((p, i) => (
               <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
                 onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={p.name} />
+                <img src={p.img} alt={pieceAlt(p.name, c.label, "laser cut metal garden sculpture")} />
               </div>
             ))}
           </div>
@@ -675,7 +675,7 @@ function Gallery() {
             </button>
           )}
           <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
-            <img src={activePiece.img} alt={activePiece.name} className="fw-expand-img" />
+            <img src={activePiece.img} alt={pieceAlt(activePiece.name, c.label, "laser cut metal garden sculpture")} className="fw-expand-img" />
             {!activePiece._upclose && (
               <button
                 className="fw-expand-details"

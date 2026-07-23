@@ -1336,7 +1336,7 @@ export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPost
           <img
             ref={imgRef}
             src={slides[slideIndex]}
-            alt={item.name}
+            alt={pieceAlt(item.name, seriesLabel)}
             className="w-full h-full object-contain"
           />
           {slides.length > 1 && (
@@ -1505,7 +1505,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
       {/* Image + info */}
       <div ref={contentRef} className="flex flex-col items-center justify-center px-14 md:px-20 w-full max-w-5xl gap-3" style={{ height: "calc(100vh - 96px)", marginTop: "72px" }} onClick={(e) => e.stopPropagation()}>
         <div className="w-full flex items-center justify-center relative flex-none group/img">
-          <img ref={imgRef} src={slides[slideIdx]} alt={item.name} className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
+          <img ref={imgRef} src={slides[slideIdx]} alt={pieceAlt(item.name, item._series)} className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "68vh" }} />
           <button
             onClick={(e) => { e.stopPropagation(); setImgExpanded(true); }}
             className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/55 text-cream/60 hover:bg-black/80 hover:text-cream transition-all duration-200 opacity-0 group-hover/img:opacity-100"
@@ -1597,7 +1597,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
         >
           <img
             src={slides[slideIdx]}
-            alt={item.name}
+            alt={pieceAlt(item.name, item._series)}
             className="max-w-[95vw] max-h-[95vh] object-contain"
           />
           <button
@@ -1628,8 +1628,41 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
   );
 }
 
+// Searchable descriptor per collection. The invented piece names (GREN,
+// BANKSIA, VASUKI…) carry the brand but have no search volume; pairing each
+// with a plain-language category phrase in the image alt text makes the same
+// image findable on Google without any visual change. Keyed off each series'
+// own label, so a piece can never be mislabelled. Unmapped/abstract series
+// fall through to the generic phrase.
+const ALT_DESCRIPTORS = {
+  // Wall art collections
+  "AUSTRALIAN NATIVES": "Australian native laser cut metal wall art",
+  "CREEPING FIGS": "creeping fig laser cut metal wall art",
+  "BRANCHES": "branch & foliage laser cut metal wall art",
+  "FLOWERS & BLOOMS": "floral laser cut metal wall art",
+  "PLUMES": "feather & plume laser cut metal wall art",
+  "JUNGLE": "tropical laser cut metal wall art",
+  "BIRDS": "bird laser cut metal wall art",
+  "PENDANTS": "laser cut metal pendant wall art",
+  "RETRO": "retro laser cut metal wall art",
+  // Sculpture collections
+  "Sculpture": "laser cut metal garden sculpture",
+  "The Classics": "laser cut metal garden sculpture",
+  "Leaf Sculptures": "leaf laser cut metal garden sculpture",
+  "Bon Bons & Genie Bottles": "laser cut metal garden sculpture",
+  // Screens
+  "Screens": "laser cut metal privacy screen",
+};
+// Builds crawlable alt text pairing the invented piece name with a searchable
+// category phrase. Unmapped collections fall back to `fallback` (pass a
+// sculpture/screen phrase on those pages so nothing is mislabelled as wall art).
+export function pieceAlt(name, label, fallback = "laser cut metal wall art") {
+  return `${name} — ${ALT_DESCRIPTORS[label] || fallback} by ROGETjames`;
+}
+
 function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
   const [_hovered, setHovered] = useState(false);
+  const imgAlt = pieceAlt(item.name, cat.label);
   return (
     <div
       className="gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
@@ -1638,9 +1671,9 @@ function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
       onMouseLeave={() => setHovered(false)}
     >
       {item.slides ? (
-        <SlidingThumb slides={item.slides} alt={`${item.name} — ROGETjames`} active={rowActive} focus={item.focus} />
+        <SlidingThumb slides={item.slides} alt={imgAlt} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
+        <img src={item.img} alt={imgAlt} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1660,6 +1693,7 @@ function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
 
 function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }) {
   const [_hovered, setHovered] = useState(false);
+  const imgAlt = pieceAlt(item.name, series.label);
   return (
     <div
       className="gallery-card group cursor-pointer rounded-2xl overflow-hidden relative flex-none h-full aspect-square"
@@ -1668,9 +1702,9 @@ function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }
       onMouseLeave={() => setHovered(false)}
     >
       {item.slides ? (
-        <SlidingThumb slides={item.slides} alt={`${item.name} — ROGETjames`} active={rowActive} focus={item.focus} />
+        <SlidingThumb slides={item.slides} alt={imgAlt} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async"
+        <img src={item.img} alt={imgAlt} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1900,7 +1934,7 @@ function DrillView({ item, seriesLabel, onClose, onExpand }) {
             <div key={i} onClick={onExpand}
               className="group cursor-pointer aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
               style={{ opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-              <img src={src} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <img src={src} alt={pieceAlt(item.name, seriesLabel)} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
           ))}
         </div>
