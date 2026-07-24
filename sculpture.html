@@ -43,15 +43,50 @@
 
     <!-- Structured Data: CollectionPage -->
     <script type="application/ld+json">
-    {
+{
       "@context": "https://schema.org",
       "@type": "CollectionPage",
       "name": "Laser Cut Sculpture",
       "url": "https://rogetjames.com/sculpture",
-      "isPartOf": { "@type": "WebSite", "name": "ROGETjames", "url": "https://rogetjames.com" },
+      "isPartOf": {
+            "@type": "WebSite",
+            "name": "ROGETjames",
+            "url": "https://rogetjames.com"
+      },
       "about": "Original laser cut sculpture in Corten steel and powdercoated aluminium — The Classics, Leaf Sculptures, Bon Bons and Genie Bottles. Crafted in Australia, delivered Australia-wide.",
-      "creator": { "@type": "Person", "name": "James Roget", "url": "https://rogetjames.com" }
-    }
+      "creator": {
+            "@type": "Person",
+            "name": "James Roget",
+            "url": "https://rogetjames.com"
+      },
+      "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": 3,
+            "itemListElement": [
+                  {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "The Classics",
+                        "url": "https://rogetjames.com/sculpture?c=classics",
+                        "image": "https://rogetjames.com/images/marakesh/marakesh-promo.jpg"
+                  },
+                  {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Leaf Sculptures",
+                        "url": "https://rogetjames.com/sculpture?c=leafs",
+                        "image": "https://rogetjames.com/images/autumn-leaf/leaf-bali-1.jpg"
+                  },
+                  {
+                        "@type": "ListItem",
+                        "position": 3,
+                        "name": "Bon Bons & Genie Bottles",
+                        "url": "https://rogetjames.com/sculpture?c=bonbons",
+                        "image": "https://rogetjames.com/images/sculptures/bon-bon.jpg"
+                  }
+            ]
+      }
+}
     </script>
   </head>
   <body>

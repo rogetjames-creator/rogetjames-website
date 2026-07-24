@@ -21,8 +21,284 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://rogetjames.com/images/hero/hero-banksia-oldmanis.jpg</image:loc>
-      <image:title>Laser Cut Wall Art by ROGETjames</image:title>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-card-1.jpg</image:loc>
+      <image:title>BANKSIA Card — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-oldmanis-bronze.jpg</image:loc>
+      <image:title>BANKSIA Oldmanis — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/australian-natives/wandoo-1.jpg</image:loc>
+      <image:title>WANDOO — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-main.jpg</image:loc>
+      <image:title>BANKSIA Free Range — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-rec-rust.jpg</image:loc>
+      <image:title>BANKSIA Rec Landscape — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-framed-rust.jpg</image:loc>
+      <image:title>BANKSIA Rec Portrait — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-free-2.jpg</image:loc>
+      <image:title>BANKSIA Free Range — Custom — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-round.jpg</image:loc>
+      <image:title>BANKSIA Round — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-deco-2.jpg</image:loc>
+      <image:title>BANKSIA Deco — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/australian-natives/wattle-1.jpg</image:loc>
+      <image:title>WATTLE — Australian native laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/autumn-2.jpg</image:loc>
+      <image:title>AUTUMN — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/grande-1.jpg</image:loc>
+      <image:title>GRANDE — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/spring-1.jpg</image:loc>
+      <image:title>SPRING — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/figaro-1.jpg</image:loc>
+      <image:title>FIGARO — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/ontio-1.jpg</image:loc>
+      <image:title>ONTIO — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/nuvine-1.jpg</image:loc>
+      <image:title>NUVINE — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/creeping-fig/butterfly-1.jpg</image:loc>
+      <image:title>BUTTERFLY — creeping fig laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/branches/gren-edge-1.jpg</image:loc>
+      <image:title>GREN Edge — branch &amp; foliage laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/branches/gren-tao-2.jpg</image:loc>
+      <image:title>GREN Tao — branch &amp; foliage laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/branches/gren-free-1.jpg</image:loc>
+      <image:title>GREN Free — branch &amp; foliage laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/branches/gren-x-1.jpg</image:loc>
+      <image:title>GREN X — branch &amp; foliage laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/vitae/vitae-gren-1.jpg</image:loc>
+      <image:title>VITAE — GREN — branch &amp; foliage laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/rue-original.jpg</image:loc>
+      <image:title>RUE — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/rue-the-3rd.jpg</image:loc>
+      <image:title>RUE the 3rd — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/olin.jpg</image:loc>
+      <image:title>OLIN — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/petunia.jpg</image:loc>
+      <image:title>PETUNIA — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/fuelles.jpg</image:loc>
+      <image:title>FUEILLES — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/ferlice.jpg</image:loc>
+      <image:title>FERLICE — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/flowers/palm-raja.jpg</image:loc>
+      <image:title>PALM RAJA — floral laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/plume/plume-deco-black.jpg</image:loc>
+      <image:title>PLUME DECO Black — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/plume/plume-deco-rust2.jpg</image:loc>
+      <image:title>PLUME DECO — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/plume/plume-deco-pink.jpg</image:loc>
+      <image:title>PLUME DECO Pink — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/plume/feather.jpg</image:loc>
+      <image:title>FEATHER — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/plume/feather-wish.jpg</image:loc>
+      <image:title>FEATHER — Toivottaa — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/plume/flock-o-feathers.jpg</image:loc>
+      <image:title>FLOCK O FEATHERS — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/uploads/1783237275228_qn3ggo.jpg</image:loc>
+      <image:title>PLUME DECO Rust — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/uploads/1783237275228_3bixg9.jpg</image:loc>
+      <image:title>PLUME DECO Rust II — feather &amp; plume laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/jungle/bambu-insitu-1.jpg</image:loc>
+      <image:title>BAMBU — tropical laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/jungle/ubud-round-1.jpg</image:loc>
+      <image:title>UBUD Round — tropical laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/jungle/ubud-rec.jpg</image:loc>
+      <image:title>UBUD Rectangle — tropical laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/b-editions/halston-b.jpg</image:loc>
+      <image:title>HALSTON B — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/b-editions/pavia-b.jpg</image:loc>
+      <image:title>PAVIA B — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/b-editions/zed-b.jpg</image:loc>
+      <image:title>ZED B — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/therus/seaweed-1.jpg</image:loc>
+      <image:title>SEAWEED — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/neazar/zon-zee-1.jpg</image:loc>
+      <image:title>ZON ZEE — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/neazar/nea-2.jpg</image:loc>
+      <image:title>NEA — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/vasuki/vasuki-sabi.jpg</image:loc>
+      <image:title>VASUKI — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/ikona/mahola-1.jpg</image:loc>
+      <image:title>MAHOLA — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/ikona/geo-leaf-1.jpg</image:loc>
+      <image:title>GEO LEAF — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/pendant/liberatum-1.jpg</image:loc>
+      <image:title>LIBERATUM — laser cut metal pendant wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/neazar/metropolis-1.jpg</image:loc>
+      <image:title>METROPOLIS — laser cut metal pendant wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/pendant/benin-horizontal.jpg</image:loc>
+      <image:title>BENIN — laser cut metal pendant wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/pendant/sanur-1.jpg</image:loc>
+      <image:title>SANUR — laser cut metal pendant wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/neazar/salamanka-1.jpg</image:loc>
+      <image:title>SALAMANKA — laser cut metal pendant wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/obliationes/obliationes-1.jpg</image:loc>
+      <image:title>OBLIATIONES — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/obliationes/obliationes-2.jpg</image:loc>
+      <image:title>OBLIATIONES — Large — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/obliationes/obliationes-tibetan-patha.jpg</image:loc>
+      <image:title>OBLIATIONES TIBETAN — Patha — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/obliationes/oko-1.jpg</image:loc>
+      <image:title>OKO — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/birds/birdy-num-num-1.jpg</image:loc>
+      <image:title>BIRDY NUM NUM — bird laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/birds/swallows-install-1.jpg</image:loc>
+      <image:title>SWALLOWS — bird laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/birds/wren-1.jpg</image:loc>
+      <image:title>WREN — bird laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/retro/jeager-insitu.jpg</image:loc>
+      <image:title>JEAGER — retro laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/retro/halston-tall-1.jpg</image:loc>
+      <image:title>HALSTON Tall — retro laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/retro/zed-o-1.jpg</image:loc>
+      <image:title>ZED O — retro laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/retro/zed-rec-1.jpg</image:loc>
+      <image:title>ZED — retro laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/vitae/vitae-shiogi-1.jpg</image:loc>
+      <image:title>VITAE — SHIOGI — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/libratum-1.jpg</image:loc>
+      <image:title>LIBRATUM — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/metropolis-client-1.jpg</image:loc>
+      <image:title>METROPOLIS — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/benin-inspired-1.jpg</image:loc>
+      <image:title>BENIN Inspired — laser cut metal wall art by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/omare-marion-front.jpg</image:loc>
+      <image:title>OMARE — Marion — laser cut metal wall art by ROGETjames</image:title>
     </image:image>
   </url>
   <url>
@@ -32,7 +308,35 @@
     <priority>0.9</priority>
     <image:image>
       <image:loc>https://rogetjames.com/images/marakesh/marakesh-promo.jpg</image:loc>
-      <image:title>Laser Cut Sculpture by ROGETjames</image:title>
+      <image:title>MARAKESH — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/halo/pavia-1.jpg</image:loc>
+      <image:title>PAVIA — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/sculptures/mowhiti.jpg</image:loc>
+      <image:title>MOWHITI — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/sculptures/omare.jpg</image:loc>
+      <image:title>OMARE — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/sculptures/bon-bon.jpg</image:loc>
+      <image:title>BON BON — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/sculptures/medina.jpg</image:loc>
+      <image:title>MEDINA — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/autumn-leaf/leaf-bali-1.jpg</image:loc>
+      <image:title>AUTUMN LEAF — laser cut metal garden sculpture by ROGETjames</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/villa-leaf/villa-leaf-trio-pool.jpg</image:loc>
+      <image:title>VILLA LEAF — laser cut metal garden sculpture by ROGETjames</image:title>
     </image:image>
   </url>
 </urlset>

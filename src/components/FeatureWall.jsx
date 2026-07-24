@@ -175,6 +175,12 @@ const CSS = `
 .fw-mobile-menu-close{position:absolute;top:20px;right:20px;padding:10px;border-radius:50%;background:rgba(255,255,255,.08);color:#F2F0E9;border:none;cursor:pointer}
 .fw-mobile-menu-divider{width:60px;height:1px;background:rgba(242,240,233,.18);margin:10px 0}
 
+/* Text index of the whole catalogue. Only one collection is rendered on screen
+   at a time, so screen readers and search engines otherwise never reach the
+   other ~15. Visually hidden (clipped, NOT display:none — display:none would
+   hide it from both). */
+.fw-index{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
 @media(max-width:640px){
   .fw-wrap{position:relative;height:auto;min-height:100dvh;overflow:visible}
   .fw-imgslot{position:relative;height:42vh;min-height:240px}
@@ -331,6 +337,19 @@ function Gallery() {
     }
     return withUpClose;
   }, [mediaImages, uploadedUpClose, upCloseForSeries]);
+
+  // Deep link: /wall-art?c=<collection-id> opens that collection directly, so
+  // every collection has its own shareable URL and the index links above go
+  // somewhere real. Applied once — the base collections exist from first render.
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (deepLinked.current || !CATS.length) return;
+    deepLinked.current = true;
+    const id = new URLSearchParams(window.location.search).get("c");
+    if (!id) return;
+    const i = CATS.findIndex((cat) => cat.id === id);
+    if (i > 0) setCur(i);
+  }, [CATS]);
 
   // One flattened + ordered piece list per collection — the SINGLE source of
   // truth for both the search index and the on-screen gallery. Australian
@@ -531,6 +550,32 @@ function Gallery() {
   return (
     <div className="fw-wrap">
       <style>{CSS}</style>
+
+      {/* Crawlable / screen-reader index of the full catalogue. The gallery
+          above shows one collection at a time, so every other collection and
+          design is invisible to both search engines and assistive tech. This
+          lists them all as real links — same content, reachable as text. */}
+      <nav className="fw-index" aria-label="All wall art collections">
+        <h2>Laser cut metal wall art collections by ROGETjames</h2>
+        {CATS.map((cat, i) => (
+          <section key={cat.id}>
+            <h3>
+              <a
+                href={`/wall-art?c=${cat.id}`}
+                onClick={(e) => { e.preventDefault(); go(i); }}
+              >
+                {cat.label}
+              </a>
+            </h3>
+            <ul>
+              {cat.pieces.filter((p) => !p._upclose).map((p) => (
+                <li key={p.name}>{p.name}</li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </nav>
+
       <div className="fw-imgslot">
         {pieces.map((p, i) => (
           <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />

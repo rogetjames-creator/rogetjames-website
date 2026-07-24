@@ -130,6 +130,11 @@ const CSS = `
 .fw-prog i{position:absolute;left:0;top:0;height:100%;background:#c08c46;border-radius:2px;transition:width .7s cubic-bezier(.7,0,.2,1)}
 @media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-subrail{display:none}}
 
+/* Text index of the whole catalogue — see FeatureWall. Only one collection is
+   on screen at a time, so this is how screen readers and search engines reach
+   the rest. Clipped, NOT display:none (which would hide it from both). */
+.fw-index{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
 @media(max-width:640px){
   .fw-wrap{position:relative;height:auto;min-height:100dvh;overflow:visible}
   .fw-imgslot{position:relative;height:42vh;min-height:240px}
@@ -287,6 +292,19 @@ function Gallery() {
     }
     return withUpClose;
   }, [mediaImages, uploadedUpClose, upCloseForSeries]);
+
+  // Deep link: /sculpture?c=<collection-id> opens that collection directly, so
+  // every collection has its own shareable URL and the index links go somewhere
+  // real. Applied once — the base collections exist from first render.
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (deepLinked.current || !CATS.length) return;
+    deepLinked.current = true;
+    const id = new URLSearchParams(window.location.search).get("c");
+    if (!id) return;
+    const i = CATS.findIndex((cat) => cat.id === id);
+    if (i > 0) setCur(i);
+  }, [CATS]);
 
   // Flat, searchable index of every named design across all collections —
   // excludes the synthetic "— Up Close" cards. flatIdx matches the per-category
@@ -473,6 +491,31 @@ function Gallery() {
   return (
     <div className="fw-wrap">
       <style>{CSS}</style>
+
+      {/* Crawlable / screen-reader index of the full catalogue — the gallery
+          shows one collection at a time, so the rest are otherwise unreachable
+          as text. Same content, listed as real links. */}
+      <nav className="fw-index" aria-label="All sculpture collections">
+        <h2>Laser cut metal garden sculpture collections by ROGETjames</h2>
+        {CATS.map((cat, i) => (
+          <section key={cat.id}>
+            <h3>
+              <a
+                href={`/sculpture?c=${cat.id}`}
+                onClick={(e) => { e.preventDefault(); go(i); }}
+              >
+                {cat.label}
+              </a>
+            </h3>
+            <ul>
+              {cat.pieces.filter((p) => !p._upclose).map((p) => (
+                <li key={p.name}>{p.name}</li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </nav>
+
       <div className="fw-imgslot">
         {pieces.map((p, i) => (
           <div key={`${c.id}-${i}`} className={`fw-bg ${i === pieceIdx ? "on" : ""}`} style={{ backgroundImage: `url("${p.img}")` }} />
