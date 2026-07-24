@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS } from "./Gallery";
 
+const API = "/api/media-upload";
+
 // Destinations grouped by where they show on the site. CRITICAL: every option
 // here maps to a key a live page actually reads, so a tagged photo never
 // silently vanishes. Wall-art series come straight from the live gallery covers
