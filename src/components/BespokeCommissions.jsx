@@ -2822,17 +2822,24 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
   useEffect(() => {
     if (!mediaKey) return;
     let alive = true;
-    fetch("/api/media-list")
-      .then((r) => r.json())
-      .catch(() => ({ images: [] }))
-      .then((d) => {
-        if (!alive) return;
-        setUploads(
-          (d.images || [])
-            .filter((m) => Array.isArray(m.destinations) && m.destinations.includes(mediaKey))
-            .map((m) => ({ name: m.name || labelProp, img: m.src }))
-        );
-      });
+    // Read both sources the Wall Art page reads: the git-committed manifest
+    // (static file) and the live blob list. Filter to this gallery's key,
+    // de-dupe by src, tidy the display name. Purely additive.
+    Promise.all([
+      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
+    ]).then(([manifest, legacy]) => {
+      if (!alive) return;
+      const fromManifest = Array.isArray(manifest) ? manifest.map((e) => ({ name: e.name, destinations: e.destinations || [], src: `/${e.path}` })) : [];
+      const fromLegacy = Array.isArray(legacy.images) ? legacy.images.map((i) => ({ name: i.name, destinations: i.destinations || [], src: i.src })) : [];
+      const seen = new Set();
+      setUploads(
+        [...fromManifest, ...fromLegacy]
+          .filter((m) => Array.isArray(m.destinations) && m.destinations.includes(mediaKey))
+          .filter((m) => { if (seen.has(m.src)) return false; seen.add(m.src); return true; })
+          .map((m) => ({ name: (m.name || "").replace(/\.(jpe?g|png|webp|heic|heif)$/i, "").replace(/\s*\d+\s*px\b/i, "").trim() || labelProp, img: m.src }))
+      );
+    });
     return () => { alive = false; };
   }, [mediaKey, labelProp]);
   const items = uploads.length ? [...baseItems, ...uploads] : baseItems;
