@@ -7,5 +7,5 @@ import "./index.css";
 // layout is identical. Standing alone, "close" returns to the homepage
 // instead of dismissing a layer.
 createRoot(document.getElementById("bespoke-sculpture-root")).render(
-  <SculptureGalleryModal onClose={() => window.location.assign("/")} />
+  <SculptureGalleryModal onClose={() => window.location.assign("/")} mediaKey="bespoke-sculpture" />
 );

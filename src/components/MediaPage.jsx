@@ -1,21 +1,48 @@
 import { useState, useEffect } from "react";
-import { MEDIA_DESTINATIONS } from "./Gallery";
+import { MEDIA_DESTINATIONS, WALL_ART_COVERS } from "./Gallery";
 
-const API = "/api/media-upload";
-
-// Destinations are generated automatically from the live catalogue categories
-// (imported from Gallery). Every category is always selectable; new categories
-// appear on their own. Photos tagged to a category show as that category's
-// "Up Close" tile. "up-close" is a combined section; "other" flags a spot that
-// isn't a category so Claude can place it.
-const DESTINATIONS = [
-  { key: "up-close", label: "Up Close (all, combined)" },
-  // New category, gallery not built yet — James uploads here first, then the
-  // "concrete"-tagged photos get fabricated into their own gallery on request.
-  { key: "concrete", label: "Concrete (new gallery — upload here)" },
-  ...MEDIA_DESTINATIONS,
+// Destinations grouped by where they show on the site. CRITICAL: every option
+// here maps to a key a live page actually reads, so a tagged photo never
+// silently vanishes. Wall-art series come straight from the live gallery covers
+// (WALL_ART_COVERS), so the list self-maintains — add a wall-art series and it
+// shows up here on its own. The old flat list also exposed dead duplicate
+// "Sculpture"/"Screens" chips (gallery-sculpture / gallery-screens) that
+// displayed nowhere; those are gone — only the working "sculpture" and
+// "screens" keys are offered.
+const DEST_GROUPS = [
+  {
+    group: "Wall Art",
+    hint: "shows on the Wall Art page",
+    items: WALL_ART_COVERS.map((c) => ({ key: c.id, label: c.label })),
+  },
+  {
+    group: "Sculpture",
+    hint: "shows on the Sculpture pages",
+    items: [
+      { key: "sculpture", label: "Sculpture (catalogue)" },
+      { key: "bespoke-sculpture", label: "Bespoke Sculpture" },
+      { key: "concepts", label: "Concepts" },
+    ],
+  },
+  { group: "Screens",   hint: "shows on the Screens page",   items: [{ key: "screens", label: "Screens" }] },
+  {
+    group: "Other",
+    hint: "special spots",
+    items: [
+      { key: "up-close", label: "Up Close (all galleries)" },
+      // Holding pen: a new category whose gallery isn't built yet. Upload here,
+      // then the tagged photos get fabricated into their own gallery on request.
+      { key: "concrete", label: "Concrete (holding — gallery not built yet)" },
+      { key: "other", label: "Somewhere else — type it below" },
+    ],
+  },
 ];
-const labelForKey = (key) => DESTINATIONS.find(d => d.key === key)?.label || (key === "other" ? "Other (see note)" : key);
+const ALL_DEST_ITEMS = DEST_GROUPS.flatMap((g) => g.items);
+// Resolve a label for any key: the curated list first, then any legacy key that
+// might still be on an older upload, so the library section always reads clearly.
+const LEGACY_LABELS = Object.fromEntries((MEDIA_DESTINATIONS || []).map((d) => [d.key, d.label]));
+const labelForKey = (key) =>
+  ALL_DEST_ITEMS.find((d) => d.key === key)?.label || LEGACY_LABELS[key] || (key === "other" ? "Other (see note)" : key);
 
 // Phone photos can be 5-10MB — far too slow/large to send as-is. Downscale to
 // a sane display size and re-encode as JPEG before upload, so a batch sends
@@ -299,20 +326,26 @@ export default function MediaPage() {
         {phase !== "done" && (
           <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 1 — Where do these go?</p>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {DESTINATIONS.map(d => {
-                const on = selectedDests.includes(d.key);
-                return (
-                  <button key={d.key} type="button" onClick={() => toggleDest(d.key)}
-                    className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                    {on ? "✓ " : ""}{d.label}
-                  </button>
-                );
-              })}
-              <button type="button" onClick={() => toggleDest("other")}
-                className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${selectedDests.includes("other") ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                {selectedDests.includes("other") ? "✓ " : ""}Other / not listed
-              </button>
+            <div className="mb-3">
+              {DEST_GROUPS.map((group) => (
+                <div key={group.group} className="mb-4 last:mb-0">
+                  <p className="font-detail text-[10px] text-cream/50 uppercase tracking-[0.18em] mb-2">
+                    {group.group}
+                    <span className="text-cream/25 normal-case tracking-normal"> · {group.hint}</span>
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((d) => {
+                      const on = selectedDests.includes(d.key);
+                      return (
+                        <button key={d.key} type="button" onClick={() => toggleDest(d.key)}
+                          className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                          {on ? "✓ " : ""}{d.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
             {selectedDests.includes("other") && (
               <input type="text" value={otherNote} onChange={e => setOtherNote(e.target.value)}
@@ -454,16 +487,23 @@ export default function MediaPage() {
                 <p className="font-detail text-[11px] text-cream/50">Tick every place it should appear.</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 mb-5 max-h-[45vh] overflow-y-auto">
-              {DESTINATIONS.map(d => {
-                const on = editDests.includes(d.key);
-                return (
-                  <button key={d.key} type="button" onClick={() => toggleEditDest(d.key)}
-                    className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                    {on ? "✓ " : ""}{d.label}
-                  </button>
-                );
-              })}
+            <div className="mb-5 max-h-[45vh] overflow-y-auto">
+              {DEST_GROUPS.map((group) => (
+                <div key={group.group} className="mb-3 last:mb-0">
+                  <p className="font-detail text-[10px] text-cream/45 uppercase tracking-[0.18em] mb-1.5">{group.group}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((d) => {
+                      const on = editDests.includes(d.key);
+                      return (
+                        <button key={d.key} type="button" onClick={() => toggleEditDest(d.key)}
+                          className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
+                          {on ? "✓ " : ""}{d.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
             <div className="flex gap-3">
               <button onClick={() => setEditing(null)}

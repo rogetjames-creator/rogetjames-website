@@ -2810,11 +2810,32 @@ export function ProjectsGalleryModal({ onClose }) {
 }
 
 export function ConceptsGalleryModal({ onClose }) {
-  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" />;
+  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey="concepts" />;
 }
 
-export function SculptureGalleryModal({ onClose, items: itemsProp = null, label: labelProp = "Sculpture" }) {
-  const items = itemsProp ?? SCULPTURE_ITEMS;
+export function SculptureGalleryModal({ onClose, items: itemsProp = null, label: labelProp = "Sculpture", mediaKey = null }) {
+  const baseItems = itemsProp ?? SCULPTURE_ITEMS;
+  // When a mediaKey is given, append any /media uploads tagged with it to the
+  // end of the gallery — same mechanism the Wall Art / Sculpture / Screens
+  // pages use. Purely additive: if the fetch fails, the static items still show.
+  const [uploads, setUploads] = useState([]);
+  useEffect(() => {
+    if (!mediaKey) return;
+    let alive = true;
+    fetch("/api/media-list")
+      .then((r) => r.json())
+      .catch(() => ({ images: [] }))
+      .then((d) => {
+        if (!alive) return;
+        setUploads(
+          (d.images || [])
+            .filter((m) => Array.isArray(m.destinations) && m.destinations.includes(mediaKey))
+            .map((m) => ({ name: m.name || labelProp, img: m.src }))
+        );
+      });
+    return () => { alive = false; };
+  }, [mediaKey, labelProp]);
+  const items = uploads.length ? [...baseItems, ...uploads] : baseItems;
   const [itemIdx, setItemIdx] = useState(null);
   const [slideIdx, setSlideIdx] = useState(0);
   const [animDir, setAnimDir] = useState(null);
