@@ -226,7 +226,7 @@ export default function Navbar({ quoteCount = 0 }) {
               {collectionOpen && (
                 <div className="absolute top-full left-0 pt-2 min-w-[150px]">
                   <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
-                  {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
+                  {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens", href: "/screens" }].map(({ label, tab, href }) => (
                     href ? (
                       <a key={tab} href={href}
                         className="block w-full text-left px-4 py-1.5 text-sm font-medium text-cream hover:text-white transition-colors duration-200">
@@ -253,8 +253,16 @@ export default function Navbar({ quoteCount = 0 }) {
               {bespokeOpen && (
                 <div className="absolute top-full left-0 pt-2 min-w-[150px]">
                   <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
-                  {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
+                  {[{ label: "Screens", cat: "screens", href: "/screens" }, { label: "Sculpture", cat: "sculpture", href: "/bespoke-sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat, href }) => {
                     const locked = LOCKED_BESPOKE_CATS.includes(cat);
+                    if (href && !locked) {
+                      return (
+                        <a key={cat} href={href}
+                          className="w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 flex items-center gap-1.5 text-cream hover:text-white">
+                          {label}
+                        </a>
+                      );
+                    }
                     return (
                       <button key={cat} onClick={() => openBespokeCat(cat)}
                         className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream hover:text-white"}`}>
@@ -345,7 +353,7 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Collection</span>
             <div className="flex gap-5">
-              {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens" }].map(({ label, tab, href }) => (
+              {[{ label: "Wall Art", tab: "wall-art", href: "/wall-art" }, { label: "Sculpture", tab: "sculpture", href: "/sculpture" }, { label: "Screens", tab: "screens", href: "/screens" }].map(({ label, tab, href }) => (
                 href ? (
                   <a key={tab} href={href} className="text-cream text-lg font-heading font-medium lift-hover">
                     {label}
@@ -363,8 +371,15 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Bespoke</span>
             <div className="flex flex-wrap justify-center gap-5">
-              {[{ label: "Screens", cat: "screens" }, { label: "Sculpture", cat: "sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat }) => {
+              {[{ label: "Screens", cat: "screens", href: "/screens" }, { label: "Sculpture", cat: "sculpture", href: "/bespoke-sculpture" }, { label: "Projects", cat: "projects" }, { label: "Commissions", cat: "commissions" }, { label: "Concepts", cat: "concepts" }].map(({ label, cat, href }) => {
                 const locked = LOCKED_BESPOKE_CATS.includes(cat);
+                if (href && !locked) {
+                  return (
+                    <a key={cat} href={href} className="text-lg font-heading font-medium lift-hover flex items-center gap-1.5 text-cream">
+                      {label}
+                    </a>
+                  );
+                }
                 return (
                   <button key={cat} onClick={() => { closeMenu(); if (!locked) window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
                     className={`text-lg font-heading font-medium lift-hover flex items-center gap-1.5 ${locked ? "text-cream/40" : "text-cream"}`}>

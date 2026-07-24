@@ -6,13 +6,13 @@ const NAV_COLS = [
     links: [
       { label: "Wall Art", href: "/wall-art" },
       { label: "Sculpture", href: "/sculpture" },
-      { label: "Screens", href: "#collection" },
+      { label: "Screens", href: "/screens" },
     ],
   },
   {
     title: "Bespoke",
     links: [
-      { label: "Sculpture", href: "#bespoke", event: "open-bespoke-category", detail: "sculpture" },
+      { label: "Sculpture", href: "/bespoke-sculpture" },
       { label: "Commissions", href: "#bespoke" },
       { label: "Projects", href: "#bespoke", event: "open-bespoke-category", detail: "projects" },
       { label: "Concepts", href: "#bespoke", event: "open-bespoke-category", detail: "concepts" },
