@@ -487,7 +487,7 @@ const WALL_ART_SERIES = [
       { name: "LIBRATUM",   img: "/images/libratum-1.jpg" },
       { name: "METROPOLIS",     img: "/images/metropolis-client-1.jpg" },
       { name: "BENIN Inspired",  img: "/images/benin-inspired-1.jpg" },
-      { name: "OMARE — Marion", img: "/images/omare-marion-front.jpg" },
+      { name: "OMARE (Custom)", img: "/images/omare-custom-front.jpg" },
     ],
   },
 ];

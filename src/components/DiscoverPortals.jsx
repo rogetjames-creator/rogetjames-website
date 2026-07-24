@@ -37,7 +37,7 @@ const CLIENT_IMAGES = [
   { src: "/images/libratum-1.jpg",                     title: "LIBRATUM" },
   { src: "/images/metropolis-client-1.jpg",            title: "METROPOLIS" },
   { src: "/images/benin-inspired-1.jpg",               title: "BENIN Inspired" },
-  { src: "/images/omare-marion-front.jpg",             title: "OMARE — Marion" },
+  { src: "/images/omare-custom-front.jpg",             title: "OMARE (Custom)" },
 ];
 
 const PORTALS = [
