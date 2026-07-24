@@ -107,6 +107,25 @@ async function getManifest() {
   }
 }
 
+// For the "list" action only: read the DEPLOYED manifest (fast CDN file, no
+// GitHub auth or rate-limit) instead of the GitHub API, with a hard 4s cap so
+// a slow read can never hang the page open. Falls back to the GitHub copy if
+// the deployed file isn't reachable. Write actions still use getManifest() so
+// they always modify the freshest copy.
+async function getManifestForList() {
+  const base = process.env.URL || process.env.DEPLOY_PRIME_URL || process.env.DEPLOY_URL;
+  if (base) {
+    try {
+      const r = await fetch(`${base}/media-manifest.json?ts=${Date.now()}`, { signal: AbortSignal.timeout(4000) });
+      if (r.ok) {
+        const parsed = await r.json();
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch { /* fall through to GitHub */ }
+  }
+  return getManifest().catch(() => []);
+}
+
 // Commits any number of new files, removed files, and the updated manifest as
 // ONE git commit — so a whole batch triggers exactly one Netlify rebuild.
 async function commitBatch({ addFiles = [], removePaths = [], manifest, message }) {
@@ -161,7 +180,7 @@ export default async function handler(req) {
   // List — merges git-committed uploads (new, fast) with anything still in
   // the older database store (from before this change), so nothing vanishes.
   if (body.action === "list") {
-    const manifest = await getManifest().catch(() => []);
+    const manifest = await getManifestForList();
     const gitItems = manifest.map((e) => ({
       id: `git_${e.id}`,
       name: e.name || "",

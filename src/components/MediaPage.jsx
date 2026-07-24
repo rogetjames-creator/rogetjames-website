@@ -112,19 +112,38 @@ export default function MediaPage() {
   const call = (payload) =>
     fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
-  const login = async (adminSecret) => {
+  // optimistic=true (auto-login from a saved key): if the library-list call is
+  // slow or fails — it hits the GitHub API and can time out — open the uploader
+  // anyway rather than lock the page. A genuine wrong-password (401) never opens
+  // optimistically. Manual password entry stays strict so a typo is caught.
+  const login = async (adminSecret, { optimistic = false } = {}) => {
     setLoading(true); setError("");
     try {
       const res = await call({ adminSecret, action: "list" });
-      const json = await res.json();
-      if (!res.ok || json.error) {
-        setError(json.error || "Failed."); setAuthed(false);
+      let json;
+      try { json = await res.json(); } catch { json = null; }
+      if (res.status === 401) {
+        setError("Wrong password."); setAuthed(false);
         try { localStorage.removeItem("stats_key"); } catch { /* ignore */ }
+      } else if (!res.ok || !json || json.error) {
+        // Reached the server but the list couldn't be built (e.g. GitHub slow).
+        if (optimistic) {
+          setAuthed(true); setSecret(adminSecret);
+          setNote("Couldn't load your existing photos just now — you can still upload.");
+          try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
+        } else { setError(json?.error || "Couldn't load — try again."); setAuthed(false); }
       } else {
         setAuthed(true); setSecret(adminSecret); setImages(json.images || []);
         try { localStorage.setItem("stats_key", adminSecret); } catch { /* ignore */ }
       }
-    } catch { setError("Request failed. Check your connection."); }
+    } catch {
+      // Network/timeout (the fetch itself threw). For a saved key, trust it and
+      // open — it verified before; the upload call will re-check server-side.
+      if (optimistic) {
+        setAuthed(true); setSecret(adminSecret);
+        setNote("Couldn't load your existing photos just now — you can still upload.");
+      } else { setError("Request failed. Check your connection — or try again."); }
+    }
     finally { setLoading(false); }
   };
 
@@ -140,7 +159,7 @@ export default function MediaPage() {
     const urlKey = new URLSearchParams(window.location.search).get("key");
     const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", "/media");
-    if (saved) login(saved);
+    if (saved) login(saved, { optimistic: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
