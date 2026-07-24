@@ -63,6 +63,11 @@ const CSS = `
 @media(max-width:900px){.fw-lead{max-width:84vw;left:26px}.fw-subrail{display:none}}
 `;
 
+// Exported so the public /screens page can render the gallery directly,
+// bypassing the admin gate below (which still guards the /feature-screens
+// preview). Same component either way — identical layout.
+export function ScreensGallery() { return <Gallery />; }
+
 function Gallery() {
   const [cur, setCur] = useState(0);
   const [pieceIdx, setPieceIdx] = useState(0);

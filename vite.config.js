@@ -21,6 +21,8 @@ export default defineConfig({
         'wall-art': resolve(__dirname, 'wall-art.html'),
         'sculpture': resolve(__dirname, 'sculpture.html'),
         'feature-screens': resolve(__dirname, 'feature-screens.html'),
+        'screens': resolve(__dirname, 'screens.html'),
+        'bespoke-sculpture': resolve(__dirname, 'bespoke-sculpture.html'),
       },
       output: {
         manualChunks: {

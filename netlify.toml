@@ -61,11 +61,6 @@
   status = 301
 
 [[redirects]]
-  from = "/screens"
-  to = "/#collection"
-  status = 301
-
-[[redirects]]
   from = "/gates"
   to = "/#collection"
   status = 301
@@ -168,6 +163,16 @@
 [[redirects]]
   from = "/sculpture"
   to = "/sculpture.html"
+  status = 200
+
+[[redirects]]
+  from = "/screens"
+  to = "/screens.html"
+  status = 200
+
+[[redirects]]
+  from = "/bespoke-sculpture"
+  to = "/bespoke-sculpture.html"
   status = 200
 
 # Old preview URLs (briefly live) → the final public slugs
