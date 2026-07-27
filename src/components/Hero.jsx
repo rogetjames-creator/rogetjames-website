@@ -97,14 +97,14 @@ const SLOTS = {
 
 // The pairs shown, in order — James's sequence, exactly as given. Left word sits
 // above-left of the symbol, right word below-right, so each reads ART <l> <r>.
+// The two phrases the mark cycles, in order. Left word sits above-left of the
+// ART symbol, right word below-right, so each reads ART <l> <r>. This array is
+// the single source of truth — the opener, the letter-cell counts and the flip
+// loop all derive from it, so changing the phrases here changes everything with
+// no other edit. Any word used must exist in heroWords.js.
 const SEQUENCE = [
-  ["MEETS", "DESIGN"],      // the resting pair the mark opens on
-  ["METAL", "FORMS"],
-  ["GOOD",  "MATTERS"],
-  ["IDEAS", "FORMED"],
-  ["SEE",   "DIFFERENTLY"],
-  ["LIVE",  "INSPIRED"],
-  ["MAKE",  "MATTER"],      // last before it loops back to MEETS/DESIGN
+  ["MAKE", "MATTER"],       // opens on — "make art matter"
+  ["GOOD", "MATTERS"],      // "good art matters"
 ];
 
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
@@ -226,10 +226,10 @@ export default function Hero() {
       });
     };
 
-    // "ART MEETS DESIGN" only reads if you watch it assemble — ART, then MEETS,
-    // then DESIGN. So when the loop comes back to it, the pair is not flipped
-    // into place: the words clear, then fly in one after the other exactly as
-    // they do on first load. ART stays put throughout.
+    // The opening phrase reads best if you watch it assemble — ART, then the
+    // left word, then the right. So when the loop comes back to SEQUENCE[0] the
+    // pair is not flipped into place: the words clear, then fly in one after the
+    // other exactly as they do on first load. ART stays put throughout.
     const flyInOpening = () => {
       const [l, r] = SEQUENCE[0];
       gsap.timeline()
@@ -382,7 +382,7 @@ export default function Hero() {
             style={{ width: "clamp(216px, 27vw, 342px)", height: "auto", overflow: "visible", marginBottom: "1.75rem" }}
             viewBox="18 150 1098 880"
             xmlns="http://www.w3.org/2000/svg"
-            aria-label="ART meets design"
+            aria-label="make art matter · good art matters"
             role="img"
           >
             <g style={{ filter: CAST_SHADOW }}>
