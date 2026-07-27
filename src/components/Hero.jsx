@@ -103,8 +103,11 @@ const SLOTS = {
 // loop all derive from it, so changing the phrases here changes everything with
 // no other edit. Any word used must exist in heroWords.js.
 const SEQUENCE = [
-  ["MAKE", "MATTER"],       // opens on — "make art matter"
-  ["GOOD", "MATTERS"],      // "good art matters"
+  ["MEETS", "DESIGN"],      // opens on — "ART meets design"
+  ["METAL", "FORMS"],
+  ["IDEAS", "FORMED"],
+  ["SEE",   "DIFFERENTLY"],
+  ["LIVE",  "INSPIRED"],
 ];
 
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
@@ -382,7 +385,7 @@ export default function Hero() {
             style={{ width: "clamp(216px, 27vw, 342px)", height: "auto", overflow: "visible", marginBottom: "1.75rem" }}
             viewBox="18 150 1098 880"
             xmlns="http://www.w3.org/2000/svg"
-            aria-label="make art matter · good art matters"
+            aria-label="ART meets design"
             role="img"
           >
             <g style={{ filter: CAST_SHADOW }}>
