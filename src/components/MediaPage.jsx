@@ -404,8 +404,12 @@ export default function MediaPage() {
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
-              + Choose photos from iCloud
-              <input type="file" accept="image/*,.heic,.heif" multiple onChange={onPick} className="hidden" />
+              + Choose photos
+              {/* accept="image/*" alone (no .heic/.heif file-extension list) is
+                  what makes iOS offer Photo Library / Take Photo / Files rather
+                  than jumping straight to the Files/iCloud picker. image/* on
+                  modern iOS already covers HEIC. */}
+              <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
             </label>
 
             {staged.length > 0 && (
