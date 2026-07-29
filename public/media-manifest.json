@@ -43,11 +43,11 @@
   },
   {
     "id": "1785287371590_llr55r",
-    "name": "1 (3).jpeg",
+    "name": "Rue",
     "destinations": [
       "other"
     ],
-    "note": "replace the Rue image in the hero page with this image. ensure it fits the screen as the rest",
+    "note": "Upscaled replacement of the original Rue hero image — placed as hero-rue-1.jpg (first hero slide).",
     "createdTime": "2026-07-29T01:09:31.591Z",
     "path": "images/uploads/1785287371590_llr55r.jpg"
   }
