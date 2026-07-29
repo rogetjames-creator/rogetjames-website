@@ -81,8 +81,8 @@ const SYMBOL_FILTER =
 //   MEETS slot  — right-aligned: every word ENDS where the S of MEETS ends.
 //   DESIGN slot — left-aligned:  every word STARTS where the D of DESIGN starts.
 const SLOTS = {
-  meets:  { id: "hero-meets",  baseline: 449.17, align: "right", anchor: 299.7 },
-  design: { id: "hero-design", baseline: 700.39, align: "left",  anchor: 802.5 },
+  meets:  { id: "hero-meets",  baseline: 440, align: "left", anchor: 802.5 },
+  design: { id: "hero-design", baseline: 585, align: "left", anchor: 802.5 },
 };
 
 // The pairs shown, in order — James's sequence, exactly as given. Left word sits
