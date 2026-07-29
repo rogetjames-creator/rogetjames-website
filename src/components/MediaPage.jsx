@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS } from "./Gallery";
+import { HERO_SLIDES } from "./heroSlides";
 
 const API = "/api/media-upload";
 
@@ -27,6 +28,14 @@ const DEST_GROUPS = [
     ],
   },
   { group: "Screens",   hint: "shows on the Screens page",   items: [{ key: "screens", label: "Screens" }] },
+  {
+    group: "Hero slideshow",
+    hint: "shows on the homepage hero",
+    items: [
+      { key: "hero", label: "Add a new slide" },
+      ...HERO_SLIDES.map((s) => ({ key: `hero-replace-${s.key}`, label: `Replace: ${s.label}` })),
+    ],
+  },
   {
     group: "Other",
     hint: "special spots",

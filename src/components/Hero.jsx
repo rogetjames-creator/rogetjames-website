@@ -5,6 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { netlifyImg } from "../utils/img";
 import { WORDS } from "./heroWords";
+import { HERO_SLIDES } from "./heroSlides";
 
 // Homepage hero. James's "ART meets design" vector mark: the glass ART symbol
 // fades in, MEETS flies in, then DESIGN, all on the original 1133.86 artboard so
@@ -14,21 +15,10 @@ import { WORDS } from "./heroWords";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SLIDES = [
-  "/images/hero/hero-rue-1.jpg",
-  "/images/hero/hero-bambu.jpg",
-  "/images/hero/hero-creeping-fig-autumn-1.jpg",
-  "/images/hero/hero-creeping-fig-autumn-2.jpg",
-  "/images/hero/hero-creeping-fig-grande.jpg",
-  "/images/hero/hero-gren-wide.jpg",
-  "/images/hero/hero-gren-free.jpg",
-  "/images/hero/hero-obliationes.jpg",
-  "/images/hero/hero-rue-3rd.jpg",
-  "/images/hero/hero-seaweed.jpg",
-  "/images/hero/hero-vasuki.jpg",
-  "/images/marakesh/marakesh-promo.jpg",
-  "/images/hero/hero-banksia-oldmanis.jpg",
-];
+// Built-in slide srcs, from the shared list. The live list (BASE + any /media
+// hero uploads) is resolved inside the component so replacements and additions
+// apply to the whole slideshow, not just the first slide.
+const BASE_SLIDES = HERO_SLIDES.map((s) => s.src);
 
 const INTERVAL = 5500;
 const FADE_DURATION = 1.6;
@@ -138,7 +128,10 @@ const DRIFT = [
 
 export default function Hero() {
   const sectionRef = useRef(null);
-  const [layerIdx, setLayerIdx] = useState(() => [0, 1 % SLIDES.length]);
+  // The live slide list: built-in slides with any /media hero uploads applied.
+  // `hero-replace-<key>` uploads swap that slide; `hero` uploads are appended.
+  const [slides, setSlides] = useState(BASE_SLIDES);
+  const [layerIdx, setLayerIdx] = useState(() => [0, 1 % BASE_SLIDES.length]);
   const [active, setActive] = useState(0);
   const idxRef = useRef(0);
   const layerRefs = useRef([null, null]);
@@ -154,6 +147,42 @@ export default function Hero() {
   // crossfades go back to the quicker linear fade.
   const [firstFadeDone, setFirstFadeDone] = useState(false);
   const lenis = useLenis();
+
+  // Merge in /media hero uploads: `hero-replace-<key>` swaps that slide's image,
+  // `hero` appends a new slide. Reads the same two sources the galleries use
+  // (git-committed manifest + live blob list). Purely additive — a failed fetch
+  // leaves the built-in slides untouched.
+  useEffect(() => {
+    let alive = true;
+    Promise.all([
+      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
+    ]).then(([manifest, legacy]) => {
+      if (!alive) return;
+      const uploads = [
+        ...(Array.isArray(manifest) ? manifest.map((e) => ({ dest: e.destinations || [], src: `/${e.path}`, t: e.createdTime || "" })) : []),
+        ...(Array.isArray(legacy.images) ? legacy.images.map((i) => ({ dest: i.destinations || [], src: i.src, t: i.createdTime || "" })) : []),
+      ];
+      if (!uploads.some((u) => u.dest.some((d) => d === "hero" || d.startsWith("hero-replace-")))) return;
+      // Latest upload wins per replace-key.
+      const byKey = {};
+      uploads.forEach((u) => u.dest.forEach((d) => {
+        if (d.startsWith("hero-replace-")) {
+          const k = d.slice("hero-replace-".length);
+          if (!byKey[k] || u.t > byKey[k].t) byKey[k] = u;
+        }
+      }));
+      const resolved = HERO_SLIDES.map((s) => (byKey[s.key] ? byKey[s.key].src : s.src));
+      const seen = new Set(resolved);
+      const added = uploads
+        .filter((u) => u.dest.includes("hero"))
+        .sort((a, b) => (a.t < b.t ? -1 : 1))
+        .map((u) => u.src)
+        .filter((src) => (seen.has(src) ? false : (seen.add(src), true)));
+      setSlides([...resolved, ...added]);
+    });
+    return () => { alive = false; };
+  }, []);
 
   // Catch the first photo landing. onLoad covers the normal case; this covers a
   // cached image (already complete before onLoad could attach), and the second
@@ -264,7 +293,7 @@ export default function Hero() {
     let cancelled = false;
     const id = setTimeout(async () => {
       advancedRef.current = true;
-      const nextSlide = (idxRef.current + 1) % SLIDES.length;
+      const nextSlide = (idxRef.current + 1) % slides.length;
       const incoming = active === 0 ? 1 : 0;
       flushSync(() => setLayerIdx((prev) => { const n = [...prev]; n[incoming] = nextSlide; return n; }));
       const el = layerRefs.current[incoming];
@@ -274,6 +303,9 @@ export default function Hero() {
       setActive(incoming);
     }, advancedRef.current ? INTERVAL : INTRO_HOLD);
     return () => { cancelled = true; clearTimeout(id); };
+    // slides.length is re-read on each advance (effect re-runs on `active`);
+    // adding it as a dep would reset the crossfade timer when uploads merge.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, heroImageReady]);
 
   useEffect(() => {
@@ -353,7 +385,7 @@ export default function Hero() {
             key={layer}
             ref={(el) => (layerRefs.current[layer] = el)}
             data-prerender-hero
-            src={netlifyImg(SLIDES[layerIdx[layer]], { w: 1600, q: 82 })}
+            src={netlifyImg(slides[layerIdx[layer]] ?? BASE_SLIDES[0], { w: 1600, q: 82 })}
             alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
             aria-hidden={layer !== 0}
             className="absolute inset-0 w-full h-full object-contain"
