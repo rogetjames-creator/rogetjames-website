@@ -40,5 +40,15 @@
     "note": "",
     "createdTime": "2026-07-24T13:00:45.994Z",
     "path": "images/uploads/1784898045994_5s59zd.jpg"
+  },
+  {
+    "id": "1785287371590_llr55r",
+    "name": "1 (3).jpeg",
+    "destinations": [
+      "other"
+    ],
+    "note": "replace the Rue image in the hero page with this image. ensure it fits the screen as the rest",
+    "createdTime": "2026-07-29T01:09:31.591Z",
+    "path": "images/uploads/1785287371590_llr55r.jpg"
   }
 ]
