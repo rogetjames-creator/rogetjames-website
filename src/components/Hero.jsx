@@ -80,10 +80,22 @@ const SYMBOL_FILTER =
 // Anchoring — both words grow OUTWARD from the ART symbol:
 //   MEETS slot  — right-aligned: every word ENDS where the S of MEETS ends.
 //   DESIGN slot — left-aligned:  every word STARTS where the D of DESIGN starts.
-const SLOTS = {
-  meets:  { id: "hero-meets",  baseline: 449.17, align: "right", anchor: 299.7 },
-  design: { id: "hero-design", baseline: 700.39, align: "left",  anchor: 802.5 },
+// Four word positions on the mark — above/below the extended T (right arm) and
+// above/below the extended R (left arm). Each phrase can place its left and
+// right word in any of these; the default is the original layout (left word
+// above the R at upper-left, right word below the T at lower-right).
+const POSITIONS = {
+  aboveR: { baseline: 449.17, align: "right", anchor: 299.7 },  // upper-left  — original left word
+  belowT: { baseline: 700.39, align: "left",  anchor: 802.5 },  // lower-right — original right word
+  aboveT: { baseline: 585,    align: "left",  anchor: 802.5 },  // upper-right — above the T crossbar
+  belowR: { baseline: 585,    align: "right", anchor: 299.7 },  // lower-left  — below the R arm (spare)
 };
+const LEFT_ID = "hero-meets";    // the left word always renders in this group
+const RIGHT_ID = "hero-design";  // the right word always renders in this group
+// A positioned slot (DOM id + baseline/align/anchor) for a phrase's left or
+// right word, from its position key. Defaults to the original layout.
+const leftSlot  = (entry) => ({ id: LEFT_ID,  ...POSITIONS[entry[2] || "aboveR"] });
+const rightSlot = (entry) => ({ id: RIGHT_ID, ...POSITIONS[entry[3] || "belowT"] });
 
 // The pairs shown, in order — James's sequence, exactly as given. Left word sits
 // above-left of the symbol, right word below-right, so each reads ART <l> <r>.
@@ -92,8 +104,11 @@ const SLOTS = {
 // the single source of truth — the opener, the letter-cell counts and the flip
 // loop all derive from it, so changing the phrases here changes everything with
 // no other edit. Any word used must exist in heroWords.js.
+// [left, right, leftPos?, rightPos?] — position keys default to the original
+// layout. The opener puts MEETS above the T and DESIGN below it; the rest keep
+// the original diagonal.
 const SEQUENCE = [
-  ["MEETS", "DESIGN"],      // opens on — "ART meets design"
+  ["MEETS", "DESIGN", "aboveT", "belowT"],  // opener: MEETS above the T, DESIGN below it
   ["METAL", "FORMS"],
   ["IDEAS", "FORMED"],
   ["",      "INSPIRED"],    // "ART inspired" — no left word, empty clears that slot
@@ -262,10 +277,11 @@ export default function Hero() {
     // pair is not flipped into place: the words clear, then fly in one after the
     // other exactly as they do on first load. ART stays put throughout.
     const flyInOpening = () => {
-      const [l, r] = SEQUENCE[0];
+      const entry = SEQUENCE[0];
+      const [l, r] = entry;
       gsap.timeline()
         .to(["#hero-meets", "#hero-design"], { opacity: 0, duration: 0.5, ease: "power2.in" })
-        .add(() => { setSlot(SLOTS.meets, l); setSlot(SLOTS.design, r); })
+        .add(() => { setSlot(leftSlot(entry), l); setSlot(rightSlot(entry), r); })
         .set("#hero-meets",  { x: -150 })
         .set("#hero-design", { x: 150, y: 90 })
         .to("#hero-meets",  { opacity: 1, x: 0,       duration: 1.5, ease: "power3.out" })
@@ -277,9 +293,10 @@ export default function Hero() {
       interval = setInterval(() => {
         at.i = (at.i + 1) % SEQUENCE.length;
         if (at.i === 0) { flyInOpening(); return; }
-        const [l, r] = SEQUENCE[at.i];
-        flipSlot(SLOTS.meets, l);
-        flipSlot(SLOTS.design, r);
+        const entry = SEQUENCE[at.i];
+        const [l, r] = entry;
+        flipSlot(leftSlot(entry), l);
+        flipSlot(rightSlot(entry), r);
       }, FLIP_EVERY * 1000);
     }, FLIP_START_DELAY * 1000);
     return () => { clearTimeout(start); clearInterval(interval); };
@@ -423,10 +440,10 @@ export default function Hero() {
               <path id="hero-art-symbol" d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER, opacity: 0 }} />
               <g id="hero-meets" style={{ fill: WORD_FILL, opacity: 0 }}>
                 {Array.from({ length: MEETS_CELLS }, (_, i) => {
-                  const c = cellsFor(SLOTS.meets, SEQUENCE[0][0])[i];
+                  const c = cellsFor(leftSlot(SEQUENCE[0]), SEQUENCE[0][0])[i];
                   return (
                     <g key={i} className="flip-cell" data-x={c ? c.x : 0}
-                       transform={`translate(${c ? c.x : 0} ${SLOTS.meets.baseline}) scale(1 1)`}
+                       transform={`translate(${c ? c.x : 0} ${leftSlot(SEQUENCE[0]).baseline}) scale(1 1)`}
                        style={c ? undefined : { opacity: 0 }}>
                       <path d={c ? c.d : ""} />
                     </g>
@@ -435,10 +452,10 @@ export default function Hero() {
               </g>
               <g id="hero-design" style={{ fill: WORD_FILL, opacity: 0 }}>
                 {Array.from({ length: DESIGN_CELLS }, (_, i) => {
-                  const c = cellsFor(SLOTS.design, SEQUENCE[0][1])[i];
+                  const c = cellsFor(rightSlot(SEQUENCE[0]), SEQUENCE[0][1])[i];
                   return (
                     <g key={i} className="flip-cell" data-x={c ? c.x : 0}
-                       transform={`translate(${c ? c.x : 0} ${SLOTS.design.baseline}) scale(1 1)`}
+                       transform={`translate(${c ? c.x : 0} ${rightSlot(SEQUENCE[0]).baseline}) scale(1 1)`}
                        style={c ? undefined : { opacity: 0 }}>
                       <path d={c ? c.d : ""} />
                     </g>
