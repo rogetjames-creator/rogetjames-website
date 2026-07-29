@@ -91,6 +91,42 @@ function compressToDataUrl(file) {
   });
 }
 
+// One tidy dropdown to choose a destination; the ones you pick show as removable
+// chips below. Replaces the old wall of ~35 chips. Multiple can be added, but
+// most uploads are one place.
+function DestPicker({ selected, onToggle }) {
+  return (
+    <div>
+      <select
+        value=""
+        onChange={(e) => { if (e.target.value) onToggle(e.target.value); }}
+        className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none transition-colors cursor-pointer"
+      >
+        <option value="" className="bg-jet">+ Choose where these go…</option>
+        {DEST_GROUPS.map((g) => (
+          <optgroup key={g.group} label={g.group} className="bg-jet">
+            {g.items.map((d) => (
+              <option key={d.key} value={d.key} disabled={selected.includes(d.key)} className="bg-jet">
+                {d.label}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {selected.map((k) => (
+            <button key={k} type="button" onClick={() => onToggle(k)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-clay border border-clay text-cream font-detail text-[11px] hover:bg-clay-light transition-colors">
+              {labelForKey(k)}<span className="text-cream/70 text-[13px] leading-none">×</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function MediaPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -357,25 +393,7 @@ export default function MediaPage() {
           <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 1 — Where do these go?</p>
             <div className="mb-3">
-              {DEST_GROUPS.map((group) => (
-                <div key={group.group} className="mb-4 last:mb-0">
-                  <p className="font-detail text-[10px] text-cream/50 uppercase tracking-[0.18em] mb-2">
-                    {group.group}
-                    <span className="text-cream/25 normal-case tracking-normal"> · {group.hint}</span>
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {group.items.map((d) => {
-                      const on = selectedDests.includes(d.key);
-                      return (
-                        <button key={d.key} type="button" onClick={() => toggleDest(d.key)}
-                          className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                          {on ? "✓ " : ""}{d.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+              <DestPicker selected={selectedDests} onToggle={toggleDest} />
             </div>
             {selectedDests.includes("other") && (
               <input type="text" value={otherNote} onChange={e => setOtherNote(e.target.value)}
@@ -517,23 +535,8 @@ export default function MediaPage() {
                 <p className="font-detail text-[11px] text-cream/50">Tick every place it should appear.</p>
               </div>
             </div>
-            <div className="mb-5 max-h-[45vh] overflow-y-auto">
-              {DEST_GROUPS.map((group) => (
-                <div key={group.group} className="mb-3 last:mb-0">
-                  <p className="font-detail text-[10px] text-cream/45 uppercase tracking-[0.18em] mb-1.5">{group.group}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {group.items.map((d) => {
-                      const on = editDests.includes(d.key);
-                      return (
-                        <button key={d.key} type="button" onClick={() => toggleEditDest(d.key)}
-                          className={`px-3 py-2 rounded-xl font-detail text-[11px] border transition-all ${on ? "bg-clay border-clay text-cream" : "bg-transparent border-white/18 text-cream/60 hover:border-white/35"}`}>
-                          {on ? "✓ " : ""}{d.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+            <div className="mb-5">
+              <DestPicker selected={editDests} onToggle={toggleEditDest} />
             </div>
             <div className="flex gap-3">
               <button onClick={() => setEditing(null)}
