@@ -106,8 +106,7 @@ const SEQUENCE = [
   ["MEETS", "DESIGN"],      // opens on — "ART meets design"
   ["METAL", "FORMS"],
   ["IDEAS", "FORMED"],
-  ["SEE",   "DIFFERENTLY"],
-  ["LIVE",  "INSPIRED"],
+  ["",      "INSPIRED"],    // "ART inspired" — no left word, empty clears that slot
 ];
 
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
