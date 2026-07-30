@@ -375,7 +375,7 @@ const WALL_ART_SERIES = [
     id: "jungle",
     label: "JUNGLE",
     items: [
-      { name: "BAMBU",          img: "/images/jungle/bambu-insitu-1.jpg", slides: ["/images/jungle/bambu-insitu-1.jpg", "/images/jungle/bambu-insitu-2.jpg"] },
+      { name: "BAMBU",          img: "/images/jungle/bambu-foyer.jpg", slides: ["/images/jungle/bambu-foyer.jpg", "/images/jungle/bambu-garden.jpg"] },
       { name: "UBUD Round",     img: "/images/jungle/ubud-round-1.jpg", slides: ["/images/jungle/ubud-round-1.jpg", "/images/jungle/ubud-round-2.jpg"] },
       { name: "UBUD Rectangle", img: "/images/jungle/ubud-rec.jpg" },
     ],
