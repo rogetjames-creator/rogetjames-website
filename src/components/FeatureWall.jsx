@@ -27,40 +27,38 @@ const UP_CLOSE_IMAGES = [
   { src: "/images/details/plume-deco-rust-2.jpg", name: "Plume Deco — Corten detail" },
 ];
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// Australian Natives thumbnail layout (per James): these three shots are
-// pinned to fixed positions, everything else is randomised, and the Up Close
-// tile is always last.
-const AN_PINS = {
-  "/images/banksia/banksia-card-1.jpg": 0,    // 1st thumb
-  "/images/banksia/banksia-rec-rust.jpg": 2,  // 3rd thumb
-  "/images/banksia/banksia-round.jpg": 3,     // 4th thumb
-};
+// Australian Natives thumbnail layout (per James): a FIXED order — NO random
+// reshuffle — so nothing moves between page loads. Rules baked into this order:
+//  · no two shots of the same design sit next to each other
+//  · Banksia Oldmanis's three shots are spread out (bronze / black / interior)
+//  · banksia-rec-framed is the LAST design (4th-last overall, before close-ups)
+//  · the close-ups (_upclose) always stay pinned at the very end
+const AN_ORDER = [
+  "/images/banksia/banksia-card-1.jpg",            // 1  Banksia Card
+  "/images/banksia/banksia-oldmanis-bronze.jpg",   // 2  Oldmanis (bronze)
+  "/images/banksia/banksia-rec-rust.jpg",          // 3  Rec Landscape (rust)
+  "/images/banksia/banksia-round.jpg",             // 4  Round
+  "/images/australian-natives/wandoo-1.jpg",       // 5  Wandoo
+  "/images/banksia/banksia-oldmanis-black.jpg",    // 6  Oldmanis (black)
+  "/images/banksia/banksia-main.jpg",              // 7  Free Range
+  "/images/banksia/banksia-deco-2.jpg",            // 8  Deco
+  "/images/banksia/banksia-framed-rust.jpg",       // 9  Rec Portrait
+  "/images/banksia/banksia-free-2.jpg",            // 10 Free Range — Custom
+  "/images/banksia/banksia-round-2.jpg",           // 11 Round (2nd)
+  "/images/banksia/banksia-oldmanis-interior.jpg", // 12 Oldmanis (interior)
+  "/images/banksia/banksia-deco.jpg",              // 13 Deco (2nd)
+  "/images/australian-natives/wattle-1.jpg",       // 14 Wattle
+  "/images/banksia/banksia-rec-framed.jpg",        // 15 Rec Landscape (framed) — 4th-last
+];
 function orderAustralianNatives(flat) {
   const upclose = flat.filter((p) => p._upclose);
   const rest = flat.filter((p) => !p._upclose);
-  const pinned = new Map();
-  const pool = [];
-  for (const p of rest) {
-    const slot = AN_PINS[p.img];
-    if (slot !== undefined && !pinned.has(slot)) pinned.set(slot, p);
-    else pool.push(p);
-  }
-  const shuffled = shuffle(pool);
-  const out = [];
-  let pi = 0;
-  for (let i = 0; i < rest.length; i++) {
-    out.push(pinned.has(i) ? pinned.get(i) : shuffled[pi++]);
-  }
-  return [...out, ...upclose];
+  const rank = (p) => {
+    const i = AN_ORDER.indexOf(p.img);
+    return i === -1 ? AN_ORDER.length : i;   // any unlisted piece falls to the end, before close-ups
+  };
+  const ordered = [...rest].sort((a, b) => rank(a) - rank(b));
+  return [...ordered, ...upclose];
 }
 
 const CSS = `
