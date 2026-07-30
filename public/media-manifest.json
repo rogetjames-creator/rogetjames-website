@@ -100,5 +100,15 @@
     "note": "",
     "createdTime": "2026-07-30T07:22:37.924Z",
     "path": "images/uploads/1785396157923_518rbp.jpg"
+  },
+  {
+    "id": "1785397037843_mipkpv",
+    "name": "Bambu - Garden 1200px.jpg",
+    "destinations": [
+      "hero-replace-bambu"
+    ],
+    "note": "",
+    "createdTime": "2026-07-30T07:37:17.844Z",
+    "path": "images/uploads/1785397037843_mipkpv.jpg"
   }
 ]
