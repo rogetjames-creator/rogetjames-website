@@ -97,7 +97,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
         {/* Header */}
         <div className="flex-none px-5 py-3.5 flex items-center gap-3 border-b border-white/10">
           {onCloseAll && (
-            <button onClick={onCloseAll}
+            <button onClick={onCloseAll} title="Back to all catalogues" aria-label="Back to all catalogues"
               className="w-8 h-8 rounded-full bg-white/8 flex items-center justify-center text-cream/40 hover:text-cream hover:bg-white/15 transition-all flex-none">
               <House size={13} />
             </button>
@@ -105,16 +105,16 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
           <span className="font-heading text-cream text-sm tracking-[0.2em] uppercase flex-1">{label}</span>
           <span className="text-cream/40 text-xs font-detail">{page + 1} / {total}</span>
           {sharePath && (
-            <button onClick={copyLink} aria-label="Copy shareable link"
+            <button onClick={copyLink} title={copied ? "Link copied" : "Copy a link to this catalogue to send"} aria-label="Copy a link to this catalogue"
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${copied ? "bg-clay text-cream" : "bg-white/10 text-cream/50 hover:text-cream"}`}>
               {copied ? <Check size={14} /> : <Link2 size={14} />}
             </button>
           )}
-          <button onClick={() => setZoomed(true)}
+          <button onClick={() => setZoomed(true)} title="Zoom in / full screen" aria-label="Zoom in / full screen"
             className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cream/50 hover:text-cream transition-colors">
             <ZoomIn size={14} />
           </button>
-          <button onClick={onClose}
+          <button onClick={onClose} title="Close" aria-label="Close"
             className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cream/70 hover:text-cream transition-colors">
             <X size={14} />
           </button>
