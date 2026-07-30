@@ -40,7 +40,7 @@ function shuffle(arr) {
 // pinned to fixed positions, everything else is randomised, and the Up Close
 // tile is always last.
 const AN_PINS = {
-  "/images/banksia/banksia-wall-art-series.jpg": 0,  // 1st thumb (Banksia Wall Art Series cover)
+  "/images/banksia/banksia-card-1.jpg": 0,    // 1st thumb
   "/images/banksia/banksia-rec-rust.jpg": 2,  // 3rd thumb
   "/images/banksia/banksia-round.jpg": 3,     // 4th thumb
 };

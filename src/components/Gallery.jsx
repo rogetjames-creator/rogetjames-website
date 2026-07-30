@@ -297,7 +297,7 @@ const WALL_ART_SERIES = [
     id: "australian-natives",
     label: "AUSTRALIAN NATIVES",
     items: [
-      { name: "BANKSIA Card",              img: "/images/banksia/banksia-wall-art-series.jpg" },
+      { name: "BANKSIA Card",              img: "/images/banksia/banksia-card-1.jpg" },
       { name: "BANKSIA Oldmanis",          img: "/images/banksia/banksia-oldmanis-bronze.jpg", slides: ["/images/banksia/banksia-oldmanis-bronze.jpg", "/images/banksia/banksia-oldmanis-black.jpg", "/images/banksia/banksia-oldmanis-interior.jpg"] },
       { name: "WANDOO",                    img: "/images/australian-natives/wandoo-1.jpg" },
       { name: "BANKSIA Free Range",        img: "/images/banksia/banksia-main.jpg" },
