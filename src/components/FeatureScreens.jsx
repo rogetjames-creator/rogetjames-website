@@ -13,6 +13,12 @@ import { SCREEN_COVERS } from "./BespokeCommissions";
 const SEED_UPCLOSE = {};
 const UP_CLOSE_IMAGES = [];
 
+// Collapse a name to letters+digits so an upload named "Wattle", "WATTLE" or
+// "wattle-1.jpg" all match the WATTLE screen design. Used to file a named
+// screen upload against its design automatically (so its section/position come
+// from the name — nothing to pick by hand).
+const normName = (s) => (s || "").toString().toLowerCase().replace(/\.(jpe?g|png|webp|heic|heif)$/i, "").replace(/[^a-z0-9]/g, "");
+
 const CSS = `
 .fw-wrap{position:fixed;inset:0;overflow:hidden;background:#1A1A1A;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(.75);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
@@ -103,10 +109,10 @@ function Gallery() {
     ]).then(([manifest, legacy]) => {
       if (!alive) return;
       const fromManifest = Array.isArray(manifest)
-        ? manifest.map((e) => ({ src: `/${e.path}`, destinations: e.destinations || [], createdTime: e.createdTime || "" }))
+        ? manifest.map((e) => ({ src: `/${e.path}`, name: e.name || "", destinations: e.destinations || [], createdTime: e.createdTime || "" }))
         : [];
       const fromLegacy = Array.isArray(legacy.images)
-        ? legacy.images.map((i) => ({ src: i.src, destinations: i.destinations || [], createdTime: i.createdTime || "" }))
+        ? legacy.images.map((i) => ({ src: i.src, name: i.name || "", destinations: i.destinations || [], createdTime: i.createdTime || "" }))
         : [];
       setMediaImages([...fromManifest, ...fromLegacy]);
     });
@@ -129,26 +135,54 @@ function Gallery() {
   // its own "— Up Close" piece, and every close-up also collects into its
   // own "Up Close" category — mirroring the live gallery's Up Close pill.
   const CATS = useMemo(() => {
+    // Every "screens" upload, newest last, name kept. Scoped to "screens"
+    // specifically — mediaImages/uploadedUpClose are shared stores across the
+    // whole site, so an unfiltered match would pull wall-art/sculpture close-ups
+    // in here too.
+    const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
+    const seenSrc = new Set();
+    const screensUploads = [
+      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("screens")).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
+      ...mediaImages.filter((m) => m.destinations.includes("screens")).map((m) => ({ src: m.src, name: m.name || "", createdTime: m.createdTime || "" })),
+    ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime)
+     .filter((u) => { if (seenSrc.has(u.src)) return false; seenSrc.add(u.src); return true; });
+
+    // A named upload whose name matches a known screen design is filed with that
+    // design — it becomes another photo of that piece, in that design's section
+    // (so "Wattle" lands with WATTLE in The Organics). Position and category are
+    // derived from the name; nothing to choose by hand.
+    const matchedSrc = new Set();
+    const uploadsForDesign = (designName) => {
+      const key = normName(designName);
+      if (!key) return [];
+      return screensUploads.filter((u) => {
+        if (matchedSrc.has(u.src)) return false;
+        const un = normName(u.name);
+        return un && (un === key || (key.length >= 4 && un.startsWith(key)));
+      });
+    };
+
     const withUpClose = SCREEN_COVERS.map((cat) => {
+      const pieces = cat.pieces.map((p) => {
+        const matched = uploadsForDesign(p.name);
+        if (!matched.length) return p;
+        const base = p.slides && p.slides.length ? p.slides : [p.img];
+        const extra = matched.map((u) => u.src).filter((s) => !base.includes(s));
+        if (!extra.length) return p;
+        extra.forEach((s) => matchedSrc.add(s));
+        return { ...p, slides: [...base, ...extra] };
+      });
       const imgs = upCloseForSeries(cat.id);
-      if (!imgs.length) return cat;
-      const upClosePiece = { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true };
-      return { ...cat, pieces: [...cat.pieces, upClosePiece] };
+      const withSection = imgs.length
+        ? [...pieces, { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true }]
+        : pieces;
+      return { ...cat, pieces: withSection };
     });
 
-    // Scoped to "screens" specifically — mediaImages/uploadedUpClose are
-    // shared stores across the whole site, so an unfiltered "any tag" match
-    // would pull wall-art/sculpture close-ups in here too.
-    const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
-    const mediaUpClose = mediaImages.filter((m) => m.destinations.includes("screens"));
-    const uploads = [
-      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("screens")).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
-      ...mediaUpClose.map((m) => ({ src: m.src, name: "", createdTime: m.createdTime || "" })),
-    ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime);
-    const seen = new Set();
-    const ordered = uploads.filter((u) => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
-    const allUpClose = [...UP_CLOSE_IMAGES, ...ordered].map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true }));
-
+    // Anything left — no name, or a name that matches no design — pools into the
+    // shared UP CLOSE category, keeping whatever name it has.
+    const leftover = screensUploads.filter((u) => !matchedSrc.has(u.src));
+    const allUpClose = [...UP_CLOSE_IMAGES, ...leftover].map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true }));
     if (allUpClose.length) {
       withUpClose.push({ id: "up-close", label: "UP CLOSE", img: allUpClose[0].img, pieces: allUpClose });
     }

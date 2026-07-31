@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS } from "./Gallery";
+import { SCREEN_COVERS } from "./BespokeCommissions";
 import { HERO_SLIDES } from "./heroSlides";
+
+// Every screen design name, self-maintaining from the live screen covers — add
+// a design and it shows up here. Typing/tapping one of these as the upload's
+// name files the photo with that design automatically (its section/position
+// follow from the name), so there's nothing to place by hand.
+const SCREEN_DESIGN_NAMES = Array.from(
+  new Set(SCREEN_COVERS.flatMap((s) => s.pieces.map((p) => p.name)))
+).sort((a, b) => a.localeCompare(b));
 
 const API = "/api/media-upload";
 
@@ -137,6 +146,7 @@ export default function MediaPage() {
   // Batch composer state
   const [selectedDests, setSelectedDests] = useState([]);
   const [otherNote, setOtherNote] = useState("");
+  const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
   const [phase, setPhase] = useState("compose");     // compose | sending | done
   const [doneInfo, setDoneInfo] = useState(null);    // { count, dests: [] }
@@ -238,7 +248,13 @@ export default function MediaPage() {
     if (!selectedDests.length || !staged.length) return;
     setPhase("sending");
     try {
-      const res = await call({ adminSecret: secret, images: staged, destinations: selectedDests, note: otherNote });
+      // A named Screens upload carries that name on every photo in the batch, so
+      // the Screens page files it with the matching design automatically.
+      const nm = screenName.trim();
+      const outImages = (selectedDests.includes("screens") && nm)
+        ? staged.map((s) => ({ ...s, name: nm }))
+        : staged;
+      const res = await call({ adminSecret: secret, images: outImages, destinations: selectedDests, note: otherNote });
       let json;
       try { json = await res.json(); }
       catch { json = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
@@ -252,7 +268,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setOtherNote(""); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setScreenName(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -400,7 +416,23 @@ export default function MediaPage() {
                 placeholder="Type where these should go (e.g. Hero slideshow, Screens — Grail)"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6" />
             )}
-            {!selectedDests.includes("other") && <div className="mb-6" />}
+            {selectedDests.includes("screens") && (
+              <div className="mb-6">
+                <input type="text" value={screenName} onChange={e => setScreenName(e.target.value)}
+                  placeholder="Which screen design? (e.g. Wattle, Grail)"
+                  className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
+                <p className="font-detail text-[11px] text-cream/50 mt-2">Name it and it files itself with that design — no need to pick a spot. Leave blank to drop it in the shared Up Close set.</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {SCREEN_DESIGN_NAMES.map(name => (
+                    <button key={name} type="button" onClick={() => setScreenName(name)}
+                      className={`px-2.5 py-1 rounded-lg font-detail text-[10px] border transition-all ${screenName.trim().toLowerCase() === name.toLowerCase() ? "bg-clay border-clay text-cream" : "border-white/15 text-cream/50 hover:border-clay/50 hover:text-cream"}`}>
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {!selectedDests.includes("other") && !selectedDests.includes("screens") && <div className="mb-6" />}
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
