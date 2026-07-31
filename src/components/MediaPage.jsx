@@ -11,6 +11,12 @@ const SCREEN_DESIGN_NAMES = Array.from(
   new Set(SCREEN_COVERS.flatMap((s) => s.pieces.map((p) => p.name)))
 ).sort((a, b) => a.localeCompare(b));
 
+// The screen sections a NEW design can be filed under, self-maintaining from
+// the live covers. Typing a name that isn't an existing design makes a brand-new
+// design; it lands in the section chosen here (or under "New" if none is picked).
+const SCREEN_SECTIONS = SCREEN_COVERS.map((s) => ({ id: s.id, label: s.label }));
+const SECTION_LABELS = Object.fromEntries(SCREEN_SECTIONS.map((s) => [s.id, `Screens — ${s.label}`]));
+
 const API = "/api/media-upload";
 
 // Destinations grouped by where they show on the site. CRITICAL: every option
@@ -62,7 +68,7 @@ const ALL_DEST_ITEMS = DEST_GROUPS.flatMap((g) => g.items);
 // might still be on an older upload, so the library section always reads clearly.
 const LEGACY_LABELS = Object.fromEntries((MEDIA_DESTINATIONS || []).map((d) => [d.key, d.label]));
 const labelForKey = (key) =>
-  ALL_DEST_ITEMS.find((d) => d.key === key)?.label || LEGACY_LABELS[key] || (key === "other" ? "Other (see note)" : key);
+  ALL_DEST_ITEMS.find((d) => d.key === key)?.label || SECTION_LABELS[key] || LEGACY_LABELS[key] || (key === "other" ? "Other (see note)" : key);
 
 // Phone photos can be 5-10MB — far too slow/large to send as-is. Downscale to
 // a sane display size and re-encode as JPEG before upload, so a batch sends
@@ -147,6 +153,7 @@ export default function MediaPage() {
   const [selectedDests, setSelectedDests] = useState([]);
   const [otherNote, setOtherNote] = useState("");
   const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
+  const [screenSection, setScreenSection] = useState(""); // section for a brand-new screen design
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
   const [phase, setPhase] = useState("compose");     // compose | sending | done
   const [doneInfo, setDoneInfo] = useState(null);    // { count, dests: [] }
@@ -249,12 +256,18 @@ export default function MediaPage() {
     setPhase("sending");
     try {
       // A named Screens upload carries that name on every photo in the batch, so
-      // the Screens page files it with the matching design automatically.
+      // the Screens page files it with the matching design (or makes a new one).
+      const screensSel = selectedDests.includes("screens");
       const nm = screenName.trim();
-      const outImages = (selectedDests.includes("screens") && nm)
+      const outImages = (screensSel && nm)
         ? staged.map((s) => ({ ...s, name: nm }))
         : staged;
-      const res = await call({ adminSecret: secret, images: outImages, destinations: selectedDests, note: otherNote });
+      // For a new design, the chosen section rides along as an extra tag so the
+      // Screens page knows where to file it.
+      const outDests = (screensSel && screenSection)
+        ? [...new Set([...selectedDests, screenSection])]
+        : selectedDests;
+      const res = await call({ adminSecret: secret, images: outImages, destinations: outDests, note: otherNote });
       let json;
       try { json = await res.json(); }
       catch { json = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
@@ -268,7 +281,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setOtherNote(""); setScreenName(""); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setScreenName(""); setScreenSection(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -416,22 +429,41 @@ export default function MediaPage() {
                 placeholder="Type where these should go (e.g. Hero slideshow, Screens — Grail)"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6" />
             )}
-            {selectedDests.includes("screens") && (
-              <div className="mb-6">
-                <input type="text" value={screenName} onChange={e => setScreenName(e.target.value)}
-                  placeholder="Which screen design? (e.g. Wattle, Grail)"
-                  className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
-                <p className="font-detail text-[11px] text-cream/50 mt-2">Name it and it files itself with that design — no need to pick a spot. Leave blank to drop it in the shared Up Close set.</p>
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {SCREEN_DESIGN_NAMES.map(name => (
-                    <button key={name} type="button" onClick={() => setScreenName(name)}
-                      className={`px-2.5 py-1 rounded-lg font-detail text-[10px] border transition-all ${screenName.trim().toLowerCase() === name.toLowerCase() ? "bg-clay border-clay text-cream" : "border-white/15 text-cream/50 hover:border-clay/50 hover:text-cream"}`}>
-                      {name}
-                    </button>
-                  ))}
+            {selectedDests.includes("screens") && (() => {
+              const nm = screenName.trim();
+              const isExisting = !!nm && SCREEN_DESIGN_NAMES.some(n => n.toLowerCase() === nm.toLowerCase());
+              const isNew = !!nm && !isExisting;
+              return (
+                <div className="mb-6">
+                  <input type="text" value={screenName} onChange={e => setScreenName(e.target.value)}
+                    placeholder="Name this design — an existing one, or a brand-new name"
+                    className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
+                  <p className="font-detail text-[11px] text-cream/50 mt-2">
+                    Tap an existing design to add these photos to it, or type a <b className="text-cream/75 font-semibold">new name</b> to create a brand-new design. Leave blank to drop them in the shared Up Close set.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {SCREEN_DESIGN_NAMES.map(name => (
+                      <button key={name} type="button" onClick={() => setScreenName(name)}
+                        className={`px-2.5 py-1 rounded-lg font-detail text-[10px] border transition-all ${nm.toLowerCase() === name.toLowerCase() ? "bg-clay border-clay text-cream" : "border-white/15 text-cream/50 hover:border-clay/50 hover:text-cream"}`}>
+                        {name}
+                      </button>
+                    ))}
+                  </div>
+                  {isNew && (
+                    <div className="mt-3">
+                      <p className="font-detail text-[11px] text-clay/90 mb-1.5">New design “{nm}” — which section?</p>
+                      <select value={screenSection} onChange={e => setScreenSection(e.target.value)}
+                        className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream outline-none transition-colors cursor-pointer">
+                        <option value="" className="bg-jet">New (a fresh section for new designs)</option>
+                        {SCREEN_SECTIONS.map(s => (
+                          <option key={s.id} value={s.id} className="bg-jet">{s.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              );
+            })()}
             {!selectedDests.includes("other") && !selectedDests.includes("screens") && <div className="mb-6" />}
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>

@@ -135,53 +135,74 @@ function Gallery() {
   // its own "— Up Close" piece, and every close-up also collects into its
   // own "Up Close" category — mirroring the live gallery's Up Close pill.
   const CATS = useMemo(() => {
-    // Every "screens" upload, newest last, name kept. Scoped to "screens"
-    // specifically — mediaImages/uploadedUpClose are shared stores across the
-    // whole site, so an unfiltered match would pull wall-art/sculpture close-ups
-    // in here too.
+    const sectionIds = new Set(SCREEN_COVERS.map((c) => c.id));
+    const existingNorms = new Set(SCREEN_COVERS.flatMap((c) => c.pieces.map((p) => normName(p.name))));
+
+    // Every "screens" upload, newest last, name + destinations kept. Scoped to
+    // "screens" specifically — mediaImages/uploadedUpClose are shared stores
+    // across the whole site, so an unfiltered match would pull wall-art /
+    // sculpture close-ups in here too.
     const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
     const seenSrc = new Set();
     const screensUploads = [
-      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("screens")).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
-      ...mediaImages.filter((m) => m.destinations.includes("screens")).map((m) => ({ src: m.src, name: m.name || "", createdTime: m.createdTime || "" })),
+      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("screens")).map((u) => ({ src: u.src, name: u.name || "", dests: u.destinations || [], createdTime: u.createdTime || "" })),
+      ...mediaImages.filter((m) => (m.destinations || []).includes("screens")).map((m) => ({ src: m.src, name: m.name || "", dests: m.destinations || [], createdTime: m.createdTime || "" })),
     ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime)
      .filter((u) => { if (seenSrc.has(u.src)) return false; seenSrc.add(u.src); return true; });
 
-    // A named upload whose name matches a known screen design is filed with that
-    // design — it becomes another photo of that piece, in that design's section
-    // (so "Wattle" lands with WATTLE in The Organics). Position and category are
-    // derived from the name; nothing to choose by hand.
-    const matchedSrc = new Set();
-    const uploadsForDesign = (designName) => {
-      const key = normName(designName);
-      if (!key) return [];
-      return screensUploads.filter((u) => {
-        if (matchedSrc.has(u.src)) return false;
-        const un = normName(u.name);
-        return un && (un === key || (key.length >= 4 && un.startsWith(key)));
-      });
-    };
+    // Sort each upload into one of three buckets by its name:
+    //  • matches an existing design  → added as another photo of that design
+    //  • a brand-new name            → becomes its own new design, in the section
+    //                                   it was tagged with (or the "New" section)
+    //  • no name                     → the shared Up Close set
+    const usedSrc = new Set();
+    const addToExisting = new Map();   // design-norm → [src…]
+    const newBySection = new Map();    // sectionId   → Map(name-norm → { name, srcs:[] })
+    const newLoose = new Map();        // name-norm   → { name, srcs:[] }  (no section chosen)
+    for (const u of screensUploads) {
+      const un = normName(u.name);
+      if (un && existingNorms.has(un)) {
+        if (!addToExisting.has(un)) addToExisting.set(un, []);
+        addToExisting.get(un).push(u.src);
+        usedSrc.add(u.src);
+      } else if (un) {
+        const sec = (u.dests || []).find((d) => d !== "screens" && sectionIds.has(d));
+        const bucket = sec ? (newBySection.get(sec) || newBySection.set(sec, new Map()).get(sec)) : newLoose;
+        const entry = bucket.get(un) || { name: u.name, srcs: [] };
+        entry.srcs.push(u.src);
+        bucket.set(un, entry);
+        usedSrc.add(u.src);
+      }
+    }
+    const pieceFor = ({ name, srcs }) => (srcs.length > 1 ? { name, img: srcs[0], slides: srcs } : { name, img: srcs[0] });
 
     const withUpClose = SCREEN_COVERS.map((cat) => {
-      const pieces = cat.pieces.map((p) => {
-        const matched = uploadsForDesign(p.name);
-        if (!matched.length) return p;
-        const base = p.slides && p.slides.length ? p.slides : [p.img];
-        const extra = matched.map((u) => u.src).filter((s) => !base.includes(s));
+      // Existing designs collect any photos named after them.
+      let pieces = cat.pieces.map((p) => {
+        const extra = addToExisting.get(normName(p.name)) || [];
         if (!extra.length) return p;
-        extra.forEach((s) => matchedSrc.add(s));
-        return { ...p, slides: [...base, ...extra] };
+        const base = p.slides && p.slides.length ? p.slides : [p.img];
+        const merged = [...base, ...extra.filter((s) => !base.includes(s))];
+        return merged.length > base.length ? { ...p, slides: merged } : p;
       });
-      const imgs = upCloseForSeries(cat.id);
-      const withSection = imgs.length
-        ? [...pieces, { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true }]
-        : pieces;
-      return { ...cat, pieces: withSection };
+      // Brand-new designs filed under this section.
+      const secMap = newBySection.get(cat.id);
+      if (secMap) pieces = [...pieces, ...Array.from(secMap.values(), pieceFor)];
+      // Section-level Up Close (unnamed section-tagged shots), minus anything
+      // already used above as a design.
+      const imgs = upCloseForSeries(cat.id).filter((src) => !usedSrc.has(src));
+      if (imgs.length) pieces = [...pieces, { name: `${cat.label} — Up Close`, img: imgs[0], slides: imgs, _upclose: true }];
+      return { ...cat, pieces };
     });
 
-    // Anything left — no name, or a name that matches no design — pools into the
-    // shared UP CLOSE category, keeping whatever name it has.
-    const leftover = screensUploads.filter((u) => !matchedSrc.has(u.src));
+    // New designs with no chosen section get their own "New" section.
+    if (newLoose.size) {
+      const pieces = Array.from(newLoose.values(), pieceFor);
+      withUpClose.push({ id: "screens-new", label: "New", img: pieces[0].img, pieces });
+    }
+
+    // Whatever is left — unnamed and not tied to a section — pools into UP CLOSE.
+    const leftover = screensUploads.filter((u) => !usedSrc.has(u.src) && !(u.dests || []).some((d) => d !== "screens" && sectionIds.has(d)));
     const allUpClose = [...UP_CLOSE_IMAGES, ...leftover].map((u) => ({ name: u.name || "Up Close", img: u.src, _upclose: true }));
     if (allUpClose.length) {
       withUpClose.push({ id: "up-close", label: "UP CLOSE", img: allUpClose[0].img, pieces: allUpClose });
