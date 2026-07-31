@@ -105,10 +105,17 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
           <span className="font-heading text-cream text-sm tracking-[0.2em] uppercase flex-1">{label}</span>
           <span className="text-cream/40 text-xs font-detail">{page + 1} / {total}</span>
           {sharePath && (
-            <button onClick={copyLink} title={copied ? "Link copied" : "Copy a link to this catalogue to send"} aria-label="Copy a link to this catalogue"
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${copied ? "bg-clay text-cream" : "bg-white/10 text-cream/50 hover:text-cream"}`}>
-              {copied ? <Check size={14} /> : <Link2 size={14} />}
-            </button>
+            <div className="relative group/copy flex-none">
+              <button onClick={copyLink} aria-label="Copy a link to this catalogue"
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${copied ? "bg-clay text-cream" : "bg-white/10 text-cream/50 hover:text-cream"}`}>
+                {copied ? <Check size={14} /> : <Link2 size={14} />}
+              </button>
+              {/* Instant custom tooltip — the native title attribute only appears
+                  after ~1s and feels unresponsive; this fades in on hover at once. */}
+              <span className="pointer-events-none absolute top-full right-0 mt-2 whitespace-nowrap rounded-lg bg-black/90 border border-white/10 px-2.5 py-1.5 text-[11px] font-detail text-cream/90 opacity-0 translate-y-1 group-hover/copy:opacity-100 group-hover/copy:translate-y-0 transition-all duration-150 z-10">
+                {copied ? "Link copied" : "Copy a link to this catalogue to send"}
+              </span>
+            </div>
           )}
           <button onClick={() => setZoomed(true)} title="Zoom in / full screen" aria-label="Zoom in / full screen"
             className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cream/50 hover:text-cream transition-colors">
