@@ -2386,7 +2386,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
           {/* Trigger row */}
           <div className="flex items-center gap-3 px-5 py-2">
             <button
-              onClick={() => { if (tab === "all" && !activeDesign && showGrid) { setShowGrid(false); setDesignPillsOpen(false); } else setDesignPillsOpen(o => !o); }}
+              onClick={() => { if (tab === "all" && !activeDesign && showGrid) { setShowGrid(false); setDesignPillsOpen(true); } else setDesignPillsOpen(o => !o); }}
               className="group flex items-center gap-2.5 transition-colors duration-200"
             >
               <span
