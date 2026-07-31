@@ -370,7 +370,7 @@ export default async function handler(req) {
     .filter(isValidKey)
     .map((d) => KEY_MAP[d] || d);
   if (!destinations.length) return json({ error: "No valid destination selected" }, 400);
-  const noteRaw = (body.note || "").toString().slice(0, 200);
+  const noteRaw = (body.note || "").toString().slice(0, 600);
 
   if (!process.env.GITHUB_TOKEN) {
     return json({ error: "Upload storage not configured yet — GITHUB_TOKEN is missing on the server." }, 500);

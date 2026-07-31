@@ -152,6 +152,7 @@ export default function MediaPage() {
   // Batch composer state
   const [selectedDests, setSelectedDests] = useState([]);
   const [otherNote, setOtherNote] = useState("");
+  const [instructions, setInstructions] = useState(""); // free-text info sent with the upload (e.g. which image to replace)
   const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
   const [screenSection, setScreenSection] = useState(""); // section for a brand-new screen design
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
@@ -267,7 +268,8 @@ export default function MediaPage() {
       const outDests = (screensSel && screenSection)
         ? [...new Set([...selectedDests, screenSection])]
         : selectedDests;
-      const res = await call({ adminSecret: secret, images: outImages, destinations: outDests, note: otherNote });
+      const combinedNote = [otherNote.trim(), instructions.trim()].filter(Boolean).join(" — ");
+      const res = await call({ adminSecret: secret, images: outImages, destinations: outDests, note: combinedNote });
       let json;
       try { json = await res.json(); }
       catch { json = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
@@ -281,7 +283,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setOtherNote(""); setScreenName(""); setScreenSection(""); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setScreenSection(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -464,7 +466,14 @@ export default function MediaPage() {
                 </div>
               );
             })()}
-            {!selectedDests.includes("other") && !selectedDests.includes("screens") && <div className="mb-6" />}
+            {!selectedDests.includes("other") && !selectedDests.includes("screens") && <div className="mb-4" />}
+
+            <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-2">
+              Instructions <span className="text-cream/40 normal-case tracking-normal font-detail">(optional)</span>
+            </p>
+            <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
+              placeholder="e.g. Replace the front BAMBU photo in Wall Art → Jungle with this one."
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6 resize-y" />
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
@@ -581,6 +590,11 @@ export default function MediaPage() {
                     className="w-full py-1.5 bg-black/40 text-cream/70 text-[10px] font-detail hover:bg-clay/50 hover:text-cream transition-colors">
                     {im.destinations?.length ? "Placed ✓ · edit" : "+ Place in category"}
                   </button>
+                  {im.note && (
+                    <p className="px-2 py-1.5 bg-clay/15 border-t border-clay/25 text-clay text-[9px] font-detail leading-snug">
+                      <span className="uppercase tracking-wider text-clay/70">Instructions: </span>{im.note}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
