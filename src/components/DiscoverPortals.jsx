@@ -32,6 +32,7 @@ const PAINTINGS = [
 const CDN_DP = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const CLIENT_IMAGES = [
+  { src: "/images/client/nea-cottesloe.jpg",           title: "NEA — Cottesloe" },
   { src: "/images/client/banksia-wall-art-series.jpg", title: "Banksia — Wall Art Series" },
   { src: "/images/client/wattle-melb.jpg",             title: "Wattle — Melbourne Install" },
   { src: "/images/libratum-1.jpg",                     title: "LIBRATUM" },
@@ -224,7 +225,7 @@ function VideoPopup({ videos, startIdx, onClose }) {
   );
 }
 
-function ArtPopup({ images, startIndex, onClose }) {
+function ArtPopup({ images, startIndex, onClose, heading = "Painting — by James Roget", altLabel = "Painting" }) {
   const [cur, setCur] = useState(startIndex);
   const [dir, setDir] = useState(1);
   const [animKey, setAnimKey] = useState(0);
@@ -276,7 +277,7 @@ function ArtPopup({ images, startIndex, onClose }) {
       {/* Header */}
       <div className="flex-none flex items-center justify-between px-5 py-3 border-b border-white/8">
         <p className="font-detail text-[9px] text-cream/60 uppercase tracking-[0.22em]">
-          Painting — by James Roget
+          {heading}
           <span className="text-cream/40 ml-3">{cur + 1} / {images.length}</span>
         </p>
         <div className="flex items-center gap-2">
@@ -297,8 +298,8 @@ function ArtPopup({ images, startIndex, onClose }) {
         <img
           key={animKey}
           src={images[cur].src}
-          alt={images[cur].title || `Painting ${cur + 1}`}
-          className="max-h-full object-contain rounded-lg pointer-events-none"
+          alt={images[cur].title || `${altLabel} ${cur + 1}`}
+          className="max-h-full max-w-full object-contain rounded-lg pointer-events-none"
           style={{ animation: slideAnim, filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.7))", maxWidth: images[cur].maxW || "100%" }}
         />
         {/* Left/right nav zones — always visible on mobile, hover-only on desktop */}
@@ -330,9 +331,8 @@ function ArtPopup({ images, startIndex, onClose }) {
       {/* Thumbnail strip */}
       <div
         ref={thumbRowRef}
-        className="flex-none flex gap-2 px-4 py-3 overflow-x-auto border-t border-white/8"
+        className="flex-none flex flex-wrap justify-center gap-2 px-4 py-3 border-t border-white/8"
         data-lenis-prevent
-        style={{ scrollbarWidth: "none" }}
       >
         {images.map((p, i) => (
           <button
@@ -627,7 +627,7 @@ export default function DiscoverPortals() {
       </div>
       <div className="w-full h-px bg-white/10" />
       <div style={{ height: bottomH || 160 }} />
-      {clientReelsOpen && <ArtPopup images={CLIENT_IMAGES} startIndex={0} onClose={() => setClientReelsOpen(false)} />}
+      {clientReelsOpen && <ArtPopup images={CLIENT_IMAGES} startIndex={0} heading="Client Images — In Situ" altLabel="Client install" onClose={() => setClientReelsOpen(false)} />}
       {linksOpen && <LinksPopup onClose={() => setLinksOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}
