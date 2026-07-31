@@ -32,13 +32,13 @@ const PAINTINGS = [
 const CDN_DP = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
 const CLIENT_IMAGES = [
-  { src: "/images/client/nea-cottesloe.jpg",           title: "NEA — Cottesloe" },
   { src: "/images/client/banksia-wall-art-series.jpg", title: "Banksia — Wall Art Series" },
   { src: "/images/client/wattle-melb.jpg",             title: "Wattle — Melbourne Install" },
   { src: "/images/libratum-1.jpg",                     title: "LIBRATUM" },
   { src: "/images/metropolis-client-1.jpg",            title: "METROPOLIS" },
   { src: "/images/benin-inspired-1.jpg",               title: "BENIN Inspired" },
   { src: "/images/omare-custom-front.jpg",             title: "OMARE (Custom)" },
+  { src: "/images/client/nea-cottesloe.jpg",           title: "NEA — Cottesloe" },
 ];
 
 const PORTALS = [
