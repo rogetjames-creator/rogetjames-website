@@ -190,7 +190,7 @@ export default function ChatWidget() {
               <p className="font-detail text-[10px] text-warm-gray/60 uppercase tracking-wider mt-0.5">ROGETjames</p>
             </div>
           </div>
-          <button onClick={closeChat} className="text-warm-gray/40 hover:text-cream/60 transition-colors">
+          <button onClick={closeChat} aria-label="Close chat" className="text-warm-gray/40 hover:text-cream/60 transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -245,6 +245,7 @@ export default function ChatWidget() {
             <button
               onClick={send}
               disabled={!input.trim() || loading}
+              aria-label="Send message"
               className="w-9 h-9 rounded-xl bg-clay flex items-center justify-center text-cream flex-shrink-0 disabled:opacity-30 hover:bg-clay-light transition-colors duration-200"
             >
               {loading ? <Loader size={14} className="animate-spin" /> : <Send size={14} />}
