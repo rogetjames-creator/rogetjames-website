@@ -20,7 +20,7 @@ gsap.registerPlugin(ScrollTrigger);
 // apply to the whole slideshow, not just the first slide.
 const BASE_SLIDES = HERO_SLIDES.map((s) => s.src);
 
-const INTERVAL = 4500;
+const INTERVAL = 4000;
 const FADE_DURATION = 1.6;
 // The opening fade of the first photo — slower and eased, so the hero arrives
 // gently rather than snapping on.
