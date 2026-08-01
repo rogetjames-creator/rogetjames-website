@@ -120,5 +120,15 @@
     "note": "Discover portal - client images ",
     "createdTime": "2026-07-31T05:18:26.831Z",
     "path": "images/uploads/1785475106831_bdhita.jpg"
+  },
+  {
+    "id": "1785549497009_nat3lh",
+    "name": "CUSTOM",
+    "destinations": [
+      "screens"
+    ],
+    "note": "This is a Light feature also",
+    "createdTime": "2026-08-01T01:58:17.009Z",
+    "path": "images/uploads/1785549497009_nat3lh.jpg"
   }
 ]
