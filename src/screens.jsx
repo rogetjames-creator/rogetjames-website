@@ -1,8 +1,11 @@
 import { createRoot } from "react-dom/client";
-import { ScreensGallery } from "./components/FeatureScreens";
+import { ScreensGalleryModal } from "./components/BespokeCommissions";
 import "./index.css";
 
-// Public Screens gallery at /screens. Renders the same gallery component as
-// the private /feature-screens preview — the only difference is that this
-// entry skips the admin gate, so the page has a real address Google can index.
-createRoot(document.getElementById("screens-root")).render(<ScreensGallery />);
+// Public Screens gallery at /screens — the original tabbed gallery with "The
+// Editions" (the one opened as a pop-up from the Screens portal), rendered
+// full-page here. Its close/logo returns to the home page since there is no
+// page underneath it.
+createRoot(document.getElementById("screens-root")).render(
+  <ScreensGalleryModal onClose={() => { window.location.href = "/"; }} />
+);
