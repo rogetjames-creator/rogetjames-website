@@ -148,5 +148,15 @@
     "note": "replace this https://rogetjames.com/images/banksia/banksia-round.jpg",
     "createdTime": "2026-08-01T04:32:48.253Z",
     "path": "images/uploads/1785558768252_xmm9qa.jpg"
+  },
+  {
+    "id": "1785558850433_h7vmf4",
+    "name": "7C864BE6-6558-456C-9C84-F61BF2FBA028_1_102_o.jpeg",
+    "destinations": [
+      "hero"
+    ],
+    "note": "Banksia round - add to hero position 4",
+    "createdTime": "2026-08-01T04:34:10.433Z",
+    "path": "images/uploads/1785558850433_h7vmf4.jpg"
   }
 ]
