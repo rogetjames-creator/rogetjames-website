@@ -13,6 +13,8 @@ export const HERO_SLIDES = [
   { key: "fig-autumn-1",     src: "/images/hero/hero-creeping-fig-autumn-1.jpg", label: "Creeping Fig Autumn 1" },
   { key: "fig-autumn-2",     src: "/images/hero/hero-creeping-fig-autumn-2.jpg", label: "Creeping Fig Autumn 2" },
   { key: "banksia-oldmanis", src: "/images/hero/hero-banksia-oldmanis.jpg",      label: "Banksia Oldmanis" },
+  { key: "marakesh",         src: "/images/marakesh/marakesh-promo.jpg",         label: "Marakesh" },
+  { key: "autumn-leafs",     src: "/images/hero/hero-autumn-leafs.jpg",          label: "Autumn Leafs" },
   { key: "banksia-round",    src: "/images/hero/hero-banksia-round.jpg",         label: "Banksia Round" },
   { key: "fig-grande",       src: "/images/hero/hero-creeping-fig-grande.jpg",   label: "Creeping Fig Grande" },
   { key: "gren-free",        src: "/images/hero/hero-gren-free.jpg",             label: "GREN Free" },
@@ -20,6 +22,5 @@ export const HERO_SLIDES = [
   { key: "rue-3rd",          src: "/images/hero/hero-rue-3rd.jpg",               label: "Rue 3rd" },
   { key: "seaweed",          src: "/images/hero/hero-seaweed.jpg",               label: "Seaweed" },
   { key: "vasuki",           src: "/images/hero/hero-vasuki.jpg",                label: "Vasuki" },
-  { key: "marakesh",         src: "/images/marakesh/marakesh-promo.jpg",         label: "Marakesh" },
   { key: "bambu",            src: "/images/hero/hero-bambu.jpg",                 label: "Bambu" },
 ];
