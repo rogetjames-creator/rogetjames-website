@@ -134,10 +134,8 @@
   {
     "id": "1785551780857_30zh3m",
     "name": "1B2C6A57-B381-43C3-89CA-6A61D1D3DA13_1_102_o.jpeg",
-    "destinations": [
-      "australian-natives"
-    ],
-    "note": "replace this image https://rogetjames.com/images/banksia/banksia-round-2.jpg",
+    "destinations": [],
+    "note": "Used in-place as banksia-round-2.jpg (BANKSIA Round, position 11). Untagged so it doesn't also appear in Up Close.",
     "createdTime": "2026-08-01T02:36:20.858Z",
     "path": "images/uploads/1785551780857_30zh3m.jpg"
   }
