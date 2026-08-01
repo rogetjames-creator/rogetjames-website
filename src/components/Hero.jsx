@@ -20,16 +20,16 @@ gsap.registerPlugin(ScrollTrigger);
 // apply to the whole slideshow, not just the first slide.
 const BASE_SLIDES = HERO_SLIDES.map((s) => s.src);
 
-const INTERVAL = 5500;
+const INTERVAL = 4500;
 const FADE_DURATION = 1.6;
 // The opening fade of the first photo — slower and eased, so the hero arrives
 // gently rather than snapping on.
 const INITIAL_FADE = 2.8;
 const INITIAL_EASE = "cubic-bezier(0.33, 0, 0.2, 1)";
 // How long the opening image is held before the slideshow starts advancing.
-// The entrance finishes around 8.9s, so this leaves the completed mark sitting
-// still on the opening picture for a good few seconds before the first change.
-const INTRO_HOLD = 15000;
+// The entrance finishes around 8.9s; hold ~1s past that so the slideshow kicks
+// in just after the "ART meets design" mark has settled.
+const INTRO_HOLD = 9900;
 
 // ART meets design mark — paths lifted verbatim from James's Illustrator SVGs
 // (symbol: "…symbol with O no words"; words: "Meets design outlines"), all on
