@@ -9,9 +9,9 @@
 // uploader's Replace list automatically.
 export const HERO_SLIDES = [
   { key: "rue-1",            src: "/images/hero/hero-rue-1.jpg",                 label: "Rue" },
-  { key: "bambu",            src: "/images/hero/hero-bambu.jpg",                 label: "Bambu" },
   { key: "fig-autumn-1",     src: "/images/hero/hero-creeping-fig-autumn-1.jpg", label: "Creeping Fig Autumn 1" },
   { key: "fig-autumn-2",     src: "/images/hero/hero-creeping-fig-autumn-2.jpg", label: "Creeping Fig Autumn 2" },
+  { key: "banksia-round",    src: "/images/hero/hero-banksia-round.jpg",         label: "Banksia Round" },
   { key: "fig-grande",       src: "/images/hero/hero-creeping-fig-grande.jpg",   label: "Creeping Fig Grande" },
   { key: "gren-wide",        src: "/images/hero/hero-gren-wide.jpg",             label: "GREN Wide" },
   { key: "gren-free",        src: "/images/hero/hero-gren-free.jpg",             label: "GREN Free" },
@@ -21,4 +21,5 @@ export const HERO_SLIDES = [
   { key: "vasuki",           src: "/images/hero/hero-vasuki.jpg",                label: "Vasuki" },
   { key: "marakesh",         src: "/images/marakesh/marakesh-promo.jpg",         label: "Marakesh" },
   { key: "banksia-oldmanis", src: "/images/hero/hero-banksia-oldmanis.jpg",      label: "Banksia Oldmanis" },
+  { key: "bambu",            src: "/images/hero/hero-bambu.jpg",                 label: "Bambu" },
 ];

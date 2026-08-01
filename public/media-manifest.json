@@ -142,20 +142,16 @@
   {
     "id": "1785558768252_xmm9qa",
     "name": "7C864BE6-6558-456C-9C84-F61BF2FBA028_1_102_o.jpeg",
-    "destinations": [
-      "australian-natives"
-    ],
-    "note": "replace this https://rogetjames.com/images/banksia/banksia-round.jpg",
+    "destinations": [],
+    "note": "Used in-place as banksia-round.jpg (BANKSIA Round). Untagged so it doesn't also appear in Up Close.",
     "createdTime": "2026-08-01T04:32:48.253Z",
     "path": "images/uploads/1785558768252_xmm9qa.jpg"
   },
   {
     "id": "1785558850433_h7vmf4",
     "name": "7C864BE6-6558-456C-9C84-F61BF2FBA028_1_102_o.jpeg",
-    "destinations": [
-      "hero"
-    ],
-    "note": "Banksia round - add to hero position 4",
+    "destinations": [],
+    "note": "Added to hero as hero-banksia-round.jpg (position 4). Untagged so it isn't also appended at the end.",
     "createdTime": "2026-08-01T04:34:10.433Z",
     "path": "images/uploads/1785558850433_h7vmf4.jpg"
   }
