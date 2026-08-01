@@ -612,7 +612,6 @@ const SCREEN_DESIGNS = [
   {
     name: "ASLYIAM", sectionStart: "THE ICONS",
     items: [
-      { name: "ASLYIAM",               img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
       { name: "ASLYIAM Light Feature", img: `${CDN}/1a26b497-b278-4edc-a050-a2b42e3718d4_rw_1200.jpg` },
       { name: "ASLYIAM",               img: `${CDN}/bb795500-d407-424b-bc89-a099f1c7a24f_rw_1200.jpg` },
       { name: "ASLYIAM",               img: `${CDN}/90166d8d-2652-40c1-8b4f-b0c9a35778af_rw_1200.jpg` },
