@@ -95,7 +95,9 @@ const CSS = `
 .fw-menu-btn:hover,.fw-menu-btn.open{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-menu-btn svg{transition:transform .25s}
 .fw-menu-btn.open svg{transform:rotate(180deg)}
-.fw-menu-panel{position:absolute;top:calc(100% + 10px);right:0;z-index:20;width:230px;max-height:360px;overflow-y:auto;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+.fw-menu-panel{position:absolute;top:calc(100% + 8px);right:0;z-index:20;width:230px;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+/* Transparent bridge over the gap so hovering button→panel never drops the menu. */
+.fw-menu-panel::before{content:"";position:absolute;top:-8px;left:0;right:0;height:8px}
 .fw-menu-item{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:.2s}
 .fw-menu-item:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
 .fw-menu-item.active{color:#c08c46;background:rgba(158,113,52,.12)}
@@ -120,6 +122,7 @@ const CSS = `
 .fw-title{font-weight:800;line-height:.94;letter-spacing:-.01em;font-size:clamp(28px,4vw,58px);text-transform:uppercase;color:rgba(242,240,233,.45) !important;text-shadow:0 2px 10px rgba(0,0,0,.3)}
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
+.fw-imgcount{margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,240,233,.45);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
 .fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(20,20,20,.68);color:inherit;font-family:inherit;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:.35s}
 .fw-pill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1)}
@@ -537,7 +540,6 @@ function Gallery() {
   // Close" card appended to categories that have close-up shots. Falls
   // back to the raw piece count for the "Up Close" category itself, where
   // every piece is (correctly) flagged _upclose.
-  const designCount = c.pieces.filter((p) => !p._upclose).length || c.pieces.length;
   // Title breaks right before " & " if the label has one (e.g. "BON BONS" /
   // "& GENIE BOTTLES"), otherwise after the first word (e.g. "AUSTRALIAN" /
   // "NATIVES") — never wherever the container width happens to allow.
@@ -650,7 +652,9 @@ function Gallery() {
             )}
           </div>
           <div className="fw-top-right">
-            <div className="fw-menu-wrap" ref={menuWrapRef}>
+            <div className="fw-menu-wrap" ref={menuWrapRef}
+              onMouseEnter={() => { setSearchOpen(false); setMenuOpen(true); }}
+              onMouseLeave={() => setMenuOpen(false)}>
               <button className={`fw-menu-btn ${menuOpen ? "open" : ""}`} onClick={() => { setSearchOpen(false); setMenuOpen((v) => !v); }}>
                 Collection Menu <ChevronDown size={12} />
               </button>
@@ -716,12 +720,12 @@ function Gallery() {
 
       <div className="fw-lead" key={cur}>
         <div className="fw-kick fw-anim"><span className="bar" />Wall Art</div>
-        <div className="fw-collection-count fw-anim">{c.label} — {designCount} Design{designCount !== 1 ? "s" : ""}</div>
         <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
+        <div className="fw-imgcount fw-anim d2">{pieceIdx + 1} of {pieces.length} image{pieces.length !== 1 ? "s" : ""}</div>
         <div className="fw-cta fw-anim d3">
           <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
-            View Collection
+            View Range
           </button>
         </div>
       </div>
