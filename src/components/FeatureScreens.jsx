@@ -24,7 +24,10 @@ const CSS = `
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(.75);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;gap:16px;padding:28px 46px}
-.fw-logo{flex:1 1 0;min-width:0;font-weight:800;letter-spacing:.02em;font-size:19px}
+.fw-logo{flex:1 1 0;min-width:0;font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;transition:color .25s}
+.fw-logo:hover{color:#c08c46}
+.fw-exit{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);text-decoration:none;cursor:pointer;font-size:13px;transition:.25s;backdrop-filter:blur(4px)}
+.fw-exit:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{flex:1 1 0;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{flex:0 0 auto;display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
@@ -319,7 +322,7 @@ function Gallery() {
       ))}
 
       <header className="fw-top">
-        <div className="fw-logo">ROGET<i>james</i></div>
+        <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
         <a className="fw-catalogue-link" href="/?bespoke=screenscat" target="_blank" rel="noopener noreferrer">
           Screens Catalogue
         </a>
@@ -342,6 +345,7 @@ function Gallery() {
               </div>
             )}
           </div>
+          <a className="fw-exit" href="/" aria-label="Exit gallery" title="Exit gallery">&#10005;</a>
         </div>
       </header>
 
