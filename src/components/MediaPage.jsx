@@ -156,6 +156,7 @@ export default function MediaPage() {
   const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
   const [screenSection, setScreenSection] = useState(""); // section for a brand-new screen design
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
+  const [dragOver, setDragOver] = useState(false);   // drag-and-drop highlight
   const [phase, setPhase] = useState("compose");     // compose | sending | done
   const [doneInfo, setDoneInfo] = useState(null);    // { count, dests: [] }
   const [note, setNote] = useState("");
@@ -230,9 +231,11 @@ export default function MediaPage() {
 
   const toggleDest = (key) => setSelectedDests(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
 
-  const onPick = async (e) => {
-    const files = Array.from(e.target.files || []);
-    e.target.value = "";
+  // Shared by the file picker AND drag-and-drop — accepts any image list.
+  const processFiles = async (fileList) => {
+    const files = Array.from(fileList || []).filter(
+      (f) => f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp|gif|tiff?)$/i.test(f.name)
+    );
     if (!files.length) return;
     setNote("Preparing photos…");
     try {
@@ -249,6 +252,9 @@ export default function MediaPage() {
       setNote("Couldn't read those photos — try again.");
     }
   };
+
+  const onPick = (e) => { const fl = e.target.files; e.target.value = ""; processFiles(fl); };
+  const onDrop = (e) => { e.preventDefault(); setDragOver(false); processFiles(e.dataTransfer?.files); };
 
   const removeStaged = (i) => setStaged(prev => prev.filter((_, idx) => idx !== i));
 
@@ -476,8 +482,13 @@ export default function MediaPage() {
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6 resize-y" />
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
-            <label className={`block w-full text-center py-3 rounded-2xl border border-white/20 text-cream/80 font-detail text-sm cursor-pointer hover:border-clay/60 hover:text-cream transition-all ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
-              + Choose photos from iCloud
+            <label
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragEnter={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={onDrop}
+              className={`block w-full text-center py-6 rounded-2xl border-2 border-dashed font-detail text-sm cursor-pointer transition-all ${dragOver ? "border-clay bg-clay/10 text-cream" : "border-white/20 text-cream/80 hover:border-clay/60 hover:text-cream"} ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
+              + Choose photos, or drag them here from Photos / Finder
               <input type="file" accept="image/*,.heic,.heif" multiple onChange={onPick} className="hidden" />
             </label>
 
