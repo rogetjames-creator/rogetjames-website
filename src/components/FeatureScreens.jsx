@@ -24,10 +24,7 @@ const CSS = `
 .fw-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transform:scale(.75);transition:opacity 1.1s cubic-bezier(.7,0,.2,1);will-change:opacity}
 .fw-bg.on{opacity:1}
 .fw-top{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;gap:16px;padding:28px 46px}
-.fw-logo{flex:1 1 0;min-width:0;font-weight:800;letter-spacing:.02em;font-size:19px;color:#F2F0E9;text-decoration:none;cursor:pointer;transition:color .25s}
-.fw-logo:hover{color:#c08c46}
-.fw-exit{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);text-decoration:none;cursor:pointer;font-size:13px;transition:.25s;backdrop-filter:blur(4px)}
-.fw-exit:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9}
+.fw-logo{flex:1 1 0;min-width:0;font-weight:800;letter-spacing:.02em;font-size:19px}
 .fw-logo i{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
 .fw-top-right{flex:1 1 0;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 .fw-catalogue-link{flex:0 0 auto;display:flex;align-items:center;padding:8px 15px;border-radius:20px;background:rgba(20,20,20,.68);border:1px solid rgba(242,240,233,.22);color:rgba(242,240,233,.75);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;backdrop-filter:blur(4px);transition:.25s;font-family:inherit;white-space:nowrap}
@@ -49,12 +46,7 @@ const CSS = `
 .fw-piece{margin-top:14px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(242,240,233,.7);text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-piece b{color:#F2F0E9;font-weight:600;letter-spacing:.1em;text-shadow:0 2px 10px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.9)}
 .fw-cta{margin-top:32px;display:flex;align-items:center;gap:18px}
-.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(20,20,20,.68);color:inherit;font-family:inherit;cursor:pointer;transition:.35s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.fw-pill:hover{background:rgba(158,113,52,.25);border-color:#c08c46;color:#F2F0E9;backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px) saturate(1.1)}
-.fs-expand{position:fixed;inset:0;z-index:120;background:rgba(6,6,6,.94);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:clamp(24px,5vw,64px)}
-.fs-expand img{max-width:92%;max-height:88%;object-fit:contain;border-radius:8px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-.fs-expand-btn{position:absolute;width:46px;height:46px;border-radius:50%;background:rgba(20,20,20,.7);border:1px solid rgba(242,240,233,.2);color:#F2F0E9;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.25s}
-.fs-expand-btn:hover{background:rgba(158,113,52,.35);border-color:#c08c46}
+.fw-pill{border:1px solid rgba(242,240,233,.3);border-radius:40px;padding:13px 26px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(20,20,20,.68);color:inherit;font-family:inherit;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .fw-anim{opacity:0;transform:translateY(22px);animation:fwUp .9s cubic-bezier(.7,0,.2,1) forwards}
 .fw-anim.d2{animation-delay:.12s}.fw-anim.d3{animation-delay:.24s}
 @keyframes fwUp{to{opacity:1;transform:none}}
@@ -85,7 +77,6 @@ export function ScreensGallery() { return <Gallery />; }
 function Gallery() {
   const [cur, setCur] = useState(0);
   const [pieceIdx, setPieceIdx] = useState(0);
-  const [expanded, setExpanded] = useState(false);   // full-screen view of the on-display design
   const busy = useRef(false);
   const [pieceFlash, setPieceFlash] = useState(-1);
   const pillRef = useRef(null);
@@ -322,7 +313,7 @@ function Gallery() {
       ))}
 
       <header className="fw-top">
-        <a className="fw-logo" href="/" title="Back to ROGETjames home">ROGET<i>james</i></a>
+        <div className="fw-logo">ROGET<i>james</i></div>
         <a className="fw-catalogue-link" href="/?bespoke=screenscat" target="_blank" rel="noopener noreferrer">
           Screens Catalogue
         </a>
@@ -345,7 +336,6 @@ function Gallery() {
               </div>
             )}
           </div>
-          <a className="fw-exit" href="/" aria-label="Exit gallery" title="Exit gallery">&#10005;</a>
         </div>
       </header>
 
@@ -354,9 +344,9 @@ function Gallery() {
         <h1 className="fw-title fw-anim d2">{titleFirst}{titleRest && <><br />{titleRest}</>}</h1>
         <div className="fw-piece fw-anim d2">On display — <b>{activePiece.name}</b></div>
         <div className="fw-cta fw-anim d3">
-          <button className="fw-pill" ref={pillRef} onClick={() => setExpanded(true)}>
-            View Range
-          </button>
+          <div className="fw-pill" ref={pillRef}>
+            View Collection
+          </div>
         </div>
       </div>
 
@@ -382,24 +372,6 @@ function Gallery() {
         <div className="fw-prog"><i style={{ width: `${((cur + 1) / CATS.length) * 100}%` }} /></div>
         <div className="fw-count">{String(cur + 1).padStart(2, "0")} / {String(CATS.length).padStart(2, "0")}</div>
       </div>
-
-      {expanded && (
-        <div className="fs-expand" onClick={() => setExpanded(false)}>
-          {pieces.length > 1 && (
-            <button className="fs-expand-btn" style={{ left: "clamp(16px,3vw,40px)" }}
-              onClick={(e) => { e.stopPropagation(); goPiece((pieceIdx - 1 + pieces.length) % pieces.length); }}
-              aria-label="Previous">&#8249;</button>
-          )}
-          <img src={activePiece.img} alt={activePiece.name} onClick={(e) => e.stopPropagation()} />
-          {pieces.length > 1 && (
-            <button className="fs-expand-btn" style={{ right: "clamp(16px,3vw,40px)" }}
-              onClick={(e) => { e.stopPropagation(); goPiece((pieceIdx + 1) % pieces.length); }}
-              aria-label="Next">&#8250;</button>
-          )}
-          <button className="fs-expand-btn" style={{ top: 22, right: "clamp(16px,3vw,40px)" }}
-            onClick={(e) => { e.stopPropagation(); setExpanded(false); }} aria-label="Close">&times;</button>
-        </div>
-      )}
 
     </div>
   );
