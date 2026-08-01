@@ -138,5 +138,15 @@
     "note": "Used in-place as banksia-round-2.jpg (BANKSIA Round, position 11). Untagged so it doesn't also appear in Up Close.",
     "createdTime": "2026-08-01T02:36:20.858Z",
     "path": "images/uploads/1785551780857_30zh3m.jpg"
+  },
+  {
+    "id": "1785558768252_xmm9qa",
+    "name": "7C864BE6-6558-456C-9C84-F61BF2FBA028_1_102_o.jpeg",
+    "destinations": [
+      "australian-natives"
+    ],
+    "note": "replace this https://rogetjames.com/images/banksia/banksia-round.jpg",
+    "createdTime": "2026-08-01T04:32:48.253Z",
+    "path": "images/uploads/1785558768252_xmm9qa.jpg"
   }
 ]
