@@ -160,5 +160,15 @@
     "note": "Used in-place as screens/orian-wall-decor.jpg (ORIAN screen). Untagged.",
     "createdTime": "2026-08-03T04:32:47.233Z",
     "path": "images/uploads/1785731567232_vyob1h.jpg"
+  },
+  {
+    "id": "1785732539168_jadg9c",
+    "name": "WATTLE",
+    "destinations": [
+      "screens"
+    ],
+    "note": "Replace this image - https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/4f9d07e7-a1ba-4215-b4ed-86dee879d606_rw_600.jpg",
+    "createdTime": "2026-08-03T04:48:59.168Z",
+    "path": "images/uploads/1785732539168_jadg9c.jpg"
   }
 ]
