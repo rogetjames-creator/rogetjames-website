@@ -84,15 +84,22 @@ function extFor(contentType) {
 // into the repo path to overwrite ("public/images/…"). Only our own /images/
 // paths are allowed — no traversal, no other hosts, no non-image files.
 function replaceTargetFromNote(note) {
-  const m = /\breplace\s+this\s+image\b[\s:–—-]*(https?:\/\/\S+)/i.exec(note || "");
-  if (!m) return null;
-  let u;
-  try { u = new URL(m[1]); } catch { return null; }
-  if (!/(^|\.)rogetjames\.com$/i.test(u.hostname)) return null;
-  let p;
-  try { p = decodeURIComponent(u.pathname); } catch { return null; }
-  if (p.includes("..") || !/^\/images\/[A-Za-z0-9._/-]+\.(jpe?g|png|webp|gif)$/i.test(p)) return null;
-  return "public" + p;
+  const n = (note || "").toString();
+  // Must express replace/remove/swap intent — avoids acting on a stray link.
+  if (!/\b(replace|remove|swap|change)\b/i.test(n)) return null;
+  // Use the first rogetjames.com /images/… image URL mentioned as the target.
+  // Handles any phrasing: "replace this image - <url>", "remove <url> and replace",
+  // "swap <url>", etc.
+  for (const raw of (n.match(/https?:\/\/\S+/gi) || [])) {
+    let u;
+    try { u = new URL(raw.replace(/[)\].,'"]+$/, "")); } catch { continue; }
+    if (!/(^|\.)rogetjames\.com$/i.test(u.hostname)) continue;
+    let p;
+    try { p = decodeURIComponent(u.pathname); } catch { continue; }
+    if (p.includes("..") || !/^\/images\/[A-Za-z0-9._/-]+\.(jpe?g|png|webp|gif)$/i.test(p)) continue;
+    return "public" + p;
+  }
+  return null;
 }
 
 async function gh(path, opts = {}) {
