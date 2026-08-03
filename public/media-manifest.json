@@ -200,5 +200,15 @@
     "note": "Replace this image https://rogetjames.com/images/banksia/banksia-free-2.jpg",
     "createdTime": "2026-08-03T08:28:46.945Z",
     "path": "images/uploads/1785745726945_2sycit.jpg"
+  },
+  {
+    "id": "1785745853513_cy0lih",
+    "name": "WATTLE",
+    "destinations": [
+      "screens"
+    ],
+    "note": "replace this https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/4f9d07e7-a1ba-4215-b4ed-86dee879d606_rw_600.jpg",
+    "createdTime": "2026-08-03T08:30:53.513Z",
+    "path": "images/uploads/1785745853513_cy0lih.jpg"
   }
 ]
