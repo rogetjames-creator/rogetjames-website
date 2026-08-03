@@ -268,5 +268,15 @@
     "note": "remove https://rogetjames.com/images/creeping-fig/nuvine-1.jpg replace",
     "createdTime": "2026-08-03T13:59:21.634Z",
     "path": "images/uploads/1785765561633_ld66id.jpg"
+  },
+  {
+    "id": "1785765766905_v01kdq",
+    "name": "79080B1D-2B09-411C-8CBC-745242C94203_1_201_a.jpeg",
+    "destinations": [
+      "creeping-fig"
+    ],
+    "note": "replace the 3rd hero image creeping fig autumn with this image and also remove this https://rogetjames.com/images/creeping-fig/autumn-2.jpg and replace",
+    "createdTime": "2026-08-03T14:02:46.905Z",
+    "path": "images/uploads/1785765766905_v01kdq.jpg"
   }
 ]
