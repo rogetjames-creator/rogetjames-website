@@ -12,7 +12,7 @@ export default function StudioBio() {
           </h2>
 
           <p className="text-cream/70 text-base leading-relaxed mt-8">
-            With over 18 years in laser-cut design, James created and led Q DESIGN Architectural Features — one of Australia's top-tier laser art companies — from 2008 to 2015, before establishing his independent studio, to focus on evolving a more artistic approach to the medium.
+            With over 18 years designing and creating art features, James established and led Q Design Architectural Features — one of Australia's top-tier laser art companies — from 2008 to 2015, before establishing an independent studio, to bring to focus a more evolving artistic approach to the medium.
           </p>
 
           <p className="text-cream/70 text-base leading-relaxed mt-5">
