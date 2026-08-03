@@ -194,10 +194,8 @@
   {
     "id": "1785745726945_2sycit",
     "name": "BANKSIA - Free range Custom  copy.jpg",
-    "destinations": [
-      "australian-natives"
-    ],
-    "note": "Replace this image https://rogetjames.com/images/banksia/banksia-free-2.jpg",
+    "destinations": [],
+    "note": "Superseded — the mural already replaced banksia-free-2.jpg in place. Untagged so it does not duplicate in Australian Natives.",
     "createdTime": "2026-08-03T08:28:46.945Z",
     "path": "images/uploads/1785745726945_2sycit.jpg"
   },
