@@ -156,10 +156,8 @@
   {
     "id": "1785731567232_vyob1h",
     "name": "ORIAN",
-    "destinations": [
-      "screens"
-    ],
-    "note": "Replace this image - https://rogetjames.com/images/screens/orian-wall-decor.jpg",
+    "destinations": [],
+    "note": "Used in-place as screens/orian-wall-decor.jpg (ORIAN screen). Untagged.",
     "createdTime": "2026-08-03T04:32:47.233Z",
     "path": "images/uploads/1785731567232_vyob1h.jpg"
   }
