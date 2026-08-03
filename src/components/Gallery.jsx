@@ -417,7 +417,7 @@ const WALL_ART_SERIES = [
     id: "pendant",
     label: "PENDANTS",
     items: [
-      { name: "LIBERATUM", img: "/images/pendant/liberatum-1.jpg" },
+      { name: "LIBRATUM", img: "/images/pendant/liberatum-1.jpg" },
       { name: "METROPOLIS", img: "/images/neazar/metropolis-1.jpg" },
       { name: "BENIN", img: "/images/pendant/benin-horizontal.jpg", slides: ["/images/pendant/benin-horizontal.jpg", "/images/pendant/benin-vertical.jpg"], focus: "30% top" },
       { name: "SANUR",     img: "/images/pendant/sanur-1.jpg", focus: "center top" },
@@ -484,7 +484,7 @@ const WALL_ART_SERIES = [
     id: "client-images",
     label: "CLIENT IMAGES",
     items: [
-      { name: "LIBRATUM",   img: "/images/libratum-1.jpg", slides: ["/images/libratum-1.jpg", "/images/custom/libratum-custom.jpg"] },
+      { name: "LIBRATUM",   img: "/images/libratum-1.jpg" },
       { name: "METROPOLIS",     img: "/images/metropolis-client-1.jpg" },
       { name: "BENIN Inspired",  img: "/images/benin-inspired-1.jpg" },
       { name: "OMARE (Custom)", img: "/images/omare-custom-front.jpg" },
@@ -824,7 +824,7 @@ const PIECE_SIZES = {
     { id: "m", label: "Medium", dims: "362 × 2390 mm", fixings: 4 },
     { id: "l", label: "Large",  dims: "460 × 2990 mm", fixings: 4 },
   ],
-  "LIBERATUM": [
+  "LIBRATUM": [
     { id: "s", label: "Small",  dims: "276 × 1800 mm", fixings: 4 },
     { id: "m", label: "Medium", dims: "362 × 2390 mm", fixings: 4 },
     { id: "l", label: "Large",  dims: "460 × 2990 mm", fixings: 4 },

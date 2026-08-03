@@ -46,7 +46,7 @@ Wall Art series and where to find them (all via the Wall Art link above):
 - B Editions: HALSTON B, ZED B, PAVIA B
 - Retro Series: HALSTON Tall, HALSTON, ZED O, ZED O SCREEN, ORIGINS
 - Therus Series: SEAWEED, ASLYIAM CLASSIC, THE SUM OF EVERYTHING
-- Pendant Series: LIBERATUM, BENIN, SANUR
+- Pendant Series: LIBRATUM, BENIN, SANUR
 - The Birds Series: BIRDY NUM NUM, WREN, BIRDY NUM NUM Free Range, SAVANAH
 - Centis Series: URCHIN, VIASI O, ASLYIAM O, CENTENNIAL, LUMIER
 
@@ -63,7 +63,7 @@ Wall Art collection deep-links — when you name a design or series, link STRAIG
 - B Editions (HALSTON B, ZED B, PAVIA B): https://rogetjames.com/wall-art?c=b-editions
 - Retro (HALSTON Tall, HALSTON, ZED O, ZED O SCREEN, ORIGINS): https://rogetjames.com/wall-art?c=retro
 - Therus (SEAWEED, ASLYIAM CLASSIC, THE SUM OF EVERYTHING): https://rogetjames.com/wall-art?c=therus
-- Pendants (LIBERATUM, BENIN, SANUR, SALAMANKA): https://rogetjames.com/wall-art?c=pendant
+- Pendants (LIBRATUM, BENIN, SANUR, SALAMANKA): https://rogetjames.com/wall-art?c=pendant
 - Birds (BIRDY NUM NUM, WREN, BIRDY NUM NUM Free Range, SAVANAH): https://rogetjames.com/wall-art?c=birds
 - Vitae (VITAE — GREN, VITAE — SHIOGI): https://rogetjames.com/wall-art?c=vitae
 Only use the generic Wall Art catalogue link (?view=wallartcat) if they ask for the whole catalogue, or the design's collection is not in this list.
@@ -309,7 +309,7 @@ THERUS SERIES
 - THE SUM OF EVERYTHING: Standard 1200 × 1200 mm (4 fixings)
 
 PENDANT SERIES
-- LIBERATUM: Small 276 × 1800 mm · Medium 362 × 2390 mm · Large 460 × 2990 mm (4 fixings)
+- LIBRATUM: Small 276 × 1800 mm · Medium 362 × 2390 mm · Large 460 × 2990 mm (4 fixings)
 - BENIN: Small 276 × 1800 mm · Medium 362 × 2390 mm · Large 460 × 2990 mm (4 fixings)
 - SANUR: Small 276 × 1800 mm · Medium 362 × 2390 mm · Large 460 × 2990 mm
 
