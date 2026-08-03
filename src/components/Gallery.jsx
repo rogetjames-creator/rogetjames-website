@@ -490,6 +490,15 @@ const WALL_ART_SERIES = [
       { name: "OMARE (Custom)", img: "/images/omare-custom-front.jpg" },
     ],
   },
+  // ── CUSTOM ────────────────────────────────
+  {
+    id: "custom",
+    label: "CUSTOM",
+    items: [
+      { name: "BANKSIA Free Range — Custom", img: "/images/custom/banksia-free-range-custom.jpg" },
+      { name: "LIBRATUM — Custom",           img: "/images/custom/libratum-custom.jpg" },
+    ],
+  },
 ];
 
 // Other categories (flat grid — more to be structured later)
