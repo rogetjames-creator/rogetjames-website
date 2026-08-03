@@ -303,7 +303,7 @@ const WALL_ART_SERIES = [
       { name: "BANKSIA Free Range",        img: "/images/banksia/banksia-main.jpg" },
       { name: "BANKSIA Rec Landscape",     img: "/images/banksia/banksia-rec-rust.jpg", slides: ["/images/banksia/banksia-rec-rust.jpg", "/images/banksia/banksia-rec-framed.jpg"] },
       { name: "BANKSIA Rec Portrait",      img: "/images/banksia/banksia-framed-rust.jpg" },
-      { name: "BANKSIA Free Range — Custom", img: "/images/banksia/banksia-free-2.jpg" },
+      { name: "BANKSIA Free Range — Custom", img: "/images/banksia/banksia-free-2.jpg", slides: ["/images/banksia/banksia-free-2.jpg", "/images/custom/banksia-free-range-custom.jpg"] },
       { name: "BANKSIA Round",             img: "/images/banksia/banksia-round.jpg", slides: ["/images/banksia/banksia-round.jpg", "/images/banksia/banksia-round-2.jpg"] },
       { name: "BANKSIA Deco",              img: "/images/banksia/banksia-deco-2.jpg", slides: ["/images/banksia/banksia-deco-2.jpg", "/images/banksia/banksia-deco.jpg"] },
       { name: "WATTLE",                    img: "/images/australian-natives/wattle-1.jpg" },
@@ -484,7 +484,7 @@ const WALL_ART_SERIES = [
     id: "client-images",
     label: "CLIENT IMAGES",
     items: [
-      { name: "LIBRATUM",   img: "/images/libratum-1.jpg" },
+      { name: "LIBRATUM",   img: "/images/libratum-1.jpg", slides: ["/images/libratum-1.jpg", "/images/custom/libratum-custom.jpg"] },
       { name: "METROPOLIS",     img: "/images/metropolis-client-1.jpg" },
       { name: "BENIN Inspired",  img: "/images/benin-inspired-1.jpg" },
       { name: "OMARE (Custom)", img: "/images/omare-custom-front.jpg" },
