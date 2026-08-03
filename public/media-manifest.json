@@ -152,5 +152,15 @@
     "note": "Added to hero as hero-banksia-round.jpg (position 4). Untagged so it isn't also appended at the end.",
     "createdTime": "2026-08-01T04:34:10.433Z",
     "path": "images/uploads/1785558850433_h7vmf4.jpg"
+  },
+  {
+    "id": "1785731567232_vyob1h",
+    "name": "ORIAN",
+    "destinations": [
+      "screens"
+    ],
+    "note": "Replace this image - https://rogetjames.com/images/screens/orian-wall-decor.jpg",
+    "createdTime": "2026-08-03T04:32:47.233Z",
+    "path": "images/uploads/1785731567232_vyob1h.jpg"
   }
 ]
