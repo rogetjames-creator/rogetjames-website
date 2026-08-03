@@ -8,8 +8,8 @@
 // /media, not just the first slide. Add a slide here and it appears in the
 // uploader's Replace list automatically.
 export const HERO_SLIDES = [
-  { key: "rue-1",            src: "/images/hero/hero-rue-1.jpg",                 label: "Rue" },
   { key: "gren-wide",        src: "/images/hero/hero-gren-wide.jpg",             label: "GREN Wide" },
+  { key: "rue-1",            src: "/images/hero/hero-rue-1.jpg",                 label: "Rue" },
   { key: "fig-autumn-1",     src: "/images/hero/hero-creeping-fig-autumn-1.jpg", label: "Creeping Fig Autumn 1" },
   { key: "fig-autumn-2",     src: "/images/hero/hero-creeping-fig-autumn-2.jpg", label: "Creeping Fig Autumn 2" },
   { key: "banksia-oldmanis", src: "/images/hero/hero-banksia-oldmanis.jpg",      label: "Banksia Oldmanis" },
