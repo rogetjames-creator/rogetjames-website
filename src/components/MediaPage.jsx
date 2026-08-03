@@ -478,7 +478,7 @@ export default function MediaPage() {
               Instructions <span className="text-cream/40 normal-case tracking-normal font-detail">(optional)</span>
             </p>
             <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
-              placeholder="e.g. Replace the front BAMBU photo in Wall Art → Jungle with this one."
+              placeholder="To auto-swap an image on Send: replace this image - https://rogetjames.com/images/…/name.jpg"
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6 resize-y" />
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>

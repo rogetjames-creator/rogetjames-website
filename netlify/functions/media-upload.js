@@ -79,6 +79,22 @@ function extFor(contentType) {
   return map[contentType] || "jpg";
 }
 
+// Automation: parse an in-note instruction like
+//   "replace this image - https://rogetjames.com/images/screens/orian-wall-decor.jpg"
+// into the repo path to overwrite ("public/images/…"). Only our own /images/
+// paths are allowed — no traversal, no other hosts, no non-image files.
+function replaceTargetFromNote(note) {
+  const m = /\breplace\s+this\s+image\b[\s:–—-]*(https?:\/\/\S+)/i.exec(note || "");
+  if (!m) return null;
+  let u;
+  try { u = new URL(m[1]); } catch { return null; }
+  if (!/(^|\.)rogetjames\.com$/i.test(u.hostname)) return null;
+  let p;
+  try { p = decodeURIComponent(u.pathname); } catch { return null; }
+  if (p.includes("..") || !/^\/images\/[A-Za-z0-9._/-]+\.(jpe?g|png|webp|gif)$/i.test(p)) return null;
+  return "public" + p;
+}
+
 async function gh(path, opts = {}) {
   const res = await fetch(`https://api.github.com${path}`, {
     ...opts,
@@ -369,8 +385,12 @@ export default async function handler(req) {
   const destinations = (Array.isArray(body.destinations) ? body.destinations : [])
     .filter(isValidKey)
     .map((d) => KEY_MAP[d] || d);
-  if (!destinations.length) return json({ error: "No valid destination selected" }, 400);
   const noteRaw = (body.note || "").toString().slice(0, 600);
+  // Automation: "replace this image - <url>" in the note swaps that exact image
+  // in place. When present, a destination isn't required — the photo goes to the
+  // target path, not a gallery.
+  const replaceTarget = replaceTargetFromNote(noteRaw);
+  if (!destinations.length && !replaceTarget) return json({ error: "No valid destination selected" }, 400);
 
   if (!process.env.GITHUB_TOKEN) {
     return json({ error: "Upload storage not configured yet — GITHUB_TOKEN is missing on the server." }, 500);
@@ -380,6 +400,7 @@ export default async function handler(req) {
     const manifest = await getManifest();
     const addFiles = [];
     const newEntries = [];
+    let replacedPath = null;
     for (const img of images) {
       const m = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(img?.dataUrl || "");
       if (!m) continue;
@@ -387,6 +408,15 @@ export default async function handler(req) {
       const base64 = m[2];
       const buf = Buffer.from(base64, "base64");
       if (buf.length > MAX_BYTES) continue;
+      // First photo of a "replace this image" upload overwrites the target in
+      // place (keeps its filename/URL, so every reference updates at once).
+      if (replaceTarget && !replacedPath) {
+        replacedPath = replaceTarget.replace(/^public\//, "");
+        const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        addFiles.push({ path: replaceTarget, base64 });
+        newEntries.push({ id, name: img.name || "", destinations: [], note: `Auto-replaced ${replacedPath} in place (upload instruction).`, createdTime: new Date().toISOString(), path: replacedPath });
+        continue;
+      }
       const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const ext = extFor(contentType);
       const relPath = `images/uploads/${id}.${ext}`;
@@ -398,9 +428,11 @@ export default async function handler(req) {
     await commitBatch({
       addFiles,
       manifest: [...manifest, ...newEntries],
-      message: `Add ${addFiles.length} uploaded image(s) — ${destinations.join(", ")}`,
+      message: replacedPath
+        ? `Replace ${replacedPath} in place (upload instruction)`
+        : `Add ${addFiles.length} uploaded image(s) — ${destinations.join(", ")}`,
     });
-    return json({ ok: true, saved: addFiles.length });
+    return json({ ok: true, saved: addFiles.length, replaced: replacedPath || undefined });
   } catch (e) {
     return json({ error: "Upload failed: " + e.message }, 500);
   }
