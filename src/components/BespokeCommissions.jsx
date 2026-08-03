@@ -2415,7 +2415,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
             )}
           </div>
           {/* Animated drawer */}
-          <div style={{ overflow: "hidden", maxHeight: designPillsOpen ? "300px" : "0px", transition: "max-height 0.35s cubic-bezier(0.4,0,0.2,1)" }}>
+          <div data-lenis-prevent style={{ overflowX: "hidden", overflowY: designPillsOpen ? "auto" : "hidden", maxHeight: designPillsOpen ? "60vh" : "0px", transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1)" }}>
             <div className="flex flex-wrap gap-2 px-5 pb-3">
               <button
                 onClick={() => { setActiveDesign(null); setFlatIdx(null); setSlideIdx(0); setDesignPillsOpen(false); }}
@@ -2423,7 +2423,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                 style={{ background: "transparent", borderColor: !activeDesign ? "#9e7134" : "rgba(242,240,233,0.45)", color: "#f2f0e9", whiteSpace: "nowrap" }}>
                 All
               </button>
-              {tabDesigns.map((d) => {
+              {[...tabDesigns].sort((a, b) => a.name.localeCompare(b.name)).map((d) => {
                 const isActive = activeDesign === d.name;
                 return (
                   <button key={d.name}
