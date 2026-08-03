@@ -497,6 +497,7 @@ const WALL_ART_SERIES = [
     items: [
       { name: "BANKSIA Free Range — Custom", img: "/images/custom/banksia-free-range-custom.jpg" },
       { name: "LIBRATUM — Custom",           img: "/images/custom/libratum-custom.jpg" },
+      { name: "CREEPING FIG — Custom",       img: "/images/custom/creeping-fig-custom.jpg" },
     ],
   },
 ];
