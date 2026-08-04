@@ -25,6 +25,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .pill-cat{background:none;cursor:pointer;font-family:inherit}
 .thumbs{padding:11px 2px}
 .thumb{margin-top:0}
+.mpanel::before{content:"";position:absolute;top:-14px;left:0;right:0;height:14px}
 .capline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;align-self:center;max-width:100%}
 .capline .dname{grid-column:2;text-align:center}
 .capline .detail-btn{grid-column:3;justify-self:end}
@@ -41,6 +42,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <a class="mitem" href="/">Home</a>
         <a class="mitem${cur("wall-art")}" href="/wall-art">Wall Art</a>
         <a class="mitem${cur("sculpture")}" href="/sculpture">Sculpture</a>
+        <a class="mitem" href="/screens">Screens</a>
+        <button class="mitem" id="catMenuBtn" type="button">Catalogue</button>
         <div class="mdiv"></div>
         <a class="mitem" href="/#bespoke">Bespoke</a>
         <a class="mitem" href="/#process">Process</a>
@@ -224,9 +227,20 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     strip.style.animationDuration=Math.max(24,Math.round((half.length*TILE)/80))+'s';
   }
 
-  const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn');
-  menuBtn.addEventListener('click',e=>{ e.stopPropagation(); const o=menu.classList.toggle('open'); menuBtn.classList.toggle('open',o); });
-  document.addEventListener('click',e=>{ if(!menu.contains(e.target)&&!menuBtn.contains(e.target)){ menu.classList.remove('open'); menuBtn.classList.remove('open'); } });
+  const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn'), menuWrap=menuBtn.parentElement;
+  const openMenu=()=>{ menu.classList.add('open'); menuBtn.classList.add('open'); };
+  const closeMenu=()=>{ menu.classList.remove('open'); menuBtn.classList.remove('open'); };
+  let menuTimer;
+  const scheduleClose=()=>{ clearTimeout(menuTimer); menuTimer=setTimeout(closeMenu,140); };
+  const cancelClose=()=>clearTimeout(menuTimer);
+  menuBtn.addEventListener('click',e=>{ e.stopPropagation(); menu.classList.contains('open')?closeMenu():openMenu(); });
+  // open on hover (desktop); a transparent CSS bridge + close-delay keep it open across the gap
+  menuWrap.addEventListener('mouseenter',()=>{ cancelClose(); openMenu(); });
+  menuWrap.addEventListener('mouseleave',scheduleClose);
+  menu.addEventListener('mouseenter',cancelClose);
+  menu.addEventListener('mouseleave',scheduleClose);
+  document.addEventListener('click',e=>{ if(!menu.contains(e.target)&&!menuBtn.contains(e.target)) closeMenu(); });
+  document.getElementById('catMenuBtn').addEventListener('click',()=>{ closeMenu(); openCat(); });
 
   const ov=document.getElementById('ov'), ovImg=document.getElementById('ovImg'),
         ovThumbs=document.getElementById('ovThumbs'), ovName=document.getElementById('ovName'),
