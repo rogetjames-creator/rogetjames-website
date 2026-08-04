@@ -10,7 +10,7 @@
 export const HERO_SLIDES = [
   { key: "gren-wide",        src: "/images/hero/hero-gren-wide.jpg",             label: "GREN Wide" },
   { key: "rue-1",            src: "/images/hero/hero-rue-1.jpg",                 label: "Rue" },
-  { key: "fig-autumn-1",     src: "/images/hero/hero-creeping-fig-autumn-1.jpg", label: "Creeping Fig Autumn 1" },
+  { key: "fig-autumn-1",     src: "/images/hero/hero-creeping-fig-autumn-1b.jpg", label: "Creeping Fig Autumn 1" },
   { key: "fig-autumn-2",     src: "/images/hero/hero-creeping-fig-autumn-2.jpg", label: "Creeping Fig Autumn 2" },
   { key: "banksia-oldmanis", src: "/images/hero/hero-banksia-oldmanis.jpg",      label: "Banksia Oldmanis" },
   { key: "marakesh",         src: "/images/marakesh/marakesh-promo.jpg",         label: "Marakesh" },
