@@ -5,6 +5,7 @@ import "./index.css";
 import { netlifyImg } from "./utils/img";
 import { RANGE_DATA } from "./data/rangeData";
 import { RANGE_CSS } from "./components/rangeGalleryStyles";
+import { PIECE_SIZES, SIZE_TIERS, priceFor, checkWA, getState, STATE_NAMES } from "./data/pricing";
 
 const IMGS   = RANGE_DATA.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
 const THUMBS = RANGE_DATA.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
@@ -13,6 +14,18 @@ const RANGES = RANGE_DATA.ranges;
 const _style = document.createElement("style");
 _style.textContent = RANGE_CSS;
 document.head.appendChild(_style);
+
+const _style2 = document.createElement("style");
+_style2.textContent = `
+.pill-cat{background:none;cursor:pointer;font-family:inherit}
+.catov{position:fixed;inset:0;z-index:115;display:none;flex-direction:column;background:rgba(8,7,6,.97);backdrop-filter:blur(8px)}
+.catov.open{display:flex}
+.cathead{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--hair);position:sticky;top:0;background:rgba(8,7,6,.9);backdrop-filter:blur(6px)}
+.catttl{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+.cathead .close{position:static;width:36px;height:36px;border-radius:50%;border:1px solid var(--hair);background:none;color:var(--cream);cursor:pointer;font-size:16px}
+.catlist{flex:1;overflow-y:auto;padding:24px 16px 60px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.catlist img{width:min(900px,94vw);height:auto;border-radius:8px;box-shadow:0 16px 40px rgba(0,0,0,.5)}`;
+document.head.appendChild(_style2);
 
 document.getElementById("wall-art-root").innerHTML = `<div class="top">
   <div class="nav-l">
@@ -35,7 +48,7 @@ document.getElementById("wall-art-root").innerHTML = `<div class="top">
   <span class="now" id="now">Wall Art &middot; The Range</span>
   <div class="nav-r">
     <button class="qpill" id="qpill" aria-label="View your quote">Quote <span class="qnum" id="qnum">0</span></button>
-    <a class="pill-cat" href="/#collection">View catalogue</a>
+    <button class="pill-cat" id="catBtn" type="button">View catalogue</button>
     <a class="x-esc" href="/" aria-label="Close — back to site">&#10005;</a>
   </div>
 </div>
@@ -75,12 +88,7 @@ document.getElementById("wall-art-root").innerHTML = `<div class="top">
       <p class="sh-sub" id="ovSub"></p>
       <div class="sh-block">
         <div class="sh-lab">Sizes — made to order &middot; select one</div>
-        <div class="sh-sizes" id="ovSizes">
-          <button class="sh-size" data-size="Small — 600 × 400 mm"><span><b>Small</b></span><span>600 &times; 400 mm</span></button>
-          <button class="sh-size" data-size="Medium — 900 × 600 mm"><span><b>Medium</b></span><span>900 &times; 600 mm</span></button>
-          <button class="sh-size" data-size="Large — 1200 × 800 mm"><span><b>Large</b></span><span>1200 &times; 800 mm</span></button>
-          <button class="sh-size" data-size="Custom — to your dimensions (POA)"><span><b>Custom</b></span><span>To your dimensions &middot; POA</span></button>
-        </div>
+        <div class="sh-sizes" id="ovSizes"></div>
       </div>
       <div class="gate">
         <p class="glab">Pricing</p>
@@ -97,7 +105,7 @@ document.getElementById("wall-art-root").innerHTML = `<div class="top">
         <div class="pout" id="pout">
           <p class="pregion" id="pregion"></p>
           <div id="prows"></div>
-          <p class="pnote">Mock-up — figures come from the ROGETjames catalogue and appear here only, after a finish + postcode. No price is shown on the overview, in a caption, or in any link.</p>
+          <p class="pnote">Prices for your area. Fixings &amp; freight to be confirmed.</p>
         </div>
       </div>
       <div class="sh-block sh-actions">
@@ -115,9 +123,15 @@ document.getElementById("wall-art-root").innerHTML = `<div class="top">
     <div class="qlist" id="qlist"></div>
     <div class="qfoot">
       <button class="qreq" id="qReq">Request quote &rarr;</button>
-      <p class="qfnote">Mock-up — on the live site this list carries into the contact / quote form. No prices are attached.</p>
+      <p class="qfnote">We'll prepare a quote for these pieces for your location.</p>
     </div>
   </div>
+</div>
+
+<!-- Wall Art catalogue -->
+<div class="catov" id="catov" role="dialog" aria-modal="true">
+  <div class="cathead"><span class="catttl">Wall Art Catalogue</span><button class="close" id="catClose" aria-label="Close">&#10005;</button></div>
+  <div class="catlist" id="catlist"></div>
 </div>`;
 
 /* ---- ported interaction logic ---- */
@@ -126,21 +140,6 @@ try{history.scrollRestoration='manual';}catch{/* ignore */}
 window.scrollTo(0,0);
 window.addEventListener('load',()=>window.scrollTo(0,0));
 const app=document.getElementById('app'), now=document.getElementById('now');
-const SIZES=[['Small','600 × 400 mm',0],['Medium','900 × 600 mm',0],['Large','1200 × 800 mm',0],['Custom','To your dimensions',1]];
-function stateOf(pc){
-  const n=+pc;
-  if((n>=2600&&n<=2618)||(n>=2900&&n<=2920)) return 'Australian Capital Territory';
-  switch(pc[0]){
-    case '1': case '2': return 'New South Wales';
-    case '3': case '8': return 'Victoria';
-    case '4': case '9': return 'Queensland';
-    case '5': return 'South Australia';
-    case '6': return 'Western Australia';
-    case '7': return 'Tasmania';
-    case '0': return 'Northern Territory';
-    default:  return 'Australia';
-  }
-}
 const twoTone = label => label.split(' ').map((w,i)=>`<span class="${i===0?'w1':'w2'}">${w}</span>`).join(' ');
 function ensureVisible(box, el){
   if(!box.classList.contains('of')) return;          // only scroll when the row overflows
@@ -182,10 +181,16 @@ RANGES.forEach((r,ri)=>{
     t.className='thumb'+(vv>0?' var':''); t.dataset.d=dd; t.dataset.v=vv; t.title=r.designs[dd].n;
     const im=document.createElement('img'); im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=r.designs[dd].n; t.appendChild(im);
     t.addEventListener('mouseenter',()=>show(dd,vv));
-    t.addEventListener('click',()=>openDetail(ri,dd,vv));
+    t.addEventListener('click',()=>show(dd,vv));            // tap = browse the images, NOT open details
     tw.appendChild(t);
   });
-  stImg.addEventListener('click',()=>openDetail(ri,cur.d,cur.v));
+  // tap the big image = advance to the next image in the range (easy mobile browsing)
+  stImg.addEventListener('click',()=>{
+    const i=r.flat.findIndex(([d,v])=>d===cur.d&&v===cur.v);
+    const [nd,nv]=r.flat[(i+1)%r.flat.length];
+    show(nd,nv);
+  });
+  // details/prices open ONLY from this button
   sec.querySelector('.detail-btn').addEventListener('click',()=>openDetail(ri,cur.d,cur.v));
   app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
   const [d0,v0]=r.flat[0]; show(d0,v0);
@@ -218,20 +223,26 @@ const ov=document.getElementById('ov'), ovImg=document.getElementById('ovImg'),
       pregion=document.getElementById('pregion'), prows=document.getElementById('prows');
 const qpill=document.getElementById('qpill'), qnum=document.getElementById('qnum'),
       qov=document.getElementById('qov'), qlist=document.getElementById('qlist');
-let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=[];
+let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=[], curTiers=SIZE_TIERS;
 const pcOK = ()=>/^\d{4}$/.test((pc.value||'').trim());
 const shown = ()=>pout.style.display==='block';
+const matId = ()=> /corten/i.test(selFinish||'') ? 'corten' : 'aluminium';   // finish -> material id
+const regionName = (v)=> STATE_NAMES[getState(v)] || 'Australia';
 function setOvImg(des,vv){ ovImg.src=IMGS[des.imgs[vv]]; curImg=THUMBS[des.imgs[vv]]; ovThumbs.querySelectorAll('.sh-th').forEach((t,j)=>t.classList.toggle('active',j===vv)); }
 function renderPrices(){
-  const v=(pc.value||'').trim();
-  pregion.textContent = stateOf(v) + ' — ' + selFinish;
-  prows.innerHTML = SIZES.map(s=>`<div class="prow"><span>${s[0]} &middot; ${s[1]}</span>${s[2]?'<b class="poa">POA</b>':'<b class="masked">$ &bull;&bull;&bull;</b>'}</div>`).join('');
+  const v=(pc.value||'').trim(), mid=matId(), isWA=checkWA(v);
+  pregion.textContent = regionName(v) + ' — ' + selFinish;
+  // real catalogue prices, gated behind the postcode. priceFor() returns null -> POA.
+  prows.innerHTML = curTiers.map(t=>{
+    const p=priceFor(t,mid,isWA);
+    return `<div class="prow"><span>${t.label}${t.label!==t.dims?' &middot; '+t.dims:''}</span><b>${p?('A$'+p.toLocaleString()):'POA'}</b></div>`;
+  }).join('');
 }
 function updateAddState(){
-  const ok=selFinish&&selSize;
+  const ok=selFinish&&selSize!=null;
   addQ.disabled=!ok;
   addqHint.textContent = ok ? 'Ready — adds this design, finish and size to your quote.'
-    : (!selFinish&&!selSize) ? 'Select a finish and a size to add to your quote.'
+    : (!selFinish&&selSize==null) ? 'Select a finish and a size to add to your quote.'
     : !selFinish ? 'Select a finish to add to your quote.' : 'Select a size to add to your quote.';
 }
 ovFinish.querySelectorAll('.sh-chip').forEach(c=>c.addEventListener('click',()=>{
@@ -240,11 +251,12 @@ ovFinish.querySelectorAll('.sh-chip').forEach(c=>c.addEventListener('click',()=>
   gerr.textContent=''; updateAddState();
   if(shown() && pcOK()) renderPrices();       // clicking either finish updates the shown prices
 }));
-ovSizes.querySelectorAll('.sh-size').forEach(s=>s.addEventListener('click',()=>{
-  selSize=s.dataset.size;
-  ovSizes.querySelectorAll('.sh-size').forEach(x=>x.classList.toggle('sel',x===s));
+ovSizes.addEventListener('click',(e)=>{
+  const b=e.target.closest('.sh-size'); if(!b) return;
+  selSize=+b.dataset.i;
+  ovSizes.querySelectorAll('.sh-size').forEach(x=>x.classList.toggle('sel',x===b));
   updateAddState();
-}));
+});
 pc.addEventListener('input',()=>{ if(shown() && selFinish && pcOK()) renderPrices(); });
 function openDetail(ri,dd,vv){
   const des=RANGES[ri].designs[dd];
@@ -254,8 +266,11 @@ function openDetail(ri,dd,vv){
   des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.src=THUMBS[gi];im.alt='';t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
   setOvImg(des,vv||0);
   curDes=des; curRange=RANGES[ri].label;
+  // this piece's real size tiers (catalogue); pieces not priced fall back to generic tiers -> POA
+  curTiers = PIECE_SIZES[des.pk||des.n] || SIZE_TIERS;
+  ovSizes.innerHTML = curTiers.map((t,i)=>`<button class="sh-size" data-i="${i}"><span><b>${t.label}</b></span><span>${t.dims}</span></button>`).join('');
   selFinish=null; ovFinish.querySelectorAll('.sh-chip').forEach(x=>x.classList.remove('sel'));
-  selSize=null; ovSizes.querySelectorAll('.sh-size').forEach(x=>x.classList.remove('sel'));
+  selSize=null;
   addQ.classList.remove('added'); addQ.textContent='Add to quote'; updateAddState();
   gateForm.style.display='flex'; pout.style.display='none'; gerr.textContent=''; pc.value='';
   ov.classList.add('open'); document.body.classList.add('locked');
@@ -263,7 +278,7 @@ function openDetail(ri,dd,vv){
 function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }
 document.getElementById('ovClose').addEventListener('click',closeDetail);
 ov.addEventListener('click',e=>{ if(e.target===ov) closeDetail(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeDetail(); closeQuote(); menu.classList.remove('open'); menuBtn.classList.remove('open'); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeDetail(); closeQuote(); closeCat(); menu.classList.remove('open'); menuBtn.classList.remove('open'); } });
 gateForm.addEventListener('submit',e=>{
   e.preventDefault();
   if(!selFinish){ gerr.textContent='Select a finish first.'; return; }
@@ -274,8 +289,9 @@ gateForm.addEventListener('submit',e=>{
 // ── Add to quote (mirrors the live quote: piece + finish + size, never a price) ──
 function updateQpill(){ qnum.textContent=quote.length; qpill.classList.toggle('show',quote.length>0); }
 addQ.addEventListener('click',()=>{
-  if(!selFinish||!selSize) return;
-  quote.push({range:curRange,name:curDes.n,finish:selFinish,size:selSize,img:curImg});
+  if(!selFinish||selSize==null) return;
+  const t=curTiers[selSize];
+  quote.push({range:curRange,name:curDes.n,finish:selFinish,size:`${t.label} — ${t.dims}`,img:curImg});
   updateQpill();
   addQ.classList.add('added'); addQ.textContent='Added to quote ✓';
   setTimeout(closeDetail,900);
@@ -295,7 +311,17 @@ function closeQuote(){ qov.classList.remove('open'); document.body.classList.rem
 qpill.addEventListener('click',openQuote);
 document.getElementById('qClose').addEventListener('click',closeQuote);
 qov.addEventListener('click',e=>{ if(e.target===qov) closeQuote(); });
-document.getElementById('qReq').addEventListener('click',e=>{ const b=e.currentTarget, t=b.textContent; b.textContent='On the live site → contact / quote form'; setTimeout(()=>{b.textContent=t;},1700); });
+document.getElementById('qReq').addEventListener('click',()=>{ window.location.href='/#contact'; });
+
+// ── Wall Art catalogue (opened by the "View catalogue" pill) ──
+const WALL_ART_CAT_PAGES = Array.from({length:26},(_,i)=>`/images/catalogues/cat1/page-${String(i+4).padStart(2,'0')}.jpg`);
+const catov=document.getElementById('catov'), catlist=document.getElementById('catlist');
+WALL_ART_CAT_PAGES.forEach(p=>{ const im=document.createElement('img'); im.loading='lazy'; im.alt=''; im.src=netlifyImg(p,{w:1000,q:72}); catlist.appendChild(im); });
+function openCat(){ catov.classList.add('open'); document.body.classList.add('locked'); catlist.scrollTop=0; }
+function closeCat(){ catov.classList.remove('open'); document.body.classList.remove('locked'); }
+document.getElementById('catBtn').addEventListener('click',openCat);
+document.getElementById('catClose').addEventListener('click',closeCat);
+catov.addEventListener('click',e=>{ if(e.target===catov) closeCat(); });
 
 // ── Return to top (appears near the bottom of the scroll) ─────────
 const toTop=document.getElementById('toTop');
