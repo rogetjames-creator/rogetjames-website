@@ -200,9 +200,20 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 
   const strip=document.getElementById('introStrip');
   if(strip){
-    // crisp cover images for the 208px sliding tiles (retina-sharp, not the tiny thumb size)
-    const covers=RANGES.map(r=>{const [d,v]=r.flat[0];return netlifyImg(data.imgs[r.designs[d].imgs[v]],{w:480,q:74});});
-    covers.concat(covers).forEach(src=>{const el=document.createElement('div');el.className='tile';const im=document.createElement('img');im.src=src;im.alt='';el.appendChild(im);strip.appendChild(el);});
+    const TILE=220; // 208px tile + 12px gap
+    // Wall Art (many ranges) keeps its range-cover strip; small collections (Sculpture) use
+    // every image so the row is just as full — same tiles, gaps and speed as Wall Art.
+    const paths = RANGES.length>=8
+      ? RANGES.map(r=>{const [d,v]=r.flat[0];return data.imgs[r.designs[d].imgs[v]];})
+      : data.imgs.slice();
+    const covers = paths.map(p=>netlifyImg(p,{w:440,q:72}));
+    // Pad one "half" so it's wider than the screen — the -50% loop then runs seamlessly (circular),
+    // never showing an empty gap when there are only a few images.
+    const minHalf=Math.max(covers.length, Math.ceil((window.innerWidth*1.4)/TILE)+1);
+    let half=[]; while(half.length<minHalf) half=half.concat(covers);
+    half.concat(half).forEach(src=>{const el=document.createElement('div');el.className='tile';const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt='';el.appendChild(im);strip.appendChild(el);});
+    // Constant scroll speed (~80px/s) regardless of tile count — so it never crawls.
+    strip.style.animationDuration=Math.max(24,Math.round((half.length*TILE)/80))+'s';
   }
 
   const menu=document.getElementById('menu'), menuBtn=document.getElementById('menuBtn');
