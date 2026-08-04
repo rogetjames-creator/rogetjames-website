@@ -313,5 +313,13 @@
     "note": "replace https://rogetjames.com/.netlify/images?url=%2Fimages%2Fbranches%2Fgren-free-1.jpg&w=1200&fm=webp&q=74",
     "createdTime": "2026-08-04T08:03:13.409Z",
     "path": "images/uploads/1785830593393_896b06.jpg"
+  },
+  {
+    "id": "1785887049233_try1j3",
+    "name": "Equisetti red copy.jpg",
+    "destinations": [],
+    "note": "Auto-replaced images/equisetti/equisetti-1.jpg in place (upload instruction).",
+    "createdTime": "2026-08-04T23:44:09.234Z",
+    "path": "images/equisetti/equisetti-1.jpg"
   }
 ]
