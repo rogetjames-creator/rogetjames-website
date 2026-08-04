@@ -203,9 +203,10 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     const TILE=220; // 208px tile + 12px gap
     // Wall Art (many ranges) keeps its range-cover strip; small collections (Sculpture) use
     // every image so the row is just as full — same tiles, gaps and speed as Wall Art.
+    const shuffle=(a)=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
     const paths = RANGES.length>=8
       ? RANGES.map(r=>{const [d,v]=r.flat[0];return data.imgs[r.designs[d].imgs[v]];})
-      : data.imgs.slice();
+      : shuffle(data.imgs.slice());   // small collections (Sculpture): random mix of the range images
     const covers = paths.map(p=>netlifyImg(p,{w:440,q:72}));
     // Pad one "half" so it's wider than the screen — the -50% loop then runs seamlessly (circular),
     // never showing an empty gap when there are only a few images.
