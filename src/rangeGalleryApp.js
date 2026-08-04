@@ -185,11 +185,18 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       t.addEventListener('click',()=>show(dd,vv));
       tw.appendChild(t);
     });
-    stImg.addEventListener('click',()=>{
+    function step(dir){
       const i=r.flat.findIndex(([d,v])=>d===curP.d&&v===curP.v);
-      const [nd,nv]=r.flat[(i+1)%r.flat.length];
-      show(nd,nv);
-    });
+      const n=(i+dir+r.flat.length)%r.flat.length;
+      const [nd,nv]=r.flat[n]; show(nd,nv);
+    }
+    // Mobile: finger-swipe the big image left/right to browse; tap = next.
+    let _sx=0,_sy=0,_swiped=false;
+    const stage=sec.querySelector('.stage');
+    stage.addEventListener('touchstart',e=>{ const t=e.changedTouches[0]; _sx=t.clientX; _sy=t.clientY; _swiped=false; },{passive:true});
+    stage.addEventListener('touchend',e=>{ const t=e.changedTouches[0], dx=t.clientX-_sx, dy=t.clientY-_sy;
+      if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)*1.4){ _swiped=true; step(dx<0?1:-1); } },{passive:true});
+    stImg.addEventListener('click',()=>{ if(_swiped){ _swiped=false; return; } step(1); });
     sec.querySelector('.detail-btn').addEventListener('click',()=>openDetail(ri,curP.d,curP.v));
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
     const [d0,v0]=r.flat[0]; show(d0,v0);
