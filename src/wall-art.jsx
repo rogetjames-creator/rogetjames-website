@@ -5,7 +5,8 @@ import "./index.css";
 import { netlifyImg } from "./utils/img";
 import { RANGE_DATA } from "./data/rangeData";
 import { RANGE_CSS } from "./components/rangeGalleryStyles";
-import { PIECE_SIZES, SIZE_TIERS, priceFor, checkWA, getState, STATE_NAMES } from "./data/pricing";
+import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "./data/pricing";
+import { loadBasket, saveBasket } from "./utils/quoteBasket";
 
 const IMGS   = RANGE_DATA.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
 const THUMBS = RANGE_DATA.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
@@ -18,6 +19,14 @@ document.head.appendChild(_style);
 const _style2 = document.createElement("style");
 _style2.textContent = `
 .pill-cat{background:none;cursor:pointer;font-family:inherit}
+/* room so a hovered/active thumb's lift+scale isn't clipped by the scroll container */
+.thumbs{padding:11px 2px}
+.thumb{margin-top:0}
+/* design name centred beneath the image; Details & prices to the right */
+.capline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.capline .dname{grid-column:2;text-align:center}
+.capline .detail-btn{grid-column:3;justify-self:end}
+@media(max-width:560px){.capline{grid-template-columns:1fr auto 1fr}.capline .detail-btn{padding:7px 12px}}
 .catov{position:fixed;inset:0;z-index:115;display:none;flex-direction:column;background:rgba(8,7,6,.97);backdrop-filter:blur(8px)}
 .catov.open{display:flex}
 .cathead{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--hair);position:sticky;top:0;background:rgba(8,7,6,.9);backdrop-filter:blur(6px)}
@@ -223,7 +232,7 @@ const ov=document.getElementById('ov'), ovImg=document.getElementById('ovImg'),
       pregion=document.getElementById('pregion'), prows=document.getElementById('prows');
 const qpill=document.getElementById('qpill'), qnum=document.getElementById('qnum'),
       qov=document.getElementById('qov'), qlist=document.getElementById('qlist');
-let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=[], curTiers=SIZE_TIERS;
+let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=loadBasket(), curTiers=SIZE_TIERS;
 const pcOK = ()=>/^\d{4}$/.test((pc.value||'').trim());
 const shown = ()=>pout.style.display==='block';
 const matId = ()=> /corten/i.test(selFinish||'') ? 'corten' : 'aluminium';   // finish -> material id
@@ -286,13 +295,18 @@ gateForm.addEventListener('submit',e=>{
   gerr.textContent=''; renderPrices(); pout.style.display='block';
 });
 
-// ── Add to quote (mirrors the live quote: piece + finish + size, never a price) ──
+// ── Add to quote — writes the SHARED basket (roj-quote-basket) so pieces carry
+//    into the home page's Contact form. Same item shape App/Contact expect.
 function updateQpill(){ qnum.textContent=quote.length; qpill.classList.toggle('show',quote.length>0); }
 addQ.addEventListener('click',()=>{
   if(!selFinish||selSize==null) return;
   const t=curTiers[selSize];
-  quote.push({range:curRange,name:curDes.n,finish:selFinish,size:`${t.label} — ${t.dims}`,img:curImg});
-  updateQpill();
+  const material=MATERIAL_OPTIONS.find(m=>m.id===matId());
+  const dup=quote.some(q=>q.name===curDes.n && q.size?.id===t.id && q.material?.id===material?.id);
+  if(!dup){
+    quote.push({ id:`${curDes.n}-${Date.now()}`, name:curDes.n, series:curRange, size:t, material, img:curImg });
+    saveBasket(quote); updateQpill();
+  }
   addQ.classList.add('added'); addQ.textContent='Added to quote ✓';
   setTimeout(closeDetail,900);
 });
@@ -301,8 +315,9 @@ function renderQuote(){
   qlist.innerHTML='';
   quote.forEach((it,i)=>{
     const row=document.createElement('div'); row.className='qrow';
-    row.innerHTML=`<img src="${it.img}" alt=""><div class="qmeta"><div class="qn">${it.name}</div><div class="qd">${it.range} &middot; ${it.finish} &middot; ${it.size}</div></div><button class="qx" aria-label="Remove">&#10005;</button>`;
-    row.querySelector('.qx').addEventListener('click',()=>{ quote.splice(i,1); updateQpill(); renderQuote(); });
+    const meta=[it.series, it.material?.label, it.size?`${it.size.label} — ${it.size.dims}`:''].filter(Boolean).join(' &middot; ');
+    row.innerHTML=`<img src="${it.img}" alt=""><div class="qmeta"><div class="qn">${it.name}</div><div class="qd">${meta}</div></div><button class="qx" aria-label="Remove">&#10005;</button>`;
+    row.querySelector('.qx').addEventListener('click',()=>{ quote.splice(i,1); saveBasket(quote); updateQpill(); renderQuote(); });
     qlist.appendChild(row);
   });
 }
@@ -312,6 +327,7 @@ qpill.addEventListener('click',openQuote);
 document.getElementById('qClose').addEventListener('click',closeQuote);
 qov.addEventListener('click',e=>{ if(e.target===qov) closeQuote(); });
 document.getElementById('qReq').addEventListener('click',()=>{ window.location.href='/#contact'; });
+updateQpill();   // show the pill if the shared basket already has items
 
 // ── Wall Art catalogue (opened by the "View catalogue" pill) ──
 const WALL_ART_CAT_PAGES = Array.from({length:26},(_,i)=>`/images/catalogues/cat1/page-${String(i+4).padStart(2,'0')}.jpg`);
