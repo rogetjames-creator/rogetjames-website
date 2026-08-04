@@ -303,5 +303,15 @@
     "note": "Auto-replaced images/flowers/rue-the-3rd.jpg in place (upload instruction).",
     "createdTime": "2026-08-04T05:12:08.644Z",
     "path": "images/flowers/rue-the-3rd.jpg"
+  },
+  {
+    "id": "1785830593393_896b06",
+    "name": "59603285-31DC-4F9B-87C1-D1319CC58190_4_5005_c.jpeg",
+    "destinations": [
+      "branches"
+    ],
+    "note": "replace https://rogetjames.com/.netlify/images?url=%2Fimages%2Fbranches%2Fgren-free-1.jpg&w=1200&fm=webp&q=74",
+    "createdTime": "2026-08-04T08:03:13.409Z",
+    "path": "images/uploads/1785830593393_896b06.jpg"
   }
 ]
