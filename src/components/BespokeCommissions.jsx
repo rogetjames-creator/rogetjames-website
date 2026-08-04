@@ -551,14 +551,14 @@ function ScreensFeatureSlideshow() {
         />
       ))}
 
-      {/* Gradient overlay */}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)" }} />
+      {/* No dark filter over the image — text stays legible via text-shadow. */}
 
       {/* Text content — animate/edit per slide here */}
       <div style={{
         position: "absolute", left: 48, top: "50%", transform: "translateY(-50%)",
         opacity: animating ? 0 : 1, transition: "opacity 0.45s ease",
         display: "flex", flexDirection: "column", gap: 10,
+        textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.7)",
       }}>
         {slide.subheading && (
           <p style={{ fontFamily: "var(--font-detail)", fontSize: 11, letterSpacing: "0.22em", textTransform: "uppercase", color: "rgba(242,240,233,0.55)", margin: 0 }}>
@@ -576,13 +576,13 @@ function ScreensFeatureSlideshow() {
       </div>
 
       {/* Slide counter */}
-      <p style={{ position: "absolute", bottom: 22, right: 24, fontFamily: "var(--font-detail)", fontSize: 11, color: "rgba(242,240,233,0.4)", letterSpacing: "0.12em", margin: 0 }}>
+      <p style={{ position: "absolute", bottom: 22, right: 24, fontFamily: "var(--font-detail)", fontSize: 11, color: "rgba(242,240,233,0.4)", letterSpacing: "0.12em", margin: 0, textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>
         {String(cur + 1).padStart(2, "0")} / {String(SCREENS_SLIDESHOW_SLIDES.length).padStart(2, "0")}
       </p>
 
       {/* Category tags */}
       <div style={{ position: "absolute", bottom: 20, left: 0, right: 0, display: "flex", justifyContent: "center", padding: "0 32px" }}>
-        <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#F2F0E9", margin: 0, textAlign: "center", lineHeight: 1.8 }}>
+        <p style={{ fontFamily: "var(--font-detail)", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#F2F0E9", margin: 0, textAlign: "center", lineHeight: 1.8, textShadow: "0 2px 10px rgba(0,0,0,0.9)" }}>
           Wall Decor · Entrance Gates · Security Gates Automated · Fencing · Infills · Dividers · Privacy Screens · Awnings · Light Features
         </p>
       </div>
