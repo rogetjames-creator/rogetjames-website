@@ -43,10 +43,9 @@ export const MATERIAL_OPTIONS = [
 
 export const priceFor = (tier, material, isWA) => {
   if (!tier) return null;
-  const corten = material === "corten";
-  const val = isWA
-    ? (corten ? tier.priceCorten : tier.price)
-    : (corten ? tier.priceCortenPC : tier.pricePC);
+  // Corten (Natural Corten Steel) is priced the SAME as Aluminium (Powder Coated) — owner
+  // directive 2026-08-04. Both finishes therefore return the Aluminium price for the region.
+  const val = isWA ? tier.price : tier.pricePC;
   return val ?? null;
 };
 

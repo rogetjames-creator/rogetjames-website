@@ -7,6 +7,7 @@ import { RANGE_DATA } from "./data/rangeData";
 import { RANGE_CSS } from "./components/rangeGalleryStyles";
 import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "./data/pricing";
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
+import { loadPostcode, savePostcode } from "./utils/postcode";
 
 const IMGS   = RANGE_DATA.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
 const THUMBS = RANGE_DATA.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
@@ -23,7 +24,7 @@ _style2.textContent = `
 .thumbs{padding:11px 2px}
 .thumb{margin-top:0}
 /* design name centred beneath the image; Details & prices to the right */
-.capline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.capline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;align-self:center;max-width:100%}
 .capline .dname{grid-column:2;text-align:center}
 .capline .detail-btn{grid-column:3;justify-self:end}
 @media(max-width:560px){.capline{grid-template-columns:1fr auto 1fr}.capline .detail-btn{padding:7px 12px}}
@@ -101,7 +102,7 @@ document.getElementById("wall-art-root").innerHTML = `<div class="top">
       </div>
       <div class="gate">
         <p class="glab">Pricing</p>
-        <p class="ghint">Choose a finish and enter your postcode to see pricing for your location.</p>
+        <p class="ghint" id="ghint">Choose a finish and enter your postcode to see pricing for your location.</p>
         <div class="sh-opts gfin" id="ovFinish">
           <button class="sh-chip" data-fin="Aluminium — Powder Coated">Aluminium — Powder Coated</button>
           <button class="sh-chip" data-fin="Natural Corten Steel">Natural Corten Steel</button>
@@ -157,7 +158,7 @@ function ensureVisible(box, el){
   else if(a<l) box.scrollTo({left:a-18});
 }
 function fitThumbs(box){ const of=box.scrollWidth>box.clientWidth+2; box.classList.toggle('of',of); box.parentElement.classList.toggle('of',of); }
-const thumbBoxes=[], posterEls=[];
+const thumbBoxes=[], posterEls=[], capAligners=[];
 RANGES.forEach((r,ri)=>{
   const sec=document.createElement('section');
   sec.className='poster'; sec.dataset.label=r.label; sec.dataset.idx=(ri+1);
@@ -172,12 +173,17 @@ RANGES.forEach((r,ri)=>{
     <div class="capline"><span class="dname"></span><button class="detail-btn">Details &amp; prices &rarr;</button></div>
     <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
   const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
+  const capline=sec.querySelector('.capline');
+  // keep the caption (name + Details button) the same width as the displayed image,
+  // so the button sits at the image's right edge — not the far screen edge.
+  function alignCap(){ const w=stImg.getBoundingClientRect().width; if(w>4) capline.style.width=Math.round(w)+'px'; }
+  capAligners.push(alignCap);
   let cur={d:0,v:0};
   function show(dd,vv){
     cur={d:dd,v:vv};
     const des=r.designs[dd];
     stImg.style.opacity=0;
-    requestAnimationFrame(()=>{ stImg.src=IMGS[des.imgs[vv]]; stImg.onload=()=>stImg.style.opacity=1; });
+    requestAnimationFrame(()=>{ stImg.src=IMGS[des.imgs[vv]]; stImg.onload=()=>{ stImg.style.opacity=1; alignCap(); }; });
     const extra=des.imgs.length>1?` &middot; ${vv+1}/${des.imgs.length}`:'';
     dn.innerHTML=`<b>${des.n}</b>${extra}`;
     let act=null;
@@ -206,7 +212,7 @@ RANGES.forEach((r,ri)=>{
   fitThumbs(tw);
 });
 // centre thumbs that fit; left-align + allow scroll only when they overflow
-window.addEventListener('resize',()=>thumbBoxes.forEach(fitThumbs));
+window.addEventListener('resize',()=>{ thumbBoxes.forEach(fitThumbs); capAligners.forEach(f=>f()); });
 requestAnimationFrame(()=>thumbBoxes.forEach(fitThumbs));
 
 // intro sliding band — range covers (first flat image of each range)
@@ -228,37 +234,38 @@ const ov=document.getElementById('ov'), ovImg=document.getElementById('ovImg'),
       ovFinish=document.getElementById('ovFinish'), ovSizes=document.getElementById('ovSizes'),
       addQ=document.getElementById('addQ'), addqHint=document.getElementById('addqHint'),
       gateForm=document.getElementById('gateForm'), pc=document.getElementById('pc'),
-      gerr=document.getElementById('gerr'), pout=document.getElementById('pout'),
+      gerr=document.getElementById('gerr'), pout=document.getElementById('pout'), ghint=document.getElementById('ghint'),
       pregion=document.getElementById('pregion'), prows=document.getElementById('prows');
 const qpill=document.getElementById('qpill'), qnum=document.getElementById('qnum'),
       qov=document.getElementById('qov'), qlist=document.getElementById('qlist');
-let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=loadBasket(), curTiers=SIZE_TIERS;
-const pcOK = ()=>/^\d{4}$/.test((pc.value||'').trim());
-const shown = ()=>pout.style.display==='block';
+let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=loadBasket(), curTiers=SIZE_TIERS, postcodeInfo=loadPostcode();
+const pcLocked = ()=> !!(postcodeInfo && postcodeInfo.postcode);       // postcode entered once -> locked (site rule)
 const matId = ()=> /corten/i.test(selFinish||'') ? 'corten' : 'aluminium';   // finish -> material id
-const regionName = (v)=> STATE_NAMES[getState(v)] || 'Australia';
+const regionOf = (info)=> STATE_NAMES[info.state] || info.state || 'Australia';
 function setOvImg(des,vv){ ovImg.src=IMGS[des.imgs[vv]]; curImg=THUMBS[des.imgs[vv]]; ovThumbs.querySelectorAll('.sh-th').forEach((t,j)=>t.classList.toggle('active',j===vv)); }
+// Prices are ALWAYS computed from the STORED postcode (entered once, locked for the visit —
+// consistent with the rest of the site; a visitor can't retype to see other regions).
 function renderPrices(){
-  const v=(pc.value||'').trim(), mid=matId(), isWA=checkWA(v);
-  pregion.textContent = regionName(v) + ' — ' + selFinish;
-  // real catalogue prices, gated behind the postcode. priceFor() returns null -> POA.
+  if(!pcLocked() || !selFinish){ pout.style.display='none'; return; }
+  const isWA=postcodeInfo.isWA, mid=matId();
+  pregion.textContent = regionOf(postcodeInfo) + ' — ' + selFinish;
   prows.innerHTML = curTiers.map(t=>{
     const p=priceFor(t,mid,isWA);
     return `<div class="prow"><span>${t.label}${t.label!==t.dims?' &middot; '+t.dims:''}</span><b>${p?('A$'+p.toLocaleString()):'POA'}</b></div>`;
   }).join('');
+  pout.style.display='block';
 }
 function updateAddState(){
   const ok=selFinish&&selSize!=null;
   addQ.disabled=!ok;
   addqHint.textContent = ok ? 'Ready — adds this design, finish and size to your quote.'
-    : (!selFinish&&selSize==null) ? 'Select a finish and a size to add to your quote.'
     : !selFinish ? 'Select a finish to add to your quote.' : 'Select a size to add to your quote.';
 }
 ovFinish.querySelectorAll('.sh-chip').forEach(c=>c.addEventListener('click',()=>{
   selFinish=c.dataset.fin;
   ovFinish.querySelectorAll('.sh-chip').forEach(x=>x.classList.toggle('sel',x===c));
   gerr.textContent=''; updateAddState();
-  if(shown() && pcOK()) renderPrices();       // clicking either finish updates the shown prices
+  renderPrices();       // if a postcode is stored, prices show/update on finish pick
 }));
 ovSizes.addEventListener('click',(e)=>{
   const b=e.target.closest('.sh-size'); if(!b) return;
@@ -266,7 +273,17 @@ ovSizes.addEventListener('click',(e)=>{
   ovSizes.querySelectorAll('.sh-size').forEach(x=>x.classList.toggle('sel',x===b));
   updateAddState();
 });
-pc.addEventListener('input',()=>{ if(shown() && selFinish && pcOK()) renderPrices(); });
+// configure the pricing gate: a stored postcode is locked (no re-entry); otherwise ask once
+function gateSetup(){
+  pout.style.display='none'; gerr.textContent='';
+  if(pcLocked()){
+    gateForm.style.display='none';
+    ghint.textContent = `Prices for ${regionOf(postcodeInfo)}. Choose a finish.`;
+  } else {
+    gateForm.style.display='flex'; pc.value='';
+    ghint.textContent = 'Choose a finish, then enter your postcode to see pricing for your area.';
+  }
+}
 function openDetail(ri,dd,vv){
   const des=RANGES[ri].designs[dd];
   ovRange.textContent=RANGES[ri].label; ovName.textContent=des.n;
@@ -277,11 +294,11 @@ function openDetail(ri,dd,vv){
   curDes=des; curRange=RANGES[ri].label;
   // this piece's real size tiers (catalogue); pieces not priced fall back to generic tiers -> POA
   curTiers = PIECE_SIZES[des.pk||des.n] || SIZE_TIERS;
-  ovSizes.innerHTML = curTiers.map((t,i)=>`<button class="sh-size" data-i="${i}"><span><b>${t.label}</b></span><span>${t.dims}</span></button>`).join('');
+  ovSizes.innerHTML = curTiers.map((t,i)=>`<button class="sh-size${i===0?' sel':''}" data-i="${i}"><span><b>${t.label}</b></span><span>${t.dims}</span></button>`).join('');
   selFinish=null; ovFinish.querySelectorAll('.sh-chip').forEach(x=>x.classList.remove('sel'));
-  selSize=null;
-  addQ.classList.remove('added'); addQ.textContent='Add to quote'; updateAddState();
-  gateForm.style.display='flex'; pout.style.display='none'; gerr.textContent=''; pc.value='';
+  selSize = curTiers.length ? 0 : null;   // pre-select first size (matches the site; single-size pieces add straight away)
+  addQ.classList.remove('added'); addQ.textContent='Add to quote';
+  gateSetup(); updateAddState();
   ov.classList.add('open'); document.body.classList.add('locked');
 }
 function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }
@@ -291,8 +308,14 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeDetail(); cl
 gateForm.addEventListener('submit',e=>{
   e.preventDefault();
   if(!selFinish){ gerr.textContent='Select a finish first.'; return; }
-  if(!pcOK()){ gerr.textContent='Enter a 4-digit Australian postcode.'; return; }
-  gerr.textContent=''; renderPrices(); pout.style.display='block';
+  const v=(pc.value||'').trim();
+  if(!/^\d{4}$/.test(v)){ gerr.textContent='Enter a 4-digit Australian postcode.'; return; }
+  // store once + lock for the visit (shared roj_postcode key -> same across the whole site)
+  postcodeInfo = { postcode:v, isWA:checkWA(v), state:getState(v), isAdmin:false };
+  savePostcode(postcodeInfo);
+  gerr.textContent=''; gateForm.style.display='none';
+  ghint.textContent = `Prices for ${regionOf(postcodeInfo)}. Choose a finish.`;
+  renderPrices();
 });
 
 // ── Add to quote — writes the SHARED basket (roj-quote-basket) so pieces carry
