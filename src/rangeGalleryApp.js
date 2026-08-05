@@ -466,28 +466,32 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       const giFor=(raw)=>{ if(idxByPath.has(raw)) return idxByPath.get(raw);
         const gi=IMGS.length; IMGS.push(netlifyImg(raw,{w:1200,q:74})); THUMBS.push(netlifyImg(raw,{w:220,q:62})); idxByPath.set(raw,gi); return gi; };
       const upCloseForSeries=(id)=>{
+        const idWord=id.split('-')[0];
         const seed=(upClose.seed&&upClose.seed[id])||[];
         const uploads=[
-          ...mediaImages.filter(m=>(m.destinations||[]).includes(id)).map(m=>({src:m.src,createdTime:m.createdTime||''})),
-          ...uploadedUpClose.filter(u=>(u.destinations||[]).includes(id)).map(u=>({src:u.src,createdTime:u.createdTime||''})),
+          // media/manifest close-ups: must carry the series tag AND 'up-close'
+          ...mediaImages.filter(m=>{const d=m.destinations||[];return d.includes(id)&&d.includes('up-close');}).map(m=>({src:m.src,createdTime:m.createdTime||''})),
+          // dedicated Up Close store: tagged with the series, or (store items are often untagged) named after it
+          ...uploadedUpClose.filter(u=>{const d=u.destinations||[];return d.includes(id)||(u.name||'').toLowerCase().includes(idWord);}).map(u=>({src:u.src,createdTime:u.createdTime||''})),
         ].sort(byUploadTime);
         const out=[...seed]; for(const u of uploads) if(!out.includes(u.src)) out.push(u.src); return out;
       };
 
-      // Per range: append its close-ups as a single "— Up Close" entry, pinned last.
+      // Per range: append this series' close-ups as individual thumbs, pinned last.
       rangeHandles.forEach(h=>{
         const id=upClose.seriesId&&upClose.seriesId[h.r.label]; if(!id) return;
         const imgs=upCloseForSeries(id); if(!imgs.length) return;
         const gis=imgs.map(giFor);
         const di=h.r.designs.length;
         h.r.designs.push({ n:`${h.r.label} — Up Close`, imgs:gis, _upclose:true });
-        h.r.flat.push([di,0]);
-        h.addThumb(di,0,'upclose'); h.fit();
+        gis.forEach((_,vi)=>{ h.r.flat.push([di,vi]); h.addThumb(di,vi,'upclose'); });
+        h.fit();
       });
 
-      // Standalone UP CLOSE range — every close-up shot, seeds first.
+      // Standalone UP CLOSE range — genuine close-ups only (seeds + the Up Close
+      // store + anything tagged 'up-close'); never the general gallery uploads.
       const seedSrcs=new Set((upClose.globalSeed||[]).map(u=>u.src));
-      const mediaUp=mediaImages.filter(m=>(m.destinations||[]).length>0);
+      const mediaUp=mediaImages.filter(m=>(m.destinations||[]).includes('up-close'));
       const extra=[
         ...uploadedUpClose.map(u=>({src:u.src,name:u.name||'',createdTime:u.createdTime||''})),
         ...mediaUp.map(m=>({src:m.src,name:'',createdTime:m.createdTime||''})),
