@@ -221,8 +221,12 @@ export default function SearchModal({ open, onClose }) {
     setTimeout(() => {
       const el = document.querySelector(item.section);
       if (!el) return;
-      const y = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top: y, behavior: "smooth" });
+      // The whole site scrolls through Lenis — a plain window.scrollTo is ignored,
+      // which is why selecting a result used to leave you stranded at the top of
+      // the page. Drive Lenis so it actually travels to the work.
+      const ln = lenis || (typeof window !== "undefined" && window.__lenis);
+      if (ln) ln.scrollTo(el, { offset: -80, duration: 1.4, easing: (t) => 1 - Math.pow(1 - t, 4) });
+      else { const y = el.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({ top: y, behavior: "smooth" }); }
     }, 400);
   }, [onClose, lenis]);
 

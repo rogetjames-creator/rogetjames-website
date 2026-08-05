@@ -221,7 +221,14 @@ export default function App() {
     function onScroll() { ScrollTrigger.update(); }
     lenisRef.current?.lenis?.on("scroll", onScroll);
 
-    function update(time) { lenisRef.current?.lenis?.raf(time * 1000); }
+    // Expose the live Lenis instance so components outside the ReactLenis context
+    // (the nav SearchModal) can drive smooth scroll — a plain window.scrollTo is
+    // ignored while Lenis owns the page scroll. Assigned in the ticker so it
+    // self-heals once ReactLenis has attached its ref.
+    function update(time) {
+      const l = lenisRef.current?.lenis;
+      if (l) { if (window.__lenis !== l) window.__lenis = l; l.raf(time * 1000); }
+    }
     gsap.ticker.add(update);
     gsap.ticker.lagSmoothing(0);
 
@@ -230,6 +237,7 @@ export default function App() {
       lenisRef.current?.lenis?.off("scroll", onScroll);
       gsap.ticker.remove(update);
       clearTimeout(timeout);
+      window.__lenis = null;
     };
   }, []);
 

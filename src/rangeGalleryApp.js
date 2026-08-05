@@ -25,10 +25,12 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
+  // Reserve one extra slot for the standalone "UP CLOSE" range (Wall Art only).
+  const TOTAL = RANGES.length + (upClose ? 1 : 0);
 
   if (!_stylesInjected) {
     _stylesInjected = true;
@@ -42,7 +44,12 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section }
 .capline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;align-self:center;max-width:100%}
 .capline .dname{grid-column:2;text-align:center}
 .capline .detail-btn{grid-column:3;justify-self:end}
-@media(max-width:560px){.capline{grid-template-columns:1fr auto 1fr}.capline .detail-btn{padding:7px 12px}}`;
+@media(max-width:560px){.capline{grid-template-columns:1fr auto 1fr}.capline .detail-btn{padding:7px 12px}}
+.rangepills{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;max-width:880px;margin:0 auto 18px;padding:0 12px}
+.rpill{font-family:var(--font-detail,inherit);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(237,232,223,.72);background:rgba(237,232,223,.05);border:1px solid rgba(237,232,223,.2);border-radius:999px;padding:5px 12px;cursor:pointer;transition:color .18s,border-color .18s,background .18s;white-space:nowrap;line-height:1}
+.rpill:hover{color:#fff;border-color:rgba(237,232,223,.55);background:rgba(237,232,223,.1)}
+.rpill.upclose{border-color:rgba(158,113,52,.6);color:#d6b483}
+.rpill.upclose:hover{border-color:rgba(158,113,52,.9);color:#f0d9b6}`;
     document.head.appendChild(s2);
   }
 
@@ -88,7 +95,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section }
     <div class="band-title"><h1>The <span class="w2">Range</span></h1></div>
   </div>
   <div class="intro-bot">
-    <p class="rangecount">${RANGES.length} ranges &middot; scroll to browse &middot; hover to preview &middot; tap for details &amp; prices</p>
+    <div class="rangepills" id="rangePills"></div>
+    <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap for details &amp; prices</p>
     <div class="chev">&#8964;</div>
   </div>
 </section>
@@ -164,11 +172,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section }
     else if(a<l) box.scrollTo({left:a-18});
   }
   function fitThumbs(box){ const of=box.scrollWidth>box.clientWidth+2; box.classList.toggle('of',of); box.parentElement.classList.toggle('of',of); }
-  const thumbBoxes=[], posterEls=[], capAligners=[];
-  RANGES.forEach((r,ri)=>{
+  const thumbBoxes=[], posterEls=[], capAligners=[], rangeHandles=[];
+  function buildRange(r,ri){
     const sec=document.createElement('section');
     sec.className='poster'; sec.dataset.label=r.label; sec.dataset.idx=(ri+1);
-    const idx=String(ri+1).padStart(2,'0'), tot=String(RANGES.length).padStart(2,'0');
+    const idx=String(ri+1).padStart(2,'0'), tot=String(TOTAL).padStart(2,'0');
     sec.innerHTML=`
       <div class="p-head">
         <span class="p-idx">${idx}<span class="of"> / ${tot}</span></span>
@@ -194,14 +202,16 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section }
       tw.querySelectorAll('.thumb').forEach(t=>{const on=(+t.dataset.d===dd&&+t.dataset.v===vv);t.classList.toggle('active',on);if(on)act=t;});
       if(act) ensureVisible(tw,act);
     }
-    r.flat.forEach(([dd,vv])=>{
+    function addThumb(dd,vv,extraCls){
       const t=document.createElement('div');
-      t.className='thumb'+(vv>0?' var':''); t.dataset.d=dd; t.dataset.v=vv; t.title=r.designs[dd].n;
+      t.className='thumb'+(vv>0?' var':'')+(extraCls?(' '+extraCls):''); t.dataset.d=dd; t.dataset.v=vv; t.title=r.designs[dd].n;
       const im=document.createElement('img'); im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=r.designs[dd].n; t.appendChild(im);
       t.addEventListener('mouseenter',()=>show(dd,vv));
       t.addEventListener('click',()=>show(dd,vv));
       tw.appendChild(t);
-    });
+      return t;
+    }
+    r.flat.forEach(([dd,vv])=>addThumb(dd,vv));
     // Desktop: the strip has a hidden scrollbar and the page is vertical
     // scroll-snap, so a plain mouse wheel can't reach the overflow thumbs.
     // Translate vertical wheel into horizontal strip scroll when it overflows.
@@ -227,7 +237,19 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section }
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
     const [d0,v0]=r.flat[0]; show(d0,v0);
     fitThumbs(tw);
-  });
+    return { r, ri, sec, tw, show, addThumb, fit:()=>fitThumbs(tw) };
+  }
+  RANGES.forEach((r,ri)=>{ rangeHandles.push(buildRange(r,ri)); });
+
+  // Range-title pills under the intro — click one to jump to that range.
+  const pillWrap=document.getElementById('rangePills');
+  function addPill(text,targetEl,cls){
+    if(!pillWrap) return null;
+    const b=document.createElement('button'); b.type='button'; b.className='rpill'+(cls?(' '+cls):''); b.textContent=text;
+    b.addEventListener('click',()=>{ targetEl.scrollIntoView({behavior:'smooth',block:'start'}); });
+    pillWrap.appendChild(b); return b;
+  }
+  rangeHandles.forEach(h=>addPill(h.r.label,h.sec));
   window.addEventListener('resize',()=>{ thumbBoxes.forEach(fitThumbs); capAligners.forEach(f=>f()); });
   requestAnimationFrame(()=>thumbBoxes.forEach(fitThumbs));
 
@@ -408,4 +430,68 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section }
   }});},{threshold:.55});
   posterEls.forEach(s=>io.observe(s));
   const introEl=document.querySelector('.intro'); introEl.dataset.label=''; io.observe(introEl);
+
+  // ---- Up Close (Wall Art) --------------------------------------------------
+  // Fetch the close-up detail shots (same live sources as the main gallery),
+  // pin each series' shots at the END of its range, and add a standalone
+  // "UP CLOSE" range. Additive only — a failure here never breaks the gallery.
+  if(upClose){(async()=>{
+    try{
+      let uploadedUpClose=[], mediaImages=[];
+      try{ const d=await fetch('/api/up-close-list').then(r=>r.json());
+        if(d&&Array.isArray(d.images)) uploadedUpClose=d.images.map(i=>({src:i.src,name:i.name,destinations:i.destinations||[],createdTime:i.createdTime||''})); }catch{/* offline */}
+      try{
+        const [manifest,legacy]=await Promise.all([
+          fetch(`/media-manifest.json?v=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():[]).catch(()=>[]),
+          fetch('/api/media-list').then(r=>r.json()).catch(()=>({images:[]})),
+        ]);
+        const fromManifest=Array.isArray(manifest)?manifest.map(e=>({src:`/${e.path}`,destinations:e.destinations||[],createdTime:e.createdTime||''})):[];
+        const fromLegacy=(legacy&&Array.isArray(legacy.images))?legacy.images.map(i=>({src:i.src,destinations:i.destinations||[],createdTime:i.createdTime||''})):[];
+        mediaImages=[...fromManifest,...fromLegacy];
+      }catch{/* offline */}
+
+      const byUploadTime=(a,b)=>new Date(a.createdTime||0)-new Date(b.createdTime||0);
+      const idxByPath=new Map(data.imgs.map((p,i)=>[p,i]));
+      const giFor=(raw)=>{ if(idxByPath.has(raw)) return idxByPath.get(raw);
+        const gi=IMGS.length; IMGS.push(netlifyImg(raw,{w:1200,q:74})); THUMBS.push(netlifyImg(raw,{w:220,q:62})); idxByPath.set(raw,gi); return gi; };
+      const upCloseForSeries=(id)=>{
+        const seed=(upClose.seed&&upClose.seed[id])||[];
+        const uploads=[
+          ...mediaImages.filter(m=>(m.destinations||[]).includes(id)).map(m=>({src:m.src,createdTime:m.createdTime||''})),
+          ...uploadedUpClose.filter(u=>(u.destinations||[]).includes(id)).map(u=>({src:u.src,createdTime:u.createdTime||''})),
+        ].sort(byUploadTime);
+        const out=[...seed]; for(const u of uploads) if(!out.includes(u.src)) out.push(u.src); return out;
+      };
+
+      // Per range: append its close-ups as a single "— Up Close" entry, pinned last.
+      rangeHandles.forEach(h=>{
+        const id=upClose.seriesId&&upClose.seriesId[h.r.label]; if(!id) return;
+        const imgs=upCloseForSeries(id); if(!imgs.length) return;
+        const gis=imgs.map(giFor);
+        const di=h.r.designs.length;
+        h.r.designs.push({ n:`${h.r.label} — Up Close`, imgs:gis, _upclose:true });
+        h.r.flat.push([di,0]);
+        h.addThumb(di,0,'upclose'); h.fit();
+      });
+
+      // Standalone UP CLOSE range — every close-up shot, seeds first.
+      const seedSrcs=new Set((upClose.globalSeed||[]).map(u=>u.src));
+      const mediaUp=mediaImages.filter(m=>(m.destinations||[]).length>0);
+      const extra=[
+        ...uploadedUpClose.map(u=>({src:u.src,name:u.name||'',createdTime:u.createdTime||''})),
+        ...mediaUp.map(m=>({src:m.src,name:'',createdTime:m.createdTime||''})),
+      ].filter(u=>!seedSrcs.has(u.src)).sort(byUploadTime);
+      const seen=new Set(); const ordered=extra.filter(u=>{ if(seen.has(u.src)) return false; seen.add(u.src); return true; });
+      const allUp=[...(upClose.globalSeed||[]), ...ordered];
+      if(allUp.length){
+        const upRange={ label:'UP CLOSE', count:allUp.length,
+          designs:allUp.map(u=>({ n:u.name||'Up Close', imgs:[giFor(u.src)], _upclose:true })),
+          flat:allUp.map((_,i)=>[i,0]) };
+        const ri=RANGES.length; RANGES.push(upRange);
+        const h=buildRange(upRange,ri);
+        rangeHandles.push(h); io.observe(h.sec);
+        addPill('UP CLOSE',h.sec,'upclose');
+      }
+    }catch{/* Up Close is additive — never break the gallery */}
+  })();}
 }

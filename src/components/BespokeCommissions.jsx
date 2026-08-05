@@ -2325,7 +2325,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="6" cy="6" r="4"/><line x1="9.5" y1="9.5" x2="13" y2="13"/></svg>
               </button>
           }
-          <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+          <button onClick={() => { if (flatIdx !== null) { setFlatIdx(null); setSlideIdx(0); } else { onClose(); } }} className="flex-none text-cream/40 hover:text-cream transition-colors" aria-label={flatIdx !== null ? "Back to gallery" : "Close"}>{flatIdx !== null ? <ChevronLeft size={17} /> : <X size={15} />}</button>
         </div>
       </div>
 
@@ -2694,7 +2694,7 @@ export function ProjectsGalleryModal({ onClose }) {
           <span className="font-detail text-[9px] font-normal not-italic uppercase tracking-[0.2em] text-cream/50 ml-2">· Projects</span>
         </button>
         <div className="flex-1" />
-        <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+        <button onClick={() => { if (itemIdx !== null) { setItemIdx(null); setSlideIdx(0); } else { onClose(); } }} className="flex-none text-cream/40 hover:text-cream transition-colors" aria-label={itemIdx !== null ? "Back to gallery" : "Close"}>{itemIdx !== null ? <ChevronLeft size={17} /> : <X size={15} />}</button>
       </div>
 
       {/* Category pills */}
@@ -2935,7 +2935,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
           )}
         </div>
 
-        <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors"><X size={15} /></button>
+        <button onClick={() => { if (itemIdx !== null) { setItemIdx(null); setSlideIdx(0); } else { onClose(); } }} className="flex-none text-cream/40 hover:text-cream transition-colors" aria-label={itemIdx !== null ? "Back to gallery" : "Close"}>{itemIdx !== null ? <ChevronLeft size={17} /> : <X size={15} />}</button>
       </div>
 
       {/* Search results */}
