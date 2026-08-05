@@ -444,33 +444,28 @@ export default function MediaPage() {
             )}
             {selectedDests.includes("screens") && (() => {
               const nm = screenName.trim();
-              const isExisting = !!nm && SCREEN_DESIGN_NAMES.some(n => n.toLowerCase() === nm.toLowerCase());
-              const isNew = !!nm && !isExisting;
+              const lf = screenSection === "light-features";
               return (
                 <div className="mb-6">
                   <input type="text" value={screenName} onChange={e => setScreenName(e.target.value)}
                     placeholder="Name this design — an existing one, or a brand-new name"
                     className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
                   <p className="font-detail text-[11px] text-cream/50 mt-2">
-                    Tap an existing design to add these photos to it, or type a <b className="text-cream/75 font-semibold">new name</b> to create a brand-new design. Leave blank to drop them in the shared Up Close set.
+                    Click a design (e.g. <b className="text-cream/75 font-semibold">ASLYIAM</b>) and/or <b className="text-clay/90 font-semibold">Light Features</b> — pick both if it&apos;s both. Type a new name to create a brand-new design. Leave blank to drop them in the shared Up Close set.
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {SCREEN_DESIGN_NAMES.map(name => (
-                      <button key={name} type="button" onClick={() => setScreenName(name)}
+                      <button key={name} type="button"
+                        onClick={() => setScreenName(cur => cur.trim().toLowerCase() === name.toLowerCase() ? "" : name)}
                         className={`px-2.5 py-1 rounded-lg font-detail text-[10px] border transition-all ${nm.toLowerCase() === name.toLowerCase() ? "bg-clay border-clay text-cream" : "border-white/15 text-cream/50 hover:border-clay/50 hover:text-cream"}`}>
                         {name}
                       </button>
                     ))}
-                  </div>
-                  <div className="mt-3">
-                    <p className="font-detail text-[11px] text-clay/90 mb-1.5">Which section on the Screens page? <span className="text-cream/45 normal-case tracking-normal">— includes Light Features</span></p>
-                    <select value={screenSection} onChange={e => setScreenSection(e.target.value)}
-                      className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream outline-none transition-colors cursor-pointer">
-                      <option value="" className="bg-jet">{isNew ? "New (a fresh section for new designs)" : "— none / keep in general Screens —"}</option>
-                      {SCREEN_SECTIONS.map(s => (
-                        <option key={s.id} value={s.id} className="bg-jet">{s.label}</option>
-                      ))}
-                    </select>
+                    <button type="button"
+                      onClick={() => setScreenSection(s => s === "light-features" ? "" : "light-features")}
+                      className={`px-2.5 py-1 rounded-lg font-detail text-[10px] uppercase tracking-[0.1em] border transition-all ${lf ? "bg-clay border-clay text-cream" : "border-clay/45 text-clay/90 hover:border-clay hover:text-cream"}`}>
+                      Light Features
+                    </button>
                   </div>
                 </div>
               );

@@ -237,7 +237,10 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     stImg.addEventListener('click',()=>{ if(_swiped){ _swiped=false; return; } step(1); });
     sec.querySelector('.detail-btn').addEventListener('click',()=>openDetail(ri,curP.d,curP.v));
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
-    const [d0,v0]=r.flat[0]; show(d0,v0);
+    const [d0,v0]=r.flat[0];
+    // Eagerly load the first couple of ranges; defer the rest until they near the
+    // viewport so the page isn't fetching every range's hero image at once on load.
+    if(ri<2) show(d0,v0); else sec._initStage=()=>show(d0,v0);
     fitThumbs(tw);
     return { r, ri, sec, tw, show, addThumb, fit:()=>fitThumbs(tw) };
   }
@@ -252,6 +255,12 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     pillWrap.appendChild(b); return b;
   }
   rangeHandles.forEach(h=>addPill(h.r.label,h.sec));
+
+  // Preload each deferred range's hero image just before it scrolls into view.
+  const preloadIO = new IntersectionObserver((es)=>{
+    es.forEach((e)=>{ if(e.isIntersecting && e.target._initStage){ e.target._initStage(); e.target._initStage=null; } });
+  }, { rootMargin: '900px 0px' });
+  posterEls.forEach((s)=>{ if(s._initStage) preloadIO.observe(s); });
   window.addEventListener('resize',()=>{ thumbBoxes.forEach(fitThumbs); capAligners.forEach(f=>f()); });
   requestAnimationFrame(()=>thumbBoxes.forEach(fitThumbs));
 
@@ -492,6 +501,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         const ri=RANGES.length; RANGES.push(upRange);
         const h=buildRange(upRange,ri);
         rangeHandles.push(h); io.observe(h.sec);
+        if(h.sec._initStage) preloadIO.observe(h.sec);
         addPill('UP CLOSE',h.sec,'upclose');
       }
     }catch{/* Up Close is additive — never break the gallery */}

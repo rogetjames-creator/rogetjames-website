@@ -610,7 +610,7 @@ const SCREEN_DESIGNS = [
     items: [
       { name: "ASLYIAM Light Feature", img: `${CDN}/1a26b497-b278-4edc-a050-a2b42e3718d4_rw_1200.jpg` },
       { name: "ASLYIAM",               img: `${CDN}/bb795500-d407-424b-bc89-a099f1c7a24f_rw_1200.jpg` },
-      { name: "ASLYIAM",               img: `${CDN}/90166d8d-2652-40c1-8b4f-b0c9a35778af_rw_1200.jpg` },
+      { name: "ASLYIAM Cellar Door", img: "/images/uploads/1785936773170_lbq7tk.jpg", tags: ["light features"] },
       { name: "ASLYIAM", img: `${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, slides: [`${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, `${CDN}/f9a69d89-d090-4620-ad47-1569381a5503_rw_1200.jpg`] },
     ],
   },
