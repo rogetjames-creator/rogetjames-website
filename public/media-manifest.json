@@ -331,5 +331,16 @@
     "note": "after Banksia round on the home slide.",
     "createdTime": "2026-08-05T02:26:33.237Z",
     "path": "images/uploads/1785896793237_u56z65.jpg"
+  },
+  {
+    "id": "1785936773170_lbq7tk",
+    "name": "ASLYIAM - Cellar door  also put in light features",
+    "destinations": [
+      "screens",
+      "icons"
+    ],
+    "note": "remove https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/90166d8d-2652-40c1-8b4f-b0c9a35778af_rw_1200.jpg replace",
+    "createdTime": "2026-08-05T13:32:53.170Z",
+    "path": "images/uploads/1785936773170_lbq7tk.jpg"
   }
 ]
