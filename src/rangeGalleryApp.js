@@ -80,7 +80,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   <span class="now" id="now">${label} &middot; The Range</span>
   <div class="nav-r">
     <button class="qpill" id="qpill" aria-label="View your quote">Quote <span class="qnum" id="qnum">0</span></button>
-    <button class="pill-cat" id="catBtn" type="button">View catalogue</button>
+    <button class="pill-cat" id="catBtn" type="button">${label} Catalogue</button>
     <a class="x-esc" href="/" aria-label="Close — back to site">&#10005;</a>
   </div>
 </div>
