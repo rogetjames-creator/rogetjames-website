@@ -11,6 +11,4 @@ mountRangeGallery({
   label: "Sculpture",
   noun: "sculpture",
   section: "sculpture",
-  catPages: [1, 5, 4, 6, 7].map((n) => `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`),
-  catLabel: "Sculpture Catalogue",
 });

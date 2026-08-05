@@ -14,7 +14,12 @@ const SCREEN_DESIGN_NAMES = Array.from(
 // The screen sections a NEW design can be filed under, self-maintaining from
 // the live covers. Typing a name that isn't an existing design makes a brand-new
 // design; it lands in the section chosen here (or under "New" if none is picked).
-const SCREEN_SECTIONS = SCREEN_COVERS.map((s) => ({ id: s.id, label: s.label }));
+const SCREEN_SECTIONS = [
+  ...SCREEN_COVERS.map((s) => ({ id: s.id, label: s.label })),
+  // Light Features is a cross-cutting Screens category (not a design section), but
+  // still needs to be a place you can file an image into.
+  { id: "light-features", label: "LIGHT FEATURES" },
+];
 const SECTION_LABELS = Object.fromEntries(SCREEN_SECTIONS.map((s) => [s.id, `Screens — ${s.label}`]));
 
 const API = "/api/media-upload";

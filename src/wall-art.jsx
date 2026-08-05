@@ -10,6 +10,4 @@ mountRangeGallery({
   label: "Wall Art",
   noun: "wall art",
   section: "wall-art",
-  catPages: Array.from({ length: 26 }, (_, i) => `/images/catalogues/cat1/page-${String(i + 4).padStart(2, "0")}.jpg`),
-  catLabel: "Wall Art Catalogue",
 });

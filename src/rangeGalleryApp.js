@@ -10,9 +10,22 @@ import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState,
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
 
+// The site's catalogues — same set + order as the main nav bar (Navbar.jsx CATALOGUES).
+// Keep in sync with Navbar.jsx if those change.
+const _CAT1     = Array.from({ length: 38 }, (_, i) => `/images/catalogues/cat1/page-${String(i + 1).padStart(2, "0")}.jpg`);
+const _CAT2     = [1, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`);
+const _DULUX    = Array.from({ length: 8 }, (_, i) => `/images/catalogues/dulux/page-${String(i + 1).padStart(2, "0")}.jpg`);
+const _INTERPON = Array.from({ length: 8 }, (_, i) => `/images/catalogues/interpon/page-${String(i + 1).padStart(2, "0")}.jpg`);
+const CATALOGUES = [
+  { label: "Wall Art & Screens", pages: _CAT1 },
+  { label: "Sculpture, Light Features & Mirrors", pages: _CAT2 },
+  { label: "Dulux Colours", pages: _DULUX },
+  { label: "Interpon Colours", pages: _INTERPON },
+];
+
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, catPages, catLabel }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -39,17 +52,18 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     <div class="menu-wrap">
       <button class="burger" id="menuBtn" aria-label="Menu" aria-haspopup="true"><span></span><span></span><span></span></button>
       <div class="mpanel" id="menu" role="menu">
-        <a class="mitem" href="/">Home</a>
         <a class="mitem${cur("wall-art")}" href="/wall-art">Wall Art</a>
         <a class="mitem${cur("sculpture")}" href="/sculpture">Sculpture</a>
         <a class="mitem" href="/screens">Screens</a>
-        <button class="mitem" id="catMenuBtn" type="button">Catalogue</button>
         <div class="mdiv"></div>
         <a class="mitem" href="/#bespoke">Bespoke</a>
         <a class="mitem" href="/#process">Process</a>
-        <a class="mitem" href="/#services">Services</a>
-        <a class="mitem" href="/#about">About</a>
         <a class="mitem" href="/#contact">Contact</a>
+        <div class="mdiv"></div>
+        <button class="mitem mcat" data-cat="0" type="button">Wall Art &amp; Screens</button>
+        <button class="mitem mcat" data-cat="1" type="button">Sculpture, Light Features &amp; Mirrors</button>
+        <button class="mitem mcat" data-cat="2" type="button">Dulux Colours</button>
+        <button class="mitem mcat" data-cat="3" type="button">Interpon Colours</button>
       </div>
     </div>
     <a class="logo" href="/" aria-label="ROGETjames — home">ROGET<i>james</i></a>
@@ -188,6 +202,15 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       t.addEventListener('click',()=>show(dd,vv));
       tw.appendChild(t);
     });
+    // Desktop: the strip has a hidden scrollbar and the page is vertical
+    // scroll-snap, so a plain mouse wheel can't reach the overflow thumbs.
+    // Translate vertical wheel into horizontal strip scroll when it overflows.
+    tw.addEventListener('wheel', e => {
+      if(!tw.classList.contains('of')) return;
+      const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if(!d) return;
+      tw.scrollLeft += d; e.preventDefault();
+    }, { passive:false });
     function step(dir){
       const i=r.flat.findIndex(([d,v])=>d===curP.d&&v===curP.v);
       const n=(i+dir+r.flat.length)%r.flat.length;
@@ -240,7 +263,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   menu.addEventListener('mouseenter',cancelClose);
   menu.addEventListener('mouseleave',scheduleClose);
   document.addEventListener('click',e=>{ if(!menu.contains(e.target)&&!menuBtn.contains(e.target)) closeMenu(); });
-  document.getElementById('catMenuBtn').addEventListener('click',()=>{ closeMenu(); openCat(); });
+  menu.querySelectorAll('.mcat').forEach(btn=>btn.addEventListener('click',()=>openCat(+btn.dataset.cat)));
 
   const ov=document.getElementById('ov'), ovImg=document.getElementById('ovImg'),
         ovThumbs=document.getElementById('ovThumbs'), ovName=document.getElementById('ovName'),
@@ -359,16 +382,20 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   document.getElementById('qReq').addEventListener('click',()=>{ window.location.href='/#contact'; });
   updateQpill();
 
-  // Catalogue — the site's shared CatPageViewer (same viewer used everywhere else).
+  // Catalogues — the site's shared CatPageViewer; same set as the main nav bar.
   const catRootEl=document.getElementById('catRoot');
   let catReactRoot=null;
-  function openCat(){
+  function openCat(idx){
+    const c=CATALOGUES[idx]; if(!c) return;
+    closeMenu();
     document.body.classList.add('locked');
+    if(catReactRoot) catReactRoot.unmount();
     catReactRoot=createRoot(catRootEl);
-    catReactRoot.render(createElement(CatPageViewer,{ pages:catPages, label:catLabel, onClose:closeCat, onCloseAll:()=>{ closeCat(); window.location.href='/'; } }));
+    catReactRoot.render(createElement(CatPageViewer,{ pages:c.pages, label:c.label, onClose:closeCat, onCloseAll:()=>{ closeCat(); window.location.href='/'; } }));
   }
   function closeCat(){ if(catReactRoot){ catReactRoot.unmount(); catReactRoot=null; } document.body.classList.remove('locked'); }
-  document.getElementById('catBtn').addEventListener('click',openCat);
+  // "View catalogue" pill opens this gallery's primary catalogue (Wall Art & Screens / Sculpture)
+  document.getElementById('catBtn').addEventListener('click',()=>openCat(section==='sculpture'?1:0));
 
   const toTop=document.getElementById('toTop');
   toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));

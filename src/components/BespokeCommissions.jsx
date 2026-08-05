@@ -115,11 +115,7 @@ const COMMISSIONS = {
       id: "public-2",
       label: "SCULPTURES & TOTEMS",
       items: [
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, slides: [`${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`, `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`, `${CDN}/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg`, `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`, `/images/omare-custom-front.jpg`, `/images/hero/hero-marakesh-tall.jpg`, `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg`] },
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg` },
-        { name: "Unity in Diversity",             img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg` },
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, slides: [`${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`, `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`, `/images/uploads/1785745326687_0pxdcn.jpg`, `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`] },
         { name: "MARAKESH TRIO (Custom)",         img: "/images/hero/hero-marakesh-tall.jpg" },
         { name: "MARAKESH TRIO (Custom)",         img: `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg` },
         { name: "OMARE (Custom)",                 img: `/images/omare-custom-front.jpg` },
@@ -975,7 +971,7 @@ const PROJECTS_ROWS = [
       { name: "Unity in Diversity", img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
       { name: "UNITY IN DIVERSITY", img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
       { name: "UNITY IN DIVERSITY", img: `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg` },
-      { name: "UNITY IN DIVERSITY", img: `${CDN}/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg` },
+      { name: "UNITY IN DIVERSITY", img: "/images/uploads/1785745463839_tie649.jpg" },
     ],
   },
   {
@@ -2812,6 +2808,14 @@ export function ConceptsGalleryModal({ onClose }) {
   return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey="concepts" />;
 }
 
+// Uploaded media suppressed as duplicates (removed per owner). Matched against
+// the image src, so one entry covers both the committed manifest path and the
+// live blob id, whichever source the image comes from.
+const MEDIA_SUPPRESS = [
+  "1784883338512_ggq8l0", // HUE — duplicate of "Hue 2"
+  "1785745326687_0pxdcn", // UNITY replacement — used in the slides in-place, not as a standalone tile
+];
+
 export function SculptureGalleryModal({ onClose, items: itemsProp = null, label: labelProp = "Sculpture", mediaKey = null }) {
   const baseItems = itemsProp ?? SCULPTURE_ITEMS;
   // When a mediaKey is given, append any /media uploads tagged with it to the
@@ -2835,6 +2839,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
       setUploads(
         [...fromManifest, ...fromLegacy]
           .filter((m) => Array.isArray(m.destinations) && m.destinations.includes(mediaKey))
+          .filter((m) => !MEDIA_SUPPRESS.some((id) => (m.src || "").includes(id)))
           .filter((m) => { if (seen.has(m.src)) return false; seen.add(m.src); return true; })
           .map((m) => ({ name: (m.name || "").replace(/\.(jpe?g|png|webp|heic|heif)$/i, "").replace(/\s*\d+\s*px\b/i, "").trim() || labelProp, img: m.src }))
       );
