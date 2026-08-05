@@ -2306,7 +2306,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
         <div className="flex-1 flex justify-center">
           <button onClick={() => setShowCat(true)}
             className="pill-trace font-detail text-[9px] uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border border-white/35 bg-transparent text-cream/88 transition-colors duration-200">
-            Catalogue
+            Screens Catalogue
           </button>
         </div>
         <div className="flex items-center gap-2 flex-none">
