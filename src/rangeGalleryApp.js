@@ -41,6 +41,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .thumbs{padding:11px 2px}
 .thumb{margin-top:0}
 .mpanel::before{content:"";position:absolute;top:-14px;left:0;right:0;height:14px}
+.mlabel{padding:8px 14px 4px;font-family:var(--font-detail,inherit);font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(242,240,233,.4)}
 .capline{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;align-self:center;max-width:100%}
 .capline .dname{grid-column:2;text-align:center}
 .capline .detail-btn{grid-column:3;justify-self:end}
@@ -67,6 +68,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <a class="mitem" href="/#process">Process</a>
         <a class="mitem" href="/#contact">Contact</a>
         <div class="mdiv"></div>
+        <div class="mlabel">Catalogues</div>
         <button class="mitem mcat" data-cat="0" type="button">Wall Art &amp; Screens</button>
         <button class="mitem mcat" data-cat="1" type="button">Sculpture, Light Features &amp; Mirrors</button>
         <button class="mitem mcat" data-cat="2" type="button">Dulux Colours</button>
@@ -276,7 +278,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const openMenu=()=>{ menu.classList.add('open'); menuBtn.classList.add('open'); };
   const closeMenu=()=>{ menu.classList.remove('open'); menuBtn.classList.remove('open'); };
   let menuTimer;
-  const scheduleClose=()=>{ clearTimeout(menuTimer); menuTimer=setTimeout(closeMenu,140); };
+  const scheduleClose=()=>{ clearTimeout(menuTimer); menuTimer=setTimeout(closeMenu,520); };
   const cancelClose=()=>clearTimeout(menuTimer);
   menuBtn.addEventListener('click',e=>{ e.stopPropagation(); menu.classList.contains('open')?closeMenu():openMenu(); });
   // open on hover (desktop); a transparent CSS bridge + close-delay keep it open across the gap
