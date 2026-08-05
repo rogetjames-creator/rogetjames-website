@@ -207,7 +207,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     function addThumb(dd,vv,extraCls){
       const t=document.createElement('div');
       t.className='thumb'+(vv>0?' var':'')+(extraCls?(' '+extraCls):''); t.dataset.d=dd; t.dataset.v=vv; t.title=r.designs[dd].n;
-      const im=document.createElement('img'); im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=r.designs[dd].n; t.appendChild(im);
+      const im=document.createElement('img'); im.loading='lazy'; im.decoding='async'; im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=r.designs[dd].n; t.appendChild(im);
       t.addEventListener('mouseenter',()=>show(dd,vv));
       t.addEventListener('click',()=>show(dd,vv));
       tw.appendChild(t);
@@ -347,7 +347,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     ovRange.textContent=RANGES[ri].label; ovName.textContent=des.n;
     ovSub.textContent=des.imgs.length>1?`${des.imgs.length} images`:`Laser-cut ${noun}`;
     ovThumbs.innerHTML='';
-    des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.src=THUMBS[gi];im.alt='';t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
+    des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt='';t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
     setOvImg(des,vv||0);
     curDes=des; curRange=RANGES[ri].label;
     curTiers = PIECE_SIZES[des.pk||des.n] || SIZE_TIERS;
