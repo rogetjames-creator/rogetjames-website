@@ -462,18 +462,16 @@ export default function MediaPage() {
                       </button>
                     ))}
                   </div>
-                  {isNew && (
-                    <div className="mt-3">
-                      <p className="font-detail text-[11px] text-clay/90 mb-1.5">New design “{nm}” — which section?</p>
-                      <select value={screenSection} onChange={e => setScreenSection(e.target.value)}
-                        className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream outline-none transition-colors cursor-pointer">
-                        <option value="" className="bg-jet">New (a fresh section for new designs)</option>
-                        {SCREEN_SECTIONS.map(s => (
-                          <option key={s.id} value={s.id} className="bg-jet">{s.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+                  <div className="mt-3">
+                    <p className="font-detail text-[11px] text-clay/90 mb-1.5">Which section on the Screens page? <span className="text-cream/45 normal-case tracking-normal">— includes Light Features</span></p>
+                    <select value={screenSection} onChange={e => setScreenSection(e.target.value)}
+                      className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream outline-none transition-colors cursor-pointer">
+                      <option value="" className="bg-jet">{isNew ? "New (a fresh section for new designs)" : "— none / keep in general Screens —"}</option>
+                      {SCREEN_SECTIONS.map(s => (
+                        <option key={s.id} value={s.id} className="bg-jet">{s.label}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               );
             })()}
