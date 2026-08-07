@@ -3174,7 +3174,7 @@ export default function Gallery() {
           delay: 0,
           scrollTrigger: {
             trigger: stripAreaRef.current,
-            start: "top bottom",
+            start: "top bottom+=300",
             toggleActions: "play none none none",
           },
         });
