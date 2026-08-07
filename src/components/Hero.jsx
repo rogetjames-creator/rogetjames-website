@@ -152,6 +152,7 @@ export default function Hero() {
   const layerRefs = useRef([null, null]);
   // False until the slideshow has advanced past the opening image.
   const advancedRef = useRef(false);
+  const preloadRef = useRef(null);
   // Guards the intro so it plays once per entry, whichever trigger gets there
   // first — the direct call on image-ready or the IntersectionObserver.
   const playedRef = useRef(false);
@@ -301,6 +302,17 @@ export default function Hero() {
     }, FLIP_START_DELAY * 1000);
     return () => { clearTimeout(start); clearInterval(interval); };
   }, [heroImageReady]);
+
+  // Preload the next slide while the current one is showing so decode() finds it
+  // in cache and doesn't stall the crossfade.
+  useEffect(() => {
+    if (!heroImageReady) return;
+    const next = (idxRef.current + 1) % slides.length;
+    const src = netlifyImg(slides[next] ?? BASE_SLIDES[0], { w: 1600, q: 82 });
+    const img = new Image();
+    img.src = src;
+    preloadRef.current = img;
+  }, [active, heroImageReady, slides]);
 
   // Crossfade using only two decode-gated image layers (see the old hero notes).
   // The opening image is held until the mark has finished arriving, so the whole
