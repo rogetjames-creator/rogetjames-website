@@ -232,6 +232,9 @@ function ArtPopup({ images, startIndex, onClose, heading = "Painting — by Jame
   const [playing, setPlaying] = useState(false);
   const thumbRowRef = useRef(null);
   const thumbRefs = useRef([]);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const swiped = useRef(false);
 
   const go = useCallback((d) => {
     setDir(d);
@@ -249,6 +252,7 @@ function ArtPopup({ images, startIndex, onClose, heading = "Painting — by Jame
   }, [playing, go]);
 
   const handleImageAreaClick = useCallback((e) => {
+    if (swiped.current) { swiped.current = false; return; }
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     if (x < rect.width / 2) prev(); else next();
@@ -294,6 +298,8 @@ function ArtPopup({ images, startIndex, onClose, heading = "Painting — by Jame
       <div
         className="flex-1 min-h-0 relative flex items-center justify-center px-6 py-5 cursor-pointer select-none"
         onClick={handleImageAreaClick}
+        onTouchStart={e => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; swiped.current = false; }}
+        onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) { swiped.current = true; (dx < 0 ? next() : prev()); } }}
       >
         <img
           key={animKey}
