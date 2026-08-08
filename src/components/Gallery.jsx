@@ -1009,6 +1009,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
   const contentRef = useRef(null);
   const imgRef = useRef(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const lenis = useLenis();
   const [slideIdx, setSlideIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -1088,8 +1089,8 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
 
   return (
     <div ref={overlayRef} className="lightbox-overlay" onClick={handleClose}
-      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50) (dx < 0 ? handleRight() : handleLeft()); }}
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) (dx < 0 ? handleRight() : handleLeft()); }}
     >
       {/* Left arrow */}
       <button
@@ -2134,6 +2135,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
   const [selectedSize, setSelectedSize] = useState(null);
   const slideRef = useRef(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   useEffect(() => {
@@ -2422,8 +2424,8 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
 
   return (
     <div className="fixed inset-0 z-[10000] bg-jet flex flex-col"
-      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50 && !isAll) handleArrow(dx < 0 ? 1 : -1); }}
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && !isAll) handleArrow(dx < 0 ? 1 : -1); }}
     >
       {/* Up Close gallery overlay */}
       {upCloseOpen && (
