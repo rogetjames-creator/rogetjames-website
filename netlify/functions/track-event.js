@@ -73,7 +73,13 @@ function emailThrottled(ip) {
 
 async function emailPostcodeAlert({ postcode, state, isWA, item, series }) {
   const fromEmail = process.env.CONTACT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>";
-  const toEmail   = process.env.NOTIFY_EMAIL || "james@rogetjames.com";
+  // Deliver to the branded address, plus the Gmail as a safety-net copy until
+  // james@rogetjames.com is confirmed receiving — matches contact.js. Deduped
+  // in case NOTIFY_EMAIL is already set to one of these.
+  const toList = [...new Set([
+    process.env.NOTIFY_EMAIL || "james@rogetjames.com",
+    "rogetjames@gmail.com",
+  ])];
   const region = isWA ? "WA" : "Interstate";
   const when = new Date().toLocaleString("en-AU", { timeZone: "Australia/Perth", dateStyle: "medium", timeStyle: "short" });
   const lines = [
@@ -87,7 +93,7 @@ async function emailPostcodeAlert({ postcode, state, isWA, item, series }) {
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: fromEmail,
-      to: [toEmail],
+      to: toList,
       subject: `Pricing interest — ${postcode || "?"} (${region})${item ? ` · ${item}` : ""}`,
       text: `Someone is checking regional pricing on rogetjames.com.\n\n${lines}`,
     }),

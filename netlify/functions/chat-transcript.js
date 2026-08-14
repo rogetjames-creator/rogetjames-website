@@ -88,7 +88,10 @@ export default async function handler(req) {
     headers: { "Authorization": `Bearer ${resendKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: process.env.CONTACT_FROM_EMAIL || "ROGETjames <james@rogetjames.com>",
-      to: process.env.NOTIFY_EMAIL || "james@rogetjames.com",
+      // Branded address plus the Gmail safety-net copy until james@rogetjames.com
+      // is confirmed receiving — matches contact.js. Deduped in case NOTIFY_EMAIL
+      // is already set to one of these.
+      to: [...new Set([process.env.NOTIFY_EMAIL || "james@rogetjames.com", "rogetjames@gmail.com"])],
       subject: `Q & Ai transcript — ${now}`,
       text: `Chat transcript from rogetjames.com\n${now}\n\n${lines}`,
     }),
