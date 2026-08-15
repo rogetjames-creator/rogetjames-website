@@ -57,6 +57,10 @@ const KEY_MAP = {
   "plumes-deco": "plume",
   "branches-gren": "branches",
   "creeping-fig-autumn": "creeping-fig",
+  // The uploader offered a "Bespoke Sculpture" chip keyed "bespoke-sculpture",
+  // but the live Sculpture gallery only reads "sculpture" — so those uploads
+  // rendered nowhere. Funnel the chip into the working key so it shows.
+  "bespoke-sculpture": "sculpture",
 };
 
 function destinationsFromOldMeta(meta) {
