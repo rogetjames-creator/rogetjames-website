@@ -845,7 +845,6 @@ const SCREEN_DESIGNS = [
   {
     name: "XAVIER",
     items: [
-      { name: "XAVIER",                     img: `${CDN}/c811003e-fc79-4bc1-96fc-8c5b5e9019ba_rw_1200.jpg` },
       { name: "XAVIER Rollingstone Sydney", img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg`, tags: ["wall decor", "display homes"] },
       { name: "XAVIER Dale Alcock Display", img: `${CDN}/a6956154-7410-44b9-97ce-e5b66efaeb3c_rw_1920.jpg` },
       { name: "XAVIER",                     img: "/images/xavier/xavier-1.jpg", tags: ["wall decor", "display homes"] },
@@ -1950,6 +1949,47 @@ const SCREEN_DESIGNS_SECTIONED = (() => {
   });
 })();
 
+// Merge live /media uploads (destination "screens") into the sectioned design
+// list so anything James uploads for Screens shows on the live gallery without
+// a code edit. An upload whose title matches an existing design is added as
+// another photo of that design; a new title becomes its own design (shown under
+// ALL). Deduped by image src so the same file never appears twice.
+const _normScreen = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+function mergeScreenUploads(base, uploads) {
+  if (!uploads || !uploads.length) return base;
+  const used = new Set();
+  const result = base.map((d) => {
+    const dn = _normScreen(d.name);
+    const existingImgs = new Set(d.items.map((it) => it.img));
+    const extra = uploads.filter(
+      (u) => u.name && _normScreen(u.name) === dn && !used.has(u.src) && !existingImgs.has(u.src)
+    );
+    if (!extra.length) return d;
+    extra.forEach((u) => used.add(u.src));
+    return { ...d, items: [...d.items, ...extra.map((u) => ({ name: u.name || d.name, img: u.src }))] };
+  });
+  // Named uploads with no matching design → new designs, appended last, filed
+  // under "icons" so they surface under the ALL tab.
+  const groups = new Map();
+  for (const u of uploads) {
+    if (used.has(u.src) || !u.name) continue;
+    const k = _normScreen(u.name);
+    if (!k) continue;
+    if (!groups.has(k)) groups.set(k, { name: u.name, imgs: [] });
+    const g = groups.get(k);
+    if (!g.imgs.includes(u.src)) g.imgs.push(u.src);
+  }
+  for (const g of groups.values()) {
+    result.push({
+      name: g.name,
+      items: g.imgs.map((src) => ({ name: g.name, img: src })),
+      _section: "icons",
+      _sections: ["icons"],
+    });
+  }
+  return result;
+}
+
 // Self-maintaining section covers for the private Feature Screens page
 // (same model as Gallery.jsx's WALL_ART_COVERS/SCULPTURE_COVERS). Each design
 // becomes one piece — its several photos (SCREEN_DESIGNS items) collected as
@@ -2121,6 +2161,37 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   const touchStartX = useRef(0);
   const pillStripRef = useRef(null);
   const [_pillAtEnd, setPillAtEnd] = useState(false);
+  const [screenUploads, setScreenUploads] = useState([]);
+
+  // Pull every "screens" upload (git-committed manifest + legacy blob stores)
+  // so the gallery reflects /media uploads live. Scoped to the "screens"
+  // destination — the media stores are shared across the whole site.
+  useEffect(() => {
+    let alive = true;
+    Promise.all([
+      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
+      fetch("/api/up-close-list").then((r) => r.json()).catch(() => ({ images: [] })),
+    ]).then(([manifest, legacy, upclose]) => {
+      if (!alive) return;
+      const rows = [
+        ...(Array.isArray(manifest) ? manifest.map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" })) : []),
+        ...(legacy?.images || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
+        ...(upclose?.images || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
+      ].filter((u) => (u.dests || []).includes("screens"));
+      const seen = new Set();
+      const deduped = rows
+        .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))
+        .filter((u) => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
+      setScreenUploads(deduped);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  const designsSectioned = React.useMemo(
+    () => mergeScreenUploads(SCREEN_DESIGNS_SECTIONED, screenUploads),
+    [screenUploads]
+  );
 
   // Callback ref: fires when element mounts — guarantees non-passive wheel listener attaches
   const pillStripCallbackRef = useCallback((el) => {
@@ -2160,10 +2231,10 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   };
 
   const tabDesigns = tab === "all"
-    ? SCREEN_DESIGNS_SECTIONED.filter(d => !d._crossListed)
+    ? designsSectioned.filter(d => !d._crossListed)
     : tagForTab
-      ? SCREEN_DESIGNS_SECTIONED.filter(d => _designHasTag(d, tagForTab))
-      : SCREEN_DESIGNS_SECTIONED.filter(d => d._sections.includes(tab));
+      ? designsSectioned.filter(d => _designHasTag(d, tagForTab))
+      : designsSectioned.filter(d => d._sections.includes(tab));
   const visibleDesigns = activeDesign
     ? tabDesigns.filter(d => d.name === activeDesign)
     : tabDesigns;
@@ -2190,7 +2261,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   // Search results (always across all designs)
   const q = searchQuery.trim().toLowerCase();
   const searchResults = q
-    ? SCREEN_DESIGNS_SECTIONED.flatMap((d, dIdx) => {
+    ? designsSectioned.flatMap((d, dIdx) => {
         const nameMatch = d.name.toLowerCase().includes(q);
         const tabMatch  = (d.tabs ?? []).some(t => t.includes(q) || q.includes(t));
         // Check if any items in this design have item-level tags (if so, don't fall back to design-level)
@@ -2443,8 +2514,8 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
             : <div className="flex flex-wrap justify-center gap-2">
                 {searchResults.map((it, i) => (
                   <div key={i} onClick={() => {
-                    // dIdx/iIdx are relative to SCREEN_DESIGNS_SECTIONED = ALL visibleDesigns
-                    const allFlat = SCREEN_DESIGNS_SECTIONED.flatMap((d, dI) =>
+                    // dIdx/iIdx are relative to designsSectioned = ALL visibleDesigns
+                    const allFlat = designsSectioned.flatMap((d, dI) =>
                       d.items.map((_, iI) => ({ dIdx: dI, iIdx: iI }))
                     );
                     const fi = allFlat.findIndex(x => x.dIdx === it.dIdx && x.iIdx === it.iIdx);
