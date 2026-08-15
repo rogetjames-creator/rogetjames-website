@@ -270,29 +270,26 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     b.addEventListener('click',()=>{ targetEl.scrollIntoView({behavior:'smooth',block:'start'}); });
     pillWrap.appendChild(b); return b;
   }
-  const rangePillEls=rangeHandles.map(h=>({h, el:addPill(h.r.label,h.sec)}));
-  // Screens preview: a second pill row of design titles sits directly under the
-  // range pills. Click a range pill to reveal its designs; click a design pill to
-  // jump to that range and load that design in the stage. Off for Wall Art/Sculpture.
+  rangeHandles.forEach(h=>addPill(h.r.label,h.sec));
+  // Screens preview: a second pill row lists EVERY design title, sitting directly
+  // under the range pills. Click a design pill to jump to its range and load that
+  // design in the stage. Off for Wall Art/Sculpture.
   if(designPills){
     const dpWrap=document.getElementById('designPills');
-    function setDesignPills(handle,pillEl){
-      if(!dpWrap) return;
-      rangePillEls.forEach(({el})=>el&&el.classList.toggle('rp-open',el===pillEl));
-      dpWrap.innerHTML='';
-      handle.r.designs.forEach((des,di)=>{
-        if(des._upclose) return;
-        const b=document.createElement('button'); b.type='button'; b.className='dpill'; b.textContent=des.n;
-        b.addEventListener('click',()=>{
-          handle.sec.scrollIntoView({behavior:'smooth',block:'start'});
-          handle.show(di,0);
-          dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
+    if(dpWrap){
+      rangeHandles.forEach((handle)=>{
+        handle.r.designs.forEach((des,di)=>{
+          if(des._upclose) return;
+          const b=document.createElement('button'); b.type='button'; b.className='dpill'; b.textContent=des.n;
+          b.addEventListener('click',()=>{
+            handle.sec.scrollIntoView({behavior:'smooth',block:'start'});
+            handle.show(di,0);
+            dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
+          });
+          dpWrap.appendChild(b);
         });
-        dpWrap.appendChild(b);
       });
     }
-    rangePillEls.forEach(({h,el})=>{ if(el) el.addEventListener('click',()=>setDesignPills(h,el)); });
-    if(rangePillEls[0]) setDesignPills(rangePillEls[0].h,rangePillEls[0].el);
   }
 
   // Preload each deferred range's hero image just before it scrolls into view.
