@@ -25,7 +25,7 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -55,7 +55,13 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .rpill{font-family:var(--font-detail,inherit);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(237,232,223,.72);background:rgba(237,232,223,.05);border:1px solid rgba(237,232,223,.2);border-radius:999px;padding:5px 12px;cursor:pointer;transition:color .18s,border-color .18s,background .18s;white-space:nowrap;line-height:1}
 .rpill:hover{color:#fff;border-color:rgba(237,232,223,.55);background:rgba(237,232,223,.1)}
 .rpill.upclose{border-color:rgba(158,113,52,.6);color:#d6b483}
-.rpill.upclose:hover{border-color:rgba(158,113,52,.9);color:#f0d9b6}`;
+.rpill.upclose:hover{border-color:rgba(158,113,52,.9);color:#f0d9b6}
+.rpill.rp-open{color:#f0d9b6;border-color:rgba(158,113,52,.7);background:rgba(158,113,52,.12)}
+.designpills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:840px;margin:-4px auto 16px;padding:0 12px}
+.designpills:empty{display:none}
+.dpill{font-family:var(--font-detail,inherit);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(237,232,223,.62);background:rgba(237,232,223,.03);border:1px solid rgba(237,232,223,.14);border-radius:999px;padding:4px 11px;cursor:pointer;transition:color .18s,border-color .18s,background .18s;white-space:nowrap;line-height:1}
+.dpill:hover{color:#fff;border-color:rgba(237,232,223,.5);background:rgba(237,232,223,.1)}
+.dpill.active{color:#f0d9b6;border-color:rgba(158,113,52,.7);background:rgba(158,113,52,.1)}`;
     document.head.appendChild(s2);
   }
 
@@ -103,6 +109,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   </div>
   <div class="intro-bot">
     <div class="rangepills" id="rangePills"></div>
+    <div class="designpills" id="designPills"></div>
     <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
     <div class="chev">&#8964;</div>
   </div>
@@ -195,7 +202,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <span class="p-count">${r.count} design${r.count!==1?'s':''}</span>
       </div>
       <div class="stage"><img alt=""></div>
-      <div class="capline"><span class="dname"></span><button class="detail-btn">${pricing ? "Details &amp; prices" : "View"} &rarr;</button></div>
+      <div class="capline"><span class="dname"></span><button class="detail-btn">${pricing ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</button></div>
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
@@ -263,7 +270,30 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     b.addEventListener('click',()=>{ targetEl.scrollIntoView({behavior:'smooth',block:'start'}); });
     pillWrap.appendChild(b); return b;
   }
-  rangeHandles.forEach(h=>addPill(h.r.label,h.sec));
+  const rangePillEls=rangeHandles.map(h=>({h, el:addPill(h.r.label,h.sec)}));
+  // Screens preview: a second pill row of design titles sits directly under the
+  // range pills. Click a range pill to reveal its designs; click a design pill to
+  // jump to that range and load that design in the stage. Off for Wall Art/Sculpture.
+  if(designPills){
+    const dpWrap=document.getElementById('designPills');
+    function setDesignPills(handle,pillEl){
+      if(!dpWrap) return;
+      rangePillEls.forEach(({el})=>el&&el.classList.toggle('rp-open',el===pillEl));
+      dpWrap.innerHTML='';
+      handle.r.designs.forEach((des,di)=>{
+        if(des._upclose) return;
+        const b=document.createElement('button'); b.type='button'; b.className='dpill'; b.textContent=des.n;
+        b.addEventListener('click',()=>{
+          handle.sec.scrollIntoView({behavior:'smooth',block:'start'});
+          handle.show(di,0);
+          dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
+        });
+        dpWrap.appendChild(b);
+      });
+    }
+    rangePillEls.forEach(({h,el})=>{ if(el) el.addEventListener('click',()=>setDesignPills(h,el)); });
+    if(rangePillEls[0]) setDesignPills(rangePillEls[0].h,rangePillEls[0].el);
+  }
 
   // Preload each deferred range's hero image just before it scrolls into view.
   const preloadIO = new IntersectionObserver((es)=>{
