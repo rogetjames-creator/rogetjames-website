@@ -170,6 +170,12 @@
   to = "/screens.html"
   status = 200
 
+# Unlisted, no-index preview: Screens on the Wall Art "range" template.
+[[redirects]]
+  from = "/screens-range"
+  to = "/screens-range.html"
+  status = 200
+
 [[redirects]]
   from = "/bespoke-sculpture"
   to = "/bespoke-sculpture.html"

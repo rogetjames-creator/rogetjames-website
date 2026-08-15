@@ -22,6 +22,7 @@ export default defineConfig({
         'sculpture': resolve(__dirname, 'sculpture.html'),
         'feature-screens': resolve(__dirname, 'feature-screens.html'),
         'screens': resolve(__dirname, 'screens.html'),
+        'screens-range': resolve(__dirname, 'screens-range.html'),
         'bespoke-sculpture': resolve(__dirname, 'bespoke-sculpture.html'),
       },
       output: {

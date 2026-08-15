@@ -25,7 +25,7 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -35,6 +35,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   if (!_stylesInjected) {
     _stylesInjected = true;
     const s1 = document.createElement("style"); s1.textContent = RANGE_CSS; document.head.appendChild(s1);
+    // Expand-only mode: hide every pricing/quote element so the detail sheet is
+    // just the enlarged image + its name.
+    const sNoPrice = document.createElement("style");
+    sNoPrice.textContent = ".no-price #qpill,.no-price .sh-sub,.no-price .sh-block,.no-price .gate,.no-price .sh-actions{display:none!important}";
+    document.head.appendChild(sNoPrice);
     const s2 = document.createElement("style");
     s2.textContent = `
 .pill-cat{background:none;cursor:pointer;font-family:inherit}
@@ -77,7 +82,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     </div>
     <a class="logo" href="/" aria-label="ROGETjames — home">ROGET<i>james</i></a>
   </div>
-  <span class="now" id="now">${label} &middot; The Range</span>
+  <span class="now" id="now">${label} &middot; The ${rangeWord}</span>
   <div class="nav-r">
     <button class="qpill" id="qpill" aria-label="View your quote">Quote <span class="qnum" id="qnum">0</span></button>
     <button class="pill-cat" id="catBtn" type="button">${label} Catalogue</button>
@@ -94,11 +99,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     <div class="rule" aria-hidden="true"></div>
     <div class="win" aria-hidden="true"><div class="strip" id="introStrip"></div></div>
     <div class="rule" aria-hidden="true"></div>
-    <div class="band-title"><h1>The <span class="w2">Range</span></h1></div>
+    <div class="band-title"><h1>The <span class="w2">${rangeWord}</span></h1></div>
   </div>
   <div class="intro-bot">
     <div class="rangepills" id="rangePills"></div>
-    <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap for details &amp; prices</p>
+    <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
     <div class="chev">&#8964;</div>
   </div>
 </section>
@@ -161,11 +166,15 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 
 <div id="catRoot"></div>`;
 
+  // Expand-only mode (pricing:false) — no sizes / postcode / prices / quote.
+  // Tapping a design just opens the image large with its name.
+  if (!pricing) document.getElementById(rootId).classList.add('no-price');
+
   try{history.scrollRestoration='manual';}catch{/* ignore */}
   window.scrollTo(0,0);
   window.addEventListener('load',()=>window.scrollTo(0,0));
   const app=document.getElementById('app'), now=document.getElementById('now');
-  const nowDefault = `${label} · The Range`;
+  const nowDefault = `${label} · The ${rangeWord}`;
   const twoTone = txt => txt.split(' ').map((w,i)=>`<span class="${i===0?'w1':'w2'}">${w}</span>`).join(' ');
   function ensureVisible(box, el){
     if(!box.classList.contains('of')) return;
@@ -186,7 +195,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <span class="p-count">${r.count} design${r.count!==1?'s':''}</span>
       </div>
       <div class="stage"><img alt=""></div>
-      <div class="capline"><span class="dname"></span><button class="detail-btn">Details &amp; prices &rarr;</button></div>
+      <div class="capline"><span class="dname"></span><button class="detail-btn">${pricing ? "Details &amp; prices" : "View"} &rarr;</button></div>
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
