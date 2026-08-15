@@ -6,6 +6,7 @@ import { useLenis } from "lenis/react";
 import { netlifyImg } from "../utils/img";
 import { WORDS } from "./heroWords";
 import { HERO_SLIDES } from "./heroSlides";
+import { MEDIA_KEYS } from "../mediaDestinations";
 
 // Homepage hero. James's "ART meets design" vector mark: the glass ART symbol
 // fades in, MEETS flies in, then DESIGN, all on the original 1133.86 artboard so
@@ -179,19 +180,20 @@ export default function Hero() {
         ...(Array.isArray(manifest) ? manifest.map((e) => ({ dest: e.destinations || [], src: `/${e.path}`, t: e.createdTime || "" })) : []),
         ...(Array.isArray(legacy.images) ? legacy.images.map((i) => ({ dest: i.destinations || [], src: i.src, t: i.createdTime || "" })) : []),
       ];
-      if (!uploads.some((u) => u.dest.some((d) => d === "hero" || d.startsWith("hero-replace-")))) return;
+      const HERO = MEDIA_KEYS.hero, HREP = MEDIA_KEYS.heroReplacePrefix;
+      if (!uploads.some((u) => u.dest.some((d) => d === HERO || d.startsWith(HREP)))) return;
       // Latest upload wins per replace-key.
       const byKey = {};
       uploads.forEach((u) => u.dest.forEach((d) => {
-        if (d.startsWith("hero-replace-")) {
-          const k = d.slice("hero-replace-".length);
+        if (d.startsWith(HREP)) {
+          const k = d.slice(HREP.length);
           if (!byKey[k] || u.t > byKey[k].t) byKey[k] = u;
         }
       }));
       const resolved = HERO_SLIDES.map((s) => (byKey[s.key] ? byKey[s.key].src : s.src));
       const seen = new Set(resolved);
       const added = uploads
-        .filter((u) => u.dest.includes("hero"))
+        .filter((u) => u.dest.includes(HERO))
         .sort((a, b) => (a.t < b.t ? -1 : 1))
         .map((u) => u.src)
         .filter((src) => (seen.has(src) ? false : (seen.add(src), true)));

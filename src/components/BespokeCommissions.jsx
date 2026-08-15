@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Search } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
+import { MEDIA_KEYS } from "../mediaDestinations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -2178,7 +2179,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
         ...(Array.isArray(manifest) ? manifest.map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" })) : []),
         ...(legacy?.images || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
         ...(upclose?.images || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
-      ].filter((u) => (u.dests || []).includes("screens"));
+      ].filter((u) => (u.dests || []).includes(MEDIA_KEYS.screens));
       const seen = new Set();
       const deduped = rows
         .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))
@@ -2876,7 +2877,7 @@ export function ProjectsGalleryModal({ onClose }) {
 }
 
 export function ConceptsGalleryModal({ onClose }) {
-  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey="concepts" />;
+  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey={MEDIA_KEYS.concepts} />;
 }
 
 // Uploaded media suppressed as duplicates (removed per owner). Matched against

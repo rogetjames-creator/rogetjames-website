@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS } from "./Gallery";
 import { SCREEN_COVERS } from "./BespokeCommissions";
 import { HERO_SLIDES } from "./heroSlides";
+import { MEDIA_KEYS, HOLDING_DESTINATIONS } from "../mediaDestinations";
 
 // Every screen design name, self-maintaining from the live screen covers — add
 // a design and it shows up here. Typing/tapping one of these as the upload's
@@ -24,15 +25,17 @@ const SECTION_LABELS = Object.fromEntries(SCREEN_SECTIONS.map((s) => [s.id, `Scr
 
 const API = "/api/media-upload";
 
-// Destinations grouped by where they show on the site. CRITICAL: every option
-// here maps to a key a live page actually reads, so a tagged photo never
-// silently vanishes. Wall-art series come straight from the live gallery covers
-// (WALL_ART_COVERS), so the list self-maintains — add a wall-art series and it
-// shows up here on its own. The old flat list also exposed dead duplicate
-// "Sculpture"/"Screens" chips (gallery-sculpture / gallery-screens) that
-// displayed nowhere; those are gone — only the working "sculpture" and
-// "screens" keys are offered.
-const DEST_GROUPS = [
+// Destinations grouped by where they show on the site. These are built from the
+// SAME sources the live pages read, so a button can never point at a spot no
+// page shows:
+//   • Wall Art series  ── WALL_ART_COVERS (the live gallery covers)
+//   • Hero slides      ── HERO_SLIDES (the live hero list)
+//   • Screens/Sculpture/Concepts/Up Close ── MEDIA_KEYS (see mediaDestinations.js),
+//     the exact keys ScreensGalleryModal / SculptureWall / Hero import and read.
+// Add a wall-art series or a hero slide and it appears here on its own. The
+// "won't go live yet" group below is kept visually separate so it's obvious a
+// holding-pen upload needs placing before it shows anywhere.
+const LIVE_DEST_GROUPS = [
   {
     group: "Wall Art",
     hint: "shows on the Wall Art page",
@@ -42,32 +45,34 @@ const DEST_GROUPS = [
     group: "Sculpture",
     hint: "shows on the Sculpture pages",
     items: [
-      { key: "sculpture", label: "Sculpture (catalogue)" },
-      { key: "bespoke-sculpture", label: "Bespoke Sculpture" },
-      { key: "concepts", label: "Concepts" },
+      { key: MEDIA_KEYS.sculpture, label: "Sculpture (catalogue)" },
+      { key: MEDIA_KEYS.concepts, label: "Concepts" },
     ],
   },
-  { group: "Screens",   hint: "shows on the Screens page",   items: [{ key: "screens", label: "Screens" }] },
+  { group: "Screens", hint: "shows on the Screens page", items: [{ key: MEDIA_KEYS.screens, label: "Screens" }] },
   {
     group: "Hero slideshow",
     hint: "shows on the homepage hero",
     items: [
-      { key: "hero", label: "Add a new slide" },
-      ...HERO_SLIDES.map((s) => ({ key: `hero-replace-${s.key}`, label: `Replace: ${s.label}` })),
+      { key: MEDIA_KEYS.hero, label: "Add a new slide" },
+      ...HERO_SLIDES.map((s) => ({ key: `${MEDIA_KEYS.heroReplacePrefix}${s.key}`, label: `Replace: ${s.label}` })),
     ],
   },
   {
     group: "Other",
     hint: "special spots",
-    items: [
-      { key: "up-close", label: "Up Close (all galleries)" },
-      // Holding pen: a new category whose gallery isn't built yet. Upload here,
-      // then the tagged photos get fabricated into their own gallery on request.
-      { key: "concrete", label: "Concrete (holding — gallery not built yet)" },
-      { key: "other", label: "Somewhere else — type it below" },
-    ],
+    items: [{ key: MEDIA_KEYS.upClose, label: "Up Close (all galleries)" }],
   },
 ];
+// Parked spots with no gallery yet — shown apart so a photo sent here is never
+// mistaken for one that's gone live.
+const HOLDING_GROUP = {
+  group: "Won't go live yet — I'll place it",
+  hint: "no gallery for these yet",
+  holding: true,
+  items: HOLDING_DESTINATIONS,
+};
+const DEST_GROUPS = [...LIVE_DEST_GROUPS, HOLDING_GROUP];
 const ALL_DEST_ITEMS = DEST_GROUPS.flatMap((g) => g.items);
 // Resolve a label for any key: the curated list first, then any legacy key that
 // might still be on an older upload, so the library section always reads clearly.

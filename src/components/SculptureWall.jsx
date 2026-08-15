@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight, ChevronDown, ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { SCULPTURE_COVERS, DetailCard, pieceAlt } from "./Gallery";
+import { MEDIA_KEYS } from "../mediaDestinations";
 import { loadBasket, saveBasket } from "../utils/quoteBasket";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
@@ -281,9 +282,9 @@ function Gallery() {
     // (fine on the wall-art page, where every upload IS wall art) would pull
     // wall-art close-ups in here too.
     const seedSrcs = new Set(UP_CLOSE_IMAGES.map((u) => u.src));
-    const mediaUpClose = mediaImages.filter((m) => m.destinations.includes("sculpture"));
+    const mediaUpClose = mediaImages.filter((m) => m.destinations.includes(MEDIA_KEYS.sculpture));
     const uploads = [
-      ...uploadedUpClose.filter((u) => (u.destinations || []).includes("sculpture")).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
+      ...uploadedUpClose.filter((u) => (u.destinations || []).includes(MEDIA_KEYS.sculpture)).map((u) => ({ src: u.src, name: u.name || "", createdTime: u.createdTime || "" })),
       ...mediaUpClose.map((m) => ({ src: m.src, name: "", createdTime: m.createdTime || "" })),
     ].filter((u) => !seedSrcs.has(u.src)).sort(byUploadTime);
     const seen = new Set();
