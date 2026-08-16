@@ -26,7 +26,8 @@ Direct links (use these — they open the right section automatically):
 - Browse Sculpture designs: https://rogetjames.com/?view=sculpture
 - View Wall Art catalogue: https://rogetjames.com/?view=wallartcat
 - View Sculpture catalogue: https://rogetjames.com/?view=sculpturecat
-- Bespoke Commissions & Screens: https://rogetjames.com/#bespoke
+- View Screens gallery: https://rogetjames.com/screens
+- Bespoke Commissions: https://rogetjames.com/#bespoke
 - How it works / Process: https://rogetjames.com/#process
 - Services overview: https://rogetjames.com/#services
 - Contact & quote enquiry: https://rogetjames.com/#contact
@@ -68,9 +69,10 @@ Wall Art collection deep-links — when you name a design or series, link STRAIG
 - Vitae (VITAE — GREN, VITAE — SHIOGI): https://rogetjames.com/wall-art?c=vitae
 Only use the generic Wall Art catalogue link (?view=wallartcat) if they ask for the whole catalogue, or the design's collection is not in this list.
 
-Screens (architectural screens & gates — via the Bespoke link above):
-- Designs: VUELTA, ASLYIAM, ERGO, FERLIE, GRAIL, LUCARIO, LUMIER, XAVIER, WATTLE, VAYA, JEAGER
-- Categories: Icons, Architectural, Organics, Classics, Indies
+Screens (architectural screens, gates, privacy screens, fencing, dividers, pergolas & light features) — always link to the Screens gallery: https://rogetjames.com/screens
+- Designs: VUELTA, ASLYIAM, ERGO, FERLIE, GRAIL, LUCARIO, LUMIER, XAVIER, WATTLE, VAYA, JEAGER, EQUISETTI, CHIOLA, ELLE, DOTTI, ORIAN, RISHIKESH, ZANADA, BLOOM, BANKSIA
+- Categories: Icons, Architectural, Organics, Classics, Indies, Light Features, Mirrors
+- For any screen design or category, send them to the Screens gallery link above.
 
 When someone asks how the site works, walk them through what each section contains and offer the relevant links.
 When someone asks about a specific design, series, or category — confirm what's available, describe it briefly, and send the direct link so they land straight in the right view.
