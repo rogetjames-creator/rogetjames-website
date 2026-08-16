@@ -3057,7 +3057,7 @@ function BrowseCollectionLabel({ selectedCategory, categoryClicked, inSection, s
   const pills = [
     { id: "sculpture", label: "Sculpture", onOpen: () => { window.location.assign("/sculpture"); } },
     { id: "wall-art",  label: "Wall Art",  onOpen: () => { window.location.assign("/wall-art"); } },
-    { id: "screens",   label: "Screens",   onOpen: () => setScreensOpen(true) },
+    { id: "screens",   label: "Screens",   onOpen: () => { window.location.assign("/screens"); } },
   ];
 
   return (
@@ -3245,7 +3245,7 @@ export default function Gallery() {
       const cat = e.detail;
       if (cat === "wall-art") { window.location.assign("/wall-art"); }
       else if (cat === "sculpture") { window.location.assign("/sculpture"); }
-      else if (cat === "screens") { setScreensOpen(true); }
+      else if (cat === "screens") { window.location.assign("/screens"); }
     };
     window.addEventListener("open-collection-category", handler);
     return () => window.removeEventListener("open-collection-category", handler);
@@ -3315,7 +3315,7 @@ export default function Gallery() {
             <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
             <Suspense fallback={null}>
               <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
-              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => { window.location.assign("/screens"); }} />
             </Suspense>
           </div>
 
@@ -3344,7 +3344,7 @@ export default function Gallery() {
             <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
             <Suspense fallback={null}>
               <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
-              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => setScreensOpen(true)} />
+              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => { window.location.assign("/screens"); }} />
             </Suspense>
           </div>
 

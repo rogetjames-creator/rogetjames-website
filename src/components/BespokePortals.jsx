@@ -138,7 +138,7 @@ export function CommissionsSection() {
   useEffect(() => {
     const handler = (e) => {
       const cat = e.detail;
-      if (cat === "screens")   setScreensOpen(true);
+      if (cat === "screens")   { window.location.assign("/screens"); return; }
       if (cat === "sculpture") setSculptureOpen(true);
       if (cat === "projects")  setProjectsOpen(true);
       if (cat === "concepts")  setConceptsOpen(true);
@@ -175,7 +175,7 @@ export function CommissionsSection() {
     if (!which) return;
     window.history.replaceState(null, "", window.location.pathname + window.location.hash);
     const opener = {
-      screens:     () => setScreensOpen(true),
+      screens:     () => { window.location.assign("/screens"); },
       sculpture:   () => setSculptureOpen(true),
       concepts:    () => setConceptsOpen(true),
       projects:    () => { if (IS_DEV) setProjectsOpen(true); },

@@ -578,7 +578,7 @@ export default function DiscoverPortals() {
 
   const getOnOpen = (portal) => {
     if (portal.popupType === "reels")     return () => setClientReelsOpen(true);
-    if (portal.popupType === "screens")   return () => setScreensOpen(true);
+    if (portal.popupType === "screens")   return () => { window.location.assign("/screens"); };
     if (portal.popupType === "sculpture") return () => setSculptureOpen(true);
     if (portal.popupType === "projects")  return () => setProjectsOpen(true);
     if (portal.popupType === "concepts")  return () => setConceptsOpen(true);
