@@ -76,6 +76,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 /* Screens (expand-only): fixed image box so it never resizes while browsing. */
 .no-price .stage{flex:none;height:62vh}
 .no-price .stage img{width:100%;height:100%;object-fit:contain}
+.no-price .capline{display:flex;justify-content:center;align-items:center;gap:18px}
 .no-price .sh-stage{flex:none;height:60vh}
 .no-price .sh-stage img{width:100%;height:100%;max-height:none;object-fit:contain}`;
     document.head.appendChild(s2);
@@ -114,7 +115,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 
 <section class="intro">
   <div class="intro-top">
-    <div class="mark"><span class="fl l"></span><span class="fl r"></span><img src="/.netlify/images?url=%2Fimages%2Froj-logo.png&w=240&fm=webp&q=90" alt="ROGETjames"></div>
+    <div class="mark"><span class="fl l"></span><span class="fl r"></span><img src="${netlifyImg('/images/roj-logo.png',{w:240,q:90})}" alt="ROGETjames"></div>
     <span class="walllabel">${label}</span>
   </div>
   <div class="band">
