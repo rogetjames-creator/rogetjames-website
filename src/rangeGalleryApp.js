@@ -65,6 +65,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .dtoggle-wrap{display:flex;justify-content:center;margin:-2px 0 12px}
 .dtoggle-wrap:empty{display:none}
 .dtoggle{cursor:pointer;letter-spacing:.16em}
+.dtoggle:hover{background:transparent;border-color:rgba(158,113,52,1);color:#f0d9b6}
 .designpills.collapsed{display:none}
 .about-wrap,.app-wrap{display:flex;justify-content:center;margin:0 0 12px}
 .about-wrap:empty,.app-wrap:empty{display:none}
