@@ -47,4 +47,8 @@ mountRangeGallery({
   viewLabel: "View design",
   // The isolated Screens catalogue — same pages as the live /screens gallery.
   catalogue: { label: "Screens Catalogue", pages: SCREENS_CAT_PAGES },
+  // Placeholder "About" spiel — James to rewrite in his own voice later.
+  aboutHtml: `<p>Curated, adaptive designs from a practice built over twenty years. Each pattern is deliberated and crafted for its category, taking form as decoration, gates, fencing, dividers, privacy screens, pergolas and light features — adapting to complement and enhance its setting across architecture, interiors and landscape, and often becoming a signature motif for the space it enters.</p><p style="margin-top:10px;opacity:.55;font-size:11px">Placeholder text — to be refined.</p>`,
+  // Applications the designs are used for.
+  applications: ["Decoration", "Gates", "Fencing", "Dividers", "Privacy", "Pergolas", "Light Features"],
 });

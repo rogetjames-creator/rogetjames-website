@@ -25,7 +25,7 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -66,6 +66,13 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .dtoggle-wrap:empty{display:none}
 .dtoggle{cursor:pointer;letter-spacing:.16em}
 .designpills.collapsed{display:none}
+.about-wrap,.app-wrap{display:flex;justify-content:center;margin:0 0 12px}
+.about-wrap:empty,.app-wrap:empty{display:none}
+.about-panel{max-width:640px;margin:0 auto 16px;padding:0 18px;font-family:var(--font-detail,inherit);font-size:13px;line-height:1.75;color:rgba(237,232,223,.74);text-align:center}
+.about-panel.collapsed{display:none}
+.apppills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:720px;margin:-2px auto 14px;padding:0 12px}
+.apppills.collapsed{display:none}
+.appx{cursor:default}
 /* Screens (expand-only): fixed image box so it never resizes while browsing. */
 .no-price .stage{flex:none;height:62vh}
 .no-price .stage img{width:100%;height:100%;object-fit:contain}
@@ -117,7 +124,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     <div class="band-title"><h1>The <span class="w2">${rangeWord}</span></h1></div>
   </div>
   <div class="intro-bot">
+    <div class="about-wrap" id="aboutWrap"></div>
+    <div class="about-panel collapsed" id="aboutPanel"></div>
     <div class="rangepills" id="rangePills"></div>
+    <div class="app-wrap" id="appWrap"></div>
+    <div class="apppills collapsed" id="appPills"></div>
     <div class="dtoggle-wrap" id="dtoggleWrap"></div>
     <div class="designpills collapsed" id="designPills"></div>
     <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
@@ -281,6 +292,30 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     pillWrap.appendChild(b); return b;
   }
   rangeHandles.forEach(h=>addPill(h.r.label,h.sec));
+
+  // Screens: "About" panel above the categories — a toggle pill that opens a spiel.
+  if(aboutHtml){
+    const panel=document.getElementById('aboutPanel'), wrap=document.getElementById('aboutWrap');
+    if(panel&&wrap){
+      panel.innerHTML=aboutHtml;
+      const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';
+      const sync=()=>{ t.textContent='About '+(panel.classList.contains('collapsed')?'▾':'▴'); };
+      sync(); t.addEventListener('click',()=>{ panel.classList.toggle('collapsed'); sync(); });
+      wrap.appendChild(t);
+    }
+  }
+  // Screens: "Applications" pill row below the categories — opens the ways a design is used.
+  if(applications && applications.length){
+    const pills=document.getElementById('appPills'), wrap=document.getElementById('appWrap');
+    if(pills&&wrap){
+      applications.forEach(a=>{ const b=document.createElement('button'); b.type='button'; b.className='dpill appx'; b.textContent=a; pills.appendChild(b); });
+      const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';
+      const sync=()=>{ t.textContent='Applications '+(pills.classList.contains('collapsed')?'▾':'▴'); };
+      sync(); t.addEventListener('click',()=>{ pills.classList.toggle('collapsed'); sync(); });
+      wrap.appendChild(t);
+    }
+  }
+
   // Screens preview: a second pill row lists EVERY design title, sitting directly
   // under the range pills. Click a design pill to jump to its range and load that
   // design in the stage. Off for Wall Art/Sculpture.
