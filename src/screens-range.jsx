@@ -55,7 +55,7 @@ mountRangeGallery({
   // The isolated Screens catalogue — same pages as the live /screens gallery.
   catalogue: { label: "Screens Catalogue", pages: SCREENS_CAT_PAGES },
   // About spiel — James's approved copy.
-  aboutHtml: `<p>Original curated, adaptive designs from a practice built over twenty years. Each pattern is diligently crafted for its category, spanning a broad range of styles and customised for purpose, be it decoration, gates, fencing, dividers, privacy screens, pergolas and light features — to complement and enhance architectural, interior and landscape settings.</p>`,
+  aboutHtml: `<p>Original curated, adaptive designs from a practice built over twenty years. Each pattern is diligently crafted for its category, spanning a broad range of styles and customised for purpose, be it Wall Decor &middot; Entrance Gates &middot; Security Gates Automated &middot; Fencing &middot; Infills &middot; Dividers &middot; Privacy Screens &middot; Awnings &middot; Light Features — to complement and enhance architectural, interior and landscape settings.</p>`,
   // Applications the designs are used for.
   applications: ["Decoration", "Gates", "Fencing", "Dividers", "Privacy", "Pergolas", "Light Features"],
   // "The Art of Shadows & Light" popup — same story + poster as the live /screens gallery.
