@@ -823,7 +823,6 @@ const SCREEN_DESIGNS = [
     items: [
       { name: "ORIAN", img: "/images/screens/orian-wall-decor.jpg", tags: ["wall decor", "residential"] },
       { name: "ORIAN", img: `${CDN}/faa234c5-9ad4-4613-a5fa-7f0d409b38cf_rw_1920.jpg`, tags: ["privacy screens", "residential"] },
-      { name: "ORIAN", img: `${CDN}/cf4e542e-07a7-4e7f-9d93-7f022739b389_rw_1920.jpg`, tags: ["divider", "residential"] },
       { name: "ORIAN", img: "/images/orian/orian-1.jpg", tags: ["gates", "residential"] },
     ],
   },
