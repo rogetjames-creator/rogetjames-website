@@ -47,7 +47,7 @@
     "destinations": [
       "other"
     ],
-    "note": "Upscaled replacement of the original Rue hero image \u2014 placed as hero-rue-1.jpg (first hero slide).",
+    "note": "Upscaled replacement of the original Rue hero image — placed as hero-rue-1.jpg (first hero slide).",
     "createdTime": "2026-07-29T01:09:31.591Z",
     "path": "images/uploads/1785287371590_llr55r.jpg"
   },
@@ -57,7 +57,7 @@
     "destinations": [
       "other"
     ],
-    "note": "Placed as hero-banksia-oldmanis.jpg \u2014 replaced the Banksia Oldmanis hero slide (shows whole via object-contain).",
+    "note": "Placed as hero-banksia-oldmanis.jpg — replaced the Banksia Oldmanis hero slide (shows whole via object-contain).",
     "createdTime": "2026-07-29T04:16:11.347Z",
     "path": "images/uploads/1785298571346_ukzgmg.jpg"
   },
@@ -187,7 +187,7 @@
     "destinations": [
       "other"
     ],
-    "note": "PROJECTS Portal under Centennial Park - Unity in Diversity \u2014 Replace this image https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg",
+    "note": "PROJECTS Portal under Centennial Park - Unity in Diversity — Replace this image https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/e0829bf1-b7fb-433d-a143-748457e1a18f_rw_1200.jpg",
     "createdTime": "2026-08-03T08:24:23.839Z",
     "path": "images/uploads/1785745463839_tie649.jpg"
   },
@@ -195,7 +195,7 @@
     "id": "1785745726945_2sycit",
     "name": "BANKSIA - Free range Custom  copy.jpg",
     "destinations": [],
-    "note": "Superseded \u2014 the mural already replaced banksia-free-2.jpg in place. Untagged so it does not duplicate in Australian Natives.",
+    "note": "Superseded — the mural already replaced banksia-free-2.jpg in place. Untagged so it does not duplicate in Australian Natives.",
     "createdTime": "2026-08-03T08:28:46.945Z",
     "path": "images/uploads/1785745726945_2sycit.jpg"
   },
@@ -223,7 +223,7 @@
     "id": "1785764719223_dx45hi",
     "name": "86013204-109A-4BDC-A729-B0C05B003E05_1_201_a.jpeg",
     "destinations": [],
-    "note": "Auto-applied in place \u2192 images/creeping-fig/figaro-1.jpg. Untagged.",
+    "note": "Auto-applied in place → images/creeping-fig/figaro-1.jpg. Untagged.",
     "createdTime": "2026-08-03T13:45:19.240Z",
     "path": "images/uploads/1785764719223_dx45hi.jpg"
   },
@@ -231,7 +231,7 @@
     "id": "1785765047126_x3uza3",
     "name": "78C68B67-26E5-4CD9-887A-0D4B73384014.jpeg",
     "destinations": [],
-    "note": "Auto-applied in place \u2192 images/creeping-fig/ontio-2.jpg. Untagged.",
+    "note": "Auto-applied in place → images/creeping-fig/ontio-2.jpg. Untagged.",
     "createdTime": "2026-08-03T13:50:47.126Z",
     "path": "images/uploads/1785765047126_x3uza3.jpg"
   },
@@ -239,7 +239,7 @@
     "id": "1785765359922_80vz0h",
     "name": "27895729-7927-4998-B1A3-A650F8093F78_1_201_a.jpeg",
     "destinations": [],
-    "note": "Auto-applied in place \u2192 images/creeping-fig/butterfly-1.jpg. Untagged.",
+    "note": "Auto-applied in place → images/creeping-fig/butterfly-1.jpg. Untagged.",
     "createdTime": "2026-08-03T13:55:59.922Z",
     "path": "images/uploads/1785765359922_80vz0h.jpg"
   },
@@ -247,7 +247,7 @@
     "id": "1785765561633_ld66id",
     "name": "7541FA08-687F-4244-A795-D7E82A1001C6.jpeg",
     "destinations": [],
-    "note": "Auto-applied in place \u2192 images/creeping-fig/nuvine-1.jpg. Untagged.",
+    "note": "Auto-applied in place → images/creeping-fig/nuvine-1.jpg. Untagged.",
     "createdTime": "2026-08-03T13:59:21.634Z",
     "path": "images/uploads/1785765561633_ld66id.jpg"
   },
@@ -384,5 +384,25 @@
     "note": "",
     "createdTime": "2026-08-16T13:36:34.532Z",
     "path": "images/uploads/1786887394532_w0lvmk.jpg"
+  },
+  {
+    "id": "1786889467373_hi0728",
+    "name": "ORIAN",
+    "destinations": [
+      "screens"
+    ],
+    "note": "",
+    "createdTime": "2026-08-16T14:11:07.374Z",
+    "path": "images/uploads/1786889467373_hi0728.jpg"
+  },
+  {
+    "id": "1786889467377_044guz",
+    "name": "ORIAN",
+    "destinations": [
+      "screens"
+    ],
+    "note": "",
+    "createdTime": "2026-08-16T14:11:07.393Z",
+    "path": "images/uploads/1786889467377_044guz.jpg"
   }
 ]
