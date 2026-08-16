@@ -34,6 +34,7 @@ function buildScreenRangeData(covers) {
     const OPENERS = {
       "THE ICONS": "viasi/viasi-1",
       "THE ARCHITECTURAL": "ff393903",
+      "THE ORGANICS": "f940abcb",
       "THE CLASSICS": "rishikesh/rishikesh-2",
     };
     const openerKey = OPENERS[sec.label.toUpperCase()];
