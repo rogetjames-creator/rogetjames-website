@@ -99,7 +99,18 @@ function replaceTargetFromNote(note) {
     try { u = new URL(raw.replace(/[)\].,'"]+$/, "")); } catch { continue; }
     if (!/(^|\.)rogetjames\.com$/i.test(u.hostname)) continue;
     let p;
-    try { p = decodeURIComponent(u.pathname); } catch { continue; }
+    try {
+      // Accept both the raw path (/images/…) and the Netlify Image CDN form
+      // (/.netlify/images?url=%2Fimages%2F…), which is what the site actually
+      // serves and what gets copied from the page.
+      if (u.pathname === "/.netlify/images") {
+        const inner = u.searchParams.get("url");
+        if (!inner) continue;
+        p = decodeURIComponent(inner);
+      } else {
+        p = decodeURIComponent(u.pathname);
+      }
+    } catch { continue; }
     if (p.includes("..") || !/^\/images\/[A-Za-z0-9._/-]+\.(jpe?g|png|webp|gif)$/i.test(p)) continue;
     return "public" + p;
   }

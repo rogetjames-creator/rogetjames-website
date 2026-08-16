@@ -167,6 +167,7 @@ export default function MediaPage() {
   const [instructions, setInstructions] = useState(""); // free-text info sent with the upload (e.g. which image to replace)
   const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
   const [screenSection, setScreenSection] = useState(""); // section for a brand-new screen design
+  const [replaceUrl, setReplaceUrl] = useState("");   // paste an existing image URL to overwrite it in place
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
   const [dragOver, setDragOver] = useState(false);   // drag-and-drop highlight
   const [phase, setPhase] = useState("compose");     // compose | sending | done
@@ -271,7 +272,9 @@ export default function MediaPage() {
   const removeStaged = (i) => setStaged(prev => prev.filter((_, idx) => idx !== i));
 
   const send = async () => {
-    if (!selectedDests.length || !staged.length) return;
+    const rep = replaceUrl.trim();
+    // Replace mode needs a URL + one photo; normal mode needs a destination.
+    if ((!selectedDests.length && !rep) || !staged.length) return;
     setPhase("sending");
     try {
       // A named Screens upload carries that name on every photo in the batch, so
@@ -286,7 +289,10 @@ export default function MediaPage() {
       const outDests = (screensSel && screenSection)
         ? [...new Set([...selectedDests, screenSection])]
         : selectedDests;
-      const combinedNote = [otherNote.trim(), instructions.trim()].filter(Boolean).join(" — ");
+      // Replace mode: the note instruction tells the server to overwrite that
+      // existing image in place (keeps its URL, so every reference updates).
+      const repNote = rep ? `replace this image - ${rep}` : "";
+      const combinedNote = [repNote, otherNote.trim(), instructions.trim()].filter(Boolean).join(" — ");
       const res = await call({ adminSecret: secret, images: outImages, destinations: outDests, note: combinedNote });
       let json;
       try { json = await res.json(); }
@@ -301,7 +307,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setScreenSection(""); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setScreenSection(""); setReplaceUrl(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -408,7 +414,7 @@ export default function MediaPage() {
     (groups[key] = groups[key] || []).push(im);
   }
 
-  const canSend = selectedDests.length > 0 && staged.length > 0;
+  const canSend = (selectedDests.length > 0 || replaceUrl.trim()) && staged.length > 0;
 
   return (
     <div className="min-h-screen bg-jet px-6 py-12">
@@ -444,6 +450,19 @@ export default function MediaPage() {
             <div className="mb-3">
               <DestPicker selected={selectedDests} onToggle={toggleDest} />
             </div>
+
+            {/* Replace an existing image in place — paste its URL, add the new photo below. */}
+            <div className="mb-4 rounded-xl border border-clay/30 bg-clay/5 p-3">
+              <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.16em] mb-1.5">Or — replace an existing image</p>
+              <input type="text" value={replaceUrl} onChange={e => setReplaceUrl(e.target.value)}
+                placeholder="Paste the image's URL (right-click the image → Copy image address)"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
+              <p className="font-detail text-[11px] text-cream/50 mt-2">
+                {replaceUrl.trim()
+                  ? "Replace mode — the photo you add below overwrites that image everywhere it appears. No destination needed."
+                  : "Overwrites that image in place (keeps its spot everywhere). Leave blank for a normal upload."}
+              </p>
+            </div>
             {selectedDests.includes("other") && (
               <input type="text" value={otherNote} onChange={e => setOtherNote(e.target.value)}
                 placeholder="Type where these should go (e.g. Hero slideshow, Screens — Grail)"
@@ -451,14 +470,13 @@ export default function MediaPage() {
             )}
             {selectedDests.includes("screens") && (() => {
               const nm = screenName.trim();
-              const lf = screenSection === "light-features";
               return (
                 <div className="mb-6">
                   <input type="text" value={screenName} onChange={e => setScreenName(e.target.value)}
                     placeholder="Name this design — an existing one, or a brand-new name"
                     className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
                   <p className="font-detail text-[11px] text-cream/50 mt-2">
-                    Click a design (e.g. <b className="text-cream/75 font-semibold">ASLYIAM</b>) and/or <b className="text-clay/90 font-semibold">Light Features</b> — pick both if it&apos;s both. Type a new name to create a brand-new design. Leave blank to drop them in the shared Up Close set.
+                    Click an existing design (e.g. <b className="text-cream/75 font-semibold">ASLYIAM</b>) to file it there, or type a new name and pick a <b className="text-clay/90 font-semibold">category</b> below for a brand-new design. Pick a category too if it also belongs there (e.g. Light Features).
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {SCREEN_DESIGN_NAMES.map(name => (
@@ -468,11 +486,16 @@ export default function MediaPage() {
                         {name}
                       </button>
                     ))}
-                    <button type="button"
-                      onClick={() => setScreenSection(s => s === "light-features" ? "" : "light-features")}
-                      className={`px-2.5 py-1 rounded-lg font-detail text-[10px] uppercase tracking-[0.1em] border transition-all ${lf ? "bg-clay border-clay text-cream" : "border-clay/45 text-clay/90 hover:border-clay hover:text-cream"}`}>
-                      Light Features
-                    </button>
+                  </div>
+                  <p className="font-detail text-[10px] text-clay/70 uppercase tracking-[0.14em] mt-3 mb-1.5">Category</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {SCREEN_SECTIONS.map(sec => (
+                      <button key={sec.id} type="button"
+                        onClick={() => setScreenSection(s => s === sec.id ? "" : sec.id)}
+                        className={`px-2.5 py-1 rounded-lg font-detail text-[10px] uppercase tracking-[0.1em] border transition-all ${screenSection === sec.id ? "bg-clay border-clay text-cream" : "border-clay/45 text-clay/90 hover:border-clay hover:text-cream"}`}>
+                        {sec.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               );
@@ -518,8 +541,8 @@ export default function MediaPage() {
               {phase === "sending"
                 ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending…</>)
                 : canSend
-                  ? `Send ${staged.length} photo${staged.length === 1 ? "" : "s"} →`
-                  : (!selectedDests.length ? "Pick a destination first" : "Choose photos first")}
+                  ? (replaceUrl.trim() ? `Replace image →` : `Send ${staged.length} photo${staged.length === 1 ? "" : "s"} →`)
+                  : (!staged.length ? "Choose a photo first" : "Pick a destination (or paste an image URL to replace)")}
             </button>
             {note && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{note}</p>}
           </div>
