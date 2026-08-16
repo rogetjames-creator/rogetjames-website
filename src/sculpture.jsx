@@ -1,14 +1,8 @@
 // The live public Sculpture gallery at /sculpture — the "The Range" overview,
-// same engine as Wall Art. ROLLBACK: revert this file to
-// `createRoot(...).render(<SculptureWall />)` (SculptureWall.jsx is untouched).
+// same engine as Wall Art, plus live /media upload merging (uploads tagged a
+// sculpture category appear as pieces in that category). ROLLBACK: revert this
+// file to `createRoot(...).render(<SculptureWall />)` (SculptureWall.jsx is untouched).
 import "./index.css";
-import { mountRangeGallery } from "./rangeGalleryApp";
-import { SCULPTURE_DATA } from "./data/sculptureData";
+import { mountSculptureRange } from "./sculptureRange";
 
-mountRangeGallery({
-  rootId: "sculpture-root",
-  data: SCULPTURE_DATA,
-  label: "Sculpture",
-  noun: "sculpture",
-  section: "sculpture",
-});
+mountSculptureRange();
