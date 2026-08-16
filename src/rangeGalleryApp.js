@@ -25,7 +25,7 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -471,17 +471,28 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   // Catalogues — the site's shared CatPageViewer; same set as the main nav bar.
   const catRootEl=document.getElementById('catRoot');
   let catReactRoot=null;
-  function openCat(idx){
-    const c=CATALOGUES[idx]; if(!c) return;
+  function openCatObj(c){
+    if(!c || !c.pages) return;
     closeMenu();
     document.body.classList.add('locked');
     if(catReactRoot) catReactRoot.unmount();
     catReactRoot=createRoot(catRootEl);
     catReactRoot.render(createElement(CatPageViewer,{ pages:c.pages, label:c.label, onClose:closeCat, onCloseAll:()=>{ closeCat(); window.location.href='/'; } }));
   }
+  function openCat(idx){ openCatObj(CATALOGUES[idx]); }
   function closeCat(){ if(catReactRoot){ catReactRoot.unmount(); catReactRoot=null; } document.body.classList.remove('locked'); }
-  // "View catalogue" pill opens this gallery's primary catalogue (Wall Art & Screens / Sculpture)
-  document.getElementById('catBtn').addEventListener('click',()=>openCat(section==='sculpture'?1:0));
+  // "View catalogue" pill opens this page's catalogue — the isolated one when supplied
+  // (Screens has its own), otherwise this gallery's shared primary catalogue.
+  document.getElementById('catBtn').addEventListener('click',()=> catalogue ? openCatObj(catalogue) : openCat(section==='sculpture'?1:0));
+  // Screens: replace the shared catalogue list in the menu with just its own catalogue.
+  if(catalogue){
+    const menuEl=document.getElementById('menu');
+    menuEl.querySelectorAll('.mcat').forEach(b=>b.remove());
+    const lbl=[...menuEl.querySelectorAll('.mlabel')].find(e=>/catalogue/i.test(e.textContent));
+    const b=document.createElement('button'); b.type='button'; b.className='mitem mcat'; b.textContent=catalogue.label||'Catalogue';
+    b.addEventListener('click',()=>openCatObj(catalogue));
+    if(lbl&&lbl.parentNode) lbl.parentNode.insertBefore(b,lbl.nextSibling); else menuEl.appendChild(b);
+  }
 
   const toTop=document.getElementById('toTop');
   toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));

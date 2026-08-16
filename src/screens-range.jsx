@@ -4,7 +4,7 @@
 // applied to Screens before deciding to make it live.
 import "./index.css";
 import { mountRangeGallery } from "./rangeGalleryApp";
-import { SCREEN_COVERS } from "./components/BespokeCommissions";
+import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
 
 // Turn the live Screens covers into the range-gallery data shape:
 //   { imgs:[…all image urls…], ranges:[ { label, count, designs:[{n,imgs:[idx]}], flat:[[design,variant]] } ] }
@@ -45,4 +45,6 @@ mountRangeGallery({
   pricing: false,
   designPills: true,
   viewLabel: "View design",
+  // The isolated Screens catalogue — same pages as the live /screens gallery.
+  catalogue: { label: "Screens Catalogue", pages: SCREENS_CAT_PAGES },
 });
