@@ -505,7 +505,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   function updateAddState(){
     const ok=selFinish&&selSize!=null;
     addQ.disabled=!ok;
-    addqHint.textContent = ok ? 'Ready — adds this design, finish and size to your quote.'
+    addqHint.textContent = ok ? 'Add this design, finish and size to quote.'
       : !selFinish ? 'Select a finish to add to your quote.' : 'Select a size to add to your quote.';
   }
   ovFinish.querySelectorAll('.sh-chip').forEach(c=>c.addEventListener('click',()=>{
