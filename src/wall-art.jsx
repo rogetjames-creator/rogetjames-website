@@ -46,5 +46,6 @@ mountRangeGallery({
   label: "Wall Art",
   noun: "wall art",
   section: "wall-art",
+  rangeWord: "Editions",
   upClose: UPCLOSE,
 });
