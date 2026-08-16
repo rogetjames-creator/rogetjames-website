@@ -24,9 +24,16 @@ function buildScreenRangeData(covers) {
       const srcs = (p.slides && p.slides.length ? p.slides : [p.img]).filter(Boolean);
       return { n: p.name, imgs: srcs.map(idxOf) };
     }).filter((d) => d.imgs.length > 0);
-    // James's call: ELLE must not be the opening design of its range — push it to the end.
-    const ei = designs.findIndex((d) => (d.n || "").toUpperCase() === "ELLE");
-    if (ei >= 0) designs.push(designs.splice(ei, 1)[0]);
+    // Random group order — each design stays grouped (its own photos together),
+    // but the groups are shuffled so the strip isn't sequential/alphabetical.
+    for (let i = designs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [designs[i], designs[j]] = [designs[j], designs[i]];
+    }
+    // James's call: ELLE must not be the opening design of its range.
+    if (designs.length > 1 && (designs[0].n || "").toUpperCase() === "ELLE") {
+      [designs[0], designs[1]] = [designs[1], designs[0]];
+    }
     // flat = the slideshow order: every variant of every design, broad.
     const flat = [];
     designs.forEach((d, di) => d.imgs.forEach((_, vi) => flat.push([di, vi])));

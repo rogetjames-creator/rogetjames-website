@@ -31,6 +31,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const RANGES = data.ranges;
   // Reserve one extra slot for the standalone "UP CLOSE" range (Wall Art only).
   const TOTAL = RANGES.length + (upClose ? 1 : 0);
+  const DESIGN_TOTAL = RANGES.reduce((s, r) => s + ((r.designs ? r.designs.length : 0) || r.count || 0), 0);
 
   if (!_stylesInjected) {
     _stylesInjected = true;
@@ -133,7 +134,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     <div class="apppills collapsed" id="appPills"></div>
     <div class="dtoggle-wrap" id="dtoggleWrap"></div>
     <div class="designpills collapsed" id="designPills"></div>
-    <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
+    <p class="rangecount">${TOTAL} ranges${!pricing ? ` &middot; ${DESIGN_TOTAL} designs` : ""} &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
     <div class="chev">&#8964;</div>
   </div>
 </section>
@@ -262,6 +263,22 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       if(!d) return;
       tw.scrollLeft += d; e.preventDefault();
     }, { passive:false });
+    // Screens: hover near either end of the thumb strip and it glides that way,
+    // faster the closer to the edge — no need to fight the wheel near the ends.
+    if(!pricing){
+      let raf=null, dir=0;
+      const EDGE=110, MAX=16;
+      const loop=()=>{ if(dir){ tw.scrollLeft += dir; raf=requestAnimationFrame(loop); } else { raf=null; } };
+      tw.addEventListener('mousemove', e => {
+        if(!tw.classList.contains('of')){ dir=0; return; }
+        const r2=tw.getBoundingClientRect(), x=e.clientX-r2.left;
+        if(x < EDGE)              dir = -Math.ceil((EDGE-x)/EDGE*MAX);
+        else if(x > r2.width-EDGE) dir =  Math.ceil((x-(r2.width-EDGE))/EDGE*MAX);
+        else                       dir = 0;
+        if(dir && !raf) raf=requestAnimationFrame(loop);
+      });
+      tw.addEventListener('mouseleave', ()=>{ dir=0; });
+    }
     function step(dir){
       const i=r.flat.findIndex(([d,v])=>d===curP.d&&v===curP.v);
       const n=(i+dir+r.flat.length)%r.flat.length;
