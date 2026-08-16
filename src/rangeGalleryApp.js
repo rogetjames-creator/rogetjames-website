@@ -113,7 +113,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       <div class="mpanel" id="menu" role="menu">
         <a class="mitem${cur("wall-art")}" href="/wall-art">Wall Art</a>
         <a class="mitem${cur("sculpture")}" href="/sculpture">Sculpture</a>
-        <a class="mitem" href="/screens">Screens</a>
+        <a class="mitem${cur("screens")}" href="/screens">Screens</a>
         <div class="mdiv"></div>
         <a class="mitem" href="/#bespoke">Bespoke</a>
         <a class="mitem" href="/#process">Process</a>
