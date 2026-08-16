@@ -1930,7 +1930,8 @@ export const SCREENS_CAT_PAGES = [
   ...[31, 32, 33, 34, 35, 36, 37].map(n =>
     `/images/catalogues/cat1/page-${String(n).padStart(2, "0")}.jpg`
   ),
-  `/images/catalogues/cat2/page-10.jpg`,
+  // Last 3 pages of the Sculpture, Light Features & Mirrors catalogue.
+  ...[8, 9, 10].map(n => `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`),
 ];
 
 const SCREEN_DESIGNS_SECTIONED = (() => {
