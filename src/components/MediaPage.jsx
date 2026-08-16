@@ -166,7 +166,7 @@ export default function MediaPage() {
   const [otherNote, setOtherNote] = useState("");
   const [instructions, setInstructions] = useState(""); // free-text info sent with the upload (e.g. which image to replace)
   const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
-  const [screenSection, setScreenSection] = useState(""); // section for a brand-new screen design
+  const [screenSections, setScreenSections] = useState([]); // one or more screen categories to file into
   const [replaceUrl, setReplaceUrl] = useState("");   // paste an existing image URL to overwrite it in place
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
   const [dragOver, setDragOver] = useState(false);   // drag-and-drop highlight
@@ -284,10 +284,10 @@ export default function MediaPage() {
       const outImages = (screensSel && nm)
         ? staged.map((s) => ({ ...s, name: nm }))
         : staged;
-      // For a new design, the chosen section rides along as an extra tag so the
-      // Screens page knows where to file it.
-      const outDests = (screensSel && screenSection)
-        ? [...new Set([...selectedDests, screenSection])]
+      // Screens: every chosen category rides along as a destination tag so the
+      // photo appears in each one (a design can live in several categories).
+      const outDests = screensSel
+        ? [...new Set([...selectedDests, ...screenSections])]
         : selectedDests;
       // Replace mode: the note instruction tells the server to overwrite that
       // existing image in place (keeps its URL, so every reference updates).
@@ -307,7 +307,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setScreenSection(""); setReplaceUrl(""); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setScreenSections([]); setReplaceUrl(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -476,7 +476,7 @@ export default function MediaPage() {
                     placeholder="Name this design — an existing one, or a brand-new name"
                     className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
                   <p className="font-detail text-[11px] text-cream/50 mt-2">
-                    Click an existing design (e.g. <b className="text-cream/75 font-semibold">ASLYIAM</b>) to file it there, or type a new name and pick a <b className="text-clay/90 font-semibold">category</b> below for a brand-new design. Pick a category too if it also belongs there (e.g. Light Features).
+                    Click an existing design (e.g. <b className="text-cream/75 font-semibold">ASLYIAM</b>) to file it there, or type a new name. Then pick <b className="text-clay/90 font-semibold">one or more categories</b> below — a design can live in several (e.g. Architectural <i>and</i> Light Features).
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {SCREEN_DESIGN_NAMES.map(name => (
@@ -491,8 +491,8 @@ export default function MediaPage() {
                   <div className="flex flex-wrap gap-1.5">
                     {SCREEN_SECTIONS.map(sec => (
                       <button key={sec.id} type="button"
-                        onClick={() => setScreenSection(s => s === sec.id ? "" : sec.id)}
-                        className={`px-2.5 py-1 rounded-lg font-detail text-[10px] uppercase tracking-[0.1em] border transition-all ${screenSection === sec.id ? "bg-clay border-clay text-cream" : "border-clay/45 text-clay/90 hover:border-clay hover:text-cream"}`}>
+                        onClick={() => setScreenSections(a => a.includes(sec.id) ? a.filter(x => x !== sec.id) : [...a, sec.id])}
+                        className={`px-2.5 py-1 rounded-lg font-detail text-[10px] uppercase tracking-[0.1em] border transition-all ${screenSections.includes(sec.id) ? "bg-clay border-clay text-cream" : "border-clay/45 text-clay/90 hover:border-clay hover:text-cream"}`}>
                         {sec.label}
                       </button>
                     ))}
