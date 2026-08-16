@@ -30,9 +30,11 @@ function buildScreenRangeData(covers) {
       const j = Math.floor(Math.random() * (i + 1));
       [designs[i], designs[j]] = [designs[j], designs[i]];
     }
-    // James's call: ELLE must not be the opening design of its range.
-    if (designs.length > 1 && (designs[0].n || "").toUpperCase() === "ELLE") {
-      [designs[0], designs[1]] = [designs[1], designs[0]];
+    // James's call: these must not be the opening design of their range.
+    const NOT_FIRST = new Set(["ELLE", "VIASI"]);
+    if (designs.length > 1 && NOT_FIRST.has((designs[0].n || "").toUpperCase())) {
+      const j = designs.findIndex((d) => !NOT_FIRST.has((d.n || "").toUpperCase()));
+      if (j > 0) [designs[0], designs[j]] = [designs[j], designs[0]];
     }
     // flat = the slideshow order: every variant of every design, broad.
     const flat = [];
