@@ -92,6 +92,7 @@ mountRangeGallery({
     "THE ARCHITECTURAL": "Crafted for the built form: each design developed to the architecture it joins, tuned to its proportion, geometry and material.",
     "THE ORGANICS": "Botanical designs that relieve hard structure — natural forms bringing movement and ease to a composition.",
     "THE CLASSICS": "A refined collection of enduring motifs, deliberately adaptable, composed to sit within classical and heritage settings.",
+    "THE INDIES": "An eclectic collection.",
     "THE MIRRORS": "Decorative mirrors for interior and exterior settings, where the frame is considered as much artwork as function.",
   },
 });
