@@ -35,7 +35,7 @@ function buildScreenRangeData(covers) {
       "THE ICONS": "viasi/viasi-1",
       "THE ARCHITECTURAL": "ff393903",
       "THE ORGANICS": "f940abcb",
-      "THE CLASSICS": "rishikesh/rishikesh-2",
+      "THE CLASSICS": "screens/orian-wall-decor",
     };
     const openerKey = OPENERS[sec.label.toUpperCase()];
     if (openerKey) {

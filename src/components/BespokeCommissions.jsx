@@ -853,7 +853,6 @@ const SCREEN_DESIGNS = [
       { name: "XAVIER",                     img: "/images/xavier/xavier-3.jpg", tags: ["wall decor", "display homes"] },
       { name: "XAVIER",                     img: "/images/xavier/xavier-4.jpg", tags: ["wall decor", "display homes"] },
       { name: "XAVIER — Display Home",      img: "/images/xavier/xavier-display-home.jpg", tags: ["wall decor", "residential", "display homes"] },
-      { name: "XAVIER — HIA Show Sydney",    img: "/images/xavier/xavier-hia.jpg", description: "XAVIER — HIA Show Sydney Winning Display" },
     ],
   },
   {
