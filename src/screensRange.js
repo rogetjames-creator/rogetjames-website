@@ -2,10 +2,42 @@
 // by both the live /screens page (src/screens.jsx) and the /screens-range preview
 // (src/screens-range.jsx). Call mountScreensRange(rootId) with the page's root id.
 import { mountRangeGallery } from "./rangeGalleryApp";
-import {
-  SCREEN_COVERS, SCREENS_CAT_PAGES,
-  SCREEN_DESIGNS_SECTIONED, mergeScreenUploads, buildScreenCovers,
-} from "./components/BespokeCommissions";
+import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
+
+// Place each /media upload into EVERY category (destination) it was tagged with —
+// e.g. an image tagged both "icons" and "light-features" appears in both ranges —
+// plus its title's home range for the general "screens" destination. This honours
+// multi-category uploads instead of only matching one spot by title.
+function injectUploads(covers, uploads) {
+  const rangeIds = new Set(covers.map((c) => c.id));
+  const norm = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const out = covers.map((c) => ({
+    id: c.id, label: c.label, img: c.img,
+    pieces: c.pieces.map((p) => ({ name: p.name, slides: (p.slides && p.slides.length) ? [...p.slides] : [p.img] })),
+  }));
+  const byId = {}; out.forEach((c) => { byId[c.id] = c; });
+  const addTo = (range, name, src) => {
+    if (!range || !src) return;
+    if (range.pieces.some((p) => p.slides.includes(src))) return; // dedupe by src within a range
+    const existing = range.pieces.find((p) => norm(p.name) === norm(name));
+    if (existing) existing.slides.push(src);
+    else range.pieces.push({ name, slides: [src] });
+  };
+  for (const u of uploads) {
+    const name = u.name || "Screen";
+    const cats = (u.dests || []).filter((d) => rangeIds.has(d));
+    cats.forEach((cat) => addTo(byId[cat], name, u.src));
+    // general "screens" destination (or no category chosen) → its title's home
+    // range, or Icons if it's a brand-new design with no category.
+    if ((u.dests || []).includes("screens") || cats.length === 0) {
+      const home = out.find((c) => c.pieces.some((p) => norm(p.name) === norm(name)));
+      if (home) addTo(home, name, u.src);
+      else if (cats.length === 0) addTo(byId.icons, name, u.src);
+    }
+  }
+  out.forEach((c) => { c.pieces.forEach((p) => { p.img = p.slides[0]; }); c.img = c.pieces.length ? c.pieces[0].img : c.img; });
+  return out;
+}
 
 // Turn the live Screens covers into the range-gallery data shape:
 //   { imgs:[…all image urls…], ranges:[ { label, count, designs:[{n,imgs:[idx]}], flat:[[design,variant]] } ] }
@@ -37,6 +69,7 @@ function buildScreenRangeData(covers) {
       "THE ARCHITECTURAL": "ff393903",
       "THE ORGANICS": "f940abcb",
       "THE CLASSICS": "screens/orian-wall-decor",
+      "THE LIGHT FEATURES": "b03ec13b",
     };
     const openerKey = OPENERS[sec.label.toUpperCase()];
     if (openerKey) {
@@ -80,26 +113,19 @@ async function fetchScreenUploads() {
 }
 
 export function mountScreensRange(rootId) {
-  const covers = () => SCREEN_COVERS;
   let mounted = false;
   const mountWith = (c) => {
     if (mounted) return;
     mounted = true;
     _mount(rootId, buildScreenRangeData(c));
   };
-  // Mount once — with /media uploads merged in if the fetch returns quickly,
-  // otherwise fall back to the static covers so the page never hangs blank.
-  const fallback = setTimeout(() => mountWith(covers()), 900);
+  // Mount once — with /media uploads placed by their destinations if the fetch
+  // returns quickly, otherwise fall back to the static covers so it never hangs.
+  const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 900);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
-    if (mounted) return;
-    if (uploads.length) {
-      const merged = mergeScreenUploads(SCREEN_DESIGNS_SECTIONED, uploads);
-      mountWith(buildScreenCovers(merged));
-    } else {
-      mountWith(covers());
-    }
-  }).catch(() => { clearTimeout(fallback); mountWith(covers()); });
+    mountWith(uploads.length ? injectUploads(SCREEN_COVERS, uploads) : SCREEN_COVERS);
+  }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS); });
 }
 
 function _mount(rootId, data) {
