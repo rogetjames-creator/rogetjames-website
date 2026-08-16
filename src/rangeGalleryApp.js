@@ -25,7 +25,7 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -70,11 +70,31 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .designpills.collapsed{display:none}
 .about-wrap,.app-wrap{display:flex;justify-content:center;margin:0 0 12px}
 .about-wrap:empty,.app-wrap:empty{display:none}
-.about-panel{max-width:640px;margin:0 auto 16px;padding:0 18px;font-family:var(--font-detail,inherit);font-size:13px;line-height:1.75;color:rgba(237,232,223,.74);text-align:center}
+.about-panel{max-width:660px;margin:0 auto 16px;padding:0 18px;font-family:var(--font-detail,inherit);font-size:14.5px;line-height:1.8;color:rgba(237,232,223,.78);text-align:center}
 .about-panel.collapsed{display:none}
 .apppills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:720px;margin:-2px auto 14px;padding:0 12px}
 .apppills.collapsed{display:none}
 .appx{cursor:default}
+.story-wrap{display:flex;justify-content:center;margin:0 0 14px}
+.story-wrap:empty{display:none}
+.story-btn{cursor:pointer;letter-spacing:.18em}
+.story-btn:hover{background:transparent;border-color:rgba(158,113,52,1);color:#f0d9b6}
+.storyov{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:24px}
+.storyov.open{display:flex}
+.storysheet{background:#111;width:min(500px,92vw);max-height:90vh;overflow-y:auto;scrollbar-width:none;position:relative;border:1px solid rgba(242,240,233,.07);display:flex;flex-direction:column}
+.storysheet::-webkit-scrollbar{display:none}
+.storyclose{position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(242,240,233,.35);cursor:pointer;font-size:18px;line-height:1;z-index:2}
+.storyhero{position:relative;width:100%;height:200px;overflow:hidden;flex-shrink:0}
+.storyhero img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.storyhero-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.35)}
+.storyhead{display:flex;align-items:center;gap:14px}
+.storyhead .ln{display:block;width:60px;height:1.5px;background:rgba(242,240,233,.35)}
+.storyhead .art,.storyhead2{font-family:var(--font-syne,inherit);font-weight:700;font-size:clamp(18px,3.5vw,26px);letter-spacing:.06em}
+.storyhead .art{color:rgba(242,240,233,.85);white-space:nowrap}
+.storyhead2{margin:0;line-height:1.05;text-align:center}
+.storyhead2 .s1{color:rgba(242,240,233,.32)}.storyhead2 .s2{color:rgba(242,240,233,.55)}.storyhead2 .s3{color:rgba(242,240,233,.9)}
+.storybody{padding:34px 40px 42px;display:flex;flex-direction:column;gap:18px}
+.storybody p{font-family:var(--font-detail,inherit);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(242,240,233,.65);line-height:1.9;margin:0;text-align:center}
 /* Screens (expand-only): fixed image box so it never resizes while browsing. */
 .no-price .stage{flex:none;height:62vh}
 .no-price .stage img{width:100%;height:100%;object-fit:contain}
@@ -130,6 +150,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   <div class="intro-bot">
     <div class="about-wrap" id="aboutWrap"></div>
     <div class="about-panel collapsed" id="aboutPanel"></div>
+    <div class="story-wrap" id="storyWrap"></div>
     <div class="rangepills" id="rangePills"></div>
     <div class="app-wrap" id="appWrap"></div>
     <div class="apppills collapsed" id="appPills"></div>
@@ -355,6 +376,34 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       wrap.appendChild(t);
     }
   }
+  // Screens: "The Art of Shadows & Light" story — a pill that opens a popup, same
+  // as the live /screens gallery.
+  if(story){
+    const wrap=document.getElementById('storyWrap');
+    if(wrap){
+      const trigger=document.createElement('button'); trigger.type='button'; trigger.className='rpill dtoggle story-btn';
+      trigger.textContent=story.label||'The Art of Shadows & Light';
+      wrap.appendChild(trigger);
+      const ov=document.createElement('div'); ov.className='storyov';
+      ov.innerHTML=`<div class="storysheet">
+        <button class="storyclose" aria-label="Close">&#10005;</button>
+        <div class="storyhero">${story.posterImg?`<img src="${netlifyImg(story.posterImg,{w:900,q:80})}" alt="ROGETjames architectural screens">`:''}
+          <div class="storyhero-ov">
+            <div class="storyhead"><span class="ln"></span><span class="art">The Art Form</span><span class="ln"></span></div>
+            <p class="storyhead2"><b class="s1">Shadows </b><b class="s2">&amp; </b><b class="s3">Light</b></p>
+          </div>
+        </div>
+        <div class="storybody">${story.lead?`<p>${story.lead}</p>`:''}${(story.paras||[]).map(p=>`<p>${p}</p>`).join('')}</div>
+      </div>`;
+      document.body.appendChild(ov);
+      const openStory=()=>{ ov.classList.add('open'); document.body.classList.add('locked'); };
+      const closeStory=()=>{ ov.classList.remove('open'); document.body.classList.remove('locked'); };
+      trigger.addEventListener('click',openStory);
+      ov.addEventListener('click',e=>{ if(e.target===ov) closeStory(); });
+      ov.querySelector('.storyclose').addEventListener('click',closeStory);
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeStory(); });
+    }
+  }
 
   // Screens preview: a second pill row lists EVERY design title, sitting directly
   // under the range pills. Click a design pill to jump to its range and load that
@@ -401,7 +450,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     const paths = RANGES.length>=8
       ? RANGES.map(r=>{const [d,v]=r.flat[0];return data.imgs[r.designs[d].imgs[v]];})
       : shuffle(data.imgs.slice());   // small collections (Sculpture): random mix of the range images
-    const covers = paths.map(p=>netlifyImg(p,{w:440,q:72}));
+    const covers = paths.map(p=>netlifyImg(p,{w:640,q:82}));
     // Pad one "half" so it's wider than the screen — the -50% loop then runs seamlessly (circular),
     // never showing an empty gap when there are only a few images.
     const minHalf=Math.max(covers.length, Math.ceil((window.innerWidth*1.4)/TILE)+1);

@@ -54,8 +54,29 @@ mountRangeGallery({
   viewLabel: "View design",
   // The isolated Screens catalogue — same pages as the live /screens gallery.
   catalogue: { label: "Screens Catalogue", pages: SCREENS_CAT_PAGES },
-  // Placeholder "About" spiel — James to rewrite in his own voice later.
-  aboutHtml: `<p>Curated, adaptive designs from a practice built over twenty years. Each pattern is deliberated and crafted for its category, taking form as decoration, gates, fencing, dividers, privacy screens, pergolas and light features — adapting to complement and enhance its setting across architecture, interiors and landscape, and often becoming a signature motif for the space it enters.</p><p style="margin-top:10px;opacity:.55;font-size:11px">Placeholder text — to be refined.</p>`,
+  // About spiel — James's approved copy.
+  aboutHtml: `<p>Original curated, adaptive designs from a practice built over twenty years. Each pattern is diligently crafted for its category, spanning a broad range of styles and customised for purpose, be it decoration, gates, fencing, dividers, privacy screens, pergolas and light features — to complement and enhance architectural, interior and landscape settings.</p>`,
   // Applications the designs are used for.
   applications: ["Decoration", "Gates", "Fencing", "Dividers", "Privacy", "Pergolas", "Light Features"],
+  // "The Art of Shadows & Light" popup — same story + poster as the live /screens gallery.
+  story: {
+    label: "The Art of Shadows & Light",
+    posterImg: "/images/screens/spiel-poster.jpg",
+    lead: "For three thousand years, humanity has shaped shadows with form and light — honing the ancient craft of screens.",
+    paras: [
+      "From the woven reeds of ancient Egypt to the carved lattices of Mesopotamian palaces — screens were never merely functional. They were a language. One that spoke of shelter and mystery, of the threshold between public and private, of shadow and adornment made beautiful.",
+      "The Islamic Golden Age gave that language its most eloquent voice — breathtaking geometric complexity that turned a wall into a meditation, a doorway into an experience. It rippled through Medieval Europe, through the courts of Asia, through the ornate ironwork of the Victorian colonial era.",
+      "Then came the machine. Laser and CNC technology did not replace the craft — they set it free. Suddenly the organic, the intricate, the impossibly fine became possible in aluminium, steel, timber and stone.",
+      "ROGETjames occupies this space today — drawing on the depth of that lineage, bringing new thinking and original design into one of the oldest crafts in the built world with contemporary precision.",
+    ],
+  },
+  // Placeholder category spiels — shown under each range title. James to finalise wording.
+  descriptions: {
+    "THE ICONS": "Our signature collection — the original designs that established the studio's language and now anchor landmark settings.",
+    "THE ARCHITECTURAL": "Crafted for the built form: each design developed to the architecture it joins, tuned to its proportion, geometry and material.",
+    "THE ORGANICS": "Botanical designs that relieve hard structure — natural forms bringing movement and ease to a composition.",
+    "THE CLASSICS": "A refined collection of enduring motifs, deliberately adaptable, composed to sit within classical and heritage settings.",
+    "THE INDIES": "An eclectic collection for the unconventional — independent patterns crafted to stand apart.",
+    "THE MIRRORS": "Decorative mirrors for interior and exterior settings, where the frame is considered as much artwork as function.",
+  },
 });
