@@ -30,15 +30,23 @@ function buildScreenRangeData(covers) {
       const j = Math.floor(Math.random() * (i + 1));
       [designs[i], designs[j]] = [designs[j], designs[i]];
     }
-    // James's call: these must not be the opening design/image of their range.
-    const NOT_FIRST = new Set(["ELLE", "VIASI"]);
-    const NOT_FIRST_IMG = ["ff393903"];
-    const badOpener = (d) =>
-      NOT_FIRST.has((d.n || "").toUpperCase()) ||
-      (d.imgs.length && NOT_FIRST_IMG.some((s) => (imgs[d.imgs[0]] || "").includes(s)));
-    if (designs.length > 1 && badOpener(designs[0])) {
-      const j = designs.findIndex((d) => !badOpener(d));
-      if (j > 0) [designs[0], designs[j]] = [designs[j], designs[0]];
+    // James's chosen opening display image per range — pinned to first position.
+    const OPENERS = {
+      "THE ICONS": "viasi/viasi-1",
+      "THE ARCHITECTURAL": "ff393903",
+    };
+    const openerKey = OPENERS[sec.label.toUpperCase()];
+    if (openerKey) {
+      let di = -1, vi = -1;
+      for (let k = 0; k < designs.length; k++) {
+        const idx = designs[k].imgs.findIndex((gi) => (imgs[gi] || "").includes(openerKey));
+        if (idx >= 0) { di = k; vi = idx; break; }
+      }
+      if (di >= 0) {
+        const [d] = designs.splice(di, 1);
+        if (vi > 0) { const [g] = d.imgs.splice(vi, 1); d.imgs.unshift(g); }
+        designs.unshift(d);
+      }
     }
     // flat = the slideshow order: every variant of every design, broad.
     const flat = [];
