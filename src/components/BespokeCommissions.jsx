@@ -664,7 +664,7 @@ const SCREEN_DESIGNS = [
       { name: "ERGO Cottesloe Hotel", img: `${CDN}/ff393903-5912-40da-9b37-aca22ef599b4_rw_1920.jpg`, tags: ["commercial", "gates"] },
       { name: "ERGO",                 img: `${CDN}/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg`, pos: "left center", tags: ["divider", "residential", "display homes"] },
       { name: "ERGO",                 img: `${CDN}/e3107b10-9669-4608-a72a-6f3d1c796cae_rw_1200.jpg`, tags: ["fencing", "residential"] },
-      { name: "ERGO",                 img: `${CDN}/52906986-dcb0-493a-b84b-508165599d56_rw_3840.jpg`, tags: ["fencing", "balustrade", "residential"] },
+      { name: "ERGO",                 img: "/images/uploads/1786870478636_qd8g0w.jpg", tags: ["fencing", "balustrade", "residential"] },
       { name: "ERGO — Residential",  img: "/images/ergo/ergo-residential.jpg", description: "ERGO residential entrance gates and screen panels", tags: ["fencing", "gates", "residential"] },
       { name: "ERGO",                 img: "/images/screens/ergo-display-home.jpg", pos: "right center", tags: ["divider", "residential", "display homes"] },
     ],
