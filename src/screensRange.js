@@ -61,18 +61,17 @@ function buildScreenRangeData(covers) {
 
 // Pull every "screens" /media upload (git-committed manifest + legacy/up-close
 // blob stores), newest last, deduped by src — the same sources the old gallery used.
+// Only the git-committed manifest (a fast static file) — this is where /media
+// uploads are committed, so it's the source of truth. We deliberately skip the
+// /api/media-list and /api/up-close-list functions here: they can cold-start slow
+// and would hold up the first render.
 async function fetchScreenUploads() {
   try {
-    const [manifest, legacy, upclose] = await Promise.all([
-      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
-      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
-      fetch("/api/up-close-list").then((r) => r.json()).catch(() => ({ images: [] })),
-    ]);
-    const rows = [
-      ...(Array.isArray(manifest) ? manifest.map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" })) : []),
-      ...((legacy && legacy.images) || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
-      ...((upclose && upclose.images) || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
-    ].filter((u) => (u.dests || []).includes("screens"));
+    const manifest = await fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : [])).catch(() => []);
+    const rows = (Array.isArray(manifest) ? manifest : [])
+      .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" }))
+      .filter((u) => (u.dests || []).includes("screens"));
     const seen = new Set();
     return rows
       .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))

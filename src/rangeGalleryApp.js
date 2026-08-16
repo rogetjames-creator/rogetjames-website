@@ -335,16 +335,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     sec.querySelector('.detail-btn').addEventListener('click',()=>openDetail(ri,curP.d,curP.v));
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
     const [d0,v0]=r.flat[0];
-    // Screens: preload every full-res image in the range so the slideshow is always
-    // crisp — browsing a thumb shows the sharp image instantly from cache.
-    const preloadFull = !pricing ? () => {
-      const seen=new Set();
-      r.flat.forEach(([d,v])=>{ const gi=r.designs[d].imgs[v]; if(seen.has(gi))return; seen.add(gi); const im=new Image(); im.decoding='async'; im.src=IMGS[gi]; });
-    } : null;
-    // Eagerly load the first couple of ranges; defer the rest until they near the
-    // viewport so the page isn't fetching every range's hero image at once on load.
-    if(ri<2){ show(d0,v0); if(preloadFull) preloadFull(); }
-    else sec._initStage=()=>{ show(d0,v0); if(preloadFull) preloadFull(); };
+    // Eagerly load the first couple of ranges' hero images; defer the rest until
+    // they near the viewport so the page isn't fetching everything at once on load.
+    // (No bulk full-res preload — the stage keeps the previous sharp image until the
+    // next has loaded, so browsing stays crisp without flooding the network.)
+    if(ri<2) show(d0,v0); else sec._initStage=()=>show(d0,v0);
     fitThumbs(tw);
     return { r, ri, sec, tw, show, addThumb, fit:()=>fitThumbs(tw) };
   }
@@ -456,7 +451,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     const shuffle=(a)=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
     const paths = RANGES.length>=8
       ? RANGES.map(r=>{const [d,v]=r.flat[0];return data.imgs[r.designs[d].imgs[v]];})
-      : shuffle(data.imgs.slice());   // small collections (Sculpture): random mix of the range images
+      : shuffle(data.imgs.slice()).slice(0,20);   // small collections: capped random mix (don't load the whole set on top of the page)
     const covers = paths.map(p=>netlifyImg(p,{w:640,q:82}));
     // Pad one "half" so it's wider than the screen — the -50% loop then runs seamlessly (circular),
     // never showing an empty gap when there are only a few images.
