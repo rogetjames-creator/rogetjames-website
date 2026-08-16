@@ -73,7 +73,7 @@ mountRangeGallery({
   // About spiel — James's approved copy.
   aboutHtml: `<p>Original curated, adaptive designs from a practice built over twenty years. Each pattern is diligently crafted for its category, spanning a broad range of styles and customised for purpose, be it Wall Decor &middot; Entrance Gates &middot; Security Gates Automated &middot; Fencing &middot; Infills &middot; Dividers &middot; Privacy Screens &middot; Awnings &middot; Light Features — to complement and enhance architectural, interior and landscape settings.</p>`,
   // Applications the designs are used for.
-  applications: ["Decoration", "Gates", "Fencing", "Dividers", "Privacy", "Pergolas", "Light Features"],
+  applications: ["Decoration", "Gates", "Fencing", "Dividers", "Privacy", "Pergolas"],
   // "The Art of Shadows & Light" popup — same story + poster as the live /screens gallery.
   story: {
     label: "The Art of Shadows & Light",
@@ -92,7 +92,6 @@ mountRangeGallery({
     "THE ARCHITECTURAL": "Crafted for the built form: each design developed to the architecture it joins, tuned to its proportion, geometry and material.",
     "THE ORGANICS": "Botanical designs that relieve hard structure — natural forms bringing movement and ease to a composition.",
     "THE CLASSICS": "A refined collection of enduring motifs, deliberately adaptable, composed to sit within classical and heritage settings.",
-    "THE INDIES": "An eclectic collection for the unconventional — independent patterns crafted to stand apart.",
     "THE MIRRORS": "Decorative mirrors for interior and exterior settings, where the frame is considered as much artwork as function.",
   },
 });

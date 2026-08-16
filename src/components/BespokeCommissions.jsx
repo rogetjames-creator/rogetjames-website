@@ -2000,18 +2000,44 @@ const SCREEN_SECTION_LABELS = {
   organics: "The Organics",
   classics: "The Classics",
   indies: "The Indies",
+  "light-features": "The Light Features",
   mirrors: "The Mirrors",
 };
+
+// Whether an image counts as a "light feature" — same rule the live gallery's
+// Light Features tab uses: item-level tags win when a design uses them, otherwise
+// the design-level tags apply.
+const _LF_TAG = "light features";
+const _isLightFeatureItem = (d, it) => {
+  const hasItemTags = d.items.some((x) => (x.tags ?? []).length > 0);
+  return hasItemTags
+    ? (it.tags ?? []).some((t) => t.includes(_LF_TAG))
+    : (d.tags ?? []).some((t) => t.includes(_LF_TAG));
+};
+const _pieceFromImgs = (name, imgs) =>
+  imgs.length > 1 ? { name, img: imgs[0], slides: imgs } : { name, img: imgs[0] };
+
 export const SCREEN_COVERS = Object.entries(SCREEN_SECTION_LABELS)
   .map(([id, label]) => {
-    const designs = SCREEN_DESIGNS_SECTIONED.filter((d) => d._section === id && !d._crossListed);
-    const pieces = designs
-      .map((d) => {
-        const imgs = d.items.map((it) => it.img).filter(Boolean);
-        if (!imgs.length) return null;
-        return imgs.length > 1 ? { name: d.name, img: imgs[0], slides: imgs } : { name: d.name, img: imgs[0] };
-      })
-      .filter(Boolean);
+    let pieces;
+    if (id === "light-features") {
+      // Every image tagged as a light feature, grouped by its design — the same
+      // set the live gallery's Light Features tab shows (cross-listed ones included).
+      pieces = [];
+      SCREEN_DESIGNS_SECTIONED.forEach((d) => {
+        const imgs = d.items.filter((it) => _isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
+        if (imgs.length) pieces.push(_pieceFromImgs(d.name, imgs));
+      });
+    } else {
+      // A section's designs, MINUS any images that belong in Light Features.
+      pieces = SCREEN_DESIGNS_SECTIONED
+        .filter((d) => d._section === id && !d._crossListed)
+        .map((d) => {
+          const imgs = d.items.filter((it) => !_isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
+          return imgs.length ? _pieceFromImgs(d.name, imgs) : null;
+        })
+        .filter(Boolean);
+    }
     if (!pieces.length) return null;
     return { id, label, img: pieces[0].img, pieces };
   })
