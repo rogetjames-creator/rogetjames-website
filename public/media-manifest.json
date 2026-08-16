@@ -372,5 +372,16 @@
     "note": "",
     "createdTime": "2026-08-16T08:54:38.637Z",
     "path": "images/uploads/1786870478636_qd8g0w.jpg"
+  },
+  {
+    "id": "1786887030964_kzirwk",
+    "name": "ASLYIAM",
+    "destinations": [
+      "screens",
+      "light-features"
+    ],
+    "note": "remove the current image https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery%2F1a26b497-b278-4edc-a050-a2b42e3718d4_rw_1200.jpg&w=1200&fm=webp&q=74 in The screens Iconic - aslyiam  and replace with this amended image",
+    "createdTime": "2026-08-16T13:30:30.964Z",
+    "path": "images/uploads/1786887030964_kzirwk.jpg"
   }
 ]
