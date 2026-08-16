@@ -61,7 +61,16 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .designpills:empty{display:none}
 .dpill{font-family:var(--font-detail,inherit);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(237,232,223,.62);background:rgba(237,232,223,.03);border:1px solid rgba(237,232,223,.14);border-radius:999px;padding:4px 11px;cursor:pointer;transition:color .18s,border-color .18s,background .18s;white-space:nowrap;line-height:1}
 .dpill:hover{color:#fff;border-color:rgba(237,232,223,.5);background:rgba(237,232,223,.1)}
-.dpill.active{color:#f0d9b6;border-color:rgba(158,113,52,.7);background:rgba(158,113,52,.1)}`;
+.dpill.active{color:#f0d9b6;border-color:rgba(158,113,52,.7);background:rgba(158,113,52,.1)}
+.dtoggle-wrap{display:flex;justify-content:center;margin:-2px 0 12px}
+.dtoggle-wrap:empty{display:none}
+.dtoggle{cursor:pointer;letter-spacing:.16em}
+.designpills.collapsed{display:none}
+/* Screens (expand-only): fixed image box so it never resizes while browsing. */
+.no-price .stage{flex:none;height:62vh}
+.no-price .stage img{width:100%;height:100%;object-fit:contain}
+.no-price .sh-stage{flex:none;height:60vh}
+.no-price .sh-stage img{width:100%;height:100%;max-height:none;object-fit:contain}`;
     document.head.appendChild(s2);
   }
 
@@ -109,7 +118,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   </div>
   <div class="intro-bot">
     <div class="rangepills" id="rangePills"></div>
-    <div class="designpills" id="designPills"></div>
+    <div class="dtoggle-wrap" id="dtoggleWrap"></div>
+    <div class="designpills collapsed" id="designPills"></div>
     <p class="rangecount">${TOTAL} ranges &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
     <div class="chev">&#8964;</div>
   </div>
@@ -289,6 +299,13 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
           dpWrap.appendChild(b);
         });
       });
+      // "Designs" toggle — the pill list is collapsed by default (saves space) and
+      // expands under the category pills when clicked.
+      const tog=document.createElement('button'); tog.type='button'; tog.className='rpill dtoggle';
+      const syncTog=()=>{ tog.textContent='Designs '+(dpWrap.classList.contains('collapsed')?'▾':'▴'); };
+      syncTog();
+      tog.addEventListener('click',()=>{ dpWrap.classList.toggle('collapsed'); syncTog(); });
+      const togWrap=document.getElementById('dtoggleWrap'); if(togWrap) togWrap.appendChild(tog);
     }
   }
 

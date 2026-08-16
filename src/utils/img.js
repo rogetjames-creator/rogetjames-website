@@ -5,6 +5,9 @@
  */
 export function netlifyImg(src, { w = 1920, q = 80 } = {}) {
   if (!src || src.startsWith("http") || src.startsWith("data:")) return src;
+  // Already a Netlify Image URL (e.g. the cdn-gallery images are pre-wrapped) —
+  // don't wrap it again, which would double-encode into a broken URL.
+  if (src.startsWith("/.netlify/images")) return src;
   // Plain Vite dev doesn't serve the Netlify Image CDN (/.netlify/images), so
   // serve the raw local file in dev and only rewrite to the CDN in production.
   if (import.meta.env && import.meta.env.DEV) return src;
