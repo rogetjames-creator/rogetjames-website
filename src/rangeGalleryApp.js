@@ -25,7 +25,7 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null }) {
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -79,6 +79,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .no-price .stage{flex:none;height:62vh}
 .no-price .stage img{width:100%;height:100%;object-fit:contain}
 .no-price .capline{display:flex;justify-content:center;align-items:center;gap:18px}
+.p-desc{margin:8px 0 0;max-width:680px;font-family:var(--font-detail,inherit);font-size:12.5px;line-height:1.6;letter-spacing:.01em;color:rgba(237,232,223,.6)}
 .no-price .sh-stage{flex:none;height:60vh}
 .no-price .sh-stage img{width:100%;height:100%;max-height:none;object-fit:contain}`;
     document.head.appendChild(s2);
@@ -225,6 +226,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <h2 class="p-name">${twoTone(r.label)}</h2>
         <span class="p-count">${r.count} design${r.count!==1?'s':''}</span>
       </div>
+      ${descriptions && descriptions[r.label] ? `<p class="p-desc">${descriptions[r.label]}</p>` : ''}
       <div class="stage"><img alt=""></div>
       <div class="capline"><span class="dname"></span><button class="detail-btn">${pricing ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</button></div>
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
@@ -236,8 +238,19 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     function show(dd,vv){
       curP={d:dd,v:vv};
       const des=r.designs[dd];
-      stImg.style.opacity=0;
-      requestAnimationFrame(()=>{ stImg.src=IMGS[des.imgs[vv]]; stImg.onload=()=>{ stImg.style.opacity=1; alignCap(); }; });
+      const gi=des.imgs[vv];
+      if(!pricing){
+        // Screens: the full-res stage image can take a second to transform cold,
+        // so seed the stage with the already-loaded thumbnail immediately (never
+        // blank), then swap up to the full image once it has loaded.
+        stImg.src=THUMBS[gi]; stImg.style.opacity=1; alignCap();
+        const full=new Image();
+        full.onload=()=>{ if(curP.d===dd && curP.v===vv){ stImg.src=IMGS[gi]; alignCap(); } };
+        full.src=IMGS[gi];
+      } else {
+        stImg.style.opacity=0;
+        requestAnimationFrame(()=>{ stImg.src=IMGS[gi]; stImg.onload=()=>{ stImg.style.opacity=1; alignCap(); }; });
+      }
       const extra=des.imgs.length>1?` &middot; ${vv+1}/${des.imgs.length}`:'';
       dn.innerHTML=`<b>${des.n}</b>${extra}`;
       let act=null;
