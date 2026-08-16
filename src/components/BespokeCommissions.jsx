@@ -1934,7 +1934,7 @@ export const SCREENS_CAT_PAGES = [
   ...[8, 9, 10].map(n => `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`),
 ];
 
-const SCREEN_DESIGNS_SECTIONED = (() => {
+export const SCREEN_DESIGNS_SECTIONED = (() => {
   const sectionMap = {
     "THE ICONS":         "icons",
     "THE ARCHITECTURAL": "architectural",
@@ -1956,7 +1956,7 @@ const SCREEN_DESIGNS_SECTIONED = (() => {
 // another photo of that design; a new title becomes its own design (shown under
 // ALL). Deduped by image src so the same file never appears twice.
 const _normScreen = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-function mergeScreenUploads(base, uploads) {
+export function mergeScreenUploads(base, uploads) {
   if (!uploads || !uploads.length) return base;
   const used = new Set();
   const result = base.map((d) => {
@@ -2018,31 +2018,36 @@ const _isLightFeatureItem = (d, it) => {
 const _pieceFromImgs = (name, imgs) =>
   imgs.length > 1 ? { name, img: imgs[0], slides: imgs } : { name, img: imgs[0] };
 
-export const SCREEN_COVERS = Object.entries(SCREEN_SECTION_LABELS)
-  .map(([id, label]) => {
-    let pieces;
-    if (id === "light-features") {
-      // Every image tagged as a light feature, grouped by its design — the same
-      // set the live gallery's Light Features tab shows (cross-listed ones included).
-      pieces = [];
-      SCREEN_DESIGNS_SECTIONED.forEach((d) => {
-        const imgs = d.items.filter((it) => _isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
-        if (imgs.length) pieces.push(_pieceFromImgs(d.name, imgs));
-      });
-    } else {
-      // A section's designs, MINUS any images that belong in Light Features.
-      pieces = SCREEN_DESIGNS_SECTIONED
-        .filter((d) => d._section === id && !d._crossListed)
-        .map((d) => {
-          const imgs = d.items.filter((it) => !_isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
-          return imgs.length ? _pieceFromImgs(d.name, imgs) : null;
-        })
-        .filter(Boolean);
-    }
-    if (!pieces.length) return null;
-    return { id, label, img: pieces[0].img, pieces };
-  })
-  .filter(Boolean);
+// Build the range-gallery covers from a design list. Passing a merged list (base
+// designs + /media uploads) makes uploads appear in the Screens range gallery.
+export function buildScreenCovers(designList) {
+  return Object.entries(SCREEN_SECTION_LABELS)
+    .map(([id, label]) => {
+      let pieces;
+      if (id === "light-features") {
+        // Every image tagged as a light feature, grouped by its design — the same
+        // set the live gallery's Light Features tab shows (cross-listed ones included).
+        pieces = [];
+        designList.forEach((d) => {
+          const imgs = d.items.filter((it) => _isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
+          if (imgs.length) pieces.push(_pieceFromImgs(d.name, imgs));
+        });
+      } else {
+        // A section's designs, MINUS any images that belong in Light Features.
+        pieces = designList
+          .filter((d) => d._section === id && !d._crossListed)
+          .map((d) => {
+            const imgs = d.items.filter((it) => !_isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
+            return imgs.length ? _pieceFromImgs(d.name, imgs) : null;
+          })
+          .filter(Boolean);
+      }
+      if (!pieces.length) return null;
+      return { id, label, img: pieces[0].img, pieces };
+    })
+    .filter(Boolean);
+}
+export const SCREEN_COVERS = buildScreenCovers(SCREEN_DESIGNS_SECTIONED);
 
 const SCREEN_TABS = [
   { id: "all",           label: "ALL" },

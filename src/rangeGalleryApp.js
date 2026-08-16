@@ -55,6 +55,10 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .rangepills{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;max-width:880px;margin:0 auto 18px;padding:0 12px}
 /* Screens: keep all category pills on one line on desktop (Wall Art's many ranges still wrap). */
 @media(min-width:900px){.no-price .rangepills{max-width:1200px;flex-wrap:nowrap;gap:6px}}
+/* Screens: the intro has a lot of content (7 categories + About/Applications/Designs),
+   so reserve clearance below the fixed top bar and let it grow instead of pushing
+   the logo mark up under the bar. */
+.no-price .intro{height:auto;min-height:100vh;box-sizing:border-box;padding-top:74px;padding-bottom:34px}
 .rpill{font-family:var(--font-detail,inherit);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(237,232,223,.72);background:rgba(237,232,223,.05);border:1px solid rgba(237,232,223,.2);border-radius:999px;padding:5px 12px;cursor:pointer;transition:color .18s,border-color .18s,background .18s;white-space:nowrap;line-height:1}
 .rpill:hover{color:#fff;border-color:rgba(237,232,223,.55);background:rgba(237,232,223,.1)}
 .rpill.upclose{border-color:rgba(158,113,52,.6);color:#d6b483}

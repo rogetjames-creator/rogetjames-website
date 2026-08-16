@@ -2,7 +2,10 @@
 // by both the live /screens page (src/screens.jsx) and the /screens-range preview
 // (src/screens-range.jsx). Call mountScreensRange(rootId) with the page's root id.
 import { mountRangeGallery } from "./rangeGalleryApp";
-import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
+import {
+  SCREEN_COVERS, SCREENS_CAT_PAGES,
+  SCREEN_DESIGNS_SECTIONED, mergeScreenUploads, buildScreenCovers,
+} from "./components/BespokeCommissions";
 
 // Turn the live Screens covers into the range-gallery data shape:
 //   { imgs:[…all image urls…], ranges:[ { label, count, designs:[{n,imgs:[idx]}], flat:[[design,variant]] } ] }
@@ -56,10 +59,54 @@ function buildScreenRangeData(covers) {
   return { imgs, ranges };
 }
 
+// Pull every "screens" /media upload (git-committed manifest + legacy/up-close
+// blob stores), newest last, deduped by src — the same sources the old gallery used.
+async function fetchScreenUploads() {
+  try {
+    const [manifest, legacy, upclose] = await Promise.all([
+      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
+      fetch("/api/up-close-list").then((r) => r.json()).catch(() => ({ images: [] })),
+    ]);
+    const rows = [
+      ...(Array.isArray(manifest) ? manifest.map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" })) : []),
+      ...((legacy && legacy.images) || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
+      ...((upclose && upclose.images) || []).map((i) => ({ src: i.src, name: i.name || "", dests: i.destinations || [], createdTime: i.createdTime || "" })),
+    ].filter((u) => (u.dests || []).includes("screens"));
+    const seen = new Set();
+    return rows
+      .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))
+      .filter((u) => { if (seen.has(u.src)) return false; seen.add(u.src); return true; });
+  } catch { return []; }
+}
+
 export function mountScreensRange(rootId) {
+  const covers = () => SCREEN_COVERS;
+  let mounted = false;
+  const mountWith = (c) => {
+    if (mounted) return;
+    mounted = true;
+    _mount(rootId, buildScreenRangeData(c));
+  };
+  // Mount once — with /media uploads merged in if the fetch returns quickly,
+  // otherwise fall back to the static covers so the page never hangs blank.
+  const fallback = setTimeout(() => mountWith(covers()), 900);
+  fetchScreenUploads().then((uploads) => {
+    clearTimeout(fallback);
+    if (mounted) return;
+    if (uploads.length) {
+      const merged = mergeScreenUploads(SCREEN_DESIGNS_SECTIONED, uploads);
+      mountWith(buildScreenCovers(merged));
+    } else {
+      mountWith(covers());
+    }
+  }).catch(() => { clearTimeout(fallback); mountWith(covers()); });
+}
+
+function _mount(rootId, data) {
   mountRangeGallery({
     rootId,
-    data: buildScreenRangeData(SCREEN_COVERS),
+    data,
     label: "Screens",
     noun: "screen",
     section: "screens",
