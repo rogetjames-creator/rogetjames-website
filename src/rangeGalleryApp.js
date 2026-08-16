@@ -240,13 +240,14 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       const des=r.designs[dd];
       const gi=des.imgs[vv];
       if(!pricing){
-        // Screens: the full-res stage image can take a second to transform cold,
-        // so seed the stage with the already-loaded thumbnail immediately (never
-        // blank), then swap up to the full image once it has loaded.
-        stImg.src=THUMBS[gi]; stImg.style.opacity=1; alignCap();
+        // Screens: crisp images only — no blurry thumbnail placeholder. Full-res
+        // images are preloaded per range, so this is normally cached and shows
+        // instantly; otherwise the current sharp image stays up until the next has
+        // fully loaded (never blurry, never blank mid-browse).
         const full=new Image();
-        full.onload=()=>{ if(curP.d===dd && curP.v===vv){ stImg.src=IMGS[gi]; alignCap(); } };
+        full.onload=()=>{ if(curP.d===dd && curP.v===vv){ stImg.src=IMGS[gi]; stImg.style.opacity=1; alignCap(); } };
         full.src=IMGS[gi];
+        if(full.complete && full.naturalWidth){ stImg.src=IMGS[gi]; stImg.style.opacity=1; alignCap(); }
       } else {
         stImg.style.opacity=0;
         requestAnimationFrame(()=>{ stImg.src=IMGS[gi]; stImg.onload=()=>{ stImg.style.opacity=1; alignCap(); }; });
@@ -307,9 +308,16 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     sec.querySelector('.detail-btn').addEventListener('click',()=>openDetail(ri,curP.d,curP.v));
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
     const [d0,v0]=r.flat[0];
+    // Screens: preload every full-res image in the range so the slideshow is always
+    // crisp — browsing a thumb shows the sharp image instantly from cache.
+    const preloadFull = !pricing ? () => {
+      const seen=new Set();
+      r.flat.forEach(([d,v])=>{ const gi=r.designs[d].imgs[v]; if(seen.has(gi))return; seen.add(gi); const im=new Image(); im.decoding='async'; im.src=IMGS[gi]; });
+    } : null;
     // Eagerly load the first couple of ranges; defer the rest until they near the
     // viewport so the page isn't fetching every range's hero image at once on load.
-    if(ri<2) show(d0,v0); else sec._initStage=()=>show(d0,v0);
+    if(ri<2){ show(d0,v0); if(preloadFull) preloadFull(); }
+    else sec._initStage=()=>{ show(d0,v0); if(preloadFull) preloadFull(); };
     fitThumbs(tw);
     return { r, ri, sec, tw, show, addThumb, fit:()=>fitThumbs(tw) };
   }
