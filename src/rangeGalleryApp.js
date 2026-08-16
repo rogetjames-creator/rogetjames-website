@@ -376,13 +376,14 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       wrap.appendChild(t);
     }
   }
-  // Screens: "The Art of Shadows & Light" story — a pill that opens a popup, same
-  // as the live /screens gallery.
+  // Screens: "The Art of Shadows & Light" story — a pill that lives inside the About
+  // panel and opens a popup, same story as the live /screens gallery.
   if(story){
-    const wrap=document.getElementById('storyWrap');
+    const wrap=document.getElementById('aboutPanel') || document.getElementById('storyWrap');
     if(wrap){
       const trigger=document.createElement('button'); trigger.type='button'; trigger.className='rpill dtoggle story-btn';
       trigger.textContent=story.label||'The Art of Shadows & Light';
+      trigger.style.marginTop='18px';
       wrap.appendChild(trigger);
       const ov=document.createElement('div'); ov.className='storyov';
       ov.innerHTML=`<div class="storysheet">
