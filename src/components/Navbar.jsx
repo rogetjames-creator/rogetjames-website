@@ -3,24 +3,15 @@ import gsap from "gsap";
 import { useLenis } from "lenis/react";
 import { Search, Lock } from "lucide-react";
 import SearchModal from "./SearchModal";
+// Catalogues — single source of truth in src/catalogues.js (shared with the
+// gallery pages and the client vault so every catalogue UI stays identical).
+import { CAT1, CAT2, DULUX_PAGES, INTERPON_PAGES, CATALOGUES } from "../catalogues";
 const CatPageViewer = lazy(() => import("./CatPageViewer"));
 const ClientPreview = lazy(() => import("./ClientPreview"));
-
-const CAT1 = Array.from({ length: 38 }, (_, i) => `/images/catalogues/cat1/page-${String(i + 1).padStart(2, "0")}.jpg`);
-const CAT2 = [1, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`);
-const DULUX_PAGES    = Array.from({ length: 8 }, (_, i) => `/images/catalogues/dulux/page-${String(i + 1).padStart(2, "0")}.jpg`);
-const INTERPON_PAGES = Array.from({ length: 8 }, (_, i) => `/images/catalogues/interpon/page-${String(i + 1).padStart(2, "0")}.jpg`);
 
 // Bespoke portals locked as "under construction" in production.
 // Sculpture and Concepts are public; Screens stays open.
 const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions"] : [];
-
-const CATALOGUES = [
-  { label: "Wall Art & Screens",                pages: CAT1 },
-  { label: "Sculpture, Light Features & Mirrors", pages: CAT2 },
-  { label: "Dulux Colours",                     pages: DULUX_PAGES },
-  { label: "Interpon Colours",                  pages: INTERPON_PAGES },
-];
 
 // SVG icons for social
 function InstagramIcon() {

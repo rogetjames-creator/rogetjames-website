@@ -406,7 +406,7 @@ function VaultContent({ clientData }) {
   };
   return (
     <div className="min-h-screen bg-jet text-cream flex flex-col">
-      <div className="flex-1 flex items-center justify-center py-10">
+      <div className="flex-1 flex items-start justify-center">
         <VaultGallery data={data} />
       </div>
     </div>

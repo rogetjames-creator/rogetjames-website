@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, lazy, Suspense } from "react";
 import gsap from "gsap";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { CATALOGUES } from "../catalogues";
+const CatPageViewer = lazy(() => import("./CatPageViewer"));
 
 // The client gallery viewer — deliberately mirrors the Wall Art / Screens /
 // Sculpture gallery look: client name + RJ mark divider on top, one large image
@@ -15,23 +17,14 @@ const previewImg = (url, w) => {
 const NO_SAVE = { onContextMenu: (e) => e.preventDefault(), onDragStart: (e) => e.preventDefault(), draggable: false };
 const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" };
 
-// All studio catalogues — image-page sets open in an in-page viewer; the colour
-// charts are PDFs that open in a new tab.
-const CATALOGUES = [
-  { label: "Wall Art & Screens", pages: Array.from({ length: 38 }, (_, i) => `/images/catalogues/cat1/page-${String(i + 1).padStart(2, "0")}.jpg`) },
-  { label: "Sculpture, Light Features & Mirrors", pages: Array.from({ length: 10 }, (_, i) => `/images/catalogues/cat2/page-${String(i + 1).padStart(2, "0")}.jpg`) },
-  { label: "Dulux Colours", pdf: "/pdfs/dulux-colours.pdf" },
-  { label: "Interpon Colours", pdf: "/pdfs/interpon-colours.pdf" },
-];
-
 const CSS = `
 .rjv{display:flex;flex-direction:column;color:#F2F0E9;width:100%}
-.rjv-head{text-align:center;padding:2px 16px 0}
+.rjv-head{text-align:center;padding:0 16px 0}
 .rjv-name{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(24px,4vw,44px);line-height:1.02;letter-spacing:-.01em;text-transform:uppercase;margin:0;color:#F2F0E9}
 .rjv-name .w2{color:rgba(237,232,223,.6)}
 .rjv-cat{display:inline-block;margin-top:16px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:999px;padding:8px 18px;text-decoration:none;transition:.25s}
 .rjv-cat:hover{background:#9E7134;border-color:#9E7134}
-.rjv-mark{position:relative;width:78px;height:78px;margin:14px auto 6px;display:flex;align-items:center;justify-content:center}
+.rjv-mark{position:relative;width:78px;height:78px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
 .rjv-mark img{width:100%;height:auto;opacity:.5;filter:drop-shadow(0 5px 0 rgba(0,0,0,.55))}
 .rjv-mark .ln{position:absolute;top:50%;height:1.5px;width:90px;background:rgba(242,240,233,.35);margin-top:-.75px}
 .rjv-mark .ln.l{right:calc(100% + 10px)}
@@ -62,11 +55,6 @@ const CSS = `
 .rjv-catmenu{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px);display:flex;flex-direction:column}
 .rjv-catmenu button{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:var(--font-detail,system-ui,sans-serif);transition:.2s;line-height:1.4}
 .rjv-catmenu button:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
-.rjv-catview{position:fixed;inset:0;z-index:330;background:#0b0b0b;display:flex;flex-direction:column}
-.rjv-catview .cvhead{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(237,232,223,.08);flex-shrink:0}
-.rjv-catview .cvtitle{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,232,223,.72)}
-.rjv-catview .cvbody{overflow-y:auto;flex:1;padding:20px 12px 44px;display:flex;flex-direction:column;align-items:center;gap:16px}
-.rjv-catview .cvbody img{width:min(880px,96vw);height:auto;border-radius:8px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
 @media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}}
 `;
 
@@ -97,7 +85,7 @@ export default function VaultGallery({ data, onClose }) {
   }, [prev, next, zoom, catOpen, catView]);
 
   return (
-    <div ref={rootRef} className="w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-9">
+    <div ref={rootRef} className="w-full max-w-6xl mx-auto px-4 md:px-8 pt-2 md:pt-2 pb-8">
       <style>{CSS}</style>
 
       {/* Top bar: visit-website (left) + catalogues dropdown (right) */}
@@ -110,7 +98,7 @@ export default function VaultGallery({ data, onClose }) {
           {catOpen && (
             <div className="rjv-catmenu">
               {CATALOGUES.map((c) => (
-                <button key={c.label} onClick={() => { setCatOpen(false); if (c.pdf) window.open(c.pdf, "_blank", "noopener"); else setCatView(c); }}>
+                <button key={c.label} onClick={() => { setCatOpen(false); setCatView(c); }}>
                   {c.label}
                 </button>
               ))}
@@ -184,19 +172,16 @@ export default function VaultGallery({ data, onClose }) {
         </div>
       )}
 
-      {/* Catalogue viewer (image-page catalogues) */}
+      {/* Catalogue viewer — the site's shared CatPageViewer, identical to the nav/galleries */}
       {catView && (
-        <div className="rjv-catview">
-          <div className="cvhead">
-            <span className="cvtitle">{catView.label} Catalogue</span>
-            <button onClick={() => setCatView(null)} className="w-9 h-9 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25" aria-label="Close catalogue"><X size={16} /></button>
-          </div>
-          <div className="cvbody" data-lenis-prevent>
-            {catView.pages.map((p, i) => (
-              <img key={i} src={previewImg(p, 1200)} alt={`${catView.label} — page ${i + 1}`} loading="lazy" decoding="async" style={NO_SAVE_STYLE} {...NO_SAVE} />
-            ))}
-          </div>
-        </div>
+        <Suspense fallback={null}>
+          <CatPageViewer
+            pages={catView.pages}
+            label={catView.label}
+            onClose={() => setCatView(null)}
+            onCloseAll={() => { setCatView(null); if (onClose) onClose(); else window.location.href = "/"; }}
+          />
+        </Suspense>
       )}
     </div>
   );

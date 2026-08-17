@@ -90,13 +90,13 @@ export default function ClientPreview({ onClose }) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-jet/96 backdrop-blur-xl"
+      className={`fixed inset-0 z-[300] flex flex-col bg-jet/96 backdrop-blur-xl ${data ? "items-stretch justify-start" : "items-center justify-center"}`}
       onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >
       <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 60%, rgba(158, 113, 52,0.04) 0%, transparent 70%)" }} />
 
       {data ? (
-        <div ref={cardRef} className="relative w-full overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 2rem)" }}>
+        <div ref={cardRef} className="relative w-full overflow-y-auto flex flex-col" style={{ maxHeight: "100vh" }} data-lenis-prevent>
           <ClientGallery data={data} onClose={close} />
         </div>
       ) : (

@@ -10,18 +10,9 @@ import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState,
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
 
-// The site's catalogues — same set + order as the main nav bar (Navbar.jsx CATALOGUES).
-// Keep in sync with Navbar.jsx if those change.
-const _CAT1     = Array.from({ length: 38 }, (_, i) => `/images/catalogues/cat1/page-${String(i + 1).padStart(2, "0")}.jpg`);
-const _CAT2     = [1, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `/images/catalogues/cat2/page-${String(n).padStart(2, "0")}.jpg`);
-const _DULUX    = Array.from({ length: 8 }, (_, i) => `/images/catalogues/dulux/page-${String(i + 1).padStart(2, "0")}.jpg`);
-const _INTERPON = Array.from({ length: 8 }, (_, i) => `/images/catalogues/interpon/page-${String(i + 1).padStart(2, "0")}.jpg`);
-const CATALOGUES = [
-  { label: "Wall Art & Screens", pages: _CAT1 },
-  { label: "Sculpture, Light Features & Mirrors", pages: _CAT2 },
-  { label: "Dulux Colours", pages: _DULUX },
-  { label: "Interpon Colours", pages: _INTERPON },
-];
+// The site's catalogues — single source of truth in src/catalogues.js, shared
+// with the nav bar and the client vault so every catalogue UI stays identical.
+import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
