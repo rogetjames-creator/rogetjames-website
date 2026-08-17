@@ -167,16 +167,34 @@ function VaultUpload({ secret }) {
   const [creating, setCreating] = useState(false);
   const [createdLink, setCreatedLink] = useState("");
   const [dragOver, setDragOver] = useState(false);
+  const [current, setCurrent] = useState(null); // selected client's full record
+  const [loadingClient, setLoadingClient] = useState(false);
 
+  const post = (payload) => fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, ...payload }) }).then((r) => r.json());
+  const vthumb = (src) => `/.netlify/images?url=${encodeURIComponent(src)}&w=240&fm=webp&q=70`;
+
+  const loadClients = () => post({ action: "list-clients" })
+    .then((d) => { if (Array.isArray(d.clients)) setClients(d.clients); if (d.error) setMsg(d.error); setPhase("idle"); })
+    .catch(() => { setPhase("idle"); setMsg("Couldn't load clients."); });
+
+  useEffect(() => { if (secret) loadClients(); /* eslint-disable-next-line */ }, [secret]);
+
+  // When a client is picked, load their existing gallery.
   useEffect(() => {
-    if (!secret) return;
+    if (!clientId) { setCurrent(null); return; }
     let alive = true;
-    fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "list-clients" }) })
-      .then((r) => r.json())
-      .then((d) => { if (!alive) return; if (Array.isArray(d.clients)) setClients(d.clients); if (d.error) setMsg(d.error); setPhase("idle"); })
-      .catch(() => { if (alive) { setPhase("idle"); setMsg("Couldn't load clients."); } });
+    setLoadingClient(true);
+    post({ action: "get-client", clientId })
+      .then((d) => { if (!alive) return; setCurrent(d.error ? null : d); })
+      .finally(() => { if (alive) setLoadingClient(false); });
     return () => { alive = false; };
-  }, [secret]);
+    /* eslint-disable-next-line */
+  }, [clientId]);
+
+  const deleteImage = async (src) => {
+    const d = await post({ action: "delete-image", clientId, src });
+    if (!d.error) setCurrent((c) => c ? { ...c, images: (c.images || []).filter((i) => i.src !== src) } : c);
+  };
 
   const onFiles = async (files) => {
     const list = [];
@@ -211,7 +229,10 @@ function VaultUpload({ secret }) {
       const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images: staged }) });
       const d = await r.json();
       if (!r.ok || d.error) { setMsg(d.error || "Upload failed."); setPhase("idle"); return; }
-      setMsg(`Added ${d.added} image(s) — the client now has ${d.total} in their vault.`); setStaged([]); setPhase("done");
+      setMsg(`Added ${d.added} image(s) — the client now has ${d.total} in their vault. New photos show in the vault about a minute after the site rebuilds.`);
+      setStaged([]); setPhase("done");
+      post({ action: "get-client", clientId }).then((c) => { if (!c.error) setCurrent(c); });
+      loadClients();
     } catch (e) { setMsg("Upload failed — " + (e?.message || "check connection.")); setPhase("idle"); }
   };
 
@@ -250,6 +271,38 @@ function VaultUpload({ secret }) {
         <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : clients.length ? "+ Choose a client…" : "No clients yet — use New client above ↑"}</option>
         {clients.map((c) => <option key={c.id} value={c.id} className="bg-jet">{c.name}{c.count ? ` — ${c.count} photo${c.count === 1 ? "" : "s"}` : ""}</option>)}
       </select>
+
+      {/* Selected client's current gallery — what's already in their vault */}
+      {clientId && (
+        <div className="mb-4 rounded-xl border border-white/12 bg-black/20 p-3">
+          {loadingClient ? (
+            <p className="font-detail text-[11px] text-cream/50">Loading this vault…</p>
+          ) : current ? (
+            <>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+                <p className="font-detail text-[12px] text-cream/85">{current.name} — {(current.images || []).length} photo{(current.images || []).length === 1 ? "" : "s"} in vault</p>
+                <a href={current.vaultUrl} target="_blank" rel="noreferrer" className="font-detail text-[11px] text-clay hover:text-clay-light underline break-all">open their vault ↗</a>
+                <span className="font-detail text-[11px] text-cream/45">login: {current.email} · password: {current.password}</span>
+              </div>
+              {(current.images || []).length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {current.images.map((im) => (
+                    <div key={im.src} className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/15 group">
+                      <img src={vthumb(im.src)} alt="" className="w-full h-full object-cover" />
+                      <button onClick={() => deleteImage(im.src)} title="Remove from vault"
+                        className="absolute top-0 right-0 bg-black/75 text-cream w-5 h-5 flex items-center justify-center text-[11px] leading-none opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="font-detail text-[11px] text-cream/40">No photos yet — drag some in below.</p>
+              )}
+            </>
+          ) : (
+            <p className="font-detail text-[11px] text-cream/50">Couldn&apos;t load this vault.</p>
+          )}
+        </div>
+      )}
 
       <label onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={onDrop}
         className={`block w-full text-center py-6 rounded-2xl border-2 border-dashed font-detail text-sm cursor-pointer transition-all mb-3 ${dragOver ? "border-clay bg-clay/10 text-cream" : "border-white/20 text-cream/80 hover:border-clay/60 hover:text-cream"} ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>

@@ -92,6 +92,13 @@ export default async function handler(req) {
       return json({ ok: true, id: email, name, email, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(email)}` });
     }
 
+    if (action === "get-client") {
+      const email = emailKey(body.clientId || body.email);
+      const record = await store.get(email, { type: "json" }).catch(() => null);
+      if (!record) return json({ error: "Client not found." }, 404);
+      return json({ email: record.email, name: record.name, password: record.password, images: record.images || [], vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(record.email)}` });
+    }
+
     if (action === "add-images") {
       const email = emailKey(body.clientId || body.email);
       const images = body.images;
