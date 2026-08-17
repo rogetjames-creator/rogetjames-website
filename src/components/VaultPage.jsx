@@ -8,6 +8,27 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ── Vault image protection ──────────────────────────────────
+// Cap resolution (a saved/screenshotted copy is only screen-good, never print
+// quality), route through the Netlify resizer (same-origin, so the strict CSP
+// allows Airtable images), discourage saving/dragging, and tile a faint
+// watermark so any screenshot still carries attribution. Note: screenshots
+// themselves can't be blocked on the web — this makes leaks low-value/traceable.
+const VAULT_IMG_W = 1200;
+function vaultImg(url) {
+  if (!url || typeof url !== "string") return url;
+  if (url.startsWith("/.netlify/images") || url.startsWith("data:")) return url;
+  return `/.netlify/images?url=${encodeURIComponent(url)}&w=${VAULT_IMG_W}&fm=webp&q=72`;
+}
+const NO_SAVE = { draggable: false, onContextMenu: (e) => e.preventDefault() };
+const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", pointerEvents: "none" };
+const WATERMARK_URL = "data:image/svg+xml;utf8," + encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='340' height='230'><text x='20' y='120' fill='rgba(255,255,255,0.12)' font-family='sans-serif' font-size='24' letter-spacing='2' transform='rotate(-26 170 115)'>ROGETjames</text></svg>"
+);
+function Watermark() {
+  return <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: `url("${WATERMARK_URL}")`, backgroundRepeat: "repeat", zIndex: 4 }} />;
+}
+
 const STATUS_CONFIG = {
   "Design":      { label: "In Design",    dot: "#60a5fa" },
   "In Progress": { label: "In Progress",  dot: "#f59e0b" },
@@ -60,12 +81,17 @@ function Lightbox({ items, startIndex, onClose }) {
         </button>
       )}
       <div className="relative max-w-5xl w-full mx-20 md:mx-28 flex flex-col items-center">
-        <img
-          key={idx}
-          src={items[idx].url}
-          alt={items[idx].name || ""}
-          className="w-full max-h-[80vh] object-contain rounded-2xl"
-        />
+        <div className="relative inline-block">
+          <img
+            key={idx}
+            src={vaultImg(items[idx].url)}
+            alt={items[idx].name || ""}
+            className="w-full max-h-[80vh] object-contain rounded-2xl"
+            {...NO_SAVE}
+            style={NO_SAVE_STYLE}
+          />
+          <Watermark />
+        </div>
         {items[idx].name && (
           <p className="mt-5 font-detail text-xs text-cream/45 uppercase tracking-widest">
             {items[idx].name.replace(/\.[^.]+$/, "")}
@@ -157,11 +183,13 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
         {images.map((img, i) => (
           <div key={i} className="hero-slide absolute inset-0">
             <img
-              src={img.url}
+              src={vaultImg(img.url)}
               alt="" role="presentation"
               className="w-full h-full object-cover"
-              style={{ transform: "scale(1.04)" }}
+              {...NO_SAVE}
+              style={{ transform: "scale(1.04)", ...NO_SAVE_STYLE }}
             />
+            <Watermark />
             <div className="absolute inset-0 bg-gradient-to-t from-jet/85 via-jet/15 to-jet/20" />
           </div>
         ))}
@@ -262,10 +290,13 @@ function GallerySlideshow({ images, onOpenLightbox }) {
         {images.map((img, i) => (
           <div key={i} className="gal-slide absolute inset-0">
             <img
-              src={img.url}
+              src={vaultImg(img.url)}
               alt={img.name || ""}
               className="w-full h-full object-cover"
+              {...NO_SAVE}
+              style={NO_SAVE_STYLE}
             />
+            <Watermark />
             {/* Tap-to-fullscreen hint */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/25">
               <div className="w-12 h-12 rounded-full bg-jet/60 backdrop-blur-sm border border-cream/20 flex items-center justify-center">

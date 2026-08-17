@@ -323,3 +323,9 @@
   for = "/*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# Allow the Netlify Image CDN to fetch + resize Airtable-hosted attachment images
+# (used by the client Vault). Serving them through /.netlify/images makes them
+# same-origin (so the strict CSP allows them) and lets us cap their resolution.
+[images]
+  remote_images = ["https://[^/]*\\.airtableusercontent\\.com/.*", "https://dl\\.airtable\\.com/.*"]
