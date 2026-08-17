@@ -17,11 +17,17 @@ const previewImg = (url, w) => {
 const NO_SAVE = { onContextMenu: (e) => e.preventDefault(), onDragStart: (e) => e.preventDefault(), draggable: false };
 const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" };
 
+// Placeholder spiel shown when a client has no custom message yet.
+const DEFAULT_SPIEL = "This is your private preview — a selection prepared exclusively for you. Take your time with each piece: study the detail, picture it in your space, and note anything that draws you in. Every design here can be tailored in size, finish and material to suit your setting. When you're ready, we'll refine the shortlist together and move toward your final commission.";
+
 const CSS = `
 .rjv{display:flex;flex-direction:column;color:#F2F0E9;width:100%}
 .rjv-head{text-align:center;padding:0 16px 0}
-.rjv-name{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(24px,4vw,44px);line-height:1.02;letter-spacing:-.01em;text-transform:uppercase;margin:0;color:#F2F0E9}
-.rjv-name .w2{color:rgba(237,232,223,.6)}
+/* Client name — vertical label down the left, reading bottom-to-top,
+   two-tone (grey + charcoal), muted */
+.rjv-vname{position:fixed;left:38px;top:50%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(28px,4.4vw,58px);line-height:1;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;z-index:15;pointer-events:none;user-select:none}
+.rjv-vname .w1{color:rgba(237,232,223,.42)}
+.rjv-vname .w2{color:rgba(237,232,223,.2)}
 .rjv-cat{display:inline-block;margin-top:16px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:999px;padding:8px 18px;text-decoration:none;transition:.25s}
 .rjv-cat:hover{background:#9E7134;border-color:#9E7134}
 .rjv-mark{position:relative;width:78px;height:78px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
@@ -33,8 +39,8 @@ const CSS = `
 .rjv-stage{height:58vh;display:flex;align-items:center;justify-content:center;margin:18px 0 8px}
 .rjv-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px;box-shadow:0 26px 70px rgba(0,0,0,.55);cursor:zoom-in;transition:opacity .18s ease}
 .rjv-cap{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
-.rjv-cap .dn{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(237,232,223,.55)}
-.rjv-cap .dn b{color:#F2F0E9;font-weight:600}
+.rjv-cap .dn{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(237,232,223,.34)}
+.rjv-cap .dn b{color:rgba(237,232,223,.56);font-weight:600}
 .rjv-thumbs{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:2px}
 .rjv-thumbs::-webkit-scrollbar{display:none}
 .rjv-thumb{flex:0 0 auto;width:62px;height:62px;border-radius:9px;overflow:hidden;border:1px solid rgba(237,232,223,.16);cursor:pointer;position:relative;transition:border-color .25s,transform .25s}
@@ -55,7 +61,8 @@ const CSS = `
 .rjv-catmenu{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px);display:flex;flex-direction:column}
 .rjv-catmenu button{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:var(--font-detail,system-ui,sans-serif);transition:.2s;line-height:1.4}
 .rjv-catmenu button:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
-@media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}}
+@media(max-width:900px){.rjv-vname{font-size:26px;left:28px}}
+@media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}.rjv-vname{font-size:18px;left:20px}}
 `;
 
 export default function VaultGallery({ data, onClose }) {
@@ -107,21 +114,22 @@ export default function VaultGallery({ data, onClose }) {
         </div>
       </div>
 
+      {/* Client name — vertical two-tone label down the left */}
+      <div className="rjv-vname" aria-label={data.clientName || "Your Gallery"}>
+        {(() => {
+          const parts = (data.clientName || "Your Gallery").trim().split(/\s+/);
+          return <><span className="w1">{parts[0]}</span>{parts.length > 1 && <span className="w2"> {parts.slice(1).join(" ")}</span>}</>;
+        })()}
+      </div>
+
       <div className="rjv">
-        {/* Header: RJ mark divider (logo + lines) above the client name, then greeting */}
+        {/* Header: RJ mark divider (logo + lines), top centre — level with the pills */}
         <div className="rjv-head">
           <div className="rjv-mark">
             <span className="ln l" />
             <span className="ln r" />
             <img src={previewImg("/images/roj-logo.png", 240)} alt="ROGETjames" />
           </div>
-          <h2 className="rjv-name">
-            {(() => {
-              const parts = (data.clientName || "Your Gallery").trim().split(/\s+/);
-              return <>{parts[0]}{parts.length > 1 && <span className="w2"> {parts.slice(1).join(" ")}</span>}</>;
-            })()}
-          </h2>
-          {data.greeting && <p className="rjv-greet">{data.greeting}</p>}
         </div>
 
         {total === 0 ? (
@@ -153,8 +161,9 @@ export default function VaultGallery({ data, onClose }) {
           </>
         )}
 
-        {/* Spiel + links underneath */}
-        {data.spiel && <p className="rjv-spiel">{data.spiel}</p>}
+        {/* Greeting + spiel underneath (scrolls) */}
+        {data.greeting && <p className="rjv-greet">{data.greeting}</p>}
+        <p className="rjv-spiel">{data.spiel || DEFAULT_SPIEL}</p>
         {data.links?.length > 0 && (
           <div className="rjv-links">
             {data.links.map((l, i) => <a key={i} className="rjv-link" href={l.url} target="_blank" rel="noreferrer">{l.label} ↗</a>)}
