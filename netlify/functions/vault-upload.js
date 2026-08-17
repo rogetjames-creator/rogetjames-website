@@ -1,15 +1,19 @@
-// Admin-only. Lets /media upload images straight into a client's Vault:
-//   • "list-clients" → returns the Airtable clients (id, name, email) for the picker
-//   • "add-images"   → commits the photos into the repo, then appends them to that
-//                       client's Airtable "Images" attachment field (so the vault,
-//                       which reads Airtable, shows them). Auth: VAULT_ADMIN_SECRET.
+// Admin-only. Runs the client Vault as a simple gallery — no Airtable.
+// A client is just: name + email + password + their images. Everything lives in
+// the private "vault-clients" Netlify Blobs store (server-side only, never served
+// to the public); the photos themselves are committed into the repo like every
+// other gallery image. Actions (all gated by VAULT_ADMIN_SECRET):
+//   • "list-clients"  → clients for the picker (email, name, image count)
+//   • "create-client" → add a client (name, email, password) → returns vault link
+//   • "add-images"    → commit photos into the repo + attach them to the client
 import crypto from "node:crypto";
+import { getStore } from "@netlify/blobs";
 
 const OWNER = "rogetjames-creator";
 const REPO = "rogetjames-website";
 const BRANCH = "main";
 const MAX_BYTES = 8 * 1024 * 1024;
-const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "Clients";
+const STORE = "vault-clients";
 
 function json(data, status = 200) {
   return { statusCode: status, headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
@@ -19,6 +23,8 @@ function safeEqual(a, b) {
   return A.length === B.length && crypto.timingSafeEqual(A, B);
 }
 function extFor(ct) { return ct.includes("png") ? "png" : ct.includes("webp") ? "webp" : ct.includes("gif") ? "gif" : "jpg"; }
+const emailKey = (e) => String(e || "").trim().toLowerCase();
+const slug = (e) => emailKey(e).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "client";
 
 async function gh(path, opts = {}) {
   const res = await fetch(`https://api.github.com${path}`, {
@@ -35,7 +41,7 @@ async function gh(path, opts = {}) {
   return res.json();
 }
 
-// Commit a set of files as one commit (no manifest — vault images aren't in it).
+// Commit a set of files as one commit.
 async function commitFiles(addFiles, message) {
   const ref = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
   const baseSha = ref.object.sha;
@@ -50,81 +56,74 @@ async function commitFiles(addFiles, message) {
   await gh(`/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", body: JSON.stringify({ sha: newCommit.sha }) });
 }
 
-const AT_BASE = () => `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
-const atHeaders = () => ({ Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`, "Content-Type": "application/json" });
-
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") return json({ error: "Method not allowed" }, 405);
-  if (!safeEqual((JSON.parse(event.body || "{}").adminSecret), process.env.VAULT_ADMIN_SECRET)) return json({ error: "Unauthorized" }, 401);
-  if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) return json({ error: "Airtable not configured on the server." }, 500);
+  let body;
+  try { body = JSON.parse(event.body || "{}"); } catch { return json({ error: "Bad request" }, 400); }
+  if (!safeEqual(body.adminSecret, process.env.VAULT_ADMIN_SECRET)) return json({ error: "Unauthorized" }, 401);
 
-  const body = JSON.parse(event.body || "{}");
+  const store = getStore({ name: STORE, consistency: "strong" });
   const action = body.action || "add-images";
 
   try {
     if (action === "list-clients") {
+      const { blobs } = await store.list();
       const clients = [];
-      let offset;
-      do {
-        // No fields[] restriction — asking for a field name that isn't an exact
-        // match makes Airtable reject the whole request (empty list). Read all.
-        const url = `${AT_BASE()}?pageSize=100${offset ? `&offset=${offset}` : ""}`;
-        const r = await fetch(url, { headers: atHeaders() });
-        const d = await r.json();
-        if (!r.ok) return json({ error: `Airtable: ${d?.error?.message || d?.error?.type || r.status}` }, 502);
-        (d.records || []).forEach((rec) => {
-          const f = rec.fields || {};
-          clients.push({ id: rec.id, name: f.Name || f.name || f["Project Title"] || f.Email || "(unnamed)", email: f.Email || f.email || "", project: f["Project Title"] || "" });
-        });
-        offset = d.offset;
-      } while (offset);
-      clients.sort((a, b) => a.name.localeCompare(b.name));
+      for (const b of blobs) {
+        const c = await store.get(b.key, { type: "json" }).catch(() => null);
+        if (c) clients.push({ id: b.key, email: c.email, name: c.name || c.email, count: (c.images || []).length, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(c.email)}` });
+      }
+      clients.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       return json({ clients });
     }
 
     if (action === "create-client") {
       const name = (body.name || "").trim();
-      const email = (body.email || "").trim();
+      const email = emailKey(body.email);
+      const password = (body.password || "").trim();
       if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Enter a name and a valid email." }, 400);
-      const token = crypto.randomUUID();
-      const res = await fetch(AT_BASE(), { method: "POST", headers: atHeaders(), body: JSON.stringify({ fields: { Name: name, Email: email, Token: token } }) });
-      const d = await res.json();
-      if (!res.ok) return json({ error: d?.error?.message || "Couldn't create the client." }, 502);
-      return json({ ok: true, id: d.id, name, email, token, vaultUrl: `https://rogetjames.com/vault?token=${token}` });
+      if (password.length < 4) return json({ error: "Set a password of at least 4 characters." }, 400);
+      const existing = await store.get(email, { type: "json" }).catch(() => null);
+      if (existing) return json({ error: "A client with that email already exists." }, 409);
+      const record = { email, name, password, images: [], token: crypto.randomUUID(), createdTime: new Date().toISOString() };
+      await store.setJSON(email, record);
+      return json({ ok: true, id: email, name, email, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(email)}` });
     }
 
     if (action === "add-images") {
-      const { clientId, images } = body;
-      if (!clientId || !Array.isArray(images) || !images.length) return json({ error: "Pick a client and at least one photo." }, 400);
+      const email = emailKey(body.clientId || body.email);
+      const images = body.images;
+      if (!email || !Array.isArray(images) || !images.length) return json({ error: "Pick a client and at least one photo." }, 400);
       if (!process.env.GITHUB_TOKEN) return json({ error: "Upload storage not configured — GITHUB_TOKEN missing." }, 500);
+      const record = await store.get(email, { type: "json" }).catch(() => null);
+      if (!record) return json({ error: "That client no longer exists." }, 404);
 
-      // Commit the photos into the repo.
       const addFiles = [];
-      const rawUrls = [];
+      const newImages = [];
       for (const img of images) {
         const m = /^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/.exec(img?.dataUrl || "");
         if (!m) continue;
         if (Buffer.from(m[2], "base64").length > MAX_BYTES) continue;
         const id = `${Date.now()}_${crypto.randomBytes(3).toString("hex")}`;
-        const rel = `public/images/vault/${clientId}/${id}.${extFor(m[1])}`;
-        addFiles.push({ path: rel, base64: m[2] });
-        rawUrls.push(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${rel}`);
+        const rel = `images/vault/${slug(email)}/${id}.${extFor(m[1])}`;
+        addFiles.push({ path: `public/${rel}`, base64: m[2] });
+        newImages.push({ src: `/${rel}`, name: img.name || "", createdTime: new Date().toISOString() });
       }
       if (!addFiles.length) return json({ error: "No valid images." }, 400);
-      await commitFiles(addFiles, `Vault images for client ${clientId} (${addFiles.length})`);
+      await commitFiles(addFiles, `Vault images for ${email} (${newImages.length})`);
+      record.images = [...(record.images || []), ...newImages];
+      await store.setJSON(email, record);
+      return json({ ok: true, added: newImages.length, total: record.images.length });
+    }
 
-      // Append to the client's Airtable Images (keep existing by id, add new by url).
-      const recRes = await fetch(`${AT_BASE()}/${clientId}`, { headers: atHeaders() });
-      const rec = await recRes.json();
-      if (!recRes.ok) return json({ error: rec?.error?.message || "Client not found in Airtable." }, 404);
-      const existing = Array.isArray(rec.fields?.Images) ? rec.fields.Images.map((a) => ({ id: a.id })) : [];
-      const patch = await fetch(`${AT_BASE()}/${clientId}`, {
-        method: "PATCH", headers: atHeaders(),
-        body: JSON.stringify({ fields: { Images: [...existing, ...rawUrls.map((url) => ({ url }))] } }),
-      });
-      const patchData = await patch.json();
-      if (!patch.ok) return json({ error: patchData?.error?.message || "Airtable update failed." }, 502);
-      return json({ ok: true, added: rawUrls.length });
+    if (action === "delete-image") {
+      const email = emailKey(body.clientId || body.email);
+      const src = body.src;
+      const record = await store.get(email, { type: "json" }).catch(() => null);
+      if (!record) return json({ error: "Client not found." }, 404);
+      record.images = (record.images || []).filter((i) => i.src !== src);
+      await store.setJSON(email, record);
+      return json({ ok: true, total: record.images.length });
     }
 
     return json({ error: "Unknown action" }, 400);

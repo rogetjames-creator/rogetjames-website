@@ -596,26 +596,27 @@ function ErrorScreen() {
 }
 
 // ── Email verification gate ──────────────────────────────────
-function VerifyStep({ token, onVerified }) {
-  const [email, setEmail] = useState("");
+function VerifyStep({ prefillEmail = "", onVerified }) {
+  const [email, setEmail] = useState(prefillEmail);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const formRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || !password) return;
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/vault-verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, email: email.trim().toLowerCase() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
-        setError(data.error || "Email not recognised. Please check and try again.");
+        setError(data.error || "Email or password not recognised. Please check and try again.");
         if (formRef.current) {
           gsap.fromTo(formRef.current, { x: -8 }, { x: 8, duration: 0.06, repeat: 5, yoyo: true, ease: "none", onComplete: () => gsap.set(formRef.current, { x: 0 }) });
         }
@@ -653,10 +654,10 @@ function VerifyStep({ token, onVerified }) {
             </div>
           </div>
           <p className="font-detail text-sm text-cream/65 text-center leading-relaxed mb-8">
-            Enter the email address associated with your exclusive preview.
+            Enter your email and password to view your private gallery.
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <div className="space-y-3">
               <input
                 type="email"
                 value={email}
@@ -666,13 +667,22 @@ function VerifyStep({ token, onVerified }) {
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/30 outline-none transition-colors duration-200"
                 style={{ caretColor: "#9E7134" }}
               />
+              <input
+                type="password"
+                value={password}
+                onChange={e => { setPassword(e.target.value); setError(""); }}
+                placeholder="Your password"
+                autoComplete="current-password"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/30 outline-none transition-colors duration-200"
+                style={{ caretColor: "#9E7134" }}
+              />
               {error && (
                 <p className="font-detail text-[11px] text-clay text-center mt-2 leading-relaxed">{error}</p>
               )}
             </div>
             <button
               type="submit"
-              disabled={!email.trim() || loading}
+              disabled={!email.trim() || !password || loading}
               className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-default transition-all duration-200 flex items-center justify-center gap-2"
             >
               {loading ? (
@@ -821,16 +831,15 @@ function AdminPanel() {
 // ── Root component ────────────────────────────────────────────
 export default function VaultPage() {
   const params = new URLSearchParams(window.location.search);
-  const token = params.get("token");
   const isAdmin = params.get("admin") === "1";
-  const STORAGE_KEY = token ? `roj_vault_${token}` : null;
+  const prefillEmail = params.get("e") || "";
+  const STORAGE_KEY = "roj_vault_session";
 
   const [step, setStep] = useState("loading");
   const [clientData, setClientData] = useState(null);
 
   useEffect(() => {
     if (isAdmin) { setStep("admin"); return; }
-    if (!token) { setStep("error"); return; }
     try {
       const cached = localStorage.getItem(STORAGE_KEY);
       if (cached) {
@@ -850,9 +859,8 @@ export default function VaultPage() {
   };
 
   if (step === "loading") return <LoadingScreen />;
-  if (step === "error")   return <ErrorScreen />;
   if (step === "admin")   return <AdminPanel />;
-  if (step === "verify")  return <VerifyStep token={token} onVerified={handleVerified} />;
+  if (step === "verify")  return <VerifyStep prefillEmail={prefillEmail} onVerified={handleVerified} />;
   if (step === "content") return <VaultContent clientData={clientData} />;
   return null;
 }

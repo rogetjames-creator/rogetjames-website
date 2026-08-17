@@ -1,108 +1,57 @@
-// Airtable table name — change via AIRTABLE_TABLE_NAME env var if needed
-const TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || "Clients";
+// Client-facing. Unlocks a vault with email + password (no Airtable).
+// Clients live in the private "vault-clients" Netlify Blobs store, written by the
+// admin at /media. A matching email + password returns that client's gallery.
+import crypto from "node:crypto";
+import { getStore } from "@netlify/blobs";
 
-/*
-  Expected Airtable fields:
-    Name               — single line text
-    Email              — email
-    Token              — single line text (auto-generated, do not edit)
-    Project Title      — single line text
-    Project Description— long text
-    Location           — single line text (e.g. "Perth, WA")
-    Status             — single select: Design / In Progress / Review / Complete / Delivered
-    Greeting           — single line text (optional opening message)
-    Images             — attachments (project images, used for hero + gallery)
-    Key Points         — long text, one point per line
-    Links              — long text, one link per line, format: "Label|https://url" or "Label|https://url|Description"
-    PDFs               — attachments
-    Invite Sent        — checkbox (auto-set when invite is sent)
-*/
+const STORE = "vault-clients";
+const emailKey = (e) => String(e || "").trim().toLowerCase();
+
+function safeEqual(a, b) {
+  const A = Buffer.from(String(a || "")); const B = Buffer.from(String(b || ""));
+  return A.length === B.length && crypto.timingSafeEqual(A, B);
+}
 
 export default async function handler(req) {
-  if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
-  }
-
-  const apiKey = process.env.AIRTABLE_API_KEY;
-  const baseId = process.env.AIRTABLE_BASE_ID;
-  if (!apiKey || !baseId) return json({ error: "Server configuration missing." }, 500);
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   let body;
   try { body = await req.json(); }
   catch { return json({ error: "Invalid request." }, 400); }
 
-  const { token, email } = body;
-  if (!token || !email) return json({ error: "Missing token or email." }, 400);
+  const email = emailKey(body.email);
+  const password = String(body.password || "");
+  if (!email || !password) return json({ error: "Enter your email and password." }, 400);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Enter a valid email." }, 400);
 
-  // Reject anything that could break out of the Airtable formula string below.
-  // Tokens are UUID-style; emails are normal addresses. Quotes/parens/commas/whitespace are not allowed.
-  const tokenOk = typeof token === "string" && /^[A-Za-z0-9._-]{1,100}$/.test(token);
-  const emailOk = typeof email === "string" && /^[^\s"'(),]{1,120}@[^\s"'(),]{1,120}$/.test(email);
-  if (!tokenOk || !emailOk) return json({ error: "Invalid token or email." }, 400);
-
-  const formula = encodeURIComponent(`AND({Token}="${token}",LOWER({Email})="${email.toLowerCase()}")`);
-  const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(TABLE_NAME)}?filterByFormula=${formula}`;
-
-  let res, data;
+  let record;
   try {
-    res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
-    data = await res.json();
+    const store = getStore({ name: STORE, consistency: "strong" });
+    record = await store.get(email, { type: "json" });
   } catch {
-    return json({ error: "Could not reach database." }, 502);
+    return json({ error: "Could not reach the vault. Try again shortly." }, 502);
   }
 
-  if (!res.ok || !data.records?.length) {
-    return json({ error: "Email not recognised for this link. Please check and try again." }, 404);
+  if (!record || !safeEqual(password, record.password)) {
+    return json({ error: "Email or password not recognised. Please check and try again." }, 401);
   }
-
-  const f = data.records[0].fields;
 
   return json({
-    clientName:         f["Name"] || "",
-    projectTitle:       f["Project Title"] || "",
-    projectDescription: f["Project Description"] || "",
-    location:           f["Location"] || "",
-    status:             f["Status"] || null,
-    greeting:           f["Greeting"] || null,
-    images:             parseAttachments(f["Images"]),
-    pdfs:               parseAttachments(f["PDFs"]),
-    keyPoints:          parseLines(f["Key Points"]),
-    links:              parseLinks(f["Links"]),
+    clientName: record.name || "",
+    projectTitle: record.projectTitle || "",
+    projectDescription: record.projectDescription || "",
+    location: record.location || "",
+    status: record.status || null,
+    greeting: record.greeting || null,
+    images: (record.images || []).map((i) => ({ url: i.src, name: i.name || "" })),
+    pdfs: [],
+    keyPoints: [],
+    links: [],
   }, 200);
 }
 
-function parseAttachments(field) {
-  if (!field) return [];
-  if (Array.isArray(field)) return field.map(f => ({ url: f.url || f, name: f.filename || "" }));
-  if (typeof field === "string") {
-    return field.split(",").map(s => s.trim()).filter(Boolean).map(u => ({ url: u, name: "" }));
-  }
-  return [];
-}
-
-// One point per line
-function parseLines(field) {
-  if (!field || typeof field !== "string") return [];
-  return field.split("\n").map(s => s.trim()).filter(Boolean);
-}
-
-// Format: "Label|https://url" or "Label|https://url|Description"
-function parseLinks(field) {
-  if (!field || typeof field !== "string") return [];
-  return field.split("\n")
-    .map(s => {
-      const parts = s.split("|").map(p => p.trim());
-      const [label, url, description] = parts;
-      return label && url ? { label, url, description: description || null } : null;
-    })
-    .filter(Boolean);
-}
-
 function json(data, status) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+  return new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 }
 
 export const config = { path: "/api/vault-verify" };

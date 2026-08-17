@@ -163,8 +163,10 @@ function VaultUpload({ secret }) {
   const [msg, setMsg] = useState("");
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [creating, setCreating] = useState(false);
   const [createdLink, setCreatedLink] = useState("");
+  const [dragOver, setDragOver] = useState(false);
 
   useEffect(() => {
     if (!secret) return;
@@ -185,16 +187,19 @@ function VaultUpload({ secret }) {
     }
     setStaged((p) => [...p, ...list]);
   };
+  const onDrop = (e) => { e.preventDefault(); setDragOver(false); onFiles(e.dataTransfer?.files); };
 
   const createClient = async () => {
-    if (!newName.trim() || !newEmail.trim()) return;
+    if (!newName.trim() || !newEmail.trim() || newPassword.trim().length < 4) return;
     setCreating(true); setMsg(""); setCreatedLink("");
     try {
-      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "create-client", name: newName.trim(), email: newEmail.trim() }) });
+      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "create-client", name: newName.trim(), email: newEmail.trim(), password: newPassword.trim() }) });
       const d = await r.json();
       if (!r.ok || d.error) { setMsg(d.error || "Couldn't create client."); setCreating(false); return; }
-      setClients((p) => [...p, { id: d.id, name: d.name, email: d.email, project: "" }].sort((a, b) => a.name.localeCompare(b.name)));
-      setClientId(d.id); setCreatedLink(d.vaultUrl); setNewName(""); setNewEmail("");
+      setClients((p) => [...p, { id: d.id, name: d.name, email: d.email }].sort((a, b) => (a.name || "").localeCompare(b.name || "")));
+      setClientId(d.id);
+      setCreatedLink(`Vault link: ${d.vaultUrl}  ·  password: ${newPassword.trim()}`);
+      setNewName(""); setNewEmail(""); setNewPassword("");
     } catch (e) { setMsg("Create failed — " + (e?.message || "check connection.")); }
     setCreating(false);
   };
@@ -206,14 +211,19 @@ function VaultUpload({ secret }) {
       const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images: staged }) });
       const d = await r.json();
       if (!r.ok || d.error) { setMsg(d.error || "Upload failed."); setPhase("idle"); return; }
-      setMsg(`Added ${d.added} image(s) to the client's vault.`); setStaged([]); setPhase("done");
+      setMsg(`Added ${d.added} image(s) — the client now has ${d.total} in their vault.`); setStaged([]); setPhase("done");
     } catch (e) { setMsg("Upload failed — " + (e?.message || "check connection.")); setPhase("idle"); }
   };
+
+  const btnLabel = phase === "sending" ? "Sending…"
+    : !clientId ? "Pick or create a client first"
+    : !staged.length ? "Add photos first"
+    : `Add ${staged.length} photo${staged.length === 1 ? "" : "s"} to vault →`;
 
   return (
     <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
       <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Client Vault — add images</p>
-      <p className="font-detail text-[11px] text-cream/50 mb-4">Pick a client and add photos — they go straight into that client&apos;s private vault. They open their link and unlock with their email.</p>
+      <p className="font-detail text-[11px] text-cream/50 mb-4">Make a client (name, email, a password), then drag photos in — they go straight into that client&apos;s private gallery. The client opens their link and unlocks with that email and password.</p>
 
       {/* New client */}
       <div className="mb-4 rounded-xl border border-clay/25 bg-clay/5 p-3">
@@ -223,27 +233,48 @@ function VaultUpload({ secret }) {
             className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
           <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Their email"
             className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
-          <button onClick={createClient} disabled={!newName.trim() || !newEmail.trim() || creating}
+          <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Password"
+            className="sm:w-32 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+          <button onClick={createClient} disabled={!newName.trim() || !newEmail.trim() || newPassword.trim().length < 4 || creating}
             className="px-4 py-2 rounded-xl bg-clay text-cream font-detail text-[12px] hover:bg-clay-light disabled:opacity-30 transition-all whitespace-nowrap">
             {creating ? "Creating…" : "+ Create"}
           </button>
         </div>
         {createdLink && (
-          <p className="font-detail text-[11px] text-green-400 mt-2 break-all">Created ✓ — vault link: <span className="text-cream/80">{createdLink}</span></p>
+          <p className="font-detail text-[11px] text-green-400 mt-2 break-all">Created ✓ — <span className="text-cream/80">{createdLink}</span></p>
         )}
       </div>
 
       <select value={clientId} onChange={(e) => setClientId(e.target.value)}
         className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none mb-3 cursor-pointer">
         <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : clients.length ? "+ Choose a client…" : "No clients yet — use New client above ↑"}</option>
-        {clients.map((c) => <option key={c.id} value={c.id} className="bg-jet">{c.name}{c.project ? ` — ${c.project}` : ""}</option>)}
+        {clients.map((c) => <option key={c.id} value={c.id} className="bg-jet">{c.name}{c.count ? ` — ${c.count} photo${c.count === 1 ? "" : "s"}` : ""}</option>)}
       </select>
-      <input type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)}
-        className="block w-full text-[12px] text-cream/60 mb-3 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-clay file:text-cream file:cursor-pointer" />
-      {staged.length > 0 && <p className="font-detail text-[11px] text-cream/50 mb-3">{staged.length} photo{staged.length === 1 ? "" : "s"} ready.</p>}
+
+      <label onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={onDrop}
+        className={`block w-full text-center py-6 rounded-2xl border-2 border-dashed font-detail text-sm cursor-pointer transition-all mb-3 ${dragOver ? "border-clay bg-clay/10 text-cream" : "border-white/20 text-cream/80 hover:border-clay/60 hover:text-cream"} ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
+        <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
+        Drag photos here, or tap to choose
+      </label>
+
+      {staged.length > 0 && (
+        <>
+          <p className="font-detail text-[10px] text-cream/50 mb-2">{staged.length} photo{staged.length === 1 ? "" : "s"} ready to send:</p>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {staged.map((s, i) => (
+              <div key={i} className="relative w-14 h-14 rounded-lg overflow-hidden border border-white/15">
+                <img src={s.dataUrl} alt="" className="w-full h-full object-cover" />
+                <button onClick={() => setStaged((p) => p.filter((_, j) => j !== i))}
+                  className="absolute top-0 right-0 bg-black/70 text-cream w-4 h-4 flex items-center justify-center text-[10px] leading-none">×</button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       <button onClick={send} disabled={!clientId || !staged.length || phase === "sending"}
         className="w-full py-3 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-        {phase === "sending" ? "Sending…" : "Add to vault →"}
+        {btnLabel}
       </button>
       {msg && <p className={`font-detail text-[11px] text-center mt-3 ${phase === "done" ? "text-green-400" : "text-amber-300"}`}>{msg}</p>}
     </div>
