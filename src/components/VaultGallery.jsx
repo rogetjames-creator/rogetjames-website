@@ -15,6 +15,15 @@ const previewImg = (url, w) => {
 const NO_SAVE = { onContextMenu: (e) => e.preventDefault(), onDragStart: (e) => e.preventDefault(), draggable: false };
 const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" };
 
+// All studio catalogues — image-page sets open in an in-page viewer; the colour
+// charts are PDFs that open in a new tab.
+const CATALOGUES = [
+  { label: "Wall Art & Screens", pages: Array.from({ length: 38 }, (_, i) => `/images/catalogues/cat1/page-${String(i + 1).padStart(2, "0")}.jpg`) },
+  { label: "Sculpture, Light Features & Mirrors", pages: Array.from({ length: 10 }, (_, i) => `/images/catalogues/cat2/page-${String(i + 1).padStart(2, "0")}.jpg`) },
+  { label: "Dulux Colours", pdf: "/pdfs/dulux-colours.pdf" },
+  { label: "Interpon Colours", pdf: "/pdfs/interpon-colours.pdf" },
+];
+
 const CSS = `
 .rjv{display:flex;flex-direction:column;color:#F2F0E9;width:100%}
 .rjv-head{text-align:center;padding:2px 16px 0}
@@ -41,6 +50,21 @@ const CSS = `
 .rjv-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0}
 .rjv-link{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.02em;color:#c79a5b;border:1px solid rgba(158,113,52,.45);border-radius:999px;padding:6px 14px;transition:.2s;text-decoration:none}
 .rjv-link:hover{color:#e6c489;border-color:#9E7134}
+.rjv-topbar{position:fixed;top:14px;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:flex-start;padding:0 16px;pointer-events:none}
+.rjv-topbar>*{pointer-events:auto}
+.rjv-web{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(237,232,223,.72);border:1px solid rgba(237,232,223,.22);border-radius:999px;padding:8px 14px;background:rgba(10,10,10,.5);backdrop-filter:blur(6px);cursor:pointer;text-decoration:none;transition:.2s}
+.rjv-web:hover{color:#fff;border-color:rgba(237,232,223,.5)}
+.rjv-catwrap{position:relative}
+.rjv-catbtn{display:flex;align-items:center;gap:8px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.28);border-radius:999px;padding:8px 16px;background:rgba(10,10,10,.5);backdrop-filter:blur(6px);cursor:pointer;transition:.2s}
+.rjv-catbtn:hover{border-color:#9E7134;color:#e6c489}
+.rjv-catmenu{position:absolute;top:calc(100% + 8px);right:0;min-width:260px;background:#141414;border:1px solid rgba(237,232,223,.12);border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.rjv-catmenu button{text-align:left;font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;letter-spacing:.02em;color:rgba(237,232,223,.82);background:none;border:none;border-radius:9px;padding:10px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.rjv-catmenu button:hover{background:rgba(158,113,52,.14);color:#f0d9b6}
+.rjv-catview{position:fixed;inset:0;z-index:330;background:#0b0b0b;display:flex;flex-direction:column}
+.rjv-catview .cvhead{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(237,232,223,.08);flex-shrink:0}
+.rjv-catview .cvtitle{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,232,223,.72)}
+.rjv-catview .cvbody{overflow-y:auto;flex:1;padding:20px 12px 44px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.rjv-catview .cvbody img{width:min(880px,96vw);height:auto;border-radius:8px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
 @media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}}
 `;
 
@@ -49,6 +73,8 @@ export default function VaultGallery({ data, onClose }) {
   const items = data.items || [];
   const [idx, setIdx] = useState(0);
   const [zoom, setZoom] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
+  const [catView, setCatView] = useState(null); // an image catalogue being viewed
   const total = items.length;
   const item = items[idx] || items[0];
 
@@ -61,22 +87,35 @@ export default function VaultGallery({ data, onClose }) {
 
   useEffect(() => {
     const h = (e) => {
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
-      if (e.key === "Escape" && zoom) setZoom(false);
+      if (e.key === "Escape") { if (catView) setCatView(null); else if (catOpen) setCatOpen(false); else if (zoom) setZoom(false); return; }
+      if (zoom) { if (e.key === "ArrowLeft") prev(); if (e.key === "ArrowRight") next(); }
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [prev, next, zoom]);
+  }, [prev, next, zoom, catOpen, catView]);
 
   return (
     <div ref={rootRef} className="w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-9">
       <style>{CSS}</style>
-      {onClose && (
-        <button onClick={onClose} className="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors z-20" aria-label="Close">
-          <X size={18} />
-        </button>
-      )}
+
+      {/* Top bar: visit-website (left) + catalogues dropdown (right) */}
+      <div className="rjv-topbar">
+        {onClose
+          ? <button className="rjv-web" onClick={onClose}>← Visit website</button>
+          : <a className="rjv-web" href="/">← Visit website</a>}
+        <div className="rjv-catwrap">
+          <button className="rjv-catbtn" onClick={() => setCatOpen((o) => !o)}>Catalogues ▾</button>
+          {catOpen && (
+            <div className="rjv-catmenu">
+              {CATALOGUES.map((c) => (
+                <button key={c.label} onClick={() => { setCatOpen(false); if (c.pdf) window.open(c.pdf, "_blank", "noopener"); else setCatView(c); }}>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="rjv">
         {/* Header: RJ mark divider (logo + lines) above the client name, then greeting */}
@@ -93,7 +132,6 @@ export default function VaultGallery({ data, onClose }) {
             })()}
           </h2>
           {data.greeting && <p className="rjv-greet">{data.greeting}</p>}
-          <a className="rjv-cat" href="/wall-art">Wall Art Catalogue ↗</a>
         </div>
 
         {total === 0 ? (
@@ -141,6 +179,21 @@ export default function VaultGallery({ data, onClose }) {
           {total > 1 && <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 md:left-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Previous"><ChevronLeft size={22} /></button>}
           <img src={previewImg(item.src, 1600)} alt={item.title || ""} className="max-w-[92vw] max-h-[90vh] object-contain" style={NO_SAVE_STYLE} {...NO_SAVE} onClick={(e) => e.stopPropagation()} />
           {total > 1 && <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 md:right-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Next"><ChevronRight size={22} /></button>}
+        </div>
+      )}
+
+      {/* Catalogue viewer (image-page catalogues) */}
+      {catView && (
+        <div className="rjv-catview">
+          <div className="cvhead">
+            <span className="cvtitle">{catView.label} Catalogue</span>
+            <button onClick={() => setCatView(null)} className="w-9 h-9 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25" aria-label="Close catalogue"><X size={16} /></button>
+          </div>
+          <div className="cvbody" data-lenis-prevent>
+            {catView.pages.map((p, i) => (
+              <img key={i} src={previewImg(p, 1200)} alt={`${catView.label} — page ${i + 1}`} loading="lazy" decoding="async" style={NO_SAVE_STYLE} {...NO_SAVE} />
+            ))}
+          </div>
         </div>
       )}
     </div>

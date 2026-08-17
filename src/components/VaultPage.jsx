@@ -406,9 +406,6 @@ function VaultContent({ clientData }) {
   };
   return (
     <div className="min-h-screen bg-jet text-cream flex flex-col">
-      <a href="/" className="fixed top-4 left-5 z-20 font-heading font-bold text-cream/90 tracking-tight hover:text-cream transition-colors">
-        ROGET<span className="font-normal italic font-drama">james</span>
-      </a>
       <div className="flex-1 flex items-center justify-center py-10">
         <VaultGallery data={data} />
       </div>
