@@ -28,12 +28,6 @@ function vaultThumb(url) {
 }
 const NO_SAVE = { draggable: false, onContextMenu: (e) => e.preventDefault() };
 const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", pointerEvents: "none" };
-const WATERMARK_URL = "data:image/svg+xml;utf8," + encodeURIComponent(
-  "<svg xmlns='http://www.w3.org/2000/svg' width='340' height='230'><text x='20' y='120' fill='rgba(255,255,255,0.12)' font-family='sans-serif' font-size='24' letter-spacing='2' transform='rotate(-26 170 115)'>ROGETjames</text></svg>"
-);
-function Watermark() {
-  return <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: `url("${WATERMARK_URL}")`, backgroundRepeat: "repeat", zIndex: 4 }} />;
-}
 
 const STATUS_CONFIG = {
   "Design":      { label: "In Design",    dot: "#60a5fa" },
@@ -96,7 +90,6 @@ function Lightbox({ items, startIndex, onClose }) {
             {...NO_SAVE}
             style={NO_SAVE_STYLE}
           />
-          <Watermark />
         </div>
         {items[idx].name && (
           <p className="mt-5 font-detail text-xs text-cream/45 uppercase tracking-widest">
@@ -195,7 +188,6 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
               {...NO_SAVE}
               style={{ transform: "scale(1.04)", ...NO_SAVE_STYLE }}
             />
-            <Watermark />
             <div className="absolute inset-0 bg-gradient-to-t from-jet/85 via-jet/15 to-jet/20" />
           </div>
         ))}
@@ -274,7 +266,6 @@ function GallerySlideshow({ images, onOpenLightbox }) {
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
             style={NO_SAVE_STYLE}
           />
-          <Watermark />
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors duration-300">
             <div className="w-9 h-9 rounded-full bg-jet/55 backdrop-blur-sm border border-cream/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-cream">
