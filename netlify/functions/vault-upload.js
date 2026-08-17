@@ -73,7 +73,7 @@ export default async function handler(req) {
       const clients = [];
       for (const b of blobs) {
         const c = await store.get(b.key, { type: "json" }).catch(() => null);
-        if (c) clients.push({ id: b.key, email: c.email, name: c.name || c.email, count: (c.images || []).length, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(c.email)}` });
+        if (c) clients.push({ id: b.key, email: c.email, name: c.name || c.email, count: (c.images || []).length, cover: (c.images || [])[0]?.src || null, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(c.email)}` });
       }
       clients.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       return json({ clients });
@@ -87,7 +87,7 @@ export default async function handler(req) {
       if (password.length < 4) return json({ error: "Set a password of at least 4 characters." }, 400);
       const existing = await store.get(email, { type: "json" }).catch(() => null);
       if (existing) return json({ error: "A client with that email already exists." }, 409);
-      const record = { email, name, password, images: [], token: crypto.randomUUID(), createdTime: new Date().toISOString() };
+      const record = { email, name, password, images: [], greeting: "", spiel: "", links: [], token: crypto.randomUUID(), createdTime: new Date().toISOString() };
       await store.setJSON(email, record);
       return json({ ok: true, id: email, name, email, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(email)}` });
     }
@@ -96,7 +96,19 @@ export default async function handler(req) {
       const email = emailKey(body.clientId || body.email);
       const record = await store.get(email, { type: "json" }).catch(() => null);
       if (!record) return json({ error: "Client not found." }, 404);
-      return json({ email: record.email, name: record.name, password: record.password, images: record.images || [], vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(record.email)}` });
+      return json({ email: record.email, name: record.name, password: record.password, images: record.images || [], greeting: record.greeting || "", spiel: record.spiel || "", links: record.links || [], vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(record.email)}` });
+    }
+
+    if (action === "update-client") {
+      const email = emailKey(body.clientId || body.email);
+      const record = await store.get(email, { type: "json" }).catch(() => null);
+      if (!record) return json({ error: "Client not found." }, 404);
+      if (typeof body.greeting === "string") record.greeting = body.greeting;
+      if (typeof body.spiel === "string") record.spiel = body.spiel;
+      if (Array.isArray(body.links)) record.links = body.links.filter((l) => l && l.label && l.url).map((l) => ({ label: String(l.label), url: String(l.url) }));
+      if (typeof body.name === "string" && body.name.trim()) record.name = body.name.trim();
+      await store.setJSON(email, record);
+      return json({ ok: true });
     }
 
     if (action === "add-images") {

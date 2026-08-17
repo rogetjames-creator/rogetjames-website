@@ -122,10 +122,21 @@ function ClientGallery({ data, onClose }) {
   return (
     <div ref={pageRef} className="w-full max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-10 flex flex-col h-full">
       <div className="flex items-start justify-between mb-8 flex-shrink-0">
-        <div>
+        <div className="max-w-2xl">
           <p className="font-detail text-[10px] text-clay uppercase tracking-[0.2em] mb-1">Private Preview</p>
           <h2 className="font-heading font-bold text-cream text-2xl md:text-3xl leading-tight">{data.clientName || "Your Gallery"}</h2>
-          {data.greeting && <p className="font-detail text-sm text-cream/75 mt-2 max-w-md leading-relaxed">{data.greeting}</p>}
+          {data.greeting && <p className="font-detail text-sm text-cream/75 mt-2 leading-relaxed">{data.greeting}</p>}
+          {data.spiel && <p className="font-detail text-sm text-cream/65 mt-3 leading-relaxed whitespace-pre-line border-l border-clay/50 pl-4">{data.spiel}</p>}
+          {data.links?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {data.links.map((l, i) => (
+                <a key={i} href={l.url} target="_blank" rel="noreferrer"
+                  className="font-detail text-[11px] text-clay hover:text-clay-light border border-clay/40 hover:border-clay rounded-full px-3 py-1.5 transition-colors">
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          )}
         </div>
         <button onClick={onClose} className="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors flex-shrink-0 mt-1" aria-label="Close">
           <X size={18} />
@@ -197,6 +208,8 @@ export default function ClientPreview({ onClose }) {
   const toGallery = (d) => ({
     clientName: d.clientName || "",
     greeting: d.greeting || "",
+    spiel: d.projectDescription || "",
+    links: d.links || [],
     items: (d.images || []).map((im) => ({ src: im.url || im.src, title: im.name || "" })),
   });
 

@@ -169,6 +169,12 @@ function VaultUpload({ secret }) {
   const [dragOver, setDragOver] = useState(false);
   const [current, setCurrent] = useState(null); // selected client's full record
   const [loadingClient, setLoadingClient] = useState(false);
+  // Per-client notes editor
+  const [nGreeting, setNGreeting] = useState("");
+  const [nSpiel, setNSpiel] = useState("");
+  const [nLinks, setNLinks] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const fillNotes = (d) => { setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); };
 
   const post = (payload) => fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, ...payload }) }).then((r) => r.json());
   const vthumb = (src) => `/.netlify/images?url=${encodeURIComponent(src)}&w=240&fm=webp&q=70`;
@@ -185,7 +191,7 @@ function VaultUpload({ secret }) {
     let alive = true;
     setLoadingClient(true);
     post({ action: "get-client", clientId })
-      .then((d) => { if (!alive) return; setCurrent(d.error ? null : d); })
+      .then((d) => { if (!alive) return; if (d.error) { setCurrent(null); } else { setCurrent(d); fillNotes(d); } })
       .finally(() => { if (alive) setLoadingClient(false); });
     return () => { alive = false; };
     /* eslint-disable-next-line */
@@ -194,6 +200,21 @@ function VaultUpload({ secret }) {
   const deleteImage = async (src) => {
     const d = await post({ action: "delete-image", clientId, src });
     if (!d.error) setCurrent((c) => c ? { ...c, images: (c.images || []).filter((i) => i.src !== src) } : c);
+  };
+
+  const parseLinks = (text) => text.split("\n").map((line) => {
+    const [label, url] = line.split("|").map((s) => (s || "").trim());
+    return label && url ? { label, url } : null;
+  }).filter(Boolean);
+
+  const saveNotes = async () => {
+    setSavingNotes(true); setMsg("");
+    const links = parseLinks(nLinks);
+    const d = await post({ action: "update-client", clientId, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links });
+    setSavingNotes(false);
+    if (d.error) { setMsg(d.error); return; }
+    setCurrent((c) => c ? { ...c, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links } : c);
+    setMsg("Saved the notes for this gallery.");
   };
 
   const onFiles = async (files) => {
@@ -236,74 +257,113 @@ function VaultUpload({ secret }) {
     } catch (e) { setMsg("Upload failed — " + (e?.message || "check connection.")); setPhase("idle"); }
   };
 
-  const btnLabel = phase === "sending" ? "Sending…"
-    : !clientId ? "Pick or create a client first"
-    : !staged.length ? "Add photos first"
-    : `Add ${staged.length} photo${staged.length === 1 ? "" : "s"} to vault →`;
+  // ── LIST VIEW: every client as a card; tap one to open it ──
+  if (!clientId) {
+    return (
+      <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
+        <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Client Vaults</p>
+        <p className="font-detail text-[11px] text-cream/50 mb-4">Each client is a private gallery. Tap a client to see their photos and add more. Make a new one below for a special gallery.</p>
 
-  return (
-    <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
-      <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Client Vault — add images</p>
-      <p className="font-detail text-[11px] text-cream/50 mb-4">Make a client (name, email, a password), then drag photos in — they go straight into that client&apos;s private gallery. The client opens their link and unlocks with that email and password.</p>
-
-      {/* New client */}
-      <div className="mb-4 rounded-xl border border-clay/25 bg-clay/5 p-3">
-        <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.14em] mb-2">New client</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Client / project name"
-            className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
-          <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Their email"
-            className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
-          <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Password"
-            className="sm:w-32 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
-          <button onClick={createClient} disabled={!newName.trim() || !newEmail.trim() || newPassword.trim().length < 4 || creating}
-            className="px-4 py-2 rounded-xl bg-clay text-cream font-detail text-[12px] hover:bg-clay-light disabled:opacity-30 transition-all whitespace-nowrap">
-            {creating ? "Creating…" : "+ Create"}
-          </button>
-        </div>
-        {createdLink && (
-          <p className="font-detail text-[11px] text-green-400 mt-2 break-all">Created ✓ — <span className="text-cream/80">{createdLink}</span></p>
-        )}
-      </div>
-
-      <select value={clientId} onChange={(e) => setClientId(e.target.value)}
-        className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none mb-3 cursor-pointer">
-        <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : clients.length ? "+ Choose a client…" : "No clients yet — use New client above ↑"}</option>
-        {clients.map((c) => <option key={c.id} value={c.id} className="bg-jet">{c.name}{c.count ? ` — ${c.count} photo${c.count === 1 ? "" : "s"}` : ""}</option>)}
-      </select>
-
-      {/* Selected client's current gallery — what's already in their vault */}
-      {clientId && (
-        <div className="mb-4 rounded-xl border border-white/12 bg-black/20 p-3">
-          {loadingClient ? (
-            <p className="font-detail text-[11px] text-cream/50">Loading this vault…</p>
-          ) : current ? (
-            <>
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
-                <p className="font-detail text-[12px] text-cream/85">{current.name} — {(current.images || []).length} photo{(current.images || []).length === 1 ? "" : "s"} in vault</p>
-                <a href={current.vaultUrl} target="_blank" rel="noreferrer" className="font-detail text-[11px] text-clay hover:text-clay-light underline break-all">open their vault ↗</a>
-                <span className="font-detail text-[11px] text-cream/45">login: {current.email} · password: {current.password}</span>
-              </div>
-              {(current.images || []).length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {current.images.map((im) => (
-                    <div key={im.src} className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/15 group">
-                      <img src={vthumb(im.src)} alt="" className="w-full h-full object-cover" />
-                      <button onClick={() => deleteImage(im.src)} title="Remove from vault"
-                        className="absolute top-0 right-0 bg-black/75 text-cream w-5 h-5 flex items-center justify-center text-[11px] leading-none opacity-0 group-hover:opacity-100 transition-opacity">×</button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="font-detail text-[11px] text-cream/40">No photos yet — drag some in below.</p>
-              )}
-            </>
-          ) : (
-            <p className="font-detail text-[11px] text-cream/50">Couldn&apos;t load this vault.</p>
+        {/* New client */}
+        <div className="mb-5 rounded-xl border border-clay/25 bg-clay/5 p-3">
+          <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.14em] mb-2">New client / new gallery</p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Name (e.g. Smith — Concepts)"
+              className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+            <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Their email"
+              className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+            <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Password"
+              className="sm:w-32 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+            <button onClick={createClient} disabled={!newName.trim() || !newEmail.trim() || newPassword.trim().length < 4 || creating}
+              className="px-4 py-2 rounded-xl bg-clay text-cream font-detail text-[12px] hover:bg-clay-light disabled:opacity-30 transition-all whitespace-nowrap">
+              {creating ? "Creating…" : "+ Create"}
+            </button>
+          </div>
+          {createdLink && (
+            <p className="font-detail text-[11px] text-green-400 mt-2 break-all">Created ✓ — <span className="text-cream/80">{createdLink}</span></p>
           )}
         </div>
+
+        {/* Client cards */}
+        {phase === "loading" ? (
+          <p className="font-detail text-[12px] text-cream/50">Loading clients…</p>
+        ) : clients.length === 0 ? (
+          <p className="font-detail text-[12px] text-cream/45">No clients yet — make one above.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {clients.map((c) => (
+              <button key={c.id} onClick={() => { setClientId(c.id); setMsg(""); setPhase("idle"); }}
+                className="text-left rounded-xl border border-white/12 bg-black/20 hover:border-clay/60 transition-all overflow-hidden group">
+                <div className="w-full aspect-[4/3] bg-cream/5 overflow-hidden">
+                  {c.cover
+                    ? <img src={vthumb(c.cover)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    : <div className="w-full h-full flex items-center justify-center font-detail text-[10px] text-cream/35 uppercase tracking-wider">No photos</div>}
+                </div>
+                <div className="p-2.5">
+                  <p className="font-detail text-[13px] text-cream/90 leading-tight truncate">{c.name}</p>
+                  <p className="font-detail text-[10px] text-cream/45 mt-0.5">{c.count} photo{c.count === 1 ? "" : "s"}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+        {msg && <p className="font-detail text-[11px] text-center mt-3 text-amber-300">{msg}</p>}
+      </div>
+    );
+  }
+
+  // ── OPEN VIEW: one client — see, add, remove ──
+  return (
+    <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
+      <button onClick={() => { setClientId(""); setStaged([]); setMsg(""); loadClients(); }}
+        className="flex items-center gap-1 font-detail text-[11px] text-cream/60 hover:text-cream uppercase tracking-[0.15em] mb-4">← All clients</button>
+
+      {loadingClient ? (
+        <p className="font-detail text-[12px] text-cream/50">Loading this vault…</p>
+      ) : current ? (
+        <>
+          <p className="font-heading font-semibold text-cream text-lg leading-tight">{current.name}</p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 mb-4">
+            <a href={current.vaultUrl} target="_blank" rel="noreferrer" className="font-detail text-[11px] text-clay hover:text-clay-light underline">open their gallery ↗</a>
+            <span className="font-detail text-[11px] text-cream/45">login: {current.email} · password: {current.password}</span>
+          </div>
+
+          {/* Existing photos */}
+          <p className="font-detail text-[10px] text-cream/50 uppercase tracking-wider mb-2">In this gallery — {(current.images || []).length}</p>
+          {(current.images || []).length > 0 ? (
+            <div className="flex flex-wrap gap-2 mb-5">
+              {current.images.map((im) => (
+                <div key={im.src} className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/15 group">
+                  <img src={vthumb(im.src)} alt="" className="w-full h-full object-cover" />
+                  <button onClick={() => deleteImage(im.src)} title="Remove from gallery"
+                    className="absolute top-0 right-0 bg-black/75 text-cream w-5 h-5 flex items-center justify-center text-[11px] leading-none opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="font-detail text-[11px] text-cream/40 mb-5">No photos yet — drag some in below.</p>
+          )}
+
+          {/* Notes / spiel / links shown to the client */}
+          <div className="rounded-xl border border-white/12 bg-black/20 p-3 mb-5">
+            <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.15em] mb-2">Notes shown in their gallery</p>
+            <input type="text" value={nGreeting} onChange={(e) => setNGreeting(e.target.value)} placeholder="Short greeting (e.g. Your private preview is ready)"
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-2" />
+            <textarea value={nSpiel} onChange={(e) => setNSpiel(e.target.value)} rows={4} placeholder="Spiel / message to the client — write as much as you like."
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-2 resize-y" />
+            <textarea value={nLinks} onChange={(e) => setNLinks(e.target.value)} rows={2} placeholder={"Links — one per line, as:  Label | https://link.com"}
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[12px] text-cream placeholder:text-cream/30 outline-none mb-2 resize-y" />
+            <button onClick={saveNotes} disabled={savingNotes}
+              className="px-4 py-2 rounded-xl bg-clay/80 text-cream font-detail text-[12px] hover:bg-clay disabled:opacity-40 transition-all">
+              {savingNotes ? "Saving…" : "Save notes"}
+            </button>
+          </div>
+        </>
+      ) : (
+        <p className="font-detail text-[12px] text-cream/50 mb-4">Couldn&apos;t load this vault.</p>
       )}
 
+      {/* Add photos */}
       <label onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={onDrop}
         className={`block w-full text-center py-6 rounded-2xl border-2 border-dashed font-detail text-sm cursor-pointer transition-all mb-3 ${dragOver ? "border-clay bg-clay/10 text-cream" : "border-white/20 text-cream/80 hover:border-clay/60 hover:text-cream"} ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
         <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
@@ -325,9 +385,9 @@ function VaultUpload({ secret }) {
         </>
       )}
 
-      <button onClick={send} disabled={!clientId || !staged.length || phase === "sending"}
+      <button onClick={send} disabled={!staged.length || phase === "sending"}
         className="w-full py-3 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all">
-        {btnLabel}
+        {phase === "sending" ? "Sending…" : !staged.length ? "Add photos above first" : `Add ${staged.length} photo${staged.length === 1 ? "" : "s"} to gallery →`}
       </button>
       {msg && <p className={`font-detail text-[11px] text-center mt-3 ${phase === "done" ? "text-green-400" : "text-amber-300"}`}>{msg}</p>}
     </div>

@@ -39,14 +39,14 @@ export default async function handler(req) {
   return json({
     clientName: record.name || "",
     projectTitle: record.projectTitle || "",
-    projectDescription: record.projectDescription || "",
+    projectDescription: record.spiel || record.projectDescription || "",
     location: record.location || "",
     status: record.status || null,
     greeting: record.greeting || null,
     images: (record.images || []).map((i) => ({ url: i.src, name: i.name || "" })),
     pdfs: [],
     keyPoints: [],
-    links: [],
+    links: (record.links || []).filter((l) => l && l.label && l.url).map((l) => ({ label: l.label, url: l.url, description: l.description || null })),
   }, 200);
 }
 
