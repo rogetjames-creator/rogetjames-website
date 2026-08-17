@@ -161,6 +161,10 @@ function VaultUpload({ secret }) {
   const [staged, setStaged] = useState([]); // [{ name, dataUrl }]
   const [phase, setPhase] = useState("loading"); // loading | idle | sending | done
   const [msg, setMsg] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createdLink, setCreatedLink] = useState("");
 
   useEffect(() => {
     if (!secret) return;
@@ -182,6 +186,19 @@ function VaultUpload({ secret }) {
     setStaged((p) => [...p, ...list]);
   };
 
+  const createClient = async () => {
+    if (!newName.trim() || !newEmail.trim()) return;
+    setCreating(true); setMsg(""); setCreatedLink("");
+    try {
+      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "create-client", name: newName.trim(), email: newEmail.trim() }) });
+      const d = await r.json();
+      if (!r.ok || d.error) { setMsg(d.error || "Couldn't create client."); setCreating(false); return; }
+      setClients((p) => [...p, { id: d.id, name: d.name, email: d.email, project: "" }].sort((a, b) => a.name.localeCompare(b.name)));
+      setClientId(d.id); setCreatedLink(d.vaultUrl); setNewName(""); setNewEmail("");
+    } catch (e) { setMsg("Create failed — " + (e?.message || "check connection.")); }
+    setCreating(false);
+  };
+
   const send = async () => {
     if (!clientId || !staged.length) return;
     setPhase("sending"); setMsg("");
@@ -196,7 +213,26 @@ function VaultUpload({ secret }) {
   return (
     <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
       <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Client Vault — add images</p>
-      <p className="font-detail text-[11px] text-cream/50 mb-4">Pick a client and add photos — they go straight into that client&apos;s private vault (their Airtable record).</p>
+      <p className="font-detail text-[11px] text-cream/50 mb-4">Pick a client and add photos — they go straight into that client&apos;s private vault. They open their link and unlock with their email.</p>
+
+      {/* New client */}
+      <div className="mb-4 rounded-xl border border-clay/25 bg-clay/5 p-3">
+        <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.14em] mb-2">New client</p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Client / project name"
+            className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+          <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="Their email"
+            className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+          <button onClick={createClient} disabled={!newName.trim() || !newEmail.trim() || creating}
+            className="px-4 py-2 rounded-xl bg-clay text-cream font-detail text-[12px] hover:bg-clay-light disabled:opacity-30 transition-all whitespace-nowrap">
+            {creating ? "Creating…" : "+ Create"}
+          </button>
+        </div>
+        {createdLink && (
+          <p className="font-detail text-[11px] text-green-400 mt-2 break-all">Created ✓ — vault link: <span className="text-cream/80">{createdLink}</span></p>
+        )}
+      </div>
+
       <select value={clientId} onChange={(e) => setClientId(e.target.value)}
         className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none mb-3 cursor-pointer">
         <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : "+ Choose a client…"}</option>

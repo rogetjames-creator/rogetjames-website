@@ -77,6 +77,17 @@ export const handler = async (event) => {
       return json({ clients });
     }
 
+    if (action === "create-client") {
+      const name = (body.name || "").trim();
+      const email = (body.email || "").trim();
+      if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Enter a name and a valid email." }, 400);
+      const token = crypto.randomUUID();
+      const res = await fetch(AT_BASE(), { method: "POST", headers: atHeaders(), body: JSON.stringify({ fields: { Name: name, Email: email, Token: token } }) });
+      const d = await res.json();
+      if (!res.ok) return json({ error: d?.error?.message || "Couldn't create the client." }, 502);
+      return json({ ok: true, id: d.id, name, email, token, vaultUrl: `https://rogetjames.com/vault?token=${token}` });
+    }
+
     if (action === "add-images") {
       const { clientId, images } = body;
       if (!clientId || !Array.isArray(images) || !images.length) return json({ error: "Pick a client and at least one photo." }, 400);
