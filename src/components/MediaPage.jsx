@@ -154,6 +154,66 @@ function DestPicker({ selected, onToggle }) {
   );
 }
 
+// Add images straight into a client's Vault (writes to their Airtable record).
+function VaultUpload({ secret }) {
+  const [clients, setClients] = useState([]);
+  const [clientId, setClientId] = useState("");
+  const [staged, setStaged] = useState([]); // [{ name, dataUrl }]
+  const [phase, setPhase] = useState("loading"); // loading | idle | sending | done
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    if (!secret) return;
+    let alive = true;
+    fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "list-clients" }) })
+      .then((r) => r.json())
+      .then((d) => { if (!alive) return; if (Array.isArray(d.clients)) setClients(d.clients); if (d.error) setMsg(d.error); setPhase("idle"); })
+      .catch(() => { if (alive) { setPhase("idle"); setMsg("Couldn't load clients."); } });
+    return () => { alive = false; };
+  }, [secret]);
+
+  const onFiles = async (files) => {
+    const list = [];
+    for (const f of Array.from(files || [])) {
+      if (!f.type.startsWith("image/")) continue;
+      const dataUrl = await new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); });
+      list.push({ name: f.name, dataUrl });
+    }
+    setStaged((p) => [...p, ...list]);
+  };
+
+  const send = async () => {
+    if (!clientId || !staged.length) return;
+    setPhase("sending"); setMsg("");
+    try {
+      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images: staged }) });
+      const d = await r.json();
+      if (!r.ok || d.error) { setMsg(d.error || "Upload failed."); setPhase("idle"); return; }
+      setMsg(`Added ${d.added} image(s) to the client's vault.`); setStaged([]); setPhase("done");
+    } catch (e) { setMsg("Upload failed — " + (e?.message || "check connection.")); setPhase("idle"); }
+  };
+
+  return (
+    <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">
+      <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-1">Client Vault — add images</p>
+      <p className="font-detail text-[11px] text-cream/50 mb-4">Pick a client and add photos — they go straight into that client&apos;s private vault (their Airtable record).</p>
+      <select value={clientId} onChange={(e) => setClientId(e.target.value)}
+        className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none mb-3 cursor-pointer">
+        <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : "+ Choose a client…"}</option>
+        {clients.map((c) => <option key={c.id} value={c.id} className="bg-jet">{c.name}{c.project ? ` — ${c.project}` : ""}</option>)}
+      </select>
+      <input type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)}
+        className="block w-full text-[12px] text-cream/60 mb-3 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-clay file:text-cream file:cursor-pointer" />
+      {staged.length > 0 && <p className="font-detail text-[11px] text-cream/50 mb-3">{staged.length} photo{staged.length === 1 ? "" : "s"} ready.</p>}
+      <button onClick={send} disabled={!clientId || !staged.length || phase === "sending"}
+        className="w-full py-3 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+        {phase === "sending" ? "Sending…" : "Add to vault →"}
+      </button>
+      {msg && <p className={`font-detail text-[11px] text-center mt-3 ${phase === "done" ? "text-green-400" : "text-amber-300"}`}>{msg}</p>}
+    </div>
+  );
+}
+
 export default function MediaPage() {
   const [secret, setSecret] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -547,6 +607,9 @@ export default function MediaPage() {
             {note && <p className="font-detail text-[11px] text-amber-300 text-center mt-3">{note}</p>}
           </div>
         )}
+
+        {/* ── CLIENT VAULT — add images to a client's private vault ── */}
+        <VaultUpload secret={secret} />
 
         {/* ── REELS (video with sound) ───────────── */}
         <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-8">

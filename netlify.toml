@@ -111,6 +111,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/vault-upload"
+  to = "/.netlify/functions/vault-upload"
+  status = 200
+
+[[redirects]]
   from = "/vault"
   to = "/vault.html"
   status = 200
