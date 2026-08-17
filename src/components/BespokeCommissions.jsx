@@ -668,14 +668,6 @@ const SCREEN_DESIGNS = [
     ],
   },
   {
-    name: "CUSTOM",
-    items: [
-      { name: "CUSTOM", img: `${CDN}/0c753703-bc6a-444c-ba4e-b7983f836b30_rw_1200.jpg`, tags: ["gates", "residential"] },
-      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-1.jpg", tags: ["fencing", "gates", "residential"] },
-      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-2.jpg", tags: ["fencing", "gates", "residential"] },
-    ],
-  },
-  {
     name: "EROS",
     items: [
       { name: "EROS",               img: `${CDN}/3e02a9f2-e096-472b-85f8-567a453a710c_rw_1200.jpg` },
@@ -746,6 +738,14 @@ const SCREEN_DESIGNS = [
 
   // ── THE ORGANICS (A–Z) ────────────────────────────────────────────────────
   { name: "BANKSIA", sectionStart: "THE ORGANICS", items: [{ name: "BANKSIA", img: `${CDN}/d9839268-e16d-4adf-8591-580d484748b6_rw_1200.jpg` }] },
+  {
+    name: "CUSTOM",
+    items: [
+      { name: "CUSTOM", img: `${CDN}/0c753703-bc6a-444c-ba4e-b7983f836b30_rw_1200.jpg`, tags: ["gates", "residential"] },
+      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-1.jpg", tags: ["fencing", "gates", "residential"] },
+      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-2.jpg", tags: ["fencing", "gates", "residential"] },
+    ],
+  },
   { name: "BLOOM", items: [
     { name: "BLOOM", img: "/images/bloom/bloom-closeup.jpg", pos: "center top", tags: ["screens", "dividers", "residential"] },
     { name: "BLOOM — Light Feature", img: "/images/bloom/bloom-light-feature.jpg", tags: ["light features", "residential"] },
