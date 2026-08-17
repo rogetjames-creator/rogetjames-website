@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, X, Download,
   Lock, ArrowRight, ArrowUpRight,
 } from "lucide-react";
+import VaultGallery from "./VaultGallery";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -395,165 +396,22 @@ function DocumentsSection({ pdfs }) {
 
 // ── Assembled vault content page ─────────────────────────────
 function VaultContent({ clientData }) {
-  const [lightboxIndex, setLightboxIndex] = useState(null);
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const headerRef = useRef(null);
-  const overviewRef = useRef(null);
-
-  const {
-    clientName, projectTitle, location, status, greeting,
-    projectDescription, images = [], keyPoints = [], links = [], pdfs = [],
-  } = clientData;
-
-  const statusConfig = STATUS_CONFIG[status] || null;
-  const hasImages = images.length > 0;
-
-  useEffect(() => {
-    // Sticky header appears after scrolling past hero
-    const st = ScrollTrigger.create({
-      trigger: "body",
-      start: "80px top",
-      onEnter: () => setHeaderVisible(true),
-      onLeaveBack: () => setHeaderVisible(false),
-    });
-
-    // Overview section entrance
-    if (overviewRef.current) {
-      const els = overviewRef.current.querySelectorAll(".reveal");
-      if (els.length) {
-        gsap.fromTo(els,
-          { opacity: 0, y: 22 },
-          {
-            opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
-            scrollTrigger: { trigger: overviewRef.current, start: "top 70%" },
-          }
-        );
-      }
-    }
-
-    return () => st.kill();
-  }, []);
-
+  const { clientName, greeting, projectDescription, images = [], links = [] } = clientData;
+  const data = {
+    clientName,
+    greeting,
+    spiel: projectDescription,
+    links,
+    items: images.map((im) => ({ src: im.url || im.src, title: im.name || "" })),
+  };
   return (
-    <div className="min-h-screen bg-jet text-cream">
-      {/* Sticky header */}
-      <header
-        ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 border-b border-cream/[0.07] bg-jet/92 backdrop-blur-md transition-all duration-400"
-        style={{ transform: headerVisible ? "translateY(0)" : "translateY(-100%)" }}
-      >
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <a href="/" className="font-heading font-bold text-cream tracking-tight hover:text-cream/75 transition-colors">
-            ROGET<span className="font-normal italic font-drama">james</span>
-          </a>
-          <div className="flex items-center gap-5">
-            <span className="font-detail text-[10px] text-cream/35 uppercase tracking-[0.2em] hidden sm:block truncate max-w-[200px]">
-              {clientName}
-            </span>
-            <a
-              href="/"
-              className="flex items-center gap-1.5 font-detail text-[10px] text-cream/50 uppercase tracking-[0.15em] hover:text-cream transition-colors border border-cream/12 hover:border-cream/30 rounded-full px-3.5 py-1.5"
-            >
-              Explore Studio <ArrowRight size={10} />
-            </a>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero slideshow */}
-      {hasImages ? (
-        <HeroSlideshow
-          images={images}
-          clientName={clientName}
-          projectTitle={projectTitle}
-          location={location}
-        />
-      ) : (
-        <div className="h-56 flex flex-col justify-end px-8 md:px-16 pb-10 border-b border-cream/[0.07]">
-          <p className="font-detail text-[10px] text-clay uppercase tracking-[0.3em] mb-2">
-            Private Client Vault{location ? ` · ${location}` : ""}
-          </p>
-          <h1 className="font-drama text-4xl font-light text-cream">{clientName}</h1>
-          {projectTitle && (
-            <p className="font-detail text-sm text-cream/45 uppercase tracking-[0.18em] mt-2">{projectTitle}</p>
-          )}
-        </div>
-      )}
-
-      {/* Project overview */}
-      <section ref={overviewRef} className="max-w-6xl mx-auto px-6 py-14 border-b border-cream/[0.07]">
-        <div className="flex flex-col md:flex-row md:items-start gap-10">
-          <div className="flex-1">
-            {greeting && (
-              <p className="reveal font-detail text-base text-cream/70 leading-relaxed mb-6 border-l-2 border-clay/40 pl-5 max-w-xl">
-                {greeting}
-              </p>
-            )}
-            {projectDescription && (
-              <p className="reveal font-detail text-sm text-cream/60 leading-relaxed max-w-2xl whitespace-pre-line">
-                {projectDescription}
-              </p>
-            )}
-          </div>
-          {statusConfig && (
-            <div className="reveal flex-shrink-0">
-              <div className="inline-flex items-center gap-2.5 bg-cream/[0.04] border border-cream/[0.08] rounded-2xl px-5 py-3">
-                <div className="w-2 h-2 rounded-full" style={{ background: statusConfig.dot }} />
-                <div>
-                  <p className="font-detail text-[9px] text-cream/35 uppercase tracking-[0.2em] mb-0.5">Status</p>
-                  <p className="font-detail text-sm text-cream/80">{statusConfig.label}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Gallery slideshow */}
-      {hasImages && (
-        <section className="max-w-6xl mx-auto px-6 py-14 border-b border-cream/[0.07]">
-          <p className="font-detail text-[10px] text-cream/30 uppercase tracking-[0.22em] mb-8">Project Images</p>
-          <GallerySlideshow
-            images={images}
-            onOpenLightbox={setLightboxIndex}
-          />
-        </section>
-      )}
-
-      {/* Key points */}
-      {keyPoints.length > 0 && <KeyPoints points={keyPoints} />}
-
-      {/* Links */}
-      {links.length > 0 && <LinksSection links={links} />}
-
-      {/* Documents */}
-      {pdfs.length > 0 && <DocumentsSection pdfs={pdfs} />}
-
-      {/* Footer CTA */}
-      <section className="max-w-6xl mx-auto px-6 py-20 text-center">
-        <div className="max-w-xl mx-auto">
-          <p className="font-detail text-[10px] text-cream/25 uppercase tracking-[0.25em] mb-3">Discover more</p>
-          <h2 className="font-drama text-3xl md:text-4xl text-cream font-light mb-8 leading-tight">
-            Explore the full<br />ROGETjames collection
-          </h2>
-          <a
-            href="/"
-            className="inline-flex items-center gap-3 bg-clay text-cream px-9 py-4 rounded-full font-detail text-xs uppercase tracking-[0.2em] hover:bg-clay-light transition-colors"
-          >
-            Explore the Studio
-            <ArrowRight size={13} />
-          </a>
-        </div>
-        <div className="mt-14 pt-8 border-t border-cream/[0.06]">
-          <p className="font-detail text-[9px] text-cream/18 uppercase tracking-widest">
-            ROGETjames · Perth · Gold Coast · Melbourne
-          </p>
-        </div>
-      </section>
-
-      {lightboxIndex !== null && images.length > 0 && (
-        <Lightbox items={images} startIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />
-      )}
+    <div className="min-h-screen bg-jet text-cream flex flex-col">
+      <a href="/" className="fixed top-4 left-5 z-20 font-heading font-bold text-cream/90 tracking-tight hover:text-cream transition-colors">
+        ROGET<span className="font-normal italic font-drama">james</span>
+      </a>
+      <div className="flex-1 flex items-center justify-center py-10">
+        <VaultGallery data={data} />
+      </div>
     </div>
   );
 }

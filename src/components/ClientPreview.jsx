@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X } from "lucide-react";
+import VaultGallery from "./VaultGallery";
 
 // ─────────────────────────────────────────────────────────────
 //  CLIENT PREVIEW — the vault door.
@@ -10,133 +11,13 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 //  Access is checked server-side by /api/vault-verify.
 // ─────────────────────────────────────────────────────────────
 
-// Serve images through the Netlify Image CDN — capped resolution + webp so the
-// original full-res file is never handed out.
-const previewImg = (url, w) => {
-  if (!url) return url;
-  if (/^data:/.test(url)) return url;
-  return `/.netlify/images?url=${encodeURIComponent(url)}&w=${w}&fm=webp&q=72`;
-};
-// Deter casual saving / dragging (kept invisible — no watermark).
-const NO_SAVE = { onContextMenu: (e) => e.preventDefault(), onDragStart: (e) => e.preventDefault(), draggable: false };
-const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" };
 const SESSION_KEY = "roj_vault_session";
 
 // ── Client gallery — logo + name + greeting above, then ONE large image at
 //    gallery size with a row of thumbnails below it, spiel underneath.
 //    No slideshow, no pills. ─────────────────────────────────────────────
 function ClientGallery({ data, onClose }) {
-  const pageRef = useRef(null);
-  const items = data.items || [];
-  const [idx, setIdx] = useState(0);
-  const [zoom, setZoom] = useState(false);
-  const total = items.length;
-  const item = items[idx] || items[0];
-
-  const prev = useCallback(() => setIdx((i) => (i - 1 + total) % total), [total]);
-  const next = useCallback(() => setIdx((i) => (i + 1) % total), [total]);
-
-  useEffect(() => {
-    gsap.fromTo(pageRef.current, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" });
-  }, []);
-
-  useEffect(() => {
-    const h = (e) => {
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
-      if (e.key === "Escape" && zoom) setZoom(false);
-    };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [prev, next, zoom]);
-
-  return (
-    <div ref={pageRef} className="w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-8 flex flex-col h-full">
-      <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors z-20" aria-label="Close">
-        <X size={18} />
-      </button>
-
-      <div className="overflow-y-auto flex-1 pb-4" data-lenis-prevent style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(158, 113, 52,0.4) transparent" }}>
-        {/* Header — logo, client name, greeting */}
-        <div className="text-center mb-6">
-          <p className="font-heading font-bold text-cream text-lg tracking-tight">ROGET<span className="font-normal italic font-drama">james</span></p>
-          <div className="w-8 h-px bg-clay/50 mx-auto mt-3 mb-4" />
-          <h2 className="font-heading font-bold text-cream text-3xl md:text-4xl leading-tight">{data.clientName || "Your Gallery"}</h2>
-          {data.greeting && <p className="font-detail text-sm text-cream/75 mt-3 max-w-xl mx-auto leading-relaxed whitespace-pre-line">{data.greeting}</p>}
-        </div>
-
-        {total === 0 ? (
-          <div className="py-24 text-center">
-            <p className="font-detail text-sm text-cream/45 uppercase tracking-wider">Your gallery is being prepared</p>
-          </div>
-        ) : (
-          <>
-            {/* Main image — gallery-sized stage */}
-            <div className="relative flex items-center justify-center" style={{ height: "60vh" }}>
-              {total > 1 && (
-                <button onClick={prev} className="absolute left-0 md:left-2 z-10 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors" aria-label="Previous">
-                  <ChevronLeft size={22} />
-                </button>
-              )}
-              <img key={idx} src={previewImg(item.src, 1400)} alt={item.title || ""} onClick={() => setZoom(true)}
-                className="max-w-full max-h-full object-contain rounded-xl cursor-zoom-in" style={NO_SAVE_STYLE} {...NO_SAVE} />
-              {total > 1 && (
-                <button onClick={next} className="absolute right-0 md:right-2 z-10 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors" aria-label="Next">
-                  <ChevronRight size={22} />
-                </button>
-              )}
-            </div>
-
-            {/* Caption + counter */}
-            <div className="flex items-center justify-center gap-3 mt-3 mb-3">
-              {item.title && <p className="font-heading font-semibold text-cream text-sm">{item.title}</p>}
-              {total > 1 && <p className="font-detail text-[10px] text-cream/45 uppercase tracking-widest">{idx + 1} / {total}</p>}
-            </div>
-
-            {/* Thumbnails row */}
-            {total > 1 && (
-              <div className="flex justify-center flex-wrap gap-2">
-                {items.map((it, i) => (
-                  <button key={i} onClick={() => setIdx(i)}
-                    className={`relative w-16 h-16 md:w-[72px] md:h-[72px] rounded-lg overflow-hidden border transition-all ${i === idx ? "border-clay" : "border-cream/10 hover:border-cream/45"}`}>
-                    <img src={previewImg(it.src, 220)} alt="" loading="lazy" className="w-full h-full object-cover" style={NO_SAVE_STYLE} {...NO_SAVE} />
-                    {i !== idx && <div className="absolute inset-0 bg-black/45 hover:bg-black/10 transition-colors" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Spiel + links underneath */}
-        {(data.spiel || data.links?.length > 0) && (
-          <div className="mt-10 max-w-2xl mx-auto text-center">
-            {data.spiel && <p className="font-detail text-[14px] text-cream/70 leading-relaxed whitespace-pre-line">{data.spiel}</p>}
-            {data.links?.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 mt-5">
-                {data.links.map((l, i) => (
-                  <a key={i} href={l.url} target="_blank" rel="noreferrer"
-                    className="font-detail text-[11px] text-clay hover:text-clay-light border border-clay/40 hover:border-clay rounded-full px-3 py-1.5 transition-colors">
-                    {l.label} ↗
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Fullscreen view */}
-      {zoom && (
-        <div className="fixed inset-0 z-[310] flex items-center justify-center bg-black/95 backdrop-blur-xl" onClick={() => setZoom(false)}>
-          <button onClick={() => setZoom(false)} className="absolute top-5 right-5 w-10 h-10 rounded-full bg-cream/15 flex items-center justify-center text-cream hover:bg-cream/30 transition-colors z-10" aria-label="Close"><X size={18} /></button>
-          {total > 1 && <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 md:left-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Previous"><ChevronLeft size={22} /></button>}
-          <img src={previewImg(item.src, 1600)} alt={item.title || ""} className="max-w-[92vw] max-h-[88vh] object-contain" style={NO_SAVE_STYLE} {...NO_SAVE} onClick={(e) => e.stopPropagation()} />
-          {total > 1 && <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 md:right-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Next"><ChevronRight size={22} /></button>}
-        </div>
-      )}
-    </div>
-  );
+  return <VaultGallery data={data} onClose={onClose} />;
 }
 
 // ── Main export ───────────────────────────────────────────────
