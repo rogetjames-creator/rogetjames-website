@@ -6,6 +6,7 @@
 //   • "list-clients"  → clients for the picker (email, name, image count)
 //   • "create-client" → add a client (name, email, password) → returns vault link
 //   • "add-images"    → commit photos into the repo + attach them to the client
+//   • "delete-image"  → remove one image from a client
 import crypto from "node:crypto";
 import { getStore } from "@netlify/blobs";
 
@@ -16,14 +17,15 @@ const MAX_BYTES = 8 * 1024 * 1024;
 const STORE = "vault-clients";
 
 function json(data, status = 200) {
-  return { statusCode: status, headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
+  return new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 }
 function safeEqual(a, b) {
   const A = Buffer.from(String(a || "")); const B = Buffer.from(String(b || ""));
   return A.length === B.length && crypto.timingSafeEqual(A, B);
 }
 function extFor(ct) { return ct.includes("png") ? "png" : ct.includes("webp") ? "webp" : ct.includes("gif") ? "gif" : "jpg"; }
-const emailKey = (e) => String(e || "").trim().toLowerCase();
+// Normalise an email: lowercase, trim, drop a "mailto:" prefix some browsers autofill.
+const emailKey = (e) => String(e || "").trim().toLowerCase().replace(/^mailto:/, "").trim();
 const slug = (e) => emailKey(e).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "client";
 
 async function gh(path, opts = {}) {
@@ -56,10 +58,10 @@ async function commitFiles(addFiles, message) {
   await gh(`/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", body: JSON.stringify({ sha: newCommit.sha }) });
 }
 
-export const handler = async (event) => {
-  if (event.httpMethod !== "POST") return json({ error: "Method not allowed" }, 405);
+export default async function handler(req) {
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   let body;
-  try { body = JSON.parse(event.body || "{}"); } catch { return json({ error: "Bad request" }, 400); }
+  try { body = await req.json(); } catch { return json({ error: "Bad request" }, 400); }
   if (!safeEqual(body.adminSecret, process.env.VAULT_ADMIN_SECRET)) return json({ error: "Unauthorized" }, 401);
 
   const store = getStore({ name: STORE, consistency: "strong" });
@@ -130,4 +132,6 @@ export const handler = async (event) => {
   } catch (e) {
     return json({ error: e?.message || "Vault upload failed." }, 500);
   }
-};
+}
+
+export const config = { path: "/api/vault-upload" };
