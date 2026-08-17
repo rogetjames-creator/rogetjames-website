@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_COVERS } from "./Gallery";
+import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
 import { SCREEN_COVERS } from "./BespokeCommissions";
 import { HERO_SLIDES } from "./heroSlides";
 import { MEDIA_KEYS, HOLDING_DESTINATIONS } from "../mediaDestinations";
@@ -44,7 +44,7 @@ const LIVE_DEST_GROUPS = [
   {
     group: "Sculpture",
     hint: "shows on the Sculpture page — pick the category",
-    items: SCULPTURE_COVERS.map((c) => ({ key: c.id, label: c.label })),
+    items: SCULPTURE_SUBCATS.map((c) => ({ key: c.id, label: c.label })),
   },
   {
     group: "Concepts",

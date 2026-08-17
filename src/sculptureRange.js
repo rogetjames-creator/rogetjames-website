@@ -9,7 +9,10 @@ const DEST_TO_LABEL = {
   classics: "The Classics",
   leafs: "Leaf Sculptures",
   bonbons: "Bon Bons & Genie Bottles",
+  fire: "Fire Sculptures",
 };
+// Categories shown without any prices/quote (view-only).
+const NO_PRICE_LABELS = ["Fire Sculptures"];
 
 async function fetchSculptureUploads() {
   try {
@@ -39,8 +42,9 @@ function injectSculptureUploads(data, uploads) {
   for (const u of uploads) {
     const labels = (u.dests || []).map((d) => DEST_TO_LABEL[d]).filter(Boolean);
     labels.forEach((label) => {
-      const range = out.ranges.find((r) => r.label === label);
-      if (!range) return;
+      let range = out.ranges.find((r) => r.label === label);
+      // A new category (e.g. Fire Sculptures) has no base range yet — create it.
+      if (!range) { range = { label, count: 0, designs: [], flat: [] }; out.ranges.push(range); }
       const gi = idxOf(u.src);
       if (range.designs.some((d) => d.imgs.includes(gi))) return; // dedupe within the range
       const di = range.designs.length;
@@ -54,7 +58,7 @@ function injectSculptureUploads(data, uploads) {
 }
 
 function mount(data) {
-  mountRangeGallery({ rootId: "sculpture-root", data, label: "Sculpture", noun: "sculpture", section: "sculpture" });
+  mountRangeGallery({ rootId: "sculpture-root", data, label: "Sculpture", noun: "sculpture", section: "sculpture", noPriceRanges: NO_PRICE_LABELS });
 }
 
 export function mountSculptureRange() {

@@ -514,10 +514,11 @@ export const WALL_ART_COVERS = WALL_ART_SERIES
 // "sculpture" series has no sub-series of its own, just a flat item list
 // tagged by `cat` (classics/bonbons/leafs — same ids as SCULPTURE_CATS in
 // CardDeckOverlay). Group those into cover cards instead.
-const SCULPTURE_SUBCATS = [
+export const SCULPTURE_SUBCATS = [
   { id: "classics", label: "The Classics" },
   { id: "leafs",    label: "Leaf Sculptures" },
   { id: "bonbons",  label: "Bon Bons & Genie Bottles" },
+  { id: "fire",     label: "Fire Sculptures" },
 ];
 export const SCULPTURE_COVERS = SCULPTURE_SUBCATS
   .map(({ id, label }) => {

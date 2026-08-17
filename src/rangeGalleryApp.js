@@ -25,7 +25,9 @@ const CATALOGUES = [
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null, noPriceRanges = null }) {
+  // Ranges (by label) that show no prices/quote even in a priced gallery.
+  const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -255,7 +257,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       </div>
       ${descriptions && descriptions[r.label] ? `<p class="p-desc">${descriptions[r.label]}</p>` : ''}
       <div class="stage"><img alt=""></div>
-      <div class="capline"><span class="dname"></span><button class="detail-btn">${pricing ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</button></div>
+      <div class="capline"><span class="dname"></span><button class="detail-btn">${(pricing && !isNoPriceRange(r.label)) ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</button></div>
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
@@ -544,6 +546,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     selSize = curTiers.length ? 0 : null;
     addQ.classList.remove('added'); addQ.textContent='Add to quote';
     gateSetup(); updateAddState();
+    // Price-free range: hide the sizes/gate/quote in the detail sheet — just image + name.
+    ov.classList.toggle('no-price', isNoPriceRange(RANGES[ri].label));
     ov.classList.add('open'); document.body.classList.add('locked');
   }
   function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }
