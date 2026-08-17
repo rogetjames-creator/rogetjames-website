@@ -228,7 +228,6 @@ const COMMISSIONS = {
       label: "GARDEN SCULPTURES",
       items: [
         { name: "HUE",         img: "/images/sculptures/hue-dalkieth.jpg" },
-        { name: "ESFERA",      img: "/images/sculptures/esfera-fire-burner.jpg" },
         { name: "ORIAN Totem", img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
         { name: "MARAKESH",    img: "/images/hero/hero-marakesh-tall.jpg" },
         { name: "YAZAD",       img: `${CDN}/a9ffceab-afdf-47d9-8ba1-53687b469ec4_rw_1200.jpg` },
