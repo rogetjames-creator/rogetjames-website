@@ -52,14 +52,14 @@ const CSS = `
 .rjv-link:hover{color:#e6c489;border-color:#9E7134}
 .rjv-topbar{position:fixed;top:14px;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:flex-start;padding:0 16px;pointer-events:none}
 .rjv-topbar>*{pointer-events:auto}
-.rjv-web{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(237,232,223,.72);border:1px solid rgba(237,232,223,.22);border-radius:999px;padding:8px 14px;background:rgba(10,10,10,.5);backdrop-filter:blur(6px);cursor:pointer;text-decoration:none;transition:.2s}
-.rjv-web:hover{color:#fff;border-color:rgba(237,232,223,.5)}
+.rjv-web{font-family:var(--font-detail,system-ui,sans-serif);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:30px;padding:8px 16px;background:none;cursor:pointer;text-decoration:none;transition:.25s;white-space:nowrap}
+.rjv-web:hover{background:#9E7134;border-color:#9E7134}
 .rjv-catwrap{position:relative}
-.rjv-catbtn{display:flex;align-items:center;gap:8px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.28);border-radius:999px;padding:8px 16px;background:rgba(10,10,10,.5);backdrop-filter:blur(6px);cursor:pointer;transition:.2s}
-.rjv-catbtn:hover{border-color:#9E7134;color:#e6c489}
-.rjv-catmenu{position:absolute;top:calc(100% + 8px);right:0;min-width:260px;background:#141414;border:1px solid rgba(237,232,223,.12);border-radius:14px;padding:6px;box-shadow:0 20px 50px rgba(0,0,0,.6);display:flex;flex-direction:column}
-.rjv-catmenu button{text-align:left;font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;letter-spacing:.02em;color:rgba(237,232,223,.82);background:none;border:none;border-radius:9px;padding:10px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
-.rjv-catmenu button:hover{background:rgba(158,113,52,.14);color:#f0d9b6}
+.rjv-catbtn{display:flex;align-items:center;gap:8px;font-family:var(--font-detail,system-ui,sans-serif);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:30px;padding:8px 16px;background:none;cursor:pointer;transition:.25s;white-space:nowrap}
+.rjv-catbtn:hover{background:#9E7134;border-color:#9E7134}
+.rjv-catmenu{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px);display:flex;flex-direction:column}
+.rjv-catmenu button{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:var(--font-detail,system-ui,sans-serif);transition:.2s;line-height:1.4}
+.rjv-catmenu button:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
 .rjv-catview{position:fixed;inset:0;z-index:330;background:#0b0b0b;display:flex;flex-direction:column}
 .rjv-catview .cvhead{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(237,232,223,.08);flex-shrink:0}
 .rjv-catview .cvtitle{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(237,232,223,.72)}
