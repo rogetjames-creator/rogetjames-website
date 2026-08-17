@@ -102,9 +102,12 @@ async function fetchScreenUploads() {
   try {
     const manifest = await fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : [])).catch(() => []);
+    // Any screen-related tag counts: the generic "screens" OR a specific screen
+    // category (icons / architectural / … / light-features / mirrors).
+    const screenKeys = new Set([...SCREEN_COVERS.map((c) => c.id), "screens"]);
     const rows = (Array.isArray(manifest) ? manifest : [])
       .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" }))
-      .filter((u) => (u.dests || []).includes("screens"));
+      .filter((u) => (u.dests || []).some((d) => screenKeys.has(d)));
     const seen = new Set();
     return rows
       .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))
