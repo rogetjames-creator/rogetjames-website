@@ -235,7 +235,7 @@ function VaultUpload({ secret }) {
 
       <select value={clientId} onChange={(e) => setClientId(e.target.value)}
         className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none mb-3 cursor-pointer">
-        <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : "+ Choose a client…"}</option>
+        <option value="" className="bg-jet">{phase === "loading" ? "Loading clients…" : clients.length ? "+ Choose a client…" : "No clients yet — use New client above ↑"}</option>
         {clients.map((c) => <option key={c.id} value={c.id} className="bg-jet">{c.name}{c.project ? ` — ${c.project}` : ""}</option>)}
       </select>
       <input type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)}

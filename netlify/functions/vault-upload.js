@@ -66,11 +66,16 @@ export const handler = async (event) => {
       const clients = [];
       let offset;
       do {
-        const url = `${AT_BASE()}?pageSize=100&fields%5B%5D=Name&fields%5B%5D=Email&fields%5B%5D=Project%20Title${offset ? `&offset=${offset}` : ""}`;
+        // No fields[] restriction — asking for a field name that isn't an exact
+        // match makes Airtable reject the whole request (empty list). Read all.
+        const url = `${AT_BASE()}?pageSize=100${offset ? `&offset=${offset}` : ""}`;
         const r = await fetch(url, { headers: atHeaders() });
         const d = await r.json();
-        if (!r.ok) return json({ error: d?.error?.message || "Airtable read failed" }, 502);
-        (d.records || []).forEach((rec) => clients.push({ id: rec.id, name: rec.fields?.Name || "(no name)", email: rec.fields?.Email || "", project: rec.fields?.["Project Title"] || "" }));
+        if (!r.ok) return json({ error: `Airtable: ${d?.error?.message || d?.error?.type || r.status}` }, 502);
+        (d.records || []).forEach((rec) => {
+          const f = rec.fields || {};
+          clients.push({ id: rec.id, name: f.Name || f.name || f["Project Title"] || f.Email || "(unnamed)", email: f.Email || f.email || "", project: f["Project Title"] || "" });
+        });
         offset = d.offset;
       } while (offset);
       clients.sort((a, b) => a.name.localeCompare(b.name));
