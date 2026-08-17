@@ -31,9 +31,11 @@ const CSS = `
 .rjv-name .w2{color:rgba(237,232,223,.6)}
 .rjv-cat{display:inline-block;margin-top:16px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:999px;padding:8px 18px;text-decoration:none;transition:.25s}
 .rjv-cat:hover{background:#9E7134;border-color:#9E7134}
-.rjv-mark{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0 6px}
-.rjv-mark .ln{display:block;width:88px;max-width:22vw;height:1px;background:rgba(237,232,223,.30)}
-.rjv-mark img{height:44px;width:auto;opacity:.92}
+.rjv-mark{position:relative;width:78px;height:78px;margin:14px auto 6px;display:flex;align-items:center;justify-content:center}
+.rjv-mark img{width:100%;height:auto;opacity:.5;filter:drop-shadow(0 5px 0 rgba(0,0,0,.55))}
+.rjv-mark .ln{position:absolute;top:50%;height:1.5px;width:90px;background:rgba(242,240,233,.35);margin-top:-.75px}
+.rjv-mark .ln.l{right:calc(100% + 10px)}
+.rjv-mark .ln.r{left:calc(100% + 10px)}
 .rjv-greet{font-family:var(--font-detail,system-ui,sans-serif);font-size:13.5px;letter-spacing:.01em;color:rgba(237,232,223,.62);max-width:640px;margin:8px auto 0;line-height:1.65;white-space:pre-line}
 .rjv-stage{height:58vh;display:flex;align-items:center;justify-content:center;margin:18px 0 8px}
 .rjv-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px;box-shadow:0 26px 70px rgba(0,0,0,.55);cursor:zoom-in;transition:opacity .18s ease}
@@ -121,9 +123,9 @@ export default function VaultGallery({ data, onClose }) {
         {/* Header: RJ mark divider (logo + lines) above the client name, then greeting */}
         <div className="rjv-head">
           <div className="rjv-mark">
-            <span className="ln" />
-            <img src="/images/roj-logo.png" alt="ROGETjames" />
-            <span className="ln" />
+            <span className="ln l" />
+            <span className="ln r" />
+            <img src={previewImg("/images/roj-logo.png", 240)} alt="ROGETjames" />
           </div>
           <h2 className="rjv-name">
             {(() => {
