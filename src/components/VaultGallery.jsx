@@ -19,6 +19,9 @@ const CSS = `
 .rjv{display:flex;flex-direction:column;color:#F2F0E9;width:100%}
 .rjv-head{text-align:center;padding:2px 16px 0}
 .rjv-name{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(24px,4vw,44px);line-height:1.02;letter-spacing:-.01em;text-transform:uppercase;margin:0;color:#F2F0E9}
+.rjv-name .w2{color:rgba(237,232,223,.6)}
+.rjv-cat{display:inline-block;margin-top:16px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:999px;padding:8px 18px;text-decoration:none;transition:.25s}
+.rjv-cat:hover{background:#9E7134;border-color:#9E7134}
 .rjv-mark{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0 6px}
 .rjv-mark .ln{display:block;width:88px;max-width:22vw;height:1px;background:rgba(237,232,223,.30)}
 .rjv-mark img{height:44px;width:auto;opacity:.92}
@@ -76,15 +79,21 @@ export default function VaultGallery({ data, onClose }) {
       )}
 
       <div className="rjv">
-        {/* Header: client name + RJ mark divider + greeting */}
+        {/* Header: RJ mark divider (logo + lines) above the client name, then greeting */}
         <div className="rjv-head">
-          <h2 className="rjv-name">{data.clientName || "Your Gallery"}</h2>
           <div className="rjv-mark">
             <span className="ln" />
             <img src="/images/roj-logo.png" alt="ROGETjames" />
             <span className="ln" />
           </div>
+          <h2 className="rjv-name">
+            {(() => {
+              const parts = (data.clientName || "Your Gallery").trim().split(/\s+/);
+              return <>{parts[0]}{parts.length > 1 && <span className="w2"> {parts.slice(1).join(" ")}</span>}</>;
+            })()}
+          </h2>
           {data.greeting && <p className="rjv-greet">{data.greeting}</p>}
+          <a className="rjv-cat" href="/wall-art">Wall Art Catalogue ↗</a>
         </div>
 
         {total === 0 ? (
@@ -93,15 +102,9 @@ export default function VaultGallery({ data, onClose }) {
           </div>
         ) : (
           <>
-            {/* Big image */}
-            <div className="rjv-stage" style={{ position: "relative" }}>
-              {total > 1 && (
-                <button onClick={prev} className="absolute left-0 md:left-1 z-10 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors" aria-label="Previous"><ChevronLeft size={22} /></button>
-              )}
+            {/* Big image — no arrows here; browse via thumbnails, arrows appear in expand view */}
+            <div className="rjv-stage">
               <img key={idx} src={previewImg(item.src, 1400)} alt={item.title || ""} onClick={() => setZoom(true)} style={NO_SAVE_STYLE} {...NO_SAVE} />
-              {total > 1 && (
-                <button onClick={next} className="absolute right-0 md:right-1 z-10 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors" aria-label="Next"><ChevronRight size={22} /></button>
-              )}
             </div>
 
             {/* Caption */}
