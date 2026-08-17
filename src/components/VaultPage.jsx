@@ -20,6 +20,12 @@ function vaultImg(url) {
   if (url.startsWith("/.netlify/images") || url.startsWith("data:")) return url;
   return `/.netlify/images?url=${encodeURIComponent(url)}&w=${VAULT_IMG_W}&fm=webp&q=72`;
 }
+// Smaller version for the thumbnail grid (loads fast, low value if captured).
+function vaultThumb(url) {
+  if (!url || typeof url !== "string") return url;
+  if (url.startsWith("/.netlify/images") || url.startsWith("data:")) return url;
+  return `/.netlify/images?url=${encodeURIComponent(url)}&w=500&fm=webp&q=68`;
+}
 const NO_SAVE = { draggable: false, onContextMenu: (e) => e.preventDefault() };
 const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none", pointerEvents: "none" };
 const WATERMARK_URL = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -250,105 +256,34 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
   );
 }
 
-// ── Large gallery slideshow ──────────────────────────────────
+// ── Gallery: thumbnail grid → tap opens fullscreen ───────────
 function GallerySlideshow({ images, onOpenLightbox }) {
-  const [idx, setIdx] = useState(0);
-  const containerRef = useRef(null);
-  const activeRef = useRef(0);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const slides = containerRef.current.querySelectorAll(".gal-slide");
-    slides.forEach((s, i) => gsap.set(s, { opacity: i === 0 ? 1 : 0, xPercent: 0 }));
-  }, []);
-
-  const go = useCallback((next, dir) => {
-    if (!containerRef.current || next === activeRef.current) return;
-    const slides = containerRef.current.querySelectorAll(".gal-slide");
-    const prev = activeRef.current;
-
-    gsap.to(slides[prev], { xPercent: dir > 0 ? -18 : 18, opacity: 0, duration: 0.42, ease: "power2.in" });
-    gsap.fromTo(slides[next],
-      { xPercent: dir > 0 ? 60 : -60, opacity: 0 },
-      { xPercent: 0, opacity: 1, duration: 0.52, ease: "power3.out" }
-    );
-    activeRef.current = next;
-    setIdx(next);
-  }, []);
-
-  const prev = () => go(idx > 0 ? idx - 1 : images.length - 1, -1);
-  const next = () => go(idx < images.length - 1 ? idx + 1 : 0, 1);
-
   return (
-    <div className="w-full">
-      <div
-        ref={containerRef}
-        className="relative overflow-hidden rounded-2xl cursor-pointer"
-        style={{ height: "clamp(320px, 60vh, 680px)" }}
-        onClick={() => onOpenLightbox(idx)}
-      >
-        {images.map((img, i) => (
-          <div key={i} className="gal-slide absolute inset-0">
-            <img
-              src={vaultImg(img.url)}
-              alt={img.name || ""}
-              className="w-full h-full object-cover"
-              {...NO_SAVE}
-              style={NO_SAVE_STYLE}
-            />
-            <Watermark />
-            {/* Tap-to-fullscreen hint */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/25">
-              <div className="w-12 h-12 rounded-full bg-jet/60 backdrop-blur-sm border border-cream/20 flex items-center justify-center">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-cream">
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                </svg>
-              </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      {images.map((img, i) => (
+        <button
+          key={i}
+          type="button"
+          onClick={() => onOpenLightbox(i)}
+          className="group relative aspect-square rounded-xl overflow-hidden border border-cream/[0.07] hover:border-clay/45 transition-colors duration-300 focus:outline-none"
+        >
+          <img
+            src={vaultThumb(img.url)}
+            alt={img.name || ""}
+            {...NO_SAVE}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+            style={NO_SAVE_STYLE}
+          />
+          <Watermark />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors duration-300">
+            <div className="w-9 h-9 rounded-full bg-jet/55 backdrop-blur-sm border border-cream/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-cream">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+              </svg>
             </div>
           </div>
-        ))}
-
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={e => { e.stopPropagation(); prev(); }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-jet/60 backdrop-blur-sm border border-cream/15 flex items-center justify-center text-cream hover:bg-jet/80 transition-all"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); next(); }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-jet/60 backdrop-blur-sm border border-cream/15 flex items-center justify-center text-cream hover:bg-jet/80 transition-all"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Caption row */}
-      <div className="flex items-center justify-between mt-4 px-1">
-        <p className="font-detail text-xs text-cream/40 uppercase tracking-wider truncate">
-          {images[idx]?.name?.replace(/\.[^.]+$/, "") || ""}
-        </p>
-        {images.length > 1 && (
-          <div className="flex items-center gap-1.5 flex-shrink-0 ml-4">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => go(i, i > idx ? 1 : -1)}
-                className="transition-all duration-300"
-                style={{
-                  width: i === idx ? 16 : 5,
-                  height: 3,
-                  borderRadius: 999,
-                  background: i === idx ? "#9e7134" : "rgba(237,232,223,0.2)",
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+        </button>
+      ))}
     </div>
   );
 }
