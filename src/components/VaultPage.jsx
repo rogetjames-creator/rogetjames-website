@@ -468,7 +468,7 @@ function VerifyStep({ prefillEmail = "", onVerified }) {
         }
         return;
       }
-      onVerified(data, email.trim().toLowerCase());
+      onVerified(data, email.trim().toLowerCase(), password);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -687,18 +687,25 @@ export default function VaultPage() {
   useEffect(() => {
     if (isAdmin) { setStep("admin"); return; }
     try {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (cached) {
-        const { data } = JSON.parse(cached);
-        if (data) { setClientData(data); setStep("content"); return; }
+      const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (cached?.data) {
+        setClientData(cached.data); setStep("content");
+        // Re-fetch fresh so new photos/captions/spiel appear on reload.
+        if (cached.verifiedEmail && cached.password) {
+          fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: cached.verifiedEmail, password: cached.password }) })
+            .then((r) => r.json())
+            .then((d) => { if (d && !d.error) { setClientData(d); localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: d, verifiedEmail: cached.verifiedEmail, password: cached.password })); } })
+            .catch(() => {});
+        }
+        return;
       }
     } catch {}
     setStep("verify");
   }, []);
 
-  const handleVerified = (data, verifiedEmail) => {
+  const handleVerified = (data, verifiedEmail, password) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, verifiedEmail }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, verifiedEmail, password }));
     } catch {}
     setClientData(data);
     setStep("content");

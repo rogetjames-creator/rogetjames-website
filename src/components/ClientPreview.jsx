@@ -35,10 +35,17 @@ export default function ClientPreview({ onClose }) {
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
     gsap.fromTo(cardRef.current, { scale: 0.94, y: 20 }, { scale: 1, y: 0, duration: 0.45, ease: "power3.out" });
     document.body.style.overflow = "hidden";
-    // Returning client — reuse the cached vault session so they skip re-entry.
+    // Returning client — reuse the cached vault session so they skip re-entry,
+    // then re-fetch fresh in the background so any new photos/captions/spiel show.
     try {
       const cached = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
       if (cached?.data) setData(toGallery(cached.data));
+      if (cached?.verifiedEmail && cached?.password) {
+        fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: cached.verifiedEmail, password: cached.password }) })
+          .then((r) => r.json())
+          .then((d) => { if (d && !d.error) { setData(toGallery(d)); localStorage.setItem(SESSION_KEY, JSON.stringify({ data: d, verifiedEmail: cached.verifiedEmail, password: cached.password })); } })
+          .catch(() => {});
+      }
     } catch { /* ignore */ }
     setTimeout(() => inputRef.current?.focus(), 450);
     return () => { document.body.style.overflow = ""; };
@@ -78,7 +85,7 @@ export default function ClientPreview({ onClose }) {
         gsap.fromTo(cardRef.current, { x: -10 }, { x: 10, duration: 0.08, repeat: 5, yoyo: true, ease: "none", onComplete: () => gsap.set(cardRef.current, { x: 0 }) });
         return;
       }
-      try { localStorage.setItem(SESSION_KEY, JSON.stringify({ data: d, verifiedEmail: email.trim().toLowerCase() })); } catch { /* ignore */ }
+      try { localStorage.setItem(SESSION_KEY, JSON.stringify({ data: d, verifiedEmail: email.trim().toLowerCase(), password })); } catch { /* ignore */ }
       setData(toGallery(d));
     } catch {
       setError("Something went wrong. Please try again.");
