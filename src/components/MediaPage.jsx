@@ -173,11 +173,13 @@ function VaultUpload({ secret }) {
   const [nGreeting, setNGreeting] = useState("");
   const [nSpiel, setNSpiel] = useState("");
   const [nLinks, setNLinks] = useState("");
+  const [nAddress, setNAddress] = useState("");
+  const [nContact, setNContact] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
   const [caps, setCaps] = useState({});          // per-image caption edits, keyed by src
   const [savingCaps, setSavingCaps] = useState(false);
   const [newCaption, setNewCaption] = useState(""); // shared caption applied to a new batch
-  const fillNotes = (d) => { setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); };
+  const fillNotes = (d) => { setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); setNAddress(d.address || ""); setNContact(d.contact || ""); };
   const fillCaps = (d) => { setCaps(Object.fromEntries((d.images || []).map((im) => [im.src, im.name || ""]))); };
 
   const post = (payload) => fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, ...payload }) }).then((r) => r.json());
@@ -224,10 +226,10 @@ function VaultUpload({ secret }) {
   const saveNotes = async () => {
     setSavingNotes(true); setMsg("");
     const links = parseLinks(nLinks);
-    const d = await post({ action: "update-client", clientId, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links });
+    const d = await post({ action: "update-client", clientId, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links, address: nAddress.trim(), contact: nContact.trim() });
     setSavingNotes(false);
     if (d.error) { setMsg(d.error); return; }
-    setCurrent((c) => c ? { ...c, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links } : c);
+    setCurrent((c) => c ? { ...c, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links, address: nAddress.trim(), contact: nContact.trim() } : c);
     setMsg("Saved the notes for this gallery.");
   };
 
@@ -375,6 +377,12 @@ function VaultUpload({ secret }) {
           {/* Notes / spiel / links shown to the client */}
           <div className="rounded-xl border border-white/12 bg-black/20 p-3 mb-5">
             <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.15em] mb-2">Notes shown in their gallery</p>
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
+              <input type="text" value={nAddress} onChange={(e) => setNAddress(e.target.value)} placeholder="Full address (private — for your records)"
+                className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+              <input type="text" value={nContact} onChange={(e) => setNContact(e.target.value)} placeholder="Contact (phone, etc.)"
+                className="sm:w-56 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+            </div>
             <input type="text" value={nGreeting} onChange={(e) => setNGreeting(e.target.value)} placeholder="Short greeting (e.g. Your private preview is ready)"
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-2" />
             <textarea value={nSpiel} onChange={(e) => setNSpiel(e.target.value)} rows={4} placeholder="Spiel / message to the client — write as much as you like."

@@ -87,7 +87,7 @@ export default async function handler(req) {
       if (password.length < 4) return json({ error: "Set a password of at least 4 characters." }, 400);
       const existing = await store.get(email, { type: "json" }).catch(() => null);
       if (existing) return json({ error: "A client with that email already exists." }, 409);
-      const record = { email, name, password, images: [], greeting: "", spiel: "", links: [], token: crypto.randomUUID(), createdTime: new Date().toISOString() };
+      const record = { email, name, password, images: [], greeting: "", spiel: "", links: [], address: "", contact: "", token: crypto.randomUUID(), createdTime: new Date().toISOString() };
       await store.setJSON(email, record);
       return json({ ok: true, id: email, name, email, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(email)}` });
     }
@@ -96,7 +96,7 @@ export default async function handler(req) {
       const email = emailKey(body.clientId || body.email);
       const record = await store.get(email, { type: "json" }).catch(() => null);
       if (!record) return json({ error: "Client not found." }, 404);
-      return json({ email: record.email, name: record.name, password: record.password, images: record.images || [], greeting: record.greeting || "", spiel: record.spiel || "", links: record.links || [], vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(record.email)}` });
+      return json({ email: record.email, name: record.name, password: record.password, images: record.images || [], greeting: record.greeting || "", spiel: record.spiel || "", links: record.links || [], address: record.address || "", contact: record.contact || "", vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(record.email)}` });
     }
 
     if (action === "update-client") {
@@ -105,6 +105,8 @@ export default async function handler(req) {
       if (!record) return json({ error: "Client not found." }, 404);
       if (typeof body.greeting === "string") record.greeting = body.greeting;
       if (typeof body.spiel === "string") record.spiel = body.spiel;
+      if (typeof body.address === "string") record.address = body.address;
+      if (typeof body.contact === "string") record.contact = body.contact;
       if (Array.isArray(body.links)) record.links = body.links.filter((l) => l && l.label && l.url).map((l) => ({ label: String(l.label), url: String(l.url) }));
       if (typeof body.name === "string" && body.name.trim()) record.name = body.name.trim();
       await store.setJSON(email, record);
