@@ -39,12 +39,18 @@ export default function ClientPreview({ onClose }) {
     // then re-fetch fresh in the background so any new photos/captions/spiel show.
     try {
       const cached = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-      if (cached?.data) setData(toGallery(cached.data));
+      // Only auto-open a session we can refresh (has stored credentials); show the
+      // cached copy instantly, then re-fetch fresh so new photos/captions/spiel appear.
       if (cached?.verifiedEmail && cached?.password) {
+        if (cached.data) setData(toGallery(cached.data));
         fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: cached.verifiedEmail, password: cached.password }) })
           .then((r) => r.json())
           .then((d) => { if (d && !d.error) { setData(toGallery(d)); localStorage.setItem(SESSION_KEY, JSON.stringify({ data: d, verifiedEmail: cached.verifiedEmail, password: cached.password })); } })
           .catch(() => {});
+      } else {
+        // Old/stale session with no refreshable credentials — clear it so the
+        // client signs in once and always gets the latest.
+        localStorage.removeItem(SESSION_KEY);
       }
     } catch { /* ignore */ }
     setTimeout(() => inputRef.current?.focus(), 450);

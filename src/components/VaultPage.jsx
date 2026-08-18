@@ -688,17 +688,17 @@ export default function VaultPage() {
     if (isAdmin) { setStep("admin"); return; }
     try {
       const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-      if (cached?.data) {
+      // Only auto-open a session we can refresh (has stored credentials).
+      if (cached?.data && cached?.verifiedEmail && cached?.password) {
         setClientData(cached.data); setStep("content");
-        // Re-fetch fresh so new photos/captions/spiel appear on reload.
-        if (cached.verifiedEmail && cached.password) {
-          fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: cached.verifiedEmail, password: cached.password }) })
-            .then((r) => r.json())
-            .then((d) => { if (d && !d.error) { setClientData(d); localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: d, verifiedEmail: cached.verifiedEmail, password: cached.password })); } })
-            .catch(() => {});
-        }
+        fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: cached.verifiedEmail, password: cached.password }) })
+          .then((r) => r.json())
+          .then((d) => { if (d && !d.error) { setClientData(d); localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: d, verifiedEmail: cached.verifiedEmail, password: cached.password })); } })
+          .catch(() => {});
         return;
       }
+      // Old/stale session without refreshable credentials — clear it and sign in fresh.
+      localStorage.removeItem(STORAGE_KEY);
     } catch {}
     setStep("verify");
   }, []);
