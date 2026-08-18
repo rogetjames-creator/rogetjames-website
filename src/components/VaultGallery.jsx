@@ -47,7 +47,7 @@ const CSS = `
 .rjv-thumb:hover{transform:translateY(-2px)}
 .rjv-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .rjv-thumb.active{border-color:#9E7134;box-shadow:0 0 0 1px #9E7134}
-.rjv-spiel{max-width:680px;margin:30px auto 0;text-align:center;font-family:var(--font-detail,system-ui,sans-serif);font-size:14px;line-height:1.85;color:rgba(237,232,223,.7);white-space:pre-line}
+.rjv-spiel{max-width:680px;margin:30px auto 0;text-align:center;font-family:var(--font-detail,system-ui,sans-serif);font-size:15.5px;line-height:1.85;color:rgba(237,232,223,.7);white-space:pre-line}
 .rjv-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0}
 .rjv-link{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.02em;color:#c79a5b;border:1px solid rgba(158,113,52,.45);border-radius:999px;padding:6px 14px;transition:.2s;text-decoration:none}
 .rjv-link:hover{color:#e6c489;border-color:#9E7134}
