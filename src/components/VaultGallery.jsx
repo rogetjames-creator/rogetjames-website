@@ -23,6 +23,36 @@ const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouc
 // Placeholder spiel shown when a client has no custom message yet.
 const DEFAULT_SPIEL = "This is your private preview — a selection prepared exclusively for you. Take your time with each piece: study the detail, picture it in your space, and note anything that draws you in. Every design here can be tailored in size, finish and material to suit your setting. When you're ready, we'll refine the shortlist together and move toward your final commission.";
 
+// Render the spiel with light structure straight from the plain /media text box:
+// each line becomes its own paragraph, a blank line adds a gap, and consecutive
+// lines starting with *, - or • become a bullet list. Lets James lay out a
+// proper letter (paragraphs, bullets) without any special editor.
+function FormattedSpiel({ text }) {
+  const lines = String(text || "").replace(/\r\n?/g, "\n").split("\n");
+  const blocks = [];
+  let bullets = [];
+  const flush = () => { if (bullets.length) { blocks.push({ t: "ul", items: bullets }); bullets = []; } };
+  lines.forEach((raw) => {
+    if (!raw.trim()) { flush(); return; }
+    const m = /^\s*[*•-]\s+(.*)$/.exec(raw);
+    if (m) bullets.push(m[1].trim());
+    else { flush(); blocks.push({ t: "p", text: raw.trim() }); }
+  });
+  flush();
+  // A single plain paragraph (e.g. the default welcome) stays centred; a
+  // structured letter reads left-aligned.
+  const single = blocks.length === 1 && blocks[0].t === "p";
+  return (
+    <div className={single ? "rjv-spiel rjv-spiel-center" : "rjv-spiel"}>
+      {blocks.map((b, i) =>
+        b.t === "ul"
+          ? <ul key={i}>{b.items.map((it, j) => <li key={j}>{it}</li>)}</ul>
+          : <p key={i}>{b.text}</p>
+      )}
+    </div>
+  );
+}
+
 const CSS = `
 .rjv{display:flex;flex-direction:column;color:#F2F0E9;width:100%}
 .rjv-head{text-align:center;padding:0 16px 0}
@@ -53,7 +83,13 @@ const CSS = `
 .rjv-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .rjv-thumb.active{border-color:#9E7134;box-shadow:0 0 0 1px #9E7134}
 .rjv-spielbox{max-width:720px;margin:34px auto 0;padding:26px 28px;border:1px solid rgba(237,232,223,.14);border-radius:16px;background:rgba(255,255,255,.03)}
-.rjv-spiel{margin:0;text-align:center;font-family:var(--font-detail,system-ui,sans-serif);font-size:15.5px;line-height:1.85;color:rgba(237,232,223,.72);white-space:pre-line}
+.rjv-spiel{font-family:var(--font-detail,system-ui,sans-serif);font-size:15.5px;line-height:1.8;color:rgba(237,232,223,.75);text-align:left}
+.rjv-spiel.rjv-spiel-center{text-align:center}
+.rjv-spiel p{margin:0 0 12px}
+.rjv-spiel p:last-child{margin-bottom:0}
+.rjv-spiel ul{margin:6px 0 14px;padding-left:20px;list-style:disc}
+.rjv-spiel.rjv-spiel-center ul{list-style-position:inside;padding-left:0}
+.rjv-spiel li{margin:3px 0}
 .rjv-reply{max-width:720px;margin:16px auto 0;padding:22px 28px;border:1px solid rgba(158,113,52,.28);border-radius:16px;background:rgba(158,113,52,.05);text-align:center}
 .rjv-reply h4{margin:0 0 4px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em;color:#ECE7DE}
 .rjv-reply p.hint{margin:0 0 12px;font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;color:rgba(237,232,223,.5)}
@@ -198,7 +234,7 @@ export default function VaultGallery({ data, onClose }) {
         {/* Greeting + spiel (contained) underneath (scrolls) */}
         {data.greeting && <p className="rjv-greet">{data.greeting}</p>}
         <div className="rjv-spielbox">
-          <p className="rjv-spiel">{data.spiel || DEFAULT_SPIEL}</p>
+          <FormattedSpiel text={data.spiel || DEFAULT_SPIEL} />
         </div>
         {data.links?.length > 0 && (
           <div className="rjv-links">

@@ -385,8 +385,9 @@ function VaultUpload({ secret }) {
             </div>
             <input type="text" value={nGreeting} onChange={(e) => setNGreeting(e.target.value)} placeholder="Short greeting (e.g. Your private preview is ready)"
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-2" />
-            <textarea value={nSpiel} onChange={(e) => setNSpiel(e.target.value)} rows={4} placeholder="Spiel / message to the client — write as much as you like."
-              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-2 resize-y" />
+            <textarea value={nSpiel} onChange={(e) => setNSpiel(e.target.value)} rows={10} placeholder={"Message to the client — write as much as you like.\n\nEach new line becomes a new paragraph.\nLeave a blank line for a bigger gap.\nStart a line with *  to make a bullet point."}
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-1 resize-y leading-relaxed" />
+            <p className="font-detail text-[10.5px] text-cream/40 mb-2 leading-relaxed">New line = new paragraph · blank line = gap · a line starting with <span className="text-clay/90">*</span> becomes a bullet.</p>
             <textarea value={nLinks} onChange={(e) => setNLinks(e.target.value)} rows={2} placeholder={"Links — one per line, as:  Label | https://link.com"}
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[12px] text-cream placeholder:text-cream/30 outline-none mb-2 resize-y" />
             <button onClick={saveNotes} disabled={savingNotes}
