@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState, useCallback, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { CATALOGUES } from "../catalogues";
-const CatPageViewer = lazy(() => import("./CatPageViewer"));
+// Bundled directly (not lazy-loaded) so the catalogue always opens reliably inside
+// the gallery — no separately-loaded piece that could fail after a deploy.
+import CatPageViewer from "./CatPageViewer";
 
 // The client gallery viewer — deliberately mirrors the Wall Art / Screens /
 // Sculpture gallery look: client name + RJ mark divider on top, one large image
@@ -184,13 +186,11 @@ export default function VaultGallery({ data, onClose }) {
       {/* Catalogue viewer — the site's shared CatPageViewer, identical to the nav/galleries.
           Both close controls return to the client's gallery (never eject to the site). */}
       {catView && (
-        <Suspense fallback={<div className="fixed inset-0 z-[10010] bg-[#0a0a0a] flex items-center justify-center"><div className="w-6 h-6 border-2 border-clay/30 border-t-clay rounded-full animate-spin" /></div>}>
-          <CatPageViewer
-            pages={catView.pages}
-            label={catView.label}
-            onClose={() => setCatView(null)}
-          />
-        </Suspense>
+        <CatPageViewer
+          pages={catView.pages}
+          label={catView.label}
+          onClose={() => setCatView(null)}
+        />
       )}
     </div>
   );
