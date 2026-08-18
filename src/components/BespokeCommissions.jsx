@@ -746,7 +746,7 @@ const SCREEN_DESIGNS = [
       { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-2.jpg", tags: ["fencing", "gates", "residential"] },
     ],
   },
-  { name: "BLOOM", items: [
+  { name: "BLOOM", tabs: ["icons", "organics"], items: [
     { name: "BLOOM", img: "/images/bloom/bloom-closeup.jpg", pos: "center top", tags: ["screens", "dividers", "residential"] },
     { name: "BLOOM — Light Feature", img: "/images/bloom/bloom-light-feature.jpg", tags: ["light features", "residential"] },
   ]},
