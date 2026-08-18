@@ -452,5 +452,25 @@
     "note": "Name - YOKAI",
     "createdTime": "2026-08-18T13:47:30.947Z",
     "path": "images/uploads/1787060850946_dl952f.jpg"
+  },
+  {
+    "id": "1787066778742_pa0p8w",
+    "name": "YOKAI - 1200px.jpg",
+    "destinations": [
+      "classics"
+    ],
+    "note": "Name - image 1 YOKAI, image 2 YOKAI and MARAKESH",
+    "createdTime": "2026-08-18T15:26:18.760Z",
+    "path": "images/uploads/1787066778742_pa0p8w.jpg"
+  },
+  {
+    "id": "1787066778762_pilt6i",
+    "name": "YOKAI & MARAKESH.jpg",
+    "destinations": [
+      "classics"
+    ],
+    "note": "Name - image 1 YOKAI, image 2 YOKAI and MARAKESH",
+    "createdTime": "2026-08-18T15:26:18.762Z",
+    "path": "images/uploads/1787066778762_pilt6i.jpg"
   }
 ]
