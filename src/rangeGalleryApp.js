@@ -252,6 +252,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
+    const detailBtn=sec.querySelector('.detail-btn');
     function alignCap(){ const w=stImg.getBoundingClientRect().width; if(w>4) capline.style.width=Math.round(w)+'px'; }
     capAligners.push(alignCap);
     let curP={d:0,v:0};
@@ -274,6 +275,9 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       }
       const extra=des.imgs.length>1?` &middot; ${vv+1}/${des.imgs.length}`:'';
       dn.innerHTML=`<b>${des.n}</b>${extra}`;
+      // A design flagged no-price (e.g. a view-only uploaded photo) shows "View"
+      // instead of "Details & prices", even inside a priced range.
+      if(pricing && detailBtn){ const viewOnly=isNoPriceRange(r.label)||des.noPrice; detailBtn.innerHTML=(viewOnly?(viewLabel||'View'):'Details &amp; prices')+' &rarr;'; }
       let act=null;
       tw.querySelectorAll('.thumb').forEach(t=>{const on=(+t.dataset.d===dd&&+t.dataset.v===vv);t.classList.toggle('active',on);if(on)act=t;});
       if(act) ensureVisible(tw,act);
@@ -538,7 +542,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     addQ.classList.remove('added'); addQ.textContent='Add to quote';
     gateSetup(); updateAddState();
     // Price-free range: hide the sizes/gate/quote in the detail sheet — just image + name.
-    ov.classList.toggle('no-price', isNoPriceRange(RANGES[ri].label));
+    ov.classList.toggle('no-price', isNoPriceRange(RANGES[ri].label) || !!des.noPrice);
     ov.classList.add('open'); document.body.classList.add('locked');
   }
   function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }

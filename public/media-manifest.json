@@ -445,10 +445,11 @@
   },
   {
     "id": "1787066778742_pa0p8w",
-    "name": "YOKAI - 1200px.jpg",
+    "name": "YOKAI",
     "destinations": [
       "classics"
     ],
+    "noPrice": true,
     "note": "Name - image 1 YOKAI, image 2 YOKAI and MARAKESH",
     "createdTime": "2026-08-18T15:26:18.760Z",
     "path": "images/uploads/1787066778742_pa0p8w.jpg"
@@ -459,6 +460,7 @@
     "destinations": [
       "classics"
     ],
+    "noPrice": true,
     "note": "Name - image 1 YOKAI, image 2 YOKAI and MARAKESH",
     "createdTime": "2026-08-18T15:26:18.762Z",
     "path": "images/uploads/1787066778762_pilt6i.jpg"

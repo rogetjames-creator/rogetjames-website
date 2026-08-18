@@ -20,7 +20,7 @@ async function fetchSculptureUploads() {
       .then((r) => (r.ok ? r.json() : [])).catch(() => []);
     const keys = new Set(Object.keys(DEST_TO_LABEL));
     const rows = (Array.isArray(manifest) ? manifest : [])
-      .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" }))
+      .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "", noPrice: !!e.noPrice }))
       .filter((u) => (u.dests || []).some((d) => keys.has(d)));
     const seen = new Set();
     return rows
@@ -49,7 +49,7 @@ function injectSculptureUploads(data, uploads) {
       if (range.designs.some((d) => d.imgs.includes(gi))) return; // dedupe within the range
       const di = range.designs.length;
       const cleanName = (u.name || label).replace(/\.(jpe?g|png|webp|gif)$/i, "").trim();
-      range.designs.push({ n: cleanName || label, imgs: [gi] });   // appended at the END
+      range.designs.push({ n: cleanName || label, imgs: [gi], noPrice: u.noPrice });   // appended at the END
       range.flat.push([di, 0]);
       range.count = range.designs.length;
     });
