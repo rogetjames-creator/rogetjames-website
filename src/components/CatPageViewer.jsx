@@ -139,8 +139,8 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
 
           {page > 0 && (
             <div onClick={() => go(-1)}
-              className="absolute inset-y-0 left-0 w-1/2 cursor-pointer flex items-center justify-start pl-4 group/prev">
-              <div className="w-9 h-9 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-cream/0 group-hover/prev:text-cream/80 transition-colors">
+              className="absolute inset-y-0 left-0 w-1/2 cursor-pointer flex items-center justify-start pl-8 group/prev">
+              <div className="w-9 h-9 rounded-full bg-black/50 border border-white/20 flex items-center justify-center text-cream/75 group-hover/prev:text-cream group-hover/prev:border-clay group-hover/prev:bg-black/70 transition-all duration-150">
                 <ChevronLeft size={16} />
               </div>
             </div>
@@ -148,8 +148,8 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
 
           {page < total - 1 && (
             <div onClick={() => go(1)}
-              className="absolute inset-y-0 right-0 w-1/2 cursor-pointer flex items-center justify-end pr-4 group/next">
-              <div className="w-9 h-9 rounded-full bg-black/60 border border-white/15 flex items-center justify-center text-cream/0 group-hover/next:text-cream/80 transition-colors">
+              className="absolute inset-y-0 right-0 w-1/2 cursor-pointer flex items-center justify-end pr-8 group/next">
+              <div className="w-9 h-9 rounded-full bg-black/50 border border-white/20 flex items-center justify-center text-cream/75 group-hover/next:text-cream group-hover/next:border-clay group-hover/next:bg-black/70 transition-all duration-150">
                 <ChevronRight size={16} />
               </div>
             </div>
