@@ -181,14 +181,14 @@ export default function VaultGallery({ data, onClose }) {
         </div>
       )}
 
-      {/* Catalogue viewer — the site's shared CatPageViewer, identical to the nav/galleries */}
+      {/* Catalogue viewer — the site's shared CatPageViewer, identical to the nav/galleries.
+          Both close controls return to the client's gallery (never eject to the site). */}
       {catView && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="fixed inset-0 z-[10010] bg-[#0a0a0a] flex items-center justify-center"><div className="w-6 h-6 border-2 border-clay/30 border-t-clay rounded-full animate-spin" /></div>}>
           <CatPageViewer
             pages={catView.pages}
             label={catView.label}
             onClose={() => setCatView(null)}
-            onCloseAll={() => { setCatView(null); if (onClose) onClose(); else window.location.href = "/"; }}
           />
         </Suspense>
       )}
