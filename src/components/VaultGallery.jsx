@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { CATALOGUES } from "../catalogues";
@@ -39,7 +40,7 @@ const CSS = `
 .rjv-mark .ln.r{left:calc(100% + 10px)}
 .rjv-greet{font-family:var(--font-detail,system-ui,sans-serif);font-size:13.5px;letter-spacing:.01em;color:rgba(237,232,223,.62);max-width:640px;margin:8px auto 0;line-height:1.65;white-space:pre-line}
 .rjv-stage{height:58vh;display:flex;align-items:center;justify-content:center;margin:18px 0 8px}
-.rjv-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px;box-shadow:0 26px 70px rgba(0,0,0,.55);cursor:zoom-in;transition:opacity .18s ease}
+.rjv-stage img{max-width:min(100%,720px);max-height:100%;object-fit:contain;border-radius:14px;box-shadow:0 26px 70px rgba(0,0,0,.55);cursor:zoom-in;transition:opacity .18s ease}
 .rjv-cap{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
 .rjv-cap .dn{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(237,232,223,.34)}
 .rjv-cap .dn b{color:rgba(237,232,223,.56);font-weight:600}
@@ -173,25 +174,23 @@ export default function VaultGallery({ data, onClose }) {
         )}
       </div>
 
-      {/* Fullscreen */}
-      {zoom && (
+      {/* Fullscreen — portalled to body so the close button is always screen-fixed (no scroll to exit) */}
+      {zoom && createPortal(
         <div className="fixed inset-0 z-[320] flex items-center justify-center bg-black/95 backdrop-blur-xl" onClick={() => setZoom(false)}>
-          <button onClick={() => setZoom(false)} className="absolute top-5 right-5 w-10 h-10 rounded-full bg-cream/15 flex items-center justify-center text-cream hover:bg-cream/30 z-10" aria-label="Close"><X size={18} /></button>
+          <button onClick={() => setZoom(false)} className="absolute top-5 right-5 w-11 h-11 rounded-full bg-cream/15 flex items-center justify-center text-cream hover:bg-cream/30 z-10" aria-label="Close"><X size={20} /></button>
           {total > 1 && <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 md:left-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Previous"><ChevronLeft size={22} /></button>}
           <img src={previewImg(item.src, 1600)} alt={item.title || ""} className="max-w-[92vw] max-h-[90vh] object-contain" style={NO_SAVE_STYLE} {...NO_SAVE} onClick={(e) => e.stopPropagation()} />
           {total > 1 && <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 md:right-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Next"><ChevronRight size={22} /></button>}
-        </div>
-      )}
+        </div>, document.body)}
 
       {/* Catalogue viewer — the site's shared CatPageViewer, identical to the nav/galleries.
           Both close controls return to the client's gallery (never eject to the site). */}
-      {catView && (
+      {catView && createPortal(
         <CatPageViewer
           pages={catView.pages}
           label={catView.label}
           onClose={() => setCatView(null)}
-        />
-      )}
+        />, document.body)}
     </div>
   );
 }
