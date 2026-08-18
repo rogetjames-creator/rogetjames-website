@@ -137,6 +137,25 @@ export default async function handler(req) {
       return json({ ok: true, added: newImages.length, total: record.images.length });
     }
 
+    if (action === "update-images") {
+      const email = emailKey(body.clientId || body.email);
+      const updates = Array.isArray(body.images) ? body.images : [];
+      const record = await store.get(email, { type: "json" }).catch(() => null);
+      if (!record) return json({ error: "Client not found." }, 404);
+      const bySrc = {};
+      updates.forEach((u) => { if (u && u.src) bySrc[u.src] = u; });
+      record.images = (record.images || []).map((im) => bySrc[im.src] ? { ...im, name: String(bySrc[im.src].name || "") } : im);
+      // Optional reorder: if a full ordered list of srcs is supplied, apply it.
+      if (Array.isArray(body.order) && body.order.length) {
+        const map = {}; record.images.forEach((im) => { map[im.src] = im; });
+        const reordered = body.order.map((s) => map[s]).filter(Boolean);
+        const rest = record.images.filter((im) => !body.order.includes(im.src));
+        record.images = [...reordered, ...rest];
+      }
+      await store.setJSON(email, record);
+      return json({ ok: true, images: record.images });
+    }
+
     if (action === "delete-image") {
       const email = emailKey(body.clientId || body.email);
       const src = body.src;

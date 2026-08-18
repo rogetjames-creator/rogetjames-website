@@ -174,7 +174,10 @@ function VaultUpload({ secret }) {
   const [nSpiel, setNSpiel] = useState("");
   const [nLinks, setNLinks] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
+  const [caps, setCaps] = useState({});          // per-image caption edits, keyed by src
+  const [savingCaps, setSavingCaps] = useState(false);
   const fillNotes = (d) => { setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); };
+  const fillCaps = (d) => { setCaps(Object.fromEntries((d.images || []).map((im) => [im.src, im.name || ""]))); };
 
   const post = (payload) => fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, ...payload }) }).then((r) => r.json());
   const vthumb = (src) => `/.netlify/images?url=${encodeURIComponent(src)}&w=240&fm=webp&q=70`;
@@ -191,7 +194,7 @@ function VaultUpload({ secret }) {
     let alive = true;
     setLoadingClient(true);
     post({ action: "get-client", clientId })
-      .then((d) => { if (!alive) return; if (d.error) { setCurrent(null); } else { setCurrent(d); fillNotes(d); } })
+      .then((d) => { if (!alive) return; if (d.error) { setCurrent(null); } else { setCurrent(d); fillNotes(d); fillCaps(d); } })
       .finally(() => { if (alive) setLoadingClient(false); });
     return () => { alive = false; };
     /* eslint-disable-next-line */
@@ -199,7 +202,17 @@ function VaultUpload({ secret }) {
 
   const deleteImage = async (src) => {
     const d = await post({ action: "delete-image", clientId, src });
-    if (!d.error) setCurrent((c) => c ? { ...c, images: (c.images || []).filter((i) => i.src !== src) } : c);
+    if (!d.error) { setCurrent((c) => c ? { ...c, images: (c.images || []).filter((i) => i.src !== src) } : c); setCaps((p) => { const n = { ...p }; delete n[src]; return n; }); }
+  };
+
+  const saveCaps = async () => {
+    setSavingCaps(true); setMsg("");
+    const images = (current.images || []).map((im) => ({ src: im.src, name: caps[im.src] ?? im.name ?? "" }));
+    const d = await post({ action: "update-images", clientId, images });
+    setSavingCaps(false);
+    if (d.error) { setMsg(d.error); return; }
+    if (d.images) setCurrent((c) => c ? { ...c, images: d.images } : c);
+    setMsg("Saved the captions for this gallery.");
   };
 
   const parseLinks = (text) => text.split("\n").map((line) => {
@@ -328,18 +341,30 @@ function VaultUpload({ secret }) {
             <span className="font-detail text-[11px] text-cream/45">login: {current.email} · password: {current.password}</span>
           </div>
 
-          {/* Existing photos */}
-          <p className="font-detail text-[10px] text-cream/50 uppercase tracking-wider mb-2">In this gallery — {(current.images || []).length}</p>
+          {/* Existing photos — number, thumbnail, caption (shown under the image), delete */}
+          <p className="font-detail text-[10px] text-cream/50 uppercase tracking-wider mb-2">In this gallery — {(current.images || []).length} · type a caption under each</p>
           {(current.images || []).length > 0 ? (
-            <div className="flex flex-wrap gap-2 mb-5">
-              {current.images.map((im) => (
-                <div key={im.src} className="relative w-16 h-16 rounded-lg overflow-hidden border border-white/15 group">
-                  <img src={vthumb(im.src)} alt="" className="w-full h-full object-cover" />
-                  <button onClick={() => deleteImage(im.src)} title="Remove from gallery"
-                    className="absolute top-0 right-0 bg-black/75 text-cream w-5 h-5 flex items-center justify-center text-[11px] leading-none opacity-0 group-hover:opacity-100 transition-opacity">×</button>
-                </div>
-              ))}
-            </div>
+            <>
+              <div className="flex flex-col gap-2 mb-3">
+                {current.images.map((im, i) => (
+                  <div key={im.src} className="flex items-center gap-3">
+                    <span className="font-detail text-[11px] text-cream/40 w-5 text-right">{i + 1}</span>
+                    <div className="relative w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border border-white/15">
+                      <img src={vthumb(im.src)} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <input type="text" value={caps[im.src] ?? ""} onChange={(e) => setCaps((p) => ({ ...p, [im.src]: e.target.value }))}
+                      placeholder="Caption (e.g. UBUD round — Corten steel, rust)"
+                      className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
+                    <button onClick={() => deleteImage(im.src)} title="Remove from gallery"
+                      className="text-cream/40 hover:text-red-400 text-lg leading-none px-1">×</button>
+                  </div>
+                ))}
+              </div>
+              <button onClick={saveCaps} disabled={savingCaps}
+                className="px-4 py-2 rounded-xl bg-clay/80 text-cream font-detail text-[12px] hover:bg-clay disabled:opacity-40 transition-all mb-5">
+                {savingCaps ? "Saving…" : "Save captions"}
+              </button>
+            </>
           ) : (
             <p className="font-detail text-[11px] text-cream/40 mb-5">No photos yet — drag some in below.</p>
           )}
