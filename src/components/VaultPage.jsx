@@ -396,9 +396,10 @@ function DocumentsSection({ pdfs }) {
 
 // ── Assembled vault content page ─────────────────────────────
 function VaultContent({ clientData }) {
-  const { clientName, greeting, projectDescription, images = [], links = [] } = clientData;
+  const { clientName, email, greeting, projectDescription, images = [], links = [] } = clientData;
   const data = {
     clientName,
+    email: email || "",
     greeting,
     spiel: projectDescription,
     links,

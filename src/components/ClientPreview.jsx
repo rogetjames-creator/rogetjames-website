@@ -69,6 +69,7 @@ export default function ClientPreview({ onClose }) {
 
   const toGallery = (d) => ({
     clientName: d.clientName || "",
+    email: d.email || "",
     greeting: d.greeting || "",
     spiel: d.projectDescription || "",
     links: d.links || [],

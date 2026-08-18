@@ -38,6 +38,7 @@ export default async function handler(req) {
 
   return json({
     clientName: record.name || "",
+    email,
     projectTitle: record.projectTitle || "",
     projectDescription: record.spiel || record.projectDescription || "",
     location: record.location || "",

@@ -26,11 +26,13 @@ const DEFAULT_SPIEL = "This is your private preview — a selection prepared exc
 const CSS = `
 .rjv{display:flex;flex-direction:column;color:#F2F0E9;width:100%}
 .rjv-head{text-align:center;padding:0 16px 0}
-/* Client name — vertical label down the left, reading bottom-to-top,
-   two-tone (grey + charcoal), muted */
-.rjv-vname{position:fixed;left:38px;top:50%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(28px,4.4vw,58px);line-height:1;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;z-index:15;pointer-events:none;user-select:none}
-.rjv-vname .w1{color:rgba(237,232,223,.42)}
-.rjv-vname .w2{color:rgba(237,232,223,.2)}
+/* Client name — vertical label down the left, aligned to the image's height and
+   level (so the thumbnail row below never reaches it). Two-tone, muted. */
+.rjv-stagewrap{position:relative}
+.rjv-vname{position:absolute;left:8px;top:0;height:100%;display:flex;align-items:center;z-index:15;pointer-events:none;user-select:none}
+.rjv-vtxt{transform:rotate(-90deg);white-space:nowrap;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:800;font-size:clamp(20px,3vw,46px);line-height:1;letter-spacing:.04em;text-transform:uppercase}
+.rjv-vtxt .w1{color:rgba(237,232,223,.42)}
+.rjv-vtxt .w2{color:rgba(237,232,223,.2)}
 .rjv-cat{display:inline-block;margin-top:16px;font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#F2F0E9;border:1px solid rgba(237,232,223,.32);border-radius:999px;padding:8px 18px;text-decoration:none;transition:.25s}
 .rjv-cat:hover{background:#9E7134;border-color:#9E7134}
 .rjv-mark{position:relative;width:78px;height:78px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
@@ -50,7 +52,18 @@ const CSS = `
 .rjv-thumb:hover{transform:translateY(-2px)}
 .rjv-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .rjv-thumb.active{border-color:#9E7134;box-shadow:0 0 0 1px #9E7134}
-.rjv-spiel{max-width:680px;margin:30px auto 0;text-align:center;font-family:var(--font-detail,system-ui,sans-serif);font-size:15.5px;line-height:1.85;color:rgba(237,232,223,.7);white-space:pre-line}
+.rjv-spielbox{max-width:720px;margin:34px auto 0;padding:26px 28px;border:1px solid rgba(237,232,223,.14);border-radius:16px;background:rgba(255,255,255,.03)}
+.rjv-spiel{margin:0;text-align:center;font-family:var(--font-detail,system-ui,sans-serif);font-size:15.5px;line-height:1.85;color:rgba(237,232,223,.72);white-space:pre-line}
+.rjv-reply{max-width:720px;margin:16px auto 0;padding:22px 28px;border:1px solid rgba(158,113,52,.28);border-radius:16px;background:rgba(158,113,52,.05);text-align:center}
+.rjv-reply h4{margin:0 0 4px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em;color:#ECE7DE}
+.rjv-reply p.hint{margin:0 0 12px;font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;color:rgba(237,232,223,.5)}
+.rjv-reply textarea{width:100%;min-height:96px;resize:vertical;background:rgba(0,0,0,.25);border:1px solid rgba(237,232,223,.16);border-radius:12px;padding:12px 14px;font-family:var(--font-detail,system-ui,sans-serif);font-size:14px;color:#ECE7DE;outline:none}
+.rjv-reply textarea:focus{border-color:rgba(158,113,52,.7)}
+.rjv-reply button{margin-top:12px;padding:10px 26px;border-radius:999px;border:1px solid #9E7134;background:#9E7134;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;cursor:pointer;transition:.2s}
+.rjv-reply button:hover{background:#b5854a;border-color:#b5854a}
+.rjv-reply button:disabled{opacity:.4;cursor:default}
+.rjv-reply .sent{font-family:var(--font-detail,system-ui,sans-serif);font-size:13px;color:#8fce9b}
+.rjv-reply .err{font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;color:#e0a35a;margin-top:8px}
 .rjv-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0}
 .rjv-link{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.02em;color:#c79a5b;border:1px solid rgba(158,113,52,.45);border-radius:999px;padding:6px 14px;transition:.2s;text-decoration:none}
 .rjv-link:hover{color:#e6c489;border-color:#9E7134}
@@ -64,8 +77,8 @@ const CSS = `
 .rjv-catmenu{position:absolute;top:calc(100% + 12px);right:0;width:240px;background:rgba(16,16,16,.97);border:1px solid rgba(242,240,233,.16);border-radius:14px;padding:8px;box-shadow:0 30px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px);display:flex;flex-direction:column}
 .rjv-catmenu button{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;background:transparent;border:none;color:rgba(242,240,233,.75);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:var(--font-detail,system-ui,sans-serif);transition:.2s;line-height:1.4}
 .rjv-catmenu button:hover{background:rgba(255,255,255,.06);color:#F2F0E9}
-@media(max-width:900px){.rjv-vname{font-size:26px;left:28px}}
-@media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}.rjv-vname{font-size:18px;left:20px}}
+@media(max-width:900px){.rjv-vtxt{font-size:26px}.rjv-vname{left:2px}}
+@media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}.rjv-vtxt{font-size:16px}.rjv-vname{left:0}}
 `;
 
 export default function VaultGallery({ data, onClose }) {
@@ -75,7 +88,23 @@ export default function VaultGallery({ data, onClose }) {
   const [zoom, setZoom] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const [catView, setCatView] = useState(null); // an image catalogue being viewed
+  const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [replyErr, setReplyErr] = useState("");
   const total = items.length;
+
+  const sendReply = async () => {
+    if (!reply.trim()) return;
+    setSending(true); setReplyErr("");
+    try {
+      const r = await fetch("/api/vault-reply", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: data.clientName, email: data.email, message: reply.trim() }) });
+      const d = await r.json();
+      if (!r.ok || d.error) { setReplyErr(d.error || "Could not send. Please try again."); setSending(false); return; }
+      setSent(true);
+    } catch { setReplyErr("Could not send. Please try again."); }
+    setSending(false);
+  };
   const item = items[idx] || items[0];
 
   const prev = useCallback(() => setIdx((i) => (i - 1 + total) % total), [total]);
@@ -117,14 +146,6 @@ export default function VaultGallery({ data, onClose }) {
         </div>
       </div>
 
-      {/* Client name — vertical two-tone label down the left */}
-      <div className="rjv-vname" aria-label={data.clientName || "Your Gallery"}>
-        {(() => {
-          const parts = (data.clientName || "Your Gallery").trim().split(/\s+/);
-          return <><span className="w1">{parts[0]}</span>{parts.length > 1 && <span className="w2"> {parts.slice(1).join(" ")}</span>}</>;
-        })()}
-      </div>
-
       <div className="rjv">
         {/* Header: RJ mark divider (logo + lines), top centre — level with the pills */}
         <div className="rjv-head">
@@ -141,9 +162,19 @@ export default function VaultGallery({ data, onClose }) {
           </div>
         ) : (
           <>
-            {/* Big image — no arrows here; browse via thumbnails, arrows appear in expand view */}
-            <div className="rjv-stage">
-              <img key={idx} src={previewImg(item.src, 1400)} alt={item.title || ""} onClick={() => setZoom(true)} style={NO_SAVE_STYLE} {...NO_SAVE} />
+            {/* Big image, with the vertical client name aligned to its height/level */}
+            <div className="rjv-stagewrap">
+              <div className="rjv-vname" aria-label={data.clientName || "Your Gallery"}>
+                <span className="rjv-vtxt">
+                  {(() => {
+                    const parts = (data.clientName || "Your Gallery").trim().split(/\s+/);
+                    return <><span className="w1">{parts[0]}</span>{parts.length > 1 && <span className="w2"> {parts.slice(1).join(" ")}</span>}</>;
+                  })()}
+                </span>
+              </div>
+              <div className="rjv-stage">
+                <img key={idx} src={previewImg(item.src, 1400)} alt={item.title || ""} onClick={() => setZoom(true)} style={NO_SAVE_STYLE} {...NO_SAVE} />
+              </div>
             </div>
 
             {/* Caption */}
@@ -164,14 +195,31 @@ export default function VaultGallery({ data, onClose }) {
           </>
         )}
 
-        {/* Greeting + spiel underneath (scrolls) */}
+        {/* Greeting + spiel (contained) underneath (scrolls) */}
         {data.greeting && <p className="rjv-greet">{data.greeting}</p>}
-        <p className="rjv-spiel">{data.spiel || DEFAULT_SPIEL}</p>
+        <div className="rjv-spielbox">
+          <p className="rjv-spiel">{data.spiel || DEFAULT_SPIEL}</p>
+        </div>
         {data.links?.length > 0 && (
           <div className="rjv-links">
             {data.links.map((l, i) => <a key={i} className="rjv-link" href={l.url} target="_blank" rel="noreferrer">{l.label} ↗</a>)}
           </div>
         )}
+
+        {/* Client reply — emails James on send */}
+        <div className="rjv-reply">
+          <h4>Send a message to ROGETjames</h4>
+          <p className="hint">Questions, thoughts or which pieces you like — write here and it comes straight to James.</p>
+          {sent ? (
+            <p className="sent">Sent ✓ — thank you, James will be in touch.</p>
+          ) : (
+            <>
+              <textarea value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Your message…" />
+              <div><button onClick={sendReply} disabled={!reply.trim() || sending}>{sending ? "Sending…" : "Send"}</button></div>
+              {replyErr && <p className="err">{replyErr}</p>}
+            </>
+          )}
+        </div>
       </div>
 
       {/* Fullscreen — portalled to body so the close button is always screen-fixed (no scroll to exit) */}
