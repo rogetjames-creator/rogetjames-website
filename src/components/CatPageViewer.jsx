@@ -90,9 +90,14 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose, zoomed, total]);
 
+  // Block casual copy/download (right-click + drag + touch save) without touching
+  // image quality — catalogues stay full original resolution, no watermark.
+  const noCopy = { onContextMenu: (e) => e.preventDefault(), onDragStart: (e) => e.preventDefault() };
+  const noCopyImg = { draggable: false, onDragStart: (e) => e.preventDefault(), style: { WebkitUserSelect: "none", userSelect: "none", WebkitTouchCallout: "none", WebkitUserDrag: "none" } };
+
   return (
     <>
-      <div className="fixed inset-0 z-[10010] flex flex-col bg-[#0a0a0a]">
+      <div {...noCopy} className="fixed inset-0 z-[10010] flex flex-col bg-[#0a0a0a]">
 
         {/* Header */}
         <div className="flex-none px-5 py-3.5 flex items-center gap-3 border-b border-white/10">
@@ -129,7 +134,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
 
         {/* Main page — click left/right halves to navigate */}
         <div className="flex-1 relative flex items-center justify-center bg-black/40 min-h-0 overflow-hidden">
-          <img src={pages[page]} alt={`Page ${page + 1}`}
+          <img src={pages[page]} alt={`Page ${page + 1}`} {...noCopyImg}
             className="max-h-full max-w-full object-contain pointer-events-none select-none" />
 
           {page > 0 && (
@@ -160,7 +165,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
                 i === page ? "border-clay opacity-100 scale-105" : "border-white/10 opacity-45 hover:opacity-75"
               }`}
               style={{ height: 82, width: 62 }}>
-              <img src={src} alt={`${label} page ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+              <img src={src} alt={`${label} page ${i + 1}`} {...noCopyImg} className="w-full h-full object-cover" loading="lazy" />
             </button>
           ))}
         </div>
@@ -168,7 +173,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
 
       {/* Zoom overlay — full-res scrollable */}
       {zoomed && (
-        <div className="fixed inset-0 z-[10011] bg-black/97 flex flex-col">
+        <div {...noCopy} className="fixed inset-0 z-[10011] bg-black/97 flex flex-col">
           <div className="flex-none flex items-center justify-between px-5 py-3 border-b border-white/10">
             <span className="font-detail text-xs text-cream/40 uppercase tracking-[0.2em]">
               Page {page + 1} of {total}
@@ -190,7 +195,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
             </div>
           </div>
           <div className="flex-1 overflow-auto" data-lenis-prevent>
-            <img src={pages[page]} alt={`${label} page ${page + 1}`} className="w-full h-auto block max-w-4xl mx-auto p-6" />
+            <img src={pages[page]} alt={`${label} page ${page + 1}`} {...noCopyImg} className="w-full h-auto block max-w-4xl mx-auto p-6" />
           </div>
         </div>
       )}
