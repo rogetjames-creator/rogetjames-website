@@ -176,6 +176,7 @@ function VaultUpload({ secret }) {
   const [savingNotes, setSavingNotes] = useState(false);
   const [caps, setCaps] = useState({});          // per-image caption edits, keyed by src
   const [savingCaps, setSavingCaps] = useState(false);
+  const [newCaption, setNewCaption] = useState(""); // shared caption applied to a new batch
   const fillNotes = (d) => { setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); };
   const fillCaps = (d) => { setCaps(Object.fromEntries((d.images || []).map((im) => [im.src, im.name || ""]))); };
 
@@ -259,13 +260,15 @@ function VaultUpload({ secret }) {
   const send = async () => {
     if (!clientId || !staged.length) return;
     setPhase("sending"); setMsg("");
+    // If a shared caption is set, apply it to every photo in this batch.
+    const images = newCaption.trim() ? staged.map((s) => ({ ...s, name: newCaption.trim() })) : staged;
     try {
-      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images: staged }) });
+      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images }) });
       const d = await r.json();
       if (!r.ok || d.error) { setMsg(d.error || "Upload failed."); setPhase("idle"); return; }
       setMsg(`Added ${d.added} image(s) — the client now has ${d.total} in their vault. New photos show in the vault about a minute after the site rebuilds.`);
-      setStaged([]); setPhase("done");
-      post({ action: "get-client", clientId }).then((c) => { if (!c.error) setCurrent(c); });
+      setStaged([]); setNewCaption(""); setPhase("done");
+      post({ action: "get-client", clientId }).then((c) => { if (!c.error) { setCurrent(c); fillCaps(c); } });
       loadClients();
     } catch (e) { setMsg("Upload failed — " + (e?.message || "check connection.")); setPhase("idle"); }
   };
@@ -407,6 +410,9 @@ function VaultUpload({ secret }) {
               </div>
             ))}
           </div>
+          <input type="text" value={newCaption} onChange={(e) => setNewCaption(e.target.value)}
+            placeholder="Caption for all of these (e.g. CORTEN Powder coat — job samples)"
+            className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-3" />
         </>
       )}
 
