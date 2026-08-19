@@ -59,9 +59,12 @@ function buildScreenRangeData(covers) {
     }).filter((d) => d.imgs.length > 0);
     // Random group order — each design stays grouped (its own photos together),
     // but the groups are shuffled so the strip isn't sequential/alphabetical.
-    for (let i = designs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [designs[i], designs[j]] = [designs[j], designs[i]];
+    // DISPLAYS keeps its owner-pinned order (see DISPLAYS_ORDER) — never shuffled.
+    if (sec.id !== "displays") {
+      for (let i = designs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [designs[i], designs[j]] = [designs[j], designs[i]];
+      }
     }
     // James's chosen opening display image per range — pinned to first position.
     const OPENERS = {
@@ -128,6 +131,12 @@ async function fetchScreenUploads() {
 // The shared "Displays" set → its own range at the end of the Screens gallery.
 // The same photos also appear under DISPLAYS in the Sculpture and Projects
 // galleries (one /media upload, three homes).
+// Owner-pinned opening order for the Screens · DISPLAYS tiles. Anything listed
+// here comes first, in this order; the rest follow by upload time.
+const DISPLAYS_ORDER = [
+  "/images/uploads/1787118567607_tc0re5.jpg",
+  "/images/uploads/1787118567609_mynq6x.jpg",
+];
 function buildDisplaysCover(uploads) {
   // Displays carry NO title — one photo per tile, no name shown.
   const seen = new Set();
@@ -137,6 +146,8 @@ function buildDisplaysCover(uploads) {
     seen.add(u.src);
     pieces.push({ name: "", img: u.src, slides: [u.src] });
   }
+  const rank = (src) => { const i = DISPLAYS_ORDER.indexOf(src); return i < 0 ? Infinity : i; };
+  pieces.sort((a, b) => rank(a.img) - rank(b.img)); // stable: unpinned keep upload order
   return { id: "displays", label: "Displays", img: pieces.length ? pieces[0].img : "", pieces };
 }
 
