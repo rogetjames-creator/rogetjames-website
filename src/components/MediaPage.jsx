@@ -446,6 +446,7 @@ export default function MediaPage() {
   const [otherNote, setOtherNote] = useState("");
   const [instructions, setInstructions] = useState(""); // free-text info sent with the upload (e.g. which image to replace)
   const [screenName, setScreenName] = useState("");   // names a Screens upload → files it with that design
+  const [pieceName, setPieceName] = useState("");     // title for a non-Screens upload (used as the gallery title, not the filename)
   const [screenSections, setScreenSections] = useState([]); // one or more screen categories to file into
   const [replaceUrl, setReplaceUrl] = useState("");   // paste an existing image URL to overwrite it in place
   const [staged, setStaged] = useState([]);          // [{ name, dataUrl }]
@@ -559,9 +560,12 @@ export default function MediaPage() {
     try {
       // A named Screens upload carries that name on every photo in the batch, so
       // the Screens page files it with the matching design (or makes a new one).
+      // Every photo in the batch carries the name James typed, so the gallery
+      // titles it by that name — never the raw filename. Screens uses its own
+      // design-name field; every other category uses the general Name field.
       const screensSel = selectedDests.includes("screens");
-      const nm = screenName.trim();
-      const outImages = (screensSel && nm)
+      const nm = (screensSel ? screenName : pieceName).trim();
+      const outImages = nm
         ? staged.map((s) => ({ ...s, name: nm }))
         : staged;
       // Screens: every chosen category rides along as a destination tag so the
@@ -587,7 +591,7 @@ export default function MediaPage() {
   };
 
   const startNewBatch = () => {
-    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setScreenSections([]); setReplaceUrl(""); setDoneInfo(null); setNote(""); setPhase("compose");
+    setStaged([]); setSelectedDests([]); setOtherNote(""); setInstructions(""); setScreenName(""); setPieceName(""); setScreenSections([]); setReplaceUrl(""); setDoneInfo(null); setNote(""); setPhase("compose");
   };
 
   const remove = async (id) => {
@@ -780,7 +784,22 @@ export default function MediaPage() {
                 </div>
               );
             })()}
-            {!selectedDests.includes("other") && !selectedDests.includes("screens") && <div className="mb-4" />}
+            {/* Name field for every non-Screens category — this becomes the gallery
+                title, so the piece is never titled by its raw filename. */}
+            {selectedDests.length > 0 && !selectedDests.includes("screens") && !replaceUrl.trim() && (
+              <div className="mb-6">
+                <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-2">
+                  Name <span className="text-cream/40 normal-case tracking-normal font-detail">(the title shown in the gallery)</span>
+                </p>
+                <input type="text" value={pieceName} onChange={e => setPieceName(e.target.value)}
+                  placeholder="e.g. ESFERA, Fire Table, POD"
+                  className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
+                <p className="font-detail text-[11px] text-cream/50 mt-2">
+                  Type the name only — no <span className="text-cream/70">- official</span> / <span className="text-cream/70">1200px</span> tags. Applied to every photo in this batch. Leave blank to keep the file's own name.
+                </p>
+              </div>
+            )}
+            {!selectedDests.includes("other") && !selectedDests.includes("screens") && selectedDests.length === 0 && <div className="mb-4" />}
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-2">
               Instructions <span className="text-cream/40 normal-case tracking-normal font-detail">(optional)</span>
