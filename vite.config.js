@@ -3,8 +3,30 @@ import { resolve } from 'path'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+// Block right-click (and its "Save image as…") on every image, site-wide.
+// Injected into the <head> of every HTML entry so it runs before anything
+// renders, on all pages. Uses elementsFromPoint so it also blocks images that
+// sit under an overlay (gallery gradients, hover layers). CSP allows inline
+// scripts (script-src 'self' 'unsafe-inline').
+const noImageRightClick = () => ({
+  name: 'no-image-right-click',
+  transformIndexHtml() {
+    return [{
+      tag: 'script',
+      injectTo: 'head',
+      children:
+        "document.addEventListener('contextmenu',function(e){var hit=false;" +
+        "try{var els=document.elementsFromPoint?document.elementsFromPoint(e.clientX,e.clientY):[];" +
+        "for(var i=0;i<els.length;i++){if(els[i]&&els[i].tagName==='IMG'){hit=true;break;}}}catch(_){}" +
+        "if(!hit){var p=e.composedPath?e.composedPath():[e.target];" +
+        "for(var j=0;j<p.length;j++){if(p[j]&&p[j].tagName==='IMG'){hit=true;break;}}}" +
+        "if(hit)e.preventDefault();},true);",
+    }]
+  },
+})
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), noImageRightClick()],
   build: {
     rollupOptions: {
       input: {
