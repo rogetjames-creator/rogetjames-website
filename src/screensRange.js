@@ -105,9 +105,19 @@ async function fetchScreenUploads() {
     // Any screen-related tag counts: the generic "screens" OR a specific screen
     // category (icons / architectural / … / light-features / mirrors).
     const screenKeys = new Set([...SCREEN_COVERS.map((c) => c.id), "screens"]);
+    // "classics" is ALSO a Sculpture category, so a bare "classics" tag is a
+    // sculpture upload, not a screen one — only treat it as a screen when the
+    // generic "screens" tag is present too. (Prevents sculpture photos leaking
+    // into Screens · The Classics.)
+    const SHARED_WITH_SCULPTURE = new Set(["classics"]);
+    const isScreenUpload = (dests) => {
+      const d = dests || [];
+      if (d.includes("screens")) return true;
+      return d.some((x) => screenKeys.has(x) && !SHARED_WITH_SCULPTURE.has(x));
+    };
     const rows = (Array.isArray(manifest) ? manifest : [])
       .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" }))
-      .filter((u) => (u.dests || []).some((d) => screenKeys.has(d)));
+      .filter((u) => isScreenUpload(u.dests));
     const seen = new Set();
     return rows
       .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))

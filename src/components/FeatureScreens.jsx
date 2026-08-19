@@ -122,8 +122,12 @@ function Gallery() {
   const byUploadTime = (a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0);
   const upCloseForSeries = useCallback((id) => {
     const seed = SEED_UPCLOSE[id] || [];
+    // "classics" is shared with the Sculpture gallery — only count a classics
+    // upload as a screen one when it also carries the generic "screens" tag,
+    // so sculpture-Classics photos never leak into Screens · The Classics.
+    const matchesScreenCat = (m) => m.destinations.includes(id) && (id !== "classics" || m.destinations.includes("screens"));
     const uploads = [
-      ...mediaImages.filter((m) => m.destinations.includes(id)).map((m) => ({ src: m.src, createdTime: m.createdTime || "" })),
+      ...mediaImages.filter(matchesScreenCat).map((m) => ({ src: m.src, createdTime: m.createdTime || "" })),
       ...uploadedUpClose.filter((u) => (u.destinations || []).includes(id)).map((u) => ({ src: u.src, createdTime: u.createdTime || "" })),
     ].sort(byUploadTime);
     const out = [...seed];
