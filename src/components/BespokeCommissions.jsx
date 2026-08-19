@@ -2749,11 +2749,39 @@ export function ProjectsGalleryModal({ onClose }) {
   const [slideIdx, setSlideIdx] = useState(0);
   const [animDir, setAnimDir] = useState(null);
   const [infoProject, setInfoProject] = useState(null);
+  const [displaysItems, setDisplaysItems] = useState([]);
   const touchStartX = useRef(0);
 
-  const items = activeProjectCat === "all"
-    ? PROJECTS_ROWS.flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })))
-    : PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat).flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })));
+  // The shared "Displays" set — /media uploads tagged "displays". The same
+  // photos also show under DISPLAYS in the Screens and Sculpture galleries.
+  useEffect(() => {
+    let alive = true;
+    fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
+      .then(r => (r.ok ? r.json() : [])).catch(() => [])
+      .then(m => {
+        if (!alive || !Array.isArray(m)) return;
+        const norm = s => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+        const rows = m.filter(e => (e.destinations || []).includes("displays"))
+          .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0));
+        const out = [];
+        for (const e of rows) {
+          const src = `/${e.path}`;
+          if (out.some(p => p.slides.includes(src))) continue;
+          const name = (e.name || "Display").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase();
+          const ex = out.find(p => norm(p.name) === norm(name));
+          if (ex) ex.slides.push(src);
+          else out.push({ name, img: src, slides: [src] });
+        }
+        setDisplaysItems(out);
+      });
+    return () => { alive = false; };
+  }, []);
+
+  const items = activeProjectCat === "displays"
+    ? displaysItems
+    : activeProjectCat === "all"
+      ? PROJECTS_ROWS.flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })))
+      : PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat).flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })));
 
   const item = itemIdx !== null ? items[itemIdx] : null;
   const currentItemCat = item?._cat ?? null;
@@ -2800,7 +2828,7 @@ export function ProjectsGalleryModal({ onClose }) {
       {/* Category pills */}
       <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/8 flex-shrink-0">
         <div className="flex gap-2 overflow-x-auto flex-1" style={{ scrollbarWidth: "none" }}>
-        {[{ id: "all", label: "All" }, ...PROJECT_CATEGORIES].map(cat => {
+        {[{ id: "all", label: "All" }, ...PROJECT_CATEGORIES, { id: "displays", label: "Displays" }].map(cat => {
           const isActive = activeProjectCat === cat.id;
           const isPosition = !isActive && cat.id !== "all" && currentItemCat === cat.id && itemIdx !== null;
           return (

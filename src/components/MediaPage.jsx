@@ -53,6 +53,11 @@ const LIVE_DEST_GROUPS = [
   },
   { group: "Screens", hint: "shows on the Screens page", items: [{ key: MEDIA_KEYS.screens, label: "Screens" }] },
   {
+    group: "Displays",
+    hint: "one upload → shows under a DISPLAYS pill in Screens, Sculpture AND Projects",
+    items: [{ key: "displays", label: "Displays (Screens + Sculpture + Projects)" }],
+  },
+  {
     group: "Hero slideshow",
     hint: "shows on the homepage hero",
     items: [

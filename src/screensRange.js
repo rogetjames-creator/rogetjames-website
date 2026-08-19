@@ -104,7 +104,7 @@ async function fetchScreenUploads() {
       .then((r) => (r.ok ? r.json() : [])).catch(() => []);
     // Any screen-related tag counts: the generic "screens" OR a specific screen
     // category (icons / architectural / … / light-features / mirrors).
-    const screenKeys = new Set([...SCREEN_COVERS.map((c) => c.id), "screens"]);
+    const screenKeys = new Set([...SCREEN_COVERS.map((c) => c.id), "screens", "displays"]);
     // "classics" is ALSO a Sculpture category, so a bare "classics" tag is a
     // sculpture upload, not a screen one — only treat it as a screen when the
     // generic "screens" tag is present too. (Prevents sculpture photos leaking
@@ -125,6 +125,23 @@ async function fetchScreenUploads() {
   } catch { return []; }
 }
 
+// The shared "Displays" set → its own range at the end of the Screens gallery.
+// The same photos also appear under DISPLAYS in the Sculpture and Projects
+// galleries (one /media upload, three homes).
+function buildDisplaysCover(uploads) {
+  const norm = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const pieces = [];
+  for (const u of uploads) {
+    if (!u.src || pieces.some((p) => p.slides.includes(u.src))) continue;
+    const name = u.name || "Display";
+    const existing = pieces.find((p) => norm(p.name) === norm(name));
+    if (existing) existing.slides.push(u.src);
+    else pieces.push({ name, slides: [u.src] });
+  }
+  pieces.forEach((p) => { p.img = p.slides[0]; });
+  return { id: "displays", label: "Displays", img: pieces.length ? pieces[0].img : "", pieces };
+}
+
 export function mountScreensRange(rootId) {
   let mounted = false;
   const mountWith = (c) => {
@@ -137,7 +154,11 @@ export function mountScreensRange(rootId) {
   const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 900);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
-    mountWith(uploads.length ? injectUploads(SCREEN_COVERS, uploads) : SCREEN_COVERS);
+    const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
+    const rest = uploads.filter((u) => !(u.dests || []).includes("displays"));
+    let covers = rest.length ? injectUploads(SCREEN_COVERS, rest) : SCREEN_COVERS;
+    if (displays.length) covers = [...covers, buildDisplaysCover(displays)];
+    mountWith(covers);
   }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS); });
 }
 

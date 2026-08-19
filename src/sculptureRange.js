@@ -10,9 +10,12 @@ const DEST_TO_LABEL = {
   leafs: "Leaf Sculptures",
   bonbons: "Bon Bons & Genie Bottles",
   fire: "Fire Sculptures",
+  // Shared "Displays" set — the same photos also show under DISPLAYS in the
+  // Screens gallery and the Projects portal.
+  displays: "DISPLAYS",
 };
 // Categories shown without any prices/quote (view-only).
-const NO_PRICE_LABELS = ["Fire Sculptures"];
+const NO_PRICE_LABELS = ["Fire Sculptures", "DISPLAYS"];
 
 async function fetchSculptureUploads() {
   try {
