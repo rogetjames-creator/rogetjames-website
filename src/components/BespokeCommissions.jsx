@@ -2760,17 +2760,16 @@ export function ProjectsGalleryModal({ onClose }) {
       .then(r => (r.ok ? r.json() : [])).catch(() => [])
       .then(m => {
         if (!alive || !Array.isArray(m)) return;
-        const norm = s => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
         const rows = m.filter(e => (e.destinations || []).includes("displays"))
           .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0));
+        // Displays carry NO title — one photo per tile, no name shown.
         const out = [];
+        const seen = new Set();
         for (const e of rows) {
           const src = `/${e.path}`;
-          if (out.some(p => p.slides.includes(src))) continue;
-          const name = (e.name || "Display").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase();
-          const ex = out.find(p => norm(p.name) === norm(name));
-          if (ex) ex.slides.push(src);
-          else out.push({ name, img: src, slides: [src] });
+          if (seen.has(src)) continue;
+          seen.add(src);
+          out.push({ name: "", img: src, slides: [src] });
         }
         setDisplaysItems(out);
       });

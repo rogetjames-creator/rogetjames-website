@@ -51,9 +51,11 @@ function injectSculptureUploads(data, uploads) {
       const gi = idxOf(u.src);
       if (range.designs.some((d) => d.imgs.includes(gi))) return; // dedupe within the range
       const di = range.designs.length;
-      // Titles always show in capitals (matches every other sculpture name).
-      const cleanName = (u.name || "").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase();
-      range.designs.push({ n: cleanName || label, imgs: [gi], noPrice: u.noPrice });   // appended at the END
+      // Displays carry NO title — just the photo. Every other range shows the
+      // given name in capitals.
+      const isDisplays = label === "DISPLAYS";
+      const cleanName = isDisplays ? "" : ((u.name || "").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase() || label);
+      range.designs.push({ n: cleanName, imgs: [gi], noPrice: u.noPrice });   // appended at the END
       range.flat.push([di, 0]);
       range.count = range.designs.length;
     });

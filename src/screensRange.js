@@ -129,16 +129,14 @@ async function fetchScreenUploads() {
 // The same photos also appear under DISPLAYS in the Sculpture and Projects
 // galleries (one /media upload, three homes).
 function buildDisplaysCover(uploads) {
-  const norm = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  // Displays carry NO title — one photo per tile, no name shown.
+  const seen = new Set();
   const pieces = [];
   for (const u of uploads) {
-    if (!u.src || pieces.some((p) => p.slides.includes(u.src))) continue;
-    const name = u.name || "Display";
-    const existing = pieces.find((p) => norm(p.name) === norm(name));
-    if (existing) existing.slides.push(u.src);
-    else pieces.push({ name, slides: [u.src] });
+    if (!u.src || seen.has(u.src)) continue;
+    seen.add(u.src);
+    pieces.push({ name: "", img: u.src, slides: [u.src] });
   }
-  pieces.forEach((p) => { p.img = p.slides[0]; });
   return { id: "displays", label: "Displays", img: pieces.length ? pieces[0].img : "", pieces };
 }
 
