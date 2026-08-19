@@ -576,20 +576,16 @@
   {
     "id": "1787118567612_51ouoi",
     "name": "AB580296-89FA-4186-AABC-97EC4EF34A85_1_201_a.jpeg",
-    "destinations": [
-      "displays"
-    ],
-    "note": "these do not have any prices",
+    "destinations": [],
+    "note": "Held out of Displays for now (owner request).",
     "createdTime": "2026-08-19T05:49:27.612Z",
     "path": "images/uploads/1787118567612_51ouoi.jpg"
   },
   {
     "id": "1787118567625_g53sbo",
     "name": "82159A30-E24D-4789-A5FB-E5BB20DA21C9_1_201_a.jpeg",
-    "destinations": [
-      "displays"
-    ],
-    "note": "these do not have any prices",
+    "destinations": [],
+    "note": "Held out of Displays for now (owner request).",
     "createdTime": "2026-08-19T05:49:27.625Z",
     "path": "images/uploads/1787118567625_g53sbo.jpg"
   },
