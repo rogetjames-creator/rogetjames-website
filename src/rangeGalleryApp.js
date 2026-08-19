@@ -16,7 +16,7 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null, noPriceRanges = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null, noPriceRanges = null, cortenOnly = false }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
@@ -183,7 +183,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <p class="glab">Pricing</p>
         <p class="ghint" id="ghint">Choose a finish and enter your postcode to see pricing for your location.</p>
         <div class="sh-opts gfin" id="ovFinish">
-          <button class="sh-chip" data-fin="Aluminium — Powder Coated">Aluminium — Powder Coated</button>
+          ${cortenOnly ? '' : '<button class="sh-chip" data-fin="Aluminium — Powder Coated">Aluminium — Powder Coated</button>'}
           <button class="sh-chip" data-fin="Natural Corten Steel">Natural Corten Steel</button>
         </div>
         <form id="gateForm">

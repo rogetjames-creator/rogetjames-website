@@ -37,7 +37,7 @@ function injectSculptureUploads(data, uploads) {
     imgs: [...data.imgs],
     ranges: data.ranges.map((r) => ({
       label: r.label, count: r.count,
-      designs: r.designs.map((d) => ({ n: d.n, imgs: [...d.imgs] })),
+      designs: r.designs.map((d) => ({ n: d.n, imgs: [...d.imgs], noPrice: d.noPrice })),
       flat: r.flat.map((f) => [...f]),
     })),
   };
@@ -64,7 +64,7 @@ function injectSculptureUploads(data, uploads) {
 }
 
 function mount(data) {
-  mountRangeGallery({ rootId: "sculpture-root", data, label: "Sculpture", noun: "sculpture", section: "sculpture", noPriceRanges: NO_PRICE_LABELS });
+  mountRangeGallery({ rootId: "sculpture-root", data, label: "Sculpture", noun: "sculpture", section: "sculpture", noPriceRanges: NO_PRICE_LABELS, cortenOnly: true });
 }
 
 export function mountSculptureRange() {
