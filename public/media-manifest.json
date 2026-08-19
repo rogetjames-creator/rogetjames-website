@@ -482,5 +482,15 @@
     "note": "Name : Fire table",
     "createdTime": "2026-08-19T04:32:06.285Z",
     "path": "images/uploads/1787113926284_fipf2g.jpg"
+  },
+  {
+    "id": "1787114713443_qvzfns",
+    "name": "POD.jpg",
+    "destinations": [
+      "fire"
+    ],
+    "note": "POD",
+    "createdTime": "2026-08-19T04:45:13.444Z",
+    "path": "images/uploads/1787114713443_qvzfns.jpg"
   }
 ]
