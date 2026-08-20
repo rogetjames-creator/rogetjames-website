@@ -164,43 +164,69 @@ async function getManifestForList() {
   return getManifest().catch(() => []);
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 // Commits any number of new files, removed files, and the updated manifest as
 // ONE git commit — so a whole batch triggers exactly one Netlify rebuild.
-async function commitBatch({ addFiles = [], removePaths = [], manifest, message }) {
-  const ref = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
-  const baseSha = ref.object.sha;
-  const baseCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits/${baseSha}`);
-  const baseTreeSha = baseCommit.tree.sha;
-
-  const tree = [];
+//
+// Reliability: the branch tip can move between reading it and pushing (a Netlify
+// rebuild, another upload, or a routine push). The old code pushed once and, on
+// that "non-fast-forward" conflict, threw — silently losing the upload. Now we
+// RETRY: on each attempt we re-read the branch AND the current manifest, re-apply
+// the change (via mutateManifest) on top of the latest, and push again. This both
+// stops uploads vanishing and prevents one upload clobbering another's manifest
+// entries. File blobs are content-addressed, so they're created once up front.
+async function commitBatch({ addFiles = [], removePaths = [], mutateManifest = (m) => m, message, retries = 5 }) {
+  const fileTree = [];
   for (const f of addFiles) {
     const blob = await gh(`/repos/${OWNER}/${REPO}/git/blobs`, {
       method: "POST",
       body: JSON.stringify({ content: f.base64, encoding: "base64" }),
     });
-    tree.push({ path: f.path, mode: "100644", type: "blob", sha: blob.sha });
+    fileTree.push({ path: f.path, mode: "100644", type: "blob", sha: blob.sha });
   }
   for (const p of removePaths) {
-    tree.push({ path: p, mode: "100644", type: "blob", sha: null });
+    fileTree.push({ path: p, mode: "100644", type: "blob", sha: null });
   }
-  const manifestBlob = await gh(`/repos/${OWNER}/${REPO}/git/blobs`, {
-    method: "POST",
-    body: JSON.stringify({ content: Buffer.from(JSON.stringify(manifest, null, 2), "utf8").toString("base64"), encoding: "base64" }),
-  });
-  tree.push({ path: "public/media-manifest.json", mode: "100644", type: "blob", sha: manifestBlob.sha });
 
-  const newTree = await gh(`/repos/${OWNER}/${REPO}/git/trees`, {
-    method: "POST",
-    body: JSON.stringify({ base_tree: baseTreeSha, tree }),
-  });
-  const newCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits`, {
-    method: "POST",
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [baseSha] }),
-  });
-  await gh(`/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`, {
-    method: "PATCH",
-    body: JSON.stringify({ sha: newCommit.sha }),
-  });
+  let lastErr;
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const ref = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
+      const baseSha = ref.object.sha;
+      const baseCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits/${baseSha}`);
+      // Read the CURRENT manifest at the latest tip and re-apply the change, so a
+      // concurrent upload's entries survive instead of being overwritten.
+      const manifest = mutateManifest(await getManifest());
+      const manifestBlob = await gh(`/repos/${OWNER}/${REPO}/git/blobs`, {
+        method: "POST",
+        body: JSON.stringify({ content: Buffer.from(JSON.stringify(manifest, null, 2), "utf8").toString("base64"), encoding: "base64" }),
+      });
+      const tree = [...fileTree, { path: "public/media-manifest.json", mode: "100644", type: "blob", sha: manifestBlob.sha }];
+      const newTree = await gh(`/repos/${OWNER}/${REPO}/git/trees`, {
+        method: "POST",
+        body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree }),
+      });
+      const newCommit = await gh(`/repos/${OWNER}/${REPO}/git/commits`, {
+        method: "POST",
+        body: JSON.stringify({ message, tree: newTree.sha, parents: [baseSha] }),
+      });
+      await gh(`/repos/${OWNER}/${REPO}/git/refs/heads/${BRANCH}`, {
+        method: "PATCH",
+        body: JSON.stringify({ sha: newCommit.sha }),
+      });
+      return; // pushed
+    } catch (e) {
+      lastErr = e;
+      // The tip moved under us (non-fast-forward) — re-read and try again rather
+      // than dropping the upload. Other errors bubble up immediately.
+      const msg = (e && e.message) || "";
+      const conflict = /\b(409|422)\b|fast[- ]?forward|not a fast|Update is not|reference already exists|is at [0-9a-f]/i.test(msg);
+      if (attempt < retries - 1 && conflict) { await sleep(400 * (attempt + 1)); continue; }
+      throw e;
+    }
+  }
+  throw lastErr;
 }
 
 export default async function handler(req) {
@@ -288,8 +314,7 @@ export default async function handler(req) {
         const manifest = await getManifest();
         const entry = manifest.find((e) => e.id === realId);
         if (!entry) return json({ error: "Not found" }, 404);
-        entry.destinations = dests;
-        await commitBatch({ manifest, message: `Place ${realId} → ${dests.join(", ") || "none"}` });
+        await commitBatch({ mutateManifest: (cur) => cur.map((e) => (e.id === realId ? { ...e, destinations: dests } : e)), message: `Place ${realId} → ${dests.join(", ") || "none"}` });
         return json({ ok: true, destinations: dests });
       }
       const storeName = body.id.startsWith("uc_") ? UC_STORE : OLD_STORE;
@@ -311,8 +336,7 @@ export default async function handler(req) {
       try {
         const manifest = await getManifest();
         const entry = manifest.find((e) => e.id === realId);
-        const updated = manifest.filter((e) => e.id !== realId);
-        await commitBatch({ removePaths: entry ? [`public/${entry.path}`] : [], manifest: updated, message: `Remove uploaded image ${realId}` });
+        await commitBatch({ removePaths: entry ? [`public/${entry.path}`] : [], mutateManifest: (cur) => cur.filter((e) => e.id !== realId), message: `Remove uploaded image ${realId}` });
         return json({ ok: true });
       } catch (e) {
         return json({ error: "Delete failed: " + e.message }, 500);
@@ -340,8 +364,7 @@ export default async function handler(req) {
       return json({ error: `Video is ${(buf.length / 1048576).toFixed(1)}MB — keep it under 4MB (trim length or lower the resolution).` }, 400);
     }
     try {
-      const manifest = await getManifest();
-      await commitBatch({ addFiles: [{ path, base64 }], manifest, message: `Update reel video: ${body.reel.slot}` });
+      await commitBatch({ addFiles: [{ path, base64 }], message: `Update reel video: ${body.reel.slot}` });
       return json({ ok: true, slot: body.reel.slot });
     } catch (e) {
       return json({ error: "Reel upload failed: " + e.message }, 500);
@@ -383,7 +406,6 @@ export default async function handler(req) {
     }
     const videoPath = REEL_SLOTS[id] ? REEL_SLOTS[id] : `public/videos/reels/${id}.mp4`;
     try {
-      const manifest = await getManifest();
       const addFiles = [{ path: videoPath, base64: Buffer.concat(parts).toString("base64") }];
       // Built-in reels already render themselves; only newly-named reels need a
       // manifest entry so the portals know to show them.
@@ -393,7 +415,7 @@ export default async function handler(req) {
         const next = [...reels.filter((r) => r && r.id !== id), entry];
         addFiles.push({ path: "public/reels-manifest.json", base64: Buffer.from(JSON.stringify(next, null, 2), "utf8").toString("base64") });
       }
-      await commitBatch({ addFiles, manifest, message: `Reel upload: ${id}` });
+      await commitBatch({ addFiles, message: `Reel upload: ${id}` });
     } catch (e) {
       return json({ error: "Reel commit failed: " + e.message }, 500);
     }
@@ -419,7 +441,6 @@ export default async function handler(req) {
   }
 
   try {
-    const manifest = await getManifest();
     const addFiles = [];
     const newEntries = [];
     let replacedPath = null;
@@ -449,7 +470,7 @@ export default async function handler(req) {
 
     await commitBatch({
       addFiles,
-      manifest: [...manifest, ...newEntries],
+      mutateManifest: (cur) => [...cur, ...newEntries],
       message: replacedPath
         ? `Replace ${replacedPath} in place (upload instruction)`
         : `Add ${addFiles.length} uploaded image(s) — ${destinations.join(", ")}`,
