@@ -37,7 +37,7 @@ function IvyWord({ name, className = "" }) {
 }
 
 const PANELS = [
-  { name: "Wall Art",          img: "/images/cdn-gallery/3b37ba78-d6be-452a-93cf-9e0115683646_rw_1200.jpg", href: "https://rogetjames.com/wall-art" },
+  { name: "Wall Art",          img: "/images/banksia/banksia-framed-rust.jpg", href: "https://rogetjames.com/wall-art" },
   { name: "Sculpture",         img: "/images/hero/hero-vasuki.jpg",                                          href: "https://rogetjames.com/sculpture" },
   { name: "Screens",           img: "/images/cdn-gallery/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg",  href: "https://rogetjames.com/?open=screens" },
   { name: "Bespoke Sculpture", img: "/images/cdn-gallery/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg",  href: "https://rogetjames.com/?open=sculpture" },
