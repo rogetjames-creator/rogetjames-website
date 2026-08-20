@@ -2031,8 +2031,12 @@ export function buildScreenCovers(designList) {
         });
       } else {
         // A section's designs, MINUS any images that belong in Light Features.
+        // Use _sections (every category a design is tabbed into), not just its
+        // primary _section — the ICONS category is the signature designs, which
+        // also live in their home category (e.g. VUELTA shows in Icons AND
+        // Organics). Anything with no tabs still shows only in its one section.
         pieces = designList
-          .filter((d) => d._section === id && !d._crossListed)
+          .filter((d) => (d._sections || [d._section]).includes(id) && !d._crossListed)
           .map((d) => {
             const imgs = d.items.filter((it) => !_isLightFeatureItem(d, it)).map((it) => it.img).filter(Boolean);
             return imgs.length ? _pieceFromImgs(d.name, imgs) : null;
