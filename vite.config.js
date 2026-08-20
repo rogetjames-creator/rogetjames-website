@@ -15,7 +15,13 @@ const noImageRightClick = () => ({
       tag: 'script',
       injectTo: 'head',
       children:
-        "document.addEventListener('contextmenu',function(e){var hit=false;" +
+        "document.addEventListener('contextmenu',function(e){" +
+        // Owner bypass: the admin password cached by /media, /admin, /stats
+        // (localStorage 'stats_key') marks James's own device — he needs
+        // right-click to copy image addresses for replacements. Everyone else
+        // is blocked.
+        "try{if(localStorage.getItem('stats_key'))return;}catch(_){}" +
+        "var hit=false;" +
         "try{var els=document.elementsFromPoint?document.elementsFromPoint(e.clientX,e.clientY):[];" +
         "for(var i=0;i<els.length;i++){if(els[i]&&els[i].tagName==='IMG'){hit=true;break;}}}catch(_){}" +
         "if(!hit){var p=e.composedPath?e.composedPath():[e.target];" +
