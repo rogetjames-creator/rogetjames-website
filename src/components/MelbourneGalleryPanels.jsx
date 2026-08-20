@@ -38,7 +38,7 @@ function IvyWord({ name, className = "" }) {
 
 const PANELS = [
   { name: "Wall Art",          img: "/images/banksia/banksia-framed-rust.jpg", href: "https://rogetjames.com/wall-art" },
-  { name: "Sculpture",         img: "/images/hero/hero-vasuki.jpg",                                          href: "https://rogetjames.com/sculpture" },
+  { name: "Sculpture",         img: "/images/autumn-leaf/autumn-leafs-wg.jpg",                                href: "https://rogetjames.com/sculpture" },
   { name: "Screens",           img: "/images/cdn-gallery/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg",  href: "https://rogetjames.com/?open=screens" },
   { name: "Bespoke Sculpture", img: "/images/cdn-gallery/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg",  href: "https://rogetjames.com/?open=sculpture" },
   { name: "Projects",          img: "/images/cdn-gallery/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg",  href: "https://rogetjames.com/?open=projects" },
@@ -76,9 +76,6 @@ export default function MelbourneGalleryPanels() {
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-b from-graphite to-onyx" />
                 )}
-
-                {/* Scrim — lifts on hover so the image reads through */}
-                <div className={`absolute inset-0 transition-colors duration-500 ${active ? "bg-black/20" : "bg-black/55"}`} />
 
                 {/* Gallery name — IVY MODE, bottom-LEFT, stays left on expand */}
                 <div className="absolute inset-0 flex items-end justify-start pb-6 pl-4 md:pl-5 pointer-events-none">
