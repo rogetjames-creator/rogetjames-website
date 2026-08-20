@@ -1,7 +1,34 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import { readFileSync } from 'fs'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+
+// Cache-buster versions for replaced images. Every /media replace-in-place is
+// recorded in media-manifest.json (the target path + when it happened). We read
+// that at build time and map each replaced image path -> a version stamp; the
+// image helper appends it to the URL so a replacement gets a NEW address and
+// shows instantly for everyone, instead of being served from a stale cache of
+// the same address. Unchanged images keep their normal caching (stay fast).
+function buildImgVersions() {
+  try {
+    const m = JSON.parse(readFileSync(resolve(__dirname, 'public/media-manifest.json'), 'utf8'))
+    const map = {}
+    const rx = /images\/[^\s"'|)]+\.(?:jpe?g|png|webp|gif)/gi
+    for (const e of (Array.isArray(m) ? m : [])) {
+      if (!e || !e.createdTime) continue
+      if (!/replac|in place|auto-applied/i.test(e.note || '')) continue
+      const v = Date.parse(e.createdTime) || 0
+      const cands = (e.note || '').match(rx) || []
+      if (e.path && !/^images\/uploads\//i.test(e.path)) cands.push(e.path)
+      for (const c of cands) {
+        const key = '/' + String(c).replace(/^\/+/, '')
+        if (v >= Number(map[key] || 0)) map[key] = String(v)
+      }
+    }
+    return map
+  } catch { return {} }
+}
 
 // Block right-click (and its "Save image as…") on every image, site-wide.
 // Injected into the <head> of every HTML entry so it runs before anything
@@ -32,6 +59,9 @@ const noImageRightClick = () => ({
 })
 
 export default defineConfig({
+  define: {
+    __IMG_VERSIONS__: JSON.stringify(buildImgVersions()),
+  },
   plugins: [react(), tailwindcss(), noImageRightClick()],
   build: {
     rollupOptions: {
