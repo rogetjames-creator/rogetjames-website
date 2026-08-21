@@ -31,6 +31,17 @@ export const MEDIA_KEYS = {
   upClose: "up-close",        // read by every gallery's Up Close row
 };
 
+// Prefixes for the two galleries that are made of many named sections, so each
+// section is its own upload spot instead of one catch-all bucket.
+// The suffix is the section's own id, so adding a section to either gallery
+// creates its upload destination automatically — nothing to type here.
+//   bespoke-<section id>   read by the Bespoke gallery (BespokeCommissions)
+//   project-<project id>   read by the Projects gallery (BespokeCommissions)
+export const BESPOKE_PREFIX = "bespoke-";
+export const PROJECT_PREFIX = "project-";
+export const bespokeKey = (sectionId) => `${BESPOKE_PREFIX}${sectionId}`;
+export const projectKey = (projectCategory) => `${PROJECT_PREFIX}${projectCategory}`;
+
 // Parked destinations: these intentionally have NO gallery yet. They are shown
 // in a separate "won't go live yet" group in the uploader so it is always
 // obvious the photo needs placing before it appears anywhere.

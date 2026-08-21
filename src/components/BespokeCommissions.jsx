@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Search } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
-import { MEDIA_KEYS } from "../mediaDestinations";
+import { MEDIA_KEYS, bespokeKey, projectKey } from "../mediaDestinations";
+import { useUploadsByKey } from "../utils/mediaUploads";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -293,9 +294,16 @@ const ALL_SERIES = [
   ...COMMISSIONS.residential,
 ];
 
-function getBySeriesIds(ids) {
-  return ids.flatMap(id => ALL_SERIES.find(s => s.id === id)?.items ?? []);
-}
+
+// Every section of the Bespoke gallery is its own upload spot in /media.
+// Built straight from the gallery above, so a new section here shows up in the
+// uploader on its own — and the gallery reads back the very same key.
+export const BESPOKE_DESTINATIONS = TABS.flatMap((t) =>
+  COMMISSIONS[t.id].map((s) => ({
+    key: bespokeKey(s.id),
+    label: `${t.label} — ${s.label}`,
+  }))
+);
 
 const CATEGORY_FILTERS = [
   { id: "sculpture",  label: "Sculpture",   seriesIds: ["public-2", "residential-3"] },
@@ -994,6 +1002,14 @@ const PROJECTS_ROWS = [
   ] },
 ];
 
+// Each project is its own upload spot in /media — a photo of the Homebase job
+// goes to Homebase, not into one shared Projects bin. Built from the rows
+// above, so adding a project creates its upload spot automatically.
+export const PROJECT_DESTINATIONS = PROJECTS_ROWS.map((r) => ({
+  key: projectKey(r.projectCategory),
+  label: r.name,
+}));
+
 const CONCEPTS_ROWS = [
   {
     id: "concepts-percent",
@@ -1466,8 +1482,36 @@ function GalleryModal({ onClose, initialCategory = null }) {
     return items.filter(item => { if (seen.has(item.img)) return false; seen.add(item.img); return true; });
   };
 
+  // /media uploads for this gallery's own sections and for each project,
+  // appended to the END of whichever section or project they were placed in.
+  const uploadKeys = useMemo(
+    () => [...BESPOKE_DESTINATIONS, ...PROJECT_DESTINATIONS].map(d => d.key),
+    []
+  );
+  const uploads = useUploadsByKey(uploadKeys);
+
+  const withUploads = useCallback((series) => {
+    const extra = uploads[bespokeKey(series.id)];
+    return extra?.length ? { ...series, items: [...series.items, ...extra] } : series;
+  }, [uploads]);
+
+  const tabSeries = useMemo(
+    () => Object.fromEntries(TABS.map(t => [t.id, COMMISSIONS[t.id].map(withUploads)])),
+    [withUploads]
+  );
+  const allSeries = useMemo(() => TABS.flatMap(t => tabSeries[t.id]), [tabSeries]);
+  const seriesByIds = useCallback(
+    (ids) => ids.flatMap(id => allSeries.find(s => s.id === id)?.items ?? []),
+    [allSeries]
+  );
+
+  const projectRows = useMemo(() => PROJECTS_ROWS.map((r) => {
+    const extra = uploads[projectKey(r.projectCategory)];
+    return extra?.length ? { ...r, items: [...r.items, ...extra] } : r;
+  }), [uploads]);
+
   const activeCatDef = CATEGORY_FILTERS.find(c => c.id === activeCategory);
-  const catItems = activeCatDef ? getBySeriesIds(activeCatDef.seriesIds) : null;
+  const catItems = activeCatDef ? seriesByIds(activeCatDef.seriesIds) : null;
 
   // Projects and Concepts are standalone row-based galleries — not combinable with tabs
   const isStandaloneGallery = activeCategory === "projects" || activeCategory === "concepts";
@@ -1475,7 +1519,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
   // null → use organised series view (tab only); array → flat grid
   const flatItems = (() => {
     // Default: both null → show all images
-    if (!activeTab && !activeCategory) return dedup(ALL_SERIES.flatMap(s => s.items));
+    if (!activeTab && !activeCategory) return dedup(allSeries.flatMap(s => s.items));
     // Standalone galleries (Projects, Concepts) render as rows — bypass flat grid
     if (isStandaloneGallery) return null;
     // Tab only → series view
@@ -1483,23 +1527,23 @@ function GalleryModal({ onClose, initialCategory = null }) {
     // Concepts (allTabs:true) or category only → full category regardless of tab
     if (activeCatDef?.allTabs || !activeTab) return dedup(catItems);
     // Tab + category → intersection via series IDs (prevents cross-tab bleed)
-    const tabSeriesIds = new Set(COMMISSIONS[activeTab].map(s => s.id));
+    const tabSeriesIds = new Set(tabSeries[activeTab].map(s => s.id));
     const intersectIds = activeCatDef.seriesIds.filter(id => tabSeriesIds.has(id));
-    return dedup(getBySeriesIds(intersectIds));
+    return dedup(seriesByIds(intersectIds));
   })();
 
-  const activeSeries = flatItems === null ? COMMISSIONS[activeTab] : null;
+  const activeSeries = flatItems === null ? tabSeries[activeTab] : null;
   const hasFilters = activeTab !== null || activeCategory !== null;
 
   // Scope the lightbox to just the series that owns the clicked image, then loop within it.
   const openLightbox = (items, idx) => { setLightboxItems(items); setLightboxIndex(idx); };
   const openLightboxScoped = useCallback((item) => {
-    const owner = ALL_SERIES.find(s => s.items.some(si => si.img === item.img));
+    const owner = allSeries.find(s => s.items.some(si => si.img === item.img));
     const pool  = owner ? owner.items : [item];
     const i     = pool.findIndex(si => si.img === item.img);
     setLightboxItems(pool);
     setLightboxIndex(i >= 0 ? i : 0);
-  }, []);
+  }, [allSeries]);
   const openDetailOrLightbox = useCallback((item) => {
     if (item.videoUrl) { openLightboxScoped(item); } else { setDetailItem(item); }
   }, [openLightboxScoped]);
@@ -1723,10 +1767,10 @@ function GalleryModal({ onClose, initialCategory = null }) {
                     ))}
                   </div>
                   {/* Filtered rows */}
-                  {PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat && r.items.length > 0).length === 0 ? (
+                  {projectRows.filter(r => r.projectCategory === activeProjectCat && r.items.length > 0).length === 0 ? (
                     <p className="font-detail text-cream/30 text-sm text-center py-16 tracking-wider uppercase">Images coming soon</p>
                   ) : (
-                    PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat).map(row => (
+                    projectRows.filter(r => r.projectCategory === activeProjectCat).map(row => (
                       <ScreenDesignRow key={row.id} design={row} onOpenLightbox={openLightbox} onDetail={openDetailOrLightbox}
                         getDebug={DEBUG_LABELS ? (item) => _manualCodes[item.img] || _debugMap.get(item.img) : null} />
                     ))
@@ -2779,11 +2823,19 @@ export function ProjectsGalleryModal({ onClose }) {
     return () => { alive = false; };
   }, []);
 
+  // /media uploads placed against a project, appended to the END of that
+  // project's own row so the newest photo lands last.
+  const projectUploads = useUploadsByKey(PROJECT_DESTINATIONS.map(d => d.key));
+  const rows = useMemo(() => PROJECTS_ROWS.map((r) => {
+    const extra = projectUploads[projectKey(r.projectCategory)];
+    return extra?.length ? { ...r, items: [...r.items, ...extra] } : r;
+  }), [projectUploads]);
+
   const items = activeProjectCat === "displays"
     ? displaysItems
     : activeProjectCat === "all"
-      ? PROJECTS_ROWS.flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })))
-      : PROJECTS_ROWS.filter(r => r.projectCategory === activeProjectCat).flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })));
+      ? rows.flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })))
+      : rows.filter(r => r.projectCategory === activeProjectCat).flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })));
 
   const item = itemIdx !== null ? items[itemIdx] : null;
   const currentItemCat = item?._cat ?? null;
@@ -2938,44 +2990,13 @@ export function ConceptsGalleryModal({ onClose }) {
   return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey={MEDIA_KEYS.concepts} />;
 }
 
-// Uploaded media suppressed as duplicates (removed per owner). Matched against
-// the image src, so one entry covers both the committed manifest path and the
-// live blob id, whichever source the image comes from.
-const MEDIA_SUPPRESS = [
-  "1784883338512_ggq8l0", // HUE — duplicate of "Hue 2"
-  "1785745326687_0pxdcn", // UNITY replacement — used in the slides in-place, not as a standalone tile
-];
-
 export function SculptureGalleryModal({ onClose, items: itemsProp = null, label: labelProp = "Sculpture", mediaKey = null }) {
   const baseItems = itemsProp ?? SCULPTURE_ITEMS;
-  // When a mediaKey is given, append any /media uploads tagged with it to the
-  // end of the gallery — same mechanism the Wall Art / Sculpture / Screens
-  // pages use. Purely additive: if the fetch fails, the static items still show.
-  const [uploads, setUploads] = useState([]);
-  useEffect(() => {
-    if (!mediaKey) return;
-    let alive = true;
-    // Read both sources the Wall Art page reads: the git-committed manifest
-    // (static file) and the live blob list. Filter to this gallery's key,
-    // de-dupe by src, tidy the display name. Purely additive.
-    Promise.all([
-      fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : [])).catch(() => []),
-      fetch("/api/media-list").then((r) => r.json()).catch(() => ({ images: [] })),
-    ]).then(([manifest, legacy]) => {
-      if (!alive) return;
-      const fromManifest = Array.isArray(manifest) ? manifest.map((e) => ({ name: e.name, destinations: e.destinations || [], src: `/${e.path}` })) : [];
-      const fromLegacy = Array.isArray(legacy.images) ? legacy.images.map((i) => ({ name: i.name, destinations: i.destinations || [], src: i.src })) : [];
-      const seen = new Set();
-      setUploads(
-        [...fromManifest, ...fromLegacy]
-          .filter((m) => Array.isArray(m.destinations) && m.destinations.includes(mediaKey))
-          .filter((m) => !MEDIA_SUPPRESS.some((id) => (m.src || "").includes(id)))
-          .filter((m) => { if (seen.has(m.src)) return false; seen.add(m.src); return true; })
-          .map((m) => ({ name: (m.name || "").replace(/\.(jpe?g|png|webp|heic|heif)$/i, "").replace(/\s*\d+\s*px\b/i, "").trim() || labelProp, img: m.src }))
-      );
-    });
-    return () => { alive = false; };
-  }, [mediaKey, labelProp]);
+  // Any /media uploads placed here are appended to the END of the gallery.
+  // Purely additive: if the fetch fails, the hand-placed items still show.
+  const uploadKeys = useMemo(() => (mediaKey ? [mediaKey] : []), [mediaKey]);
+  const byKey = useUploadsByKey(uploadKeys, labelProp);
+  const uploads = (mediaKey && byKey[mediaKey]) || [];
   const items = uploads.length ? [...baseItems, ...uploads] : baseItems;
   const [itemIdx, setItemIdx] = useState(null);
   const [slideIdx, setSlideIdx] = useState(0);

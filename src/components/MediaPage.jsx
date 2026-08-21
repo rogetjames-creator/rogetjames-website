@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
-import { SCREEN_COVERS } from "./BespokeCommissions";
+import { SCREEN_COVERS, PROJECT_DESTINATIONS } from "./BespokeCommissions";
 import { HERO_SLIDES } from "./heroSlides";
 import { MEDIA_KEYS, HOLDING_DESTINATIONS } from "../mediaDestinations";
 
@@ -52,6 +52,11 @@ const LIVE_DEST_GROUPS = [
     items: [{ key: MEDIA_KEYS.concepts, label: "Concepts" }],
   },
   { group: "Screens", hint: "shows on the Screens page", items: [{ key: MEDIA_KEYS.screens, label: "Screens" }] },
+  {
+    group: "Projects",
+    hint: "shows in the Projects gallery — pick which project it belongs to",
+    items: PROJECT_DESTINATIONS,
+  },
   {
     group: "Displays",
     hint: "one upload → shows under a DISPLAYS pill in Screens, Sculpture AND Projects",
