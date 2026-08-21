@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Instagram, Mail } from "lucide-react";
 import { netlifyImg } from "../utils/img";
 import MelbourneGalleryPanels from "./MelbourneGalleryPanels";
+import { cityHeroKey } from "../mediaDestinations";
+import { useUploadsByKey } from "../utils/mediaUploads";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,6 +57,15 @@ export default function CityPage({ city }) {
   // own set of panel pictures. Falls back to the city name.
   const citySlug = city.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
+  // A photo uploaded to this city's hero spot replaces the picture at the top
+  // of the page — newest upload wins. Falls back to the hero set in code.
+  const heroKeys = useMemo(() => [cityHeroKey(citySlug)], [citySlug]);
+  const heroUploads = useUploadsByKey(heroKeys);
+  const heroSrc = useMemo(() => {
+    const hits = heroUploads[cityHeroKey(citySlug)];
+    return hits?.length ? hits[hits.length - 1].img : hero;
+  }, [heroUploads, citySlug, hero]);
+
   const rootRef = useRef(null);
 
   useEffect(() => {
@@ -93,7 +104,7 @@ export default function CityPage({ city }) {
       {/* ── Hero — object-contain, mirrors the homepage hero ── */}
       <section className="relative h-dvh min-h-[560px] w-full overflow-hidden flex items-end bg-charcoal">
         <img
-          src={netlifyImg(hero, { w: 1600, q: 82 })}
+          src={netlifyImg(heroSrc, { w: 1600, q: 82 })}
           alt={`ROGETjames laser cut work in ${name}`}
           className="absolute inset-0 w-full h-full object-contain"
           fetchpriority="high"

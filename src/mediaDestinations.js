@@ -53,6 +53,9 @@ export const bespokeKey = (sectionId) => `${BESPOKE_PREFIX}${sectionId}`;
 export const CITY_PANEL_PREFIX = "city-";
 export const cityPanelKey = (citySlug, panelName) =>
   `${CITY_PANEL_PREFIX}${citySlug}-${panelName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+
+// The big picture at the top of a city page. Uploading here replaces it.
+export const cityHeroKey = (citySlug) => cityPanelKey(citySlug, "hero");
 export const projectKey = (projectCategory) => `${PROJECT_PREFIX}${projectCategory}`;
 
 // Parked destinations: these intentionally have NO gallery yet. They are shown

@@ -3,7 +3,7 @@ import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Galler
 import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
 import { CITY_PANEL_NAMES } from "./MelbourneGalleryPanels";
 import { HERO_SLIDES } from "./heroSlides";
-import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey } from "../mediaDestinations";
+import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey, cityHeroKey } from "../mediaDestinations";
 
 // Every screen design name, self-maintaining from the live screen covers — add
 // a design and it shows up here. Typing/tapping one of these as the upload's
@@ -49,8 +49,11 @@ const CITY_PANEL_PAGES = [
 ];
 const CITY_PANEL_GROUPS = CITY_PANEL_PAGES.map((c) => ({
   group: `${c.label} page — panels`,
-  hint: `replaces a panel's picture on the ${c.label} page`,
-  items: CITY_PANEL_NAMES.map((n) => ({ key: cityPanelKey(c.slug, n), label: n })),
+  hint: `replaces the hero or a panel picture on the ${c.label} page`,
+  items: [
+    { key: cityHeroKey(c.slug), label: "Hero image (top of the page)" },
+    ...CITY_PANEL_NAMES.map((n) => ({ key: cityPanelKey(c.slug, n), label: n })),
+  ],
 }));
 
 const LIVE_DEST_GROUPS = [
