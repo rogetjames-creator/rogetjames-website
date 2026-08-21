@@ -29,6 +29,7 @@ export const MEDIA_KEYS = {
   hero: "hero",               // read by Hero.jsx (appended as a new slide)
   heroReplacePrefix: "hero-replace-", // Hero.jsx: hero-replace-<slide key>
   upClose: "up-close",        // read by every gallery's Up Close row
+  concrete: "concrete",       // read by the Concrete gallery (BespokeCommissions)
 };
 
 // Prefixes for the two galleries that are made of many named sections, so each
@@ -46,7 +47,6 @@ export const projectKey = (projectCategory) => `${PROJECT_PREFIX}${projectCatego
 // in a separate "won't go live yet" group in the uploader so it is always
 // obvious the photo needs placing before it appears anywhere.
 export const HOLDING_DESTINATIONS = [
-  { key: "concrete", label: "Concrete — gallery not built yet" },
   { key: "other", label: "Somewhere else (I'll place it) — type below" },
 ];
 export const HOLDING_KEYS = HOLDING_DESTINATIONS.map((d) => d.key);

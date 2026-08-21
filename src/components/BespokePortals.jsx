@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
-import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
+import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
@@ -68,6 +68,16 @@ const SIDE_PORTAL_PROJECTS = {
   ],
 };
 
+// Concrete's portal shows the uploaded concrete photos themselves — the slides
+// are filled in at render time from whatever has been placed there, so the
+// portal never needs a hand-picked image.
+const SIDE_PORTAL_CONCRETE = {
+  id: "side-concrete",
+  label: "Concrete",
+  sublabel: "",
+  slides: [],
+};
+
 const SIDE_PORTAL_CONCEPTS = {
   id: "side-concepts",
   label: "Concepts",
@@ -128,7 +138,16 @@ export function CommissionsSection() {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
+  const [concreteOpen, setConcreteOpen] = useState(false);
   const [initialScreensCat, setInitialScreensCat] = useState(false);
+  // Concrete has no hand-placed images — the portal appears on its own as soon
+  // as the first photo is uploaded to it, and stays hidden until then. Its
+  // spinning slides are those same uploads.
+  const concreteImages = useConcreteImages();
+  const concretePortal = useMemo(
+    () => ({ ...SIDE_PORTAL_CONCRETE, slides: concreteImages.map((i) => i.img) }),
+    [concreteImages]
+  );
 
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
@@ -205,6 +224,9 @@ export function CommissionsSection() {
         <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setReelsOpen(true)      : undefined} />
         <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setProjectsOpen(true)   : undefined} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={() => setConceptsOpen(true)} />
+        {concreteImages.length > 0 && (
+          <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={() => setConcreteOpen(true)} />
+        )}
       </div>
 
       {/* Desktop — 4 portals in a row (Screens removed) */}
@@ -213,6 +235,9 @@ export function CommissionsSection() {
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   onOpen={() => setSculptureOpen(true)} />
         <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setReelsOpen(true)      : undefined} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    onOpen={() => setConceptsOpen(true)} />
+        {concreteImages.length > 0 && (
+          <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={() => setConcreteOpen(true)} />
+        )}
       </div>
 
       <div className="w-full h-px bg-white/10" />
@@ -222,6 +247,7 @@ export function CommissionsSection() {
       {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
       {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
       {reelsOpen     && <CommissionsGalleryPopup videos={COMMISSIONS_PORTAL.videos} onClose={() => setReelsOpen(false)} />}
+      {concreteOpen  && <ConcreteGalleryModal  onClose={() => setConcreteOpen(false)} />}
     </section>
   );
 }

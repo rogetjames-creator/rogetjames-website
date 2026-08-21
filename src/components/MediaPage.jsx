@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
-import { SCREEN_COVERS, PROJECT_DESTINATIONS } from "./BespokeCommissions";
+import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
 import { HERO_SLIDES } from "./heroSlides";
 import { MEDIA_KEYS, HOLDING_DESTINATIONS } from "../mediaDestinations";
 
@@ -47,9 +47,14 @@ const LIVE_DEST_GROUPS = [
     items: SCULPTURE_SUBCATS.map((c) => ({ key: c.id, label: c.label })),
   },
   {
-    group: "Concepts",
-    hint: "shows in the Concepts gallery",
-    items: [{ key: MEDIA_KEYS.concepts, label: "Concepts" }],
+    group: "Bespoke",
+    hint: "the Bespoke popups — Sculpture and Concepts, whole gallery or a named section",
+    items: BESPOKE_LIVE_DESTINATIONS,
+  },
+  {
+    group: "Concrete",
+    hint: "the Concrete portal appears in Bespoke as soon as the first photo lands here",
+    items: [{ key: MEDIA_KEYS.concrete, label: "Concrete" }],
   },
   { group: "Screens", hint: "shows on the Screens page", items: [{ key: MEDIA_KEYS.screens, label: "Screens" }] },
   {

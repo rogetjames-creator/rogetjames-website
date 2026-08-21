@@ -314,23 +314,43 @@ const CATEGORY_FILTERS = [
   { id: "concepts",   label: "Concepts",     seriesIds: ["public-7"], allTabs: true },
 ];
 
-export const SCULPTURE_ITEMS = (() => {
-  const seriesIds = ["public-2", "residential-3"];
-  const seen = new Set();
-  const items = ALL_SERIES
-    .filter(s => seriesIds.includes(s.id))
-    .flatMap(s => s.items)
-    .filter(item => { if (seen.has(item.img)) return false; seen.add(item.img); return true; });
-  return items;
-})();
+// The sections each Bespoke popup is built from. Named once so the gallery's
+// images and its /media upload spots always come from the same list.
+const SCULPTURE_SECTION_IDS = ["public-2", "residential-3"];
+const CONCEPTS_SECTION_IDS  = ["public-7"];
 
-export const CONCEPTS_ITEMS = (() => {
+const itemsFromSections = (ids) => {
   const seen = new Set();
   return ALL_SERIES
-    .filter(s => s.id === "public-7")
+    .filter(s => ids.includes(s.id))
     .flatMap(s => s.items)
     .filter(item => { if (seen.has(item.img)) return false; seen.add(item.img); return true; });
-})();
+};
+
+export const SCULPTURE_ITEMS = itemsFromSections(SCULPTURE_SECTION_IDS);
+export const CONCEPTS_ITEMS  = itemsFromSections(CONCEPTS_SECTION_IDS);
+
+// Every key each popup reads: its own general spot plus one spot per section it
+// is made of, so a photo can be aimed at a section instead of one big pile.
+// "bespoke-sculpture" is a legacy key from an older uploader: photos were sent
+// there but no gallery ever read it, so they were invisible. Read it here so
+// those uploads finally show. Do not remove — it is still on real photos.
+export const SCULPTURE_MEDIA_KEYS = [MEDIA_KEYS.sculpture, "bespoke-sculpture", ...SCULPTURE_SECTION_IDS.map(bespokeKey)];
+export const CONCEPTS_MEDIA_KEYS  = [MEDIA_KEYS.concepts,  ...CONCEPTS_SECTION_IDS.map(bespokeKey)];
+export const CONCRETE_MEDIA_KEYS  = [MEDIA_KEYS.concrete];
+
+// Upload spots offered for the Bespoke popups — labelled the way the section
+// reads on screen, and every one of them read by a gallery above.
+const SECTION_LABEL = (id) =>
+  TABS.map(t => COMMISSIONS[t.id].find(s => s.id === id) && `${t.label} — ${COMMISSIONS[t.id].find(s => s.id === id).label}`)
+      .find(Boolean) || id;
+
+export const BESPOKE_LIVE_DESTINATIONS = [
+  { key: MEDIA_KEYS.sculpture, label: "Sculpture — anywhere in the gallery" },
+  ...SCULPTURE_SECTION_IDS.map(id => ({ key: bespokeKey(id), label: `Sculpture · ${SECTION_LABEL(id)}` })),
+  { key: MEDIA_KEYS.concepts, label: "Concepts — anywhere in the gallery" },
+  ...CONCEPTS_SECTION_IDS.map(id => ({ key: bespokeKey(id), label: `Concepts · ${SECTION_LABEL(id)}` })),
+];
 
 // ── Debug label overlay — set to false to remove ─────────────────────────
 const DEBUG_LABELS = false;
@@ -2987,16 +3007,39 @@ export function ProjectsGalleryModal({ onClose }) {
 }
 
 export function ConceptsGalleryModal({ onClose }) {
-  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey={MEDIA_KEYS.concepts} />;
+  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey={CONCEPTS_MEDIA_KEYS} />;
 }
 
-export function SculptureGalleryModal({ onClose, items: itemsProp = null, label: labelProp = "Sculpture", mediaKey = null }) {
+// Concrete — the gallery is made entirely of James's uploads, so it starts
+// empty and fills itself the moment a photo is placed there. `useConcreteCount`
+// lets the portal stay hidden until there is something to show.
+export function useConcreteImages() {
+  const byKey = useUploadsByKey(CONCRETE_MEDIA_KEYS);
+  return byKey[MEDIA_KEYS.concrete] || [];
+}
+
+export function ConcreteGalleryModal({ onClose }) {
+  return <SculptureGalleryModal onClose={onClose} items={[]} label="Concrete" mediaKey={CONCRETE_MEDIA_KEYS} />;
+}
+
+// `mediaKey` defaults to the Sculpture gallery's own keys, so the Bespoke
+// Sculpture popup picks up uploads without every call site having to pass them.
+export function SculptureGalleryModal({ onClose, items: itemsProp = null, label: labelProp = "Sculpture", mediaKey = SCULPTURE_MEDIA_KEYS }) {
   const baseItems = itemsProp ?? SCULPTURE_ITEMS;
   // Any /media uploads placed here are appended to the END of the gallery.
-  // Purely additive: if the fetch fails, the hand-placed items still show.
-  const uploadKeys = useMemo(() => (mediaKey ? [mediaKey] : []), [mediaKey]);
-  const byKey = useUploadsByKey(uploadKeys, labelProp);
-  const uploads = (mediaKey && byKey[mediaKey]) || [];
+  // `mediaKey` accepts one key or several, so a gallery built out of named
+  // sections can offer an upload spot per section and still show them all
+  // together. Purely additive: if the fetch fails, the hand-placed items show.
+  const keyList = useMemo(
+    () => (Array.isArray(mediaKey) ? mediaKey : mediaKey ? [mediaKey] : []),
+    [mediaKey]
+  );
+  const byKey = useUploadsByKey(keyList, labelProp);
+  const uploads = useMemo(() => {
+    const seen = new Set(baseItems.map((i) => i.img));
+    return keyList.flatMap((k) => byKey[k] || [])
+      .filter((u) => { if (seen.has(u.img)) return false; seen.add(u.img); return true; });
+  }, [byKey, keyList, baseItems]);
   const items = uploads.length ? [...baseItems, ...uploads] : baseItems;
   const [itemIdx, setItemIdx] = useState(null);
   const [slideIdx, setSlideIdx] = useState(0);
