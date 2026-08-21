@@ -96,8 +96,12 @@ and `/sculpture` — they are not separate pages any more.
   Commercial / Public / Residential gallery with ~20 named sections. **Nothing
   renders `GalleryModal`.** Its section names are not names James knows. Wiring
   it up in Aug 2026 resurrected old UI and had to be reverted.
-- `FeatureWall.jsx`, `SculptureWall.jsx`, `HeroClassic.jsx`, `NoiseOverlay.jsx` —
-  no imports anywhere.
+- `FeatureWall.jsx` — the previous Wall Art gallery, replaced by `/wall-art`.
+- `SculptureWall.jsx` — the previous Sculpture gallery, replaced by `/sculpture`.
+- `HeroClassic.jsx` — the frozen original hero, kept for reference.
+- `NoiseOverlay.jsx` — an old grain texture, no longer applied anywhere.
+Nothing imports any of these. They are deliberate rollback copies — leave them
+in place, but never read them as a description of how the site works now.
 - `Gallery.jsx`'s `WALL_ART_SERIES` / `CATEGORIES` / `MEDIA_DESTINATIONS` predate
   the Range pages. `Gallery.jsx` still renders the Collection section on `/`, and
   still exports `WALL_ART_COVERS` / `SCULPTURE_SUBCATS` that `/media` uses — but it
@@ -246,7 +250,6 @@ A personalised, locked page sent to each client by email. Entry point `/vault`.
 - Section anchor IDs: `#collection`, `#about`, `#bespoke`, `#process`, `#services`, `#contact`.
 - `window.__galleryModalBody` is a ref attached by Gallery's lightbox so `ScrollArrows` in `App.jsx` can redirect scroll into the modal instead of the page. Gallery also fires `gallery-modal-open` / `gallery-modal-close` window events that `ScrollArrows` listens for.
 - Gate animation pattern (Gallery + BespokeCommissions strips): two black `position:absolute` panels at `z-20` slide apart on `start:"top bottom"` over 8s linear; the portal sits at `z-30 relative` above them.
-- `NoiseOverlay` is a fixed SVG grain texture at `z-index: 9999` — never put UI above it without a higher z-index.
 - `App.jsx` contains an unused `Reveal` blind-reveal helper; the Bespoke and Discover sections currently render inline (not hidden behind a reveal button). Do not assume they are collapsed.
 
 ## Design concepts (reference only — never deployed)

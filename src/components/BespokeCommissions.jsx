@@ -330,26 +330,19 @@ const itemsFromSections = (ids) => {
 export const SCULPTURE_ITEMS = itemsFromSections(SCULPTURE_SECTION_IDS);
 export const CONCEPTS_ITEMS  = itemsFromSections(CONCEPTS_SECTION_IDS);
 
-// Every key each popup reads: its own general spot plus one spot per section it
-// is made of, so a photo can be aimed at a section instead of one big pile.
-// "bespoke-sculpture" is a legacy key from an older uploader: photos were sent
-// there but no gallery ever read it, so they were invisible. Read it here so
-// those uploads finally show. Do not remove — it is still on real photos.
-export const SCULPTURE_MEDIA_KEYS = [MEDIA_KEYS.sculpture, "bespoke-sculpture", ...SCULPTURE_SECTION_IDS.map(bespokeKey)];
-export const CONCEPTS_MEDIA_KEYS  = [MEDIA_KEYS.concepts,  ...CONCEPTS_SECTION_IDS.map(bespokeKey)];
+// The keys each Bespoke popup reads. These galleries are FLAT — one grid and a
+// search box, no categories — so each is a single upload spot, not a set of
+// sections. `bespoke-sculpture` is the key James's existing uploads carry;
+// `sculpture` is kept only so nothing tagged with the old alias is lost.
+export const SCULPTURE_MEDIA_KEYS = [MEDIA_KEYS.bespokeSculpture, MEDIA_KEYS.sculpture];
+export const CONCEPTS_MEDIA_KEYS  = [MEDIA_KEYS.concepts];
 export const CONCRETE_MEDIA_KEYS  = [MEDIA_KEYS.concrete];
 
-// Upload spots offered for the Bespoke popups — labelled the way the section
-// reads on screen, and every one of them read by a gallery above.
-const SECTION_LABEL = (id) =>
-  TABS.map(t => COMMISSIONS[t.id].find(s => s.id === id) && `${t.label} — ${COMMISSIONS[t.id].find(s => s.id === id).label}`)
-      .find(Boolean) || id;
-
+// What /media offers for the Bespoke popups — one spot each, matching what the
+// galleries actually show.
 export const BESPOKE_LIVE_DESTINATIONS = [
-  { key: MEDIA_KEYS.sculpture, label: "Sculpture — anywhere in the gallery" },
-  ...SCULPTURE_SECTION_IDS.map(id => ({ key: bespokeKey(id), label: `Sculpture · ${SECTION_LABEL(id)}` })),
-  { key: MEDIA_KEYS.concepts, label: "Concepts — anywhere in the gallery" },
-  ...CONCEPTS_SECTION_IDS.map(id => ({ key: bespokeKey(id), label: `Concepts · ${SECTION_LABEL(id)}` })),
+  { key: MEDIA_KEYS.bespokeSculpture, label: "Bespoke Sculpture" },
+  { key: MEDIA_KEYS.concepts,         label: "Concepts" },
 ];
 
 // ── Debug label overlay — set to false to remove ─────────────────────────

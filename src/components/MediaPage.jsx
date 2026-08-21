@@ -48,7 +48,7 @@ const LIVE_DEST_GROUPS = [
   },
   {
     group: "Bespoke",
-    hint: "the Bespoke popups — Sculpture and Concepts, whole gallery or a named section",
+    hint: "the Bespoke popups on the home page — Sculpture or Concepts",
     items: BESPOKE_LIVE_DESTINATIONS,
   },
   {

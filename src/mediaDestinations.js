@@ -24,7 +24,11 @@
 // comment). Change a value here and every place that imports it moves together.
 export const MEDIA_KEYS = {
   screens: "screens",         // read by ScreensGalleryModal (BespokeCommissions)
-  sculpture: "sculpture",     // read by SculptureWall + Gallery
+  sculpture: "sculpture",     // legacy alias, still read
+  // The Bespoke Sculpture popup. This is the key James's existing uploads
+  // actually carry — the gallery used to read "sculpture", which nothing was
+  // ever tagged with, so those photos never appeared.
+  bespokeSculpture: "bespoke-sculpture",
   concepts: "concepts",       // read by the Concepts SculptureGalleryModal
   hero: "hero",               // read by Hero.jsx (appended as a new slide)
   heroReplacePrefix: "hero-replace-", // Hero.jsx: hero-replace-<slide key>
