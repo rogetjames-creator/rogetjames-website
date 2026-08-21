@@ -74,6 +74,7 @@ export default defineConfig({
         hero:  resolve(__dirname, 'hero.html'),
         melbourne: resolve(__dirname, 'melbourne.html'),
         perth: resolve(__dirname, 'perth.html'),
+        adelaide: resolve(__dirname, 'adelaide.html'),
         'gold-coast': resolve(__dirname, 'gold-coast.html'),
         sydney: resolve(__dirname, 'sydney.html'),
         'wall-art': resolve(__dirname, 'wall-art.html'),

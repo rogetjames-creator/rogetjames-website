@@ -89,6 +89,7 @@ export default function AdminPage() {
     { href: "/perth", title: "Perth page preview", desc: "Private preview of the Perth city page — placeholder content, not yet public." },
     { href: "/gold-coast", title: "Gold Coast page preview", desc: "Private preview of the Gold Coast city page — placeholder content, not yet public." },
     { href: "/sydney", title: "Sydney page preview", desc: "Private preview of the Sydney city page — placeholder content, not yet public." },
+    { href: "/adelaide", title: "Adelaide page preview", desc: "Private preview of the Adelaide city page — placeholder content, not yet public." },
   ];
 
   return (

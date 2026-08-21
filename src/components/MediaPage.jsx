@@ -45,6 +45,7 @@ const CITY_PANEL_PAGES = [
   { slug: "perth",      label: "Perth" },
   { slug: "sydney",     label: "Sydney" },
   { slug: "gold-coast", label: "Gold Coast" },
+  { slug: "adelaide",   label: "Adelaide" },
 ];
 const CITY_PANEL_GROUPS = CITY_PANEL_PAGES.map((c) => ({
   group: `${c.label} page — panels`,
