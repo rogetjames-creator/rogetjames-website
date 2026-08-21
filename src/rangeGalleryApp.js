@@ -645,8 +645,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
           fetch(`/media-manifest.json?v=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():[]).catch(()=>[]),
           fetch('/api/media-list').then(r=>r.json()).catch(()=>({images:[]})),
         ]);
-        const fromManifest=Array.isArray(manifest)?manifest.map(e=>({src:`/${e.path}`,destinations:e.destinations||[],createdTime:e.createdTime||''})):[];
-        const fromLegacy=(legacy&&Array.isArray(legacy.images))?legacy.images.map(i=>({src:i.src,destinations:i.destinations||[],createdTime:i.createdTime||''})):[];
+        const fromManifest=Array.isArray(manifest)?manifest.map(e=>({src:`/${e.path}`,name:e.name||'',destinations:e.destinations||[],createdTime:e.createdTime||''})):[];
+        const fromLegacy=(legacy&&Array.isArray(legacy.images))?legacy.images.map(i=>({src:i.src,name:i.name||'',destinations:i.destinations||[],createdTime:i.createdTime||''})):[];
         mediaImages=[...fromManifest,...fromLegacy];
       }catch{/* offline */}
 
@@ -665,6 +665,34 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         ].sort(byUploadTime);
         const out=[...seed]; for(const u of uploads) if(!out.includes(u.src)) out.push(u.src); return out;
       };
+
+      // Per range: append this series' own /media uploads as pieces at the END
+      // of the range (newest last), BEFORE the close-ups. A general upload
+      // carries the series tag WITHOUT 'up-close' — those are gallery pieces,
+      // not detail shots, and had no way of appearing here before.
+      const tidyName=(n)=>(n||'').replace(/\.(jpe?g|png|webp|heic|heif)$/i,'').replace(/\s*\d+\s*px\b/i,'').trim();
+      const basePaths=new Set(data.imgs);
+      const uploadsForSeries=(id)=>{
+        const seen=new Set();
+        return mediaImages
+          .filter(m=>{const d=m.destinations||[];return d.includes(id)&&!d.includes('up-close');})
+          .filter(m=>{ if(seen.has(m.src)||basePaths.has(m.src)) return false; seen.add(m.src); return true; })
+          .sort(byUploadTime);
+      };
+      rangeHandles.forEach(h=>{
+        const id=upClose.seriesId&&upClose.seriesId[h.r.label]; if(!id) return;
+        const ups=uploadsForSeries(id); if(!ups.length) return;
+        for(const u of ups){
+          const gi=giFor(u.src);
+          if(h.r.designs.some(d=>d.imgs.includes(gi))) continue;
+          const di=h.r.designs.length;
+          h.r.designs.push({ n: tidyName(u.name)||h.r.label, imgs:[gi] });
+          h.r.flat.push([di,0]);
+          h.addThumb(di,0);
+        }
+        h.r.count=h.r.designs.length;
+        h.fit();
+      });
 
       // Per range: append this series' close-ups as individual thumbs, pinned last.
       rangeHandles.forEach(h=>{
