@@ -484,7 +484,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         pregion=document.getElementById('pregion'), prows=document.getElementById('prows');
   const qpill=document.getElementById('qpill'), qnum=document.getElementById('qnum'),
         qov=document.getElementById('qov'), qlist=document.getElementById('qlist');
-  let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=loadBasket(), curTiers=SIZE_TIERS, postcodeInfo=loadPostcode();
+  let selFinish=null, selSize=null, curDes=null, curRange='', curImg='', quote=loadBasket(), curTiers=[], postcodeInfo=loadPostcode();
   const pcLocked = ()=> !!(postcodeInfo && postcodeInfo.postcode);
   const matId = ()=> /corten/i.test(selFinish||'') ? 'corten' : 'aluminium';
   const regionOf = (info)=> STATE_NAMES[info.state] || info.state || 'Australia';
@@ -535,8 +535,14 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt='';t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
     setOvImg(des,vv||0);
     curDes=des; curRange=RANGES[ri].label;
-    curTiers = PIECE_SIZES[des.pk||des.n] || SIZE_TIERS;
+    // NEVER invent a size. A design with no measurements on record shows no
+    // sizes at all — the old fallback filled in a generic 600x400/900x600/
+    // 1200x800 and presented it as that piece's real dimensions.
+    curTiers = PIECE_SIZES[des.pk||des.n] || [];
     ovSizes.innerHTML = curTiers.map((t,i)=>`<button class="sh-size${i===0?' sel':''}" data-i="${i}"><span><b>${t.label}</b></span><span>${t.dims}</span></button>`).join('');
+    // No measurements on record → hide the size block entirely rather than guess.
+    const sizeBlock = ovSizes.closest('.sh-block');
+    if (sizeBlock) sizeBlock.style.display = curTiers.length ? '' : 'none';
     selFinish=null; ovFinish.querySelectorAll('.sh-chip').forEach(x=>x.classList.remove('sel'));
     selSize = curTiers.length ? 0 : null;
     addQ.classList.remove('added'); addQ.textContent='Add to quote';

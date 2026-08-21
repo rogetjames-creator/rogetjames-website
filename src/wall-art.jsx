@@ -40,8 +40,15 @@ const UPCLOSE = {
   ],
 };
 
+// CUSTOM is made to order — no fixed size, finish or price. Listing it here
+// hides the sizes, the finishes, the postcode/pricing panel and the quote
+// button for that range. The detail panel still opens (image + name), ready
+// for the written piece James will add later.
+const NO_PRICE_RANGES = ["CUSTOM"];
+
 mountRangeGallery({
   rootId: "wall-art-root",
+  noPriceRanges: NO_PRICE_RANGES,
   data: RANGE_DATA,
   label: "Wall Art",
   noun: "wall art",

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, House, Link2, Check } from "lucide-react";
+import { netlifyImg } from "../utils/img";
 
 // Maps a catalogue's label to its shareable link so the Copy-link button always
 // hands out a URL that actually reopens this catalogue.
@@ -134,7 +135,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
 
         {/* Main page — click left/right halves to navigate */}
         <div className="flex-1 relative flex items-center justify-center bg-black/40 min-h-0 overflow-hidden">
-          <img src={pages[page]} alt={`Page ${page + 1}`} {...noCopyImg}
+          <img src={netlifyImg(pages[page], { w: 1400, q: 80 })} alt={`Page ${page + 1}`} {...noCopyImg}
             className="max-h-full max-w-full object-contain pointer-events-none select-none" />
 
           {page > 0 && (
@@ -165,7 +166,7 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
                 i === page ? "border-clay opacity-100 scale-105" : "border-white/10 opacity-45 hover:opacity-75"
               }`}
               style={{ height: 82, width: 62 }}>
-              <img src={src} alt={`${label} page ${i + 1}`} {...noCopyImg} className="w-full h-full object-cover" loading="lazy" />
+              <img src={netlifyImg(src, { w: 130, q: 60 })} alt={`${label} page ${i + 1}`} {...noCopyImg} className="w-full h-full object-cover" loading="lazy" />
             </button>
           ))}
         </div>
