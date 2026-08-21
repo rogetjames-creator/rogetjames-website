@@ -36,10 +36,16 @@ const API = "/api/media-upload";
 // Add a wall-art series or a hero slide and it appears here on its own. The
 // "won't go live yet" group below is kept visually separate so it's obvious a
 // holding-pen upload needs placing before it shows anywhere.
-// City pages that actually render the accordion panels. Add a city here only
-// once its page shows them, so a photo can never be sent to a panel that
-// doesn't exist. Uploading to a panel REPLACES its picture.
-const CITY_PANEL_PAGES = [{ slug: "melbourne", label: "Melbourne" }];
+// City pages that render the accordion panels. Every city page shows them, and
+// each keeps its own set of pictures. Uploading to a panel REPLACES its picture.
+// Add a city here only once its page shows the panels, so a photo can never be
+// sent to a panel that doesn't exist.
+const CITY_PANEL_PAGES = [
+  { slug: "melbourne",  label: "Melbourne" },
+  { slug: "perth",      label: "Perth" },
+  { slug: "sydney",     label: "Sydney" },
+  { slug: "gold-coast", label: "Gold Coast" },
+];
 const CITY_PANEL_GROUPS = CITY_PANEL_PAGES.map((c) => ({
   group: `${c.label} page — panels`,
   hint: `replaces a panel's picture on the ${c.label} page`,

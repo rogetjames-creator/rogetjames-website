@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Instagram, Mail } from "lucide-react";
 import { netlifyImg } from "../utils/img";
+import MelbourneGalleryPanels from "./MelbourneGalleryPanels";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,6 +51,9 @@ export default function CityPage({ city }) {
     name, region, displayLine, intro, hero,
     projects = [], suburbs = [], services = [],
   } = city;
+  // Slug used for this city's /media panel keys, so each city page keeps its
+  // own set of panel pictures. Falls back to the city name.
+  const citySlug = city.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
   const rootRef = useRef(null);
 
@@ -138,6 +142,9 @@ export default function CityPage({ city }) {
           </div>
         </div>
       </section>
+
+      {/* ── Browse every gallery — expanding vertical panels (below the spiel) ── */}
+      <MelbourneGalleryPanels city={citySlug} />
 
       {/* ── Selected work — duplicates Gallery GridCard exactly ── */}
       {projects.length > 0 && (

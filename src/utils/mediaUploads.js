@@ -27,10 +27,21 @@ export function tidyUploadName(name, fallback = "") {
     .trim() || fallback;
 }
 
+// One shared request per page load. Several galleries ask for this list on the
+// same page; without this each one hit /api/media-list separately, which is a
+// billed function call every time. They now share a single in-flight promise.
+let _inflight = null;
+export function fetchMediaUploads() {
+  if (!_inflight) {
+    _inflight = _fetchMediaUploads().catch((e) => { _inflight = null; throw e; });
+  }
+  return _inflight;
+}
+
 // Fetch both sources and return one merged, de-duplicated list.
 // Never throws — a failed fetch just contributes nothing, so a gallery's
 // hand-placed images always still render.
-export async function fetchMediaUploads() {
+async function _fetchMediaUploads() {
   const [manifest, legacy] = await Promise.all([
     fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : [])).catch(() => []),
