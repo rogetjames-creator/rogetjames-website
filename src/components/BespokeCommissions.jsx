@@ -1000,6 +1000,7 @@ const PROJECTS_ROWS = [
     description: "Description to be added.",
     items: [
       { name: "ERGO Cottesloe Hotel", img: `${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`, slides: [`${CDN}/9ea86aef-4d28-4b92-bb98-5293deef8c93_rw_3840.jpg`, `${CDN}/ff393903-5912-40da-9b37-aca22ef599b4_rw_1920.jpg`] },
+      { name: "ERGO Cottesloe Hotel — Gates", img: "/images/hero/hero-cottesloe-gate.jpg" },
     ],
   },
   { id: "projects-fiona-stanley",  name: "FIONA STANLEY HOSPITAL", projectCategory: "fiona-stanley",  location: "Murdoch, Western Australia", description: "Fiona Stanley Hospital sits on land with deep indigenous significance — a place of gathering long before the hospital existed. This commission was an artistic homage to that history. ROGETjames designed and fabricated a series of totem sculptures and installations drawing on indigenous motifs, created with respect for Country and a genuine desire to bring meaning, warmth and identity to the spaces people move through every day.", items: [
