@@ -157,10 +157,14 @@ function ReelsPortal({ onOpen }) {
     return () => observer.disconnect();
   }, [introTriggered]);
 
-  // Imperatively play the video — autoPlay attribute can be silently ignored by browsers
+  // Imperatively play the video — autoPlay attribute can be silently ignored by browsers.
+  // Force muted as a property first: React doesn't reliably reflect the `muted`
+  // prop to the element, so without this a reel can sporadically play with sound
+  // on load even though it's marked muted.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+    v.muted = true;
     v.play().catch(() => {});
   }, [curReel]);
 

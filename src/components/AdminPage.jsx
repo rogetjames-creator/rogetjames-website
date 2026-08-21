@@ -84,6 +84,7 @@ export default function AdminPage() {
     { href: "/wall-art", title: "Wall Art gallery", desc: "The live Wall Art gallery." },
     { href: "/sculpture", title: "Sculpture gallery", desc: "The live Sculpture gallery." },
     { href: "/feature-screens", title: "Screens preview", desc: "Private preview of the Screens gallery style — not yet live." },
+    { href: "/screens-range", title: "Screens — Range layout", desc: "Screens on the Wall Art 'range' template — horizontal-slide layout. Private preview." },
     { href: "/melbourne", title: "Melbourne page preview", desc: "Private preview of the Melbourne city page — placeholder content, not yet public." },
     { href: "/perth", title: "Perth page preview", desc: "Private preview of the Perth city page — placeholder content, not yet public." },
     { href: "/gold-coast", title: "Gold Coast page preview", desc: "Private preview of the Gold Coast city page — placeholder content, not yet public." },
