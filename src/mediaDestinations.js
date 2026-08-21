@@ -46,6 +46,13 @@ export const MEDIA_KEYS = {
 export const BESPOKE_PREFIX = "bespoke-";
 export const PROJECT_PREFIX = "project-";
 export const bespokeKey = (sectionId) => `${BESPOKE_PREFIX}${sectionId}`;
+
+// City page accordion panels. One key per city per panel, so a photo uploaded
+// there REPLACES that panel's picture (newest upload wins). Only cities whose
+// page actually renders the panels are offered in /media.
+export const CITY_PANEL_PREFIX = "city-";
+export const cityPanelKey = (citySlug, panelName) =>
+  `${CITY_PANEL_PREFIX}${citySlug}-${panelName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 export const projectKey = (projectCategory) => `${PROJECT_PREFIX}${projectCategory}`;
 
 // Parked destinations: these intentionally have NO gallery yet. They are shown

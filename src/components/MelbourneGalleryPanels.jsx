@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { netlifyImg } from "../utils/img";
 import { IVY_WORDS } from "./ivyModeWords";
+import { cityPanelKey } from "../mediaDestinations";
+import { useUploadsByKey } from "../utils/mediaUploads";
 
 // ── Melbourne "browse every gallery" panels ───────────────────────────────
 // Slim vertical rectangles, one per gallery. Hover expands a panel out to reveal
@@ -47,14 +49,29 @@ const PANELS = [
   { name: "Concrete",          img: null,                                                                     href: "https://rogetjames.com/#bespoke" },
 ];
 
-export default function MelbourneGalleryPanels() {
+// The panels are shared by every city page. `city` is the slug used in the
+// /media destination key, so each city gets its own set of pictures.
+export const CITY_PANEL_NAMES = PANELS.map((p) => p.name);
+
+export default function MelbourneGalleryPanels({ city = "melbourne" }) {
   const [hover, setHover] = useState(null);
+
+  // A photo uploaded to a panel REPLACES that panel's picture — newest wins.
+  const keys = useMemo(() => PANELS.map((p) => cityPanelKey(city, p.name)), [city]);
+  const uploads = useUploadsByKey(keys);
+  const panels = useMemo(
+    () => PANELS.map((p) => {
+      const hits = uploads[cityPanelKey(city, p.name)];
+      return hits?.length ? { ...p, img: hits[hits.length - 1].img } : p;
+    }),
+    [uploads, city]
+  );
 
   return (
     <section className="bg-jet pb-20 md:pb-32">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex gap-1.5 md:gap-2 w-full h-[60vh] min-h-[380px] max-h-[660px]">
-          {PANELS.map((p, i) => {
+          {panels.map((p, i) => {
             const active = hover === i;
             return (
               <a

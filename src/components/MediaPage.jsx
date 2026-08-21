@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
 import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
+import { CITY_PANEL_NAMES } from "./MelbourneGalleryPanels";
 import { HERO_SLIDES } from "./heroSlides";
-import { MEDIA_KEYS, HOLDING_DESTINATIONS } from "../mediaDestinations";
+import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey } from "../mediaDestinations";
 
 // Every screen design name, self-maintaining from the live screen covers — add
 // a design and it shows up here. Typing/tapping one of these as the upload's
@@ -35,6 +36,16 @@ const API = "/api/media-upload";
 // Add a wall-art series or a hero slide and it appears here on its own. The
 // "won't go live yet" group below is kept visually separate so it's obvious a
 // holding-pen upload needs placing before it shows anywhere.
+// City pages that actually render the accordion panels. Add a city here only
+// once its page shows them, so a photo can never be sent to a panel that
+// doesn't exist. Uploading to a panel REPLACES its picture.
+const CITY_PANEL_PAGES = [{ slug: "melbourne", label: "Melbourne" }];
+const CITY_PANEL_GROUPS = CITY_PANEL_PAGES.map((c) => ({
+  group: `${c.label} page — panels`,
+  hint: `replaces a panel's picture on the ${c.label} page`,
+  items: CITY_PANEL_NAMES.map((n) => ({ key: cityPanelKey(c.slug, n), label: n })),
+}));
+
 const LIVE_DEST_GROUPS = [
   {
     group: "Wall Art",
@@ -89,7 +100,7 @@ const HOLDING_GROUP = {
   holding: true,
   items: HOLDING_DESTINATIONS,
 };
-const DEST_GROUPS = [...LIVE_DEST_GROUPS, HOLDING_GROUP];
+const DEST_GROUPS = [...LIVE_DEST_GROUPS, ...CITY_PANEL_GROUPS, HOLDING_GROUP];
 const ALL_DEST_ITEMS = DEST_GROUPS.flatMap((g) => g.items);
 // Resolve a label for any key: the curated list first, then any legacy key that
 // might still be on an older upload, so the library section always reads clearly.
