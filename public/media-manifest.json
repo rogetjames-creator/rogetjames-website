@@ -684,5 +684,15 @@
     "note": "Auto-replaced images/autumn-leaf/leafs-wg-copper.jpg in place (upload instruction).",
     "createdTime": "2026-08-20T06:05:02.950Z",
     "path": "images/autumn-leaf/leafs-wg-copper.jpg"
+  },
+  {
+    "id": "1787318316506_7mce56",
+    "name": "Custom Natives",
+    "destinations": [
+      "custom"
+    ],
+    "note": "",
+    "createdTime": "2026-08-21T13:18:36.507Z",
+    "path": "images/uploads/1787318316506_7mce56.jpg"
   }
 ]
