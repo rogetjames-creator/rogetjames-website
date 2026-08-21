@@ -116,7 +116,12 @@ const COMMISSIONS = {
       id: "public-2",
       label: "SCULPTURES & TOTEMS",
       items: [
-        { name: "UNITY IN DIVERSITY",             img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, slides: [`${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`, `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`, `/images/uploads/1785745326687_0pxdcn.jpg`, `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg`] },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg` },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg` },
+        { name: "Unity in Diversity",             img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg` },
+        { name: "UNITY IN DIVERSITY",             img: "/images/uploads/1785745463839_tie649.jpg" },
+        { name: "UNITY IN DIVERSITY",             img: "/images/uploads/1785745326687_0pxdcn.jpg" },
+        { name: "UNITY IN DIVERSITY",             img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
         { name: "MARAKESH TRIO (Custom)",         img: "/images/hero/hero-marakesh-tall.jpg" },
         { name: "MARAKESH TRIO (Custom)",         img: `${CDN}/931545f6-0a20-4f80-8707-7f6367b77839_rw_1920.jpg` },
         { name: "OMARE (Custom)",                 img: `/images/omare-custom-front.jpg` },
@@ -3259,6 +3264,7 @@ function BespokePortal() {
           {BESPOKE_PORTAL_ITEMS.map((item, i) => (
             item.type === "video"
               ? <video key={i} src={item.src} autoPlay muted loop playsInline
+                  ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
               : <img key={i} src={item.img} alt={item.label}
