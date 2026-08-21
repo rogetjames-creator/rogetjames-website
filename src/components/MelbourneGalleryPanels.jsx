@@ -40,7 +40,7 @@ const PANELS = [
   { name: "Wall Art",          img: "/images/banksia/banksia-framed-rust.jpg", href: "https://rogetjames.com/wall-art" },
   { name: "Sculpture",         img: "/images/autumn-leaf/autumn-leafs-wg.jpg",                                href: "https://rogetjames.com/sculpture" },
   { name: "Screens",           img: "/images/cdn-gallery/f940abcb-61e1-4097-8525-2be2df42c732_rw_1200.jpg",  href: "https://rogetjames.com/?open=screens" },
-  { name: "Bespoke Sculpture", img: "/images/cdn-gallery/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg",  href: "https://rogetjames.com/?open=sculpture" },
+  { name: "Bespoke Sculpture", img: "/images/uploads/1785745463839_tie649.jpg",                              href: "https://rogetjames.com/?open=sculpture" },
   { name: "Projects",          img: "/images/cdn-gallery/737c1792-472d-4328-9c28-1f74c7f49d95_rw_1920.jpg",  href: "https://rogetjames.com/?open=projects" },
   { name: "Commissions",       img: "/images/cdn-gallery/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg",  href: "https://rogetjames.com/?open=commissions" },
   { name: "Concepts",          img: "/images/cdn-gallery/cdd20f14-69b8-4224-ab94-80bc4a4b42bf_rw_1200.jpg",  href: "https://rogetjames.com/?open=concepts" },
