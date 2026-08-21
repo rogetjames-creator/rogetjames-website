@@ -30,6 +30,7 @@ export const MEDIA_KEYS = {
   heroReplacePrefix: "hero-replace-", // Hero.jsx: hero-replace-<slide key>
   upClose: "up-close",        // read by every gallery's Up Close row
   concrete: "concrete",       // read by the Concrete gallery (BespokeCommissions)
+  clientImages: "client-images", // read by the Client Images portal (DiscoverPortals)
 };
 
 // Prefixes for the two galleries that are made of many named sections, so each

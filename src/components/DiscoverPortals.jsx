@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { X, ChevronLeft, ChevronRight, Play, Pause, ExternalLink, Phone, Mail, Instagram } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
+import { useUploadsByKey } from "../utils/mediaUploads";
+import { MEDIA_KEYS } from "../mediaDestinations";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,6 +42,9 @@ const CLIENT_IMAGES = [
   { src: "/images/omare-custom-front.jpg",             title: "OMARE (Custom)" },
   { src: "/images/client/nea-cottesloe.jpg",           title: "NEA — Cottesloe" },
 ];
+
+// The /media destination this portal reads.
+const CLIENT_IMAGE_KEYS = [MEDIA_KEYS.clientImages];
 
 const PORTALS = [
   {
@@ -479,6 +484,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
               {videos ? videos.map((v, i) => (
                 <video key={v.src} src={v.src} autoPlay muted loop playsInline
+                  ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
               )) : portal.slides.map((slide, i) => {
@@ -549,6 +555,25 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
 }
 
 export default function DiscoverPortals() {
+  // Client Images is the spot James uploads in-situ client photos to. The list
+  // above is the hand-placed set; anything uploaded to "client-images" is
+  // appended to the END so new installs appear without a code change.
+  const clientUploads = useUploadsByKey(CLIENT_IMAGE_KEYS);
+  const clientImages = useMemo(() => {
+    const extra = clientUploads[MEDIA_KEYS.clientImages] || [];
+    const seen = new Set(CLIENT_IMAGES.map(i => i.src));
+    return [
+      ...CLIENT_IMAGES,
+      ...extra.filter(u => { if (seen.has(u.img)) return false; seen.add(u.img); return true; })
+              .map(u => ({ src: u.img, title: u.name || "Client install" })),
+    ];
+  }, [clientUploads]);
+  const portals = useMemo(
+    () => PORTALS.map(p => p.id === "client-works"
+      ? { ...p, slides: clientImages.map(i => i.src), popup: clientImages }
+      : p),
+    [clientImages]
+  );
   const headerRef = useRef(null);
   const [bottomH, setBottomH] = useState(0);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
@@ -609,7 +634,7 @@ export default function DiscoverPortals() {
       <div className="w-full h-px bg-white/10" />
       <div className={`bg-matt-black py-[55px] ${isMobile ? "px-2" : "px-8"}`}>
         <div className={`flex justify-center ${isMobile ? "items-start gap-3" : "items-end gap-10 md:gap-20"}`}>
-          {PORTALS.map(portal => {
+          {portals.map(portal => {
             const p = (portal.id === "reels" && reelExtra.length)
               ? { ...portal, videos: [...portal.videos, ...reelExtra.filter(e => !portal.videos.some(v => v.src === e.src))] }
               : portal;
@@ -627,7 +652,7 @@ export default function DiscoverPortals() {
       </div>
       <div className="w-full h-px bg-white/10" />
       <div style={{ height: bottomH || 160 }} />
-      {clientReelsOpen && <ArtPopup images={CLIENT_IMAGES} startIndex={0} heading="Client Images — In Situ" altLabel="Client install" onClose={() => setClientReelsOpen(false)} />}
+      {clientReelsOpen && <ArtPopup images={clientImages} startIndex={0} heading="Client Images — In Situ" altLabel="Client install" onClose={() => setClientReelsOpen(false)} />}
       {linksOpen && <LinksPopup onClose={() => setLinksOpen(false)} />}
       {screensOpen   && <ScreensGalleryModal   onClose={() => setScreensOpen(false)} />}
       {sculptureOpen && <SculptureGalleryModal onClose={() => setSculptureOpen(false)} />}

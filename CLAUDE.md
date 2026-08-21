@@ -65,25 +65,70 @@ Local dev via Netlify CLI runs on port 8888 (`netlify dev`) and proxies the Vite
 
 **Stack:** React 19, Vite 7 (multi-page), Tailwind CSS v4, GSAP 3 + ScrollTrigger, Lenis smooth scroll, Lottie React, Lucide React icons. `react-pageflip` (catalogue flipbook), `react-pdf` (PDF viewing), `@netlify/blobs` (server-side storage in functions).
 
-**Multi-page build** — `vite.config.js` defines nine HTML entry points, each its own React root:
+**⚠️ Read this before touching any gallery.** This repo still contains a whole
+earlier version of the site. Several files look authoritative and render nothing.
+Never treat a data structure as live because it exists — trace what renders it.
 
-| URL (via `netlify.toml` rewrite) | HTML | Entry | Root component | Purpose |
-|---|---|---|---|---|
-| `/` | `index.html` | `src/main.jsx` | `App.jsx` | Main public site |
-| `/vault` | `vault.html` | `src/vault.jsx` | `VaultPage.jsx` | Client vault (see below) |
-| `/stats` | `stats.html` | `src/stats.jsx` | `StatsPage.jsx` | Analytics dashboard (admin) |
-| `/media` | `media.html` | `src/media.jsx` | `MediaPage.jsx` | Photo upload tool (admin) |
-| `/admin` | `admin.html` | `src/admin.jsx` | `AdminPage.jsx` | Hub linking to the admin pages |
-| `/melbourne` | `melbourne.html` | `src/melbourne.jsx` | `MelbournePreview.jsx` | Private preview, Melbourne city SEO page |
-| `/feature-wall` | `feature-wall.html` | `src/feature-wall.jsx` | `FeatureWall.jsx` | Private preview — alternative Wall Art gallery (see below) |
-| `/feature-sculpture` | `feature-sculpture.html` | `src/feature-sculpture.jsx` | `SculptureWall.jsx` | Same model as Feature Wall, retargeted at Sculpture |
-| `/feature-screens` | `feature-screens.html` | `src/feature-screens.jsx` | `FeatureScreens.jsx` | Same model, retargeted at Screens — no design Info/Prices panel |
+**The galleries (the live ones).** Each is its own page, built by a plain-JS
+mount function plus generated data. They are NOT React modals:
 
-`vite.config.js` also runs a `critical-css` plugin (Critters) at build end that inlines above-the-fold CSS into each of the nine HTML files.
+| Page | Built by | Data |
+|---|---|---|
+| `/wall-art` | `src/rangeGalleryApp.js` | `src/data/rangeData.js` |
+| `/sculpture` | `src/sculptureRange.js` → `rangeGalleryApp` | `src/data/sculptureData.js` |
+| `/screens`, `/screens-range` | `src/screensRange.js` | in-file |
+| `/bespoke-sculpture` | `SculptureGalleryModal` (BespokeCommissions.jsx) | `SCULPTURE_ITEMS` |
 
-**Feature Wall / Feature Sculpture / Feature Screens (private previews)** — password-gated (same admin password as `/stats`/`/media`) previews of an alternative gallery template, linked only from `/admin`. James plans to eventually say "go" to promote Feature Wall to the official live Wall Art gallery — treat every request on these pages as pre-launch QA, not just cosmetic tweaks. All three read the same live Up Close/media data as `Gallery.jsx` (`/api/up-close-list`, `/api/media-list`, `media-manifest.json`), scoped per page to its own destination tag (`sculpture` / `screens`) so uploads never leak across pages. Feature Wall/Sculpture reuse `Gallery.jsx`'s `DetailCard` directly, so pricing/postcode-gating always matches the live site by construction — Feature Screens has no Info/Prices panel at all (Screens has no per-piece pricing here), its bottom pill just says "Expand". `WALL_ART_COVERS`/`SCULPTURE_COVERS` (from `Gallery.jsx`) and `SCREEN_COVERS` (from `BespokeCommissions.jsx`) are the self-maintaining per-category data sources for each page — add a wall-art series, a sculpture `cat` tag, or a screen design, and it appears automatically, no other change needed.
+**Everything else that ships**
 
-**Page order (main site)** — `App.jsx` composes: Navbar → Hero → StudioBio → Gallery → About → CommissionsSection → Process → Services → Contact → DiscoverPortals → Footer → ScrollArrows → ChatWidget. Gallery, CommissionsSection, and DiscoverPortals are lazy-loaded (`lazy` + `Suspense`). `CommissionsSection` (the **Bespoke section**) is exported from `BespokePortals.jsx`, which composes portal tiles over `BespokeCommissions.jsx` and `DiscoverPortals.jsx` modals.
+| URL | Entry | Root |
+|---|---|---|
+| `/` | `src/main.jsx` | `App.jsx` |
+| `/media` `/stats` `/admin` `/vault` | matching `src/*.jsx` | `MediaPage` `StatsPage` `AdminPage` `VaultPage` |
+| `/melbourne` `/perth` `/sydney` `/gold-coast` | matching `src/*.jsx` | `MelbournePreview` / `CityPreview` |
+| `/hero` `/feature-screens` | matching `src/*.jsx` | `HeroPreview` `FeatureScreens` |
+
+`/feature-wall` and `/feature-sculpture` are now 301 redirects to `/wall-art`
+and `/sculpture` — they are not separate pages any more.
+
+**OLD SITE — do not build on these.** They are kept only as rollback:
+- `COMMISSIONS` and `GalleryModal` in `BespokeCommissions.jsx` — the tabbed
+  Commercial / Public / Residential gallery with ~20 named sections. **Nothing
+  renders `GalleryModal`.** Its section names are not names James knows. Wiring
+  it up in Aug 2026 resurrected old UI and had to be reverted.
+- `FeatureWall.jsx`, `SculptureWall.jsx`, `HeroClassic.jsx`, `NoiseOverlay.jsx` —
+  no imports anywhere.
+- `Gallery.jsx`'s `WALL_ART_SERIES` / `CATEGORIES` / `MEDIA_DESTINATIONS` predate
+  the Range pages. `Gallery.jsx` still renders the Collection section on `/`, and
+  still exports `WALL_ART_COVERS` / `SCULPTURE_SUBCATS` that `/media` uses — but it
+  is **not** what `/wall-art` or `/sculpture` render.
+
+**Where an upload has to be tagged to appear** (get this wrong and the photo
+vanishes silently — the single most common bug here):
+
+| Gallery | Destination key it reads |
+|---|---|
+| `/wall-art` | the series id (`australian-natives`, `branches`, …) → piece at the END of that range; add `up-close` as well to make it a detail shot instead |
+| `/sculpture` | `classics`, `leafs`, `bonbons`, `fire`, `displays` (`DEST_TO_LABEL` in `sculptureRange.js`) |
+| `/screens` | `screens` plus its section keys |
+| Bespoke Sculpture / Concepts popups | `sculpture` / `concepts` |
+| Projects popup | `project-<project>` |
+| Concrete | `concrete` — the portal appears once the first photo lands |
+
+**Bespoke section on `/`** — FOUR portals: Sculpture, Concepts, Projects,
+Commissions. **There is no Screens portal there.** Projects and Commissions show
+"Under Construction" to the public and open only for James (`?preview=roj-open`)
+or in dev.
+
+**Page order (main site)** — `App.jsx` composes: Navbar → Hero → StudioBio →
+Gallery → About → CommissionsSection → Process → Services → Contact →
+DiscoverPortals → Footer → ScrollArrows → ChatWidget. Gallery,
+CommissionsSection and DiscoverPortals are lazy-loaded. `CommissionsSection`
+comes from `BespokePortals.jsx`, which lays portal tiles over the popup galleries
+exported by `BespokeCommissions.jsx`.
+
+`vite.config.js` also runs a `critical-css` plugin (Critters) that inlines
+above-the-fold CSS into every HTML file at build end.
 
 **Scroll architecture** — Lenis (`autoRaf: false`) is driven by GSAP's ticker (`gsap.ticker.add(update)`) in `App.jsx`. This keeps ScrollTrigger frame-perfect. All components register `ScrollTrigger` themselves. Never add a second Lenis instance.
 
