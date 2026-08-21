@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
-import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
+import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, GalleryModal, useConcreteImages } from "./BespokeCommissions";
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
@@ -139,6 +139,7 @@ export function CommissionsSection() {
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
   const [concreteOpen, setConcreteOpen] = useState(false);
+  const [bespokeAllOpen, setBespokeAllOpen] = useState(false);
   const [initialScreensCat, setInitialScreensCat] = useState(false);
   // Concrete has no hand-placed images — the portal appears on its own as soon
   // as the first photo is uploaded to it, and stays hidden until then. Its
@@ -149,7 +150,7 @@ export function CommissionsSection() {
     [concreteImages]
   );
 
-  const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
+  const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen || concreteOpen || bespokeAllOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
@@ -161,6 +162,10 @@ export function CommissionsSection() {
       if (cat === "sculpture") setSculptureOpen(true);
       if (cat === "projects")  setProjectsOpen(true);
       if (cat === "concepts")  setConceptsOpen(true);
+      // The full Bespoke gallery — every tab and section. Nothing listened for
+      // this before, so the nav's "Commissions" entry opened nothing and the
+      // per-section uploads had no gallery to appear in.
+      if (cat === "commissions") setBespokeAllOpen(true);
     };
     window.addEventListener("open-bespoke-category", handler);
     return () => window.removeEventListener("open-bespoke-category", handler);
@@ -248,6 +253,7 @@ export function CommissionsSection() {
       {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
       {reelsOpen     && <CommissionsGalleryPopup videos={COMMISSIONS_PORTAL.videos} onClose={() => setReelsOpen(false)} />}
       {concreteOpen  && <ConcreteGalleryModal  onClose={() => setConcreteOpen(false)} />}
+      {bespokeAllOpen && <GalleryModal onClose={() => setBespokeAllOpen(false)} />}
     </section>
   );
 }

@@ -1361,7 +1361,10 @@ function GalleryCard({ item, onClick, onDetail }) {
   );
 }
 
-function GalleryModal({ onClose, initialCategory = null }) {
+// The full Bespoke gallery — every tab and every named section. Reached from
+// the nav's Bespoke menu ("Commissions"), which stays locked to the public in
+// production, so today this opens for James and in dev only.
+export function GalleryModal({ onClose, initialCategory = null }) {
   const [activeTab, setActiveTab] = useState(null);
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [sweepingId, setSweepingId] = useState(null);

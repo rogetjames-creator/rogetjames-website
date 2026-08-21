@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
-import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
+import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS, BESPOKE_DESTINATIONS } from "./BespokeCommissions";
 import { HERO_SLIDES } from "./heroSlides";
 import { MEDIA_KEYS, HOLDING_DESTINATIONS } from "../mediaDestinations";
 
@@ -50,6 +50,11 @@ const LIVE_DEST_GROUPS = [
     group: "Bespoke",
     hint: "the Bespoke popups — Sculpture and Concepts, whole gallery or a named section",
     items: BESPOKE_LIVE_DESTINATIONS,
+  },
+  {
+    group: "Bespoke — every section",
+    hint: "the full Bespoke gallery, by tab and section",
+    items: BESPOKE_DESTINATIONS,
   },
   {
     group: "Concrete",
