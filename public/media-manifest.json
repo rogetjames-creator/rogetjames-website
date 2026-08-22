@@ -782,5 +782,15 @@
     "note": "Auto-replaced images/halo/pavia-1.jpg in place (upload instruction).",
     "createdTime": "2026-08-22T02:10:46.101Z",
     "path": "images/halo/pavia-1.jpg"
+  },
+  {
+    "id": "1787364729004_ljc0gv",
+    "name": "67BF2F5D-5101-40EB-AE1D-E84E2F7B2721_1_201_a.jpeg",
+    "destinations": [
+      "hero"
+    ],
+    "note": "",
+    "createdTime": "2026-08-22T02:12:09.018Z",
+    "path": "images/uploads/1787364729004_ljc0gv.jpg"
   }
 ]
