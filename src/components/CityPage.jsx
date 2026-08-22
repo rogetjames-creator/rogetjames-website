@@ -50,8 +50,8 @@ function SectionTitle({ children }) {
 
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero,
-    projects = [], suburbs = [], services = [],
+    name, region, displayLine, intro, hero, heroMark,
+    suburbs = [], services = [],
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
   // own set of panel pictures. Falls back to the city name.
@@ -117,12 +117,21 @@ export default function CityPage({ city }) {
               {name}, {region} · Australia-wide studio
             </p>
             <h1 className="flex flex-col">
-              <span
-                className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
-                style={{ color: "rgba(237,232,223,0.18)", textShadow: "0 -1px 1px rgba(255,253,248,0.22), 0 1px 1px rgba(0,0,0,0.28)", opacity: 0 }}
-              >
-                {name}
-              </span>
+              {heroMark ? (
+                <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
+                  {heroMark}
+                </span>
+              ) : (
+                // Until this city has its own Ethnocentric wordmark, the plain
+                // name carries Melbourne's weight and lift — text-cream/90 with
+                // the same drop shadow — rather than the old faint engraved look.
+                <span
+                  className="city-h-1 font-drama italic text-5xl md:text-7xl lg:text-8xl leading-[0.9] text-cream/90"
+                  style={{ textShadow: "0 3px 10px rgba(0,0,0,0.45)", opacity: 0 }}
+                >
+                  {name}
+                </span>
+              )}
               {displayLine && (
                 <span
                   className="city-h-2 font-heading font-semibold text-cream/70 text-base md:text-xl leading-snug mt-4 max-w-xl"
@@ -156,39 +165,6 @@ export default function CityPage({ city }) {
 
       {/* ── Browse every gallery — expanding vertical panels (below the spiel) ── */}
       <MelbourneGalleryPanels city={citySlug} />
-
-      {/* ── Selected work — duplicates Gallery GridCard exactly ── */}
-      {projects.length > 0 && (
-        <section className="py-20 md:py-32">
-          <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div className="city-reveal mb-10">
-              <Eyebrow>Selected work</Eyebrow>
-              <SectionTitle>Pieces in {name}</SectionTitle>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {projects.map((p, i) => (
-                <div
-                  key={i}
-                  className="city-reveal gallery-card group cursor-pointer rounded-2xl overflow-hidden bg-cream-dark relative aspect-square"
-                >
-                  <img
-                    src={netlifyImg(p.src, { w: 800, q: 78 })}
-                    alt={`${p.title} — ROGETjames`}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-                    <p className="text-cream font-heading font-semibold text-sm" style={{ wordSpacing: "-0.05em" }}>{p.title}</p>
-                    {p.detail && <p className="text-cream/60 font-detail text-[9px] uppercase tracking-[0.12em] mt-0.5">{p.detail}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ── Services ─────────────────────────────────────── */}
       {services.length > 0 && (
