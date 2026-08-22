@@ -46,6 +46,8 @@
   --font-benguiat: "ITC Benguiat Condensed", "Plus Jakarta Sans", sans-serif;
   --font-detail: "Jost", "DM Sans", sans-serif;
   --font-bebas: "Bebas Neue", sans-serif;
+  /* Perth page heading — Aviano Serif, delivered by Adobe Fonts (kit cio5yrd). */
+  --font-aviano: "aviano-serif", "Playfair Display", Georgia, serif;
 
   --ease-magnetic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);

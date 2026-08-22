@@ -50,7 +50,7 @@ function SectionTitle({ children }) {
 
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero, heroMark,
+    name, region, displayLine, intro, hero, heroMark, heroFontClass,
     suburbs = [], services = [],
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
@@ -121,8 +121,18 @@ export default function CityPage({ city }) {
                 <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
                   {heroMark}
                 </span>
+              ) : heroFontClass ? (
+                // This city has its own heading face (Perth = Aviano Serif).
+                // Set in white at Melbourne's cap height and opacity so the
+                // two pages read as the same treatment.
+                <span
+                  className={`city-h-1 ${heroFontClass} text-white/90 uppercase leading-none text-[2.35rem] md:text-[3.95rem] lg:text-[4.85rem]`}
+                  style={{ opacity: 0, textShadow: "0 3px 10px rgba(0,0,0,0.45)" }}
+                >
+                  {name}
+                </span>
               ) : (
-                // Until this city has its own Ethnocentric wordmark, the plain
+                // Until this city has its own wordmark, the plain
                 // name carries Melbourne's weight and lift — text-cream/90 with
                 // the same drop shadow — rather than the old faint engraved look.
                 <span
