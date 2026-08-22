@@ -214,7 +214,7 @@ function ReelsPortal({ onOpen }) {
       >
         <div className="relative overflow-hidden w-64 h-64 md:w-72 md:h-72" style={{ borderRadius: "50%" }}>
           <video
-            ref={videoRef}
+            ref={(el) => { videoRef.current = el; if (el) el.muted = true; }}
             key={curReel}
             src={(portalReels[curReel] || portalReels[0]).video}
             autoPlay muted playsInline preload="auto"

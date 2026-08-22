@@ -152,7 +152,7 @@ export function CommissionsGalleryPopup({ videos, onClose, title }) {
               >
                 {v.poster
                   ? <img src={v.poster || v.thumb} alt={v.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" style={{ objectPosition: v.posterPos || "center center" }} />
-                  : <video src={v.src || v.video} muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
+                  : <video src={v.src || v.video} muted ref={el => { if (el) el.muted = true; }} playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
                 }
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

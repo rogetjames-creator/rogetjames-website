@@ -3375,7 +3375,7 @@ function BespokePortal() {
                   style={{ aspectRatio: "16/9" }}>
                   {item.img
                     ? <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    : <video src={item.src} muted playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
+                    : <video src={item.src} muted ref={el => { if (el) el.muted = true; }} playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
                   }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   {item.type === "video" && (
