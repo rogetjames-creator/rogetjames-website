@@ -8,8 +8,9 @@ import "./index.css";
 const PERTH = {
   name: "Perth",
   region: "WA",
-  // Perth's heading face — Aviano Serif, loaded on perth.html via Adobe Fonts.
-  heroFontClass: "font-aviano",
+  // Heading face — Aviano Serif, from James's PERTH.svg.
+  // Sizes give the same cap height as the MELBOURNE mark.
+  heroTypeClass: "font-aviano font-normal text-[33.1px] md:text-[56.1px] lg:text-[68.8px]",
   displayLine: "",
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — designed and made in Perth for Architects, Designers and discerning clients across Western Australia.",

@@ -50,7 +50,7 @@ function SectionTitle({ children }) {
 
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero, heroMark, heroFontClass,
+    name, region, displayLine, intro, hero, heroMark, heroTypeClass, heroStretch,
     suburbs = [], services = [],
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
@@ -121,15 +121,26 @@ export default function CityPage({ city }) {
                 <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
                   {heroMark}
                 </span>
-              ) : heroFontClass ? (
-                // This city has its own heading face (Perth = Aviano Serif).
-                // Set in white at Melbourne's cap height and opacity so the
-                // two pages read as the same treatment.
-                <span
-                  className={`city-h-1 ${heroFontClass} text-white/90 uppercase leading-none text-[2.35rem] md:text-[3.95rem] lg:text-[4.85rem]`}
-                  style={{ opacity: 0, textShadow: "0 3px 10px rgba(0,0,0,0.45)" }}
-                >
-                  {name}
+              ) : heroTypeClass ? (
+                // Each city has its own heading face, supplied by James as an
+                // SVG naming the font (see src/components/CityPage notes). All
+                // are set white at 90% with Melbourne's drop shadow, and sized
+                // so the cap height matches the MELBOURNE mark exactly —
+                // 51.8px at desktop, 42.2 at md, 25.0 at base. The sizes live
+                // on each city because every face has a different cap ratio.
+                // heroStretch reproduces the horizontal scale in his artwork;
+                // it sits on an inner span so it can't fight the GSAP drift-in
+                // that owns the transform on .city-h-1.
+                <span className="city-h-1 block" style={{ opacity: 0 }}>
+                  <span
+                    className={`${heroTypeClass} text-white/90 uppercase leading-none inline-block`}
+                    style={{
+                      textShadow: "0 3px 10px rgba(0,0,0,0.45)",
+                      ...(heroStretch ? { transform: `scaleX(${heroStretch})`, transformOrigin: "left center" } : {}),
+                    }}
+                  >
+                    {name}
+                  </span>
                 </span>
               ) : (
                 // Until this city has its own wordmark, the plain

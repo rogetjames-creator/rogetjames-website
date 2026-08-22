@@ -8,6 +8,10 @@ import "./index.css";
 const SYDNEY = {
   name: "Sydney",
   region: "NSW",
+  // Heading face — Handel Gothic Light, from James's SYDNEY.svg.
+  // Sizes give the same cap height as the MELBOURNE mark.
+  heroTypeClass: "font-handel font-light text-[37.4px] md:text-[63.3px] lg:text-[77.7px]",
+  heroStretch: 1.18,   // the horizontal scale in his artwork
   displayLine: "",
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — bespoke works made for Sydney homes, architects and commercial projects across New South Wales.",

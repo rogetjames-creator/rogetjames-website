@@ -8,6 +8,10 @@ import "./index.css";
 const GOLD_COAST = {
   name: "Gold Coast",
   region: "QLD",
+  // Heading face — New Astro Medium, from James's GOLD COAST.svg.
+  // Sizes give the same cap height as the MELBOURNE mark.
+  heroTypeClass: "font-newastro font-medium text-[35.5px] md:text-[60.1px] lg:text-[73.7px]",
+  heroStretch: 1.18,   // the horizontal scale in his artwork
   displayLine: "",
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — bespoke pieces made for Gold Coast homes, architects and waterfront developments across South East Queensland.",

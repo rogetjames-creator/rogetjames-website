@@ -10,6 +10,10 @@ import "./index.css";
 const ADELAIDE = {
   name: "Adelaide",
   region: "SA",
+  // Heading face — Amandine Bold, from James's ADELAIDE.svg.
+  // Sizes give the same cap height as the MELBOURNE mark.
+  heroTypeClass: "font-amandine font-bold text-[32.7px] md:text-[55.3px] lg:text-[67.9px]",
+  heroStretch: 1.18,   // the horizontal scale in his artwork
   displayLine: "",
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — curated catalogues and bespoke works, made for Adelaide architects, designers and discerning clients.",
