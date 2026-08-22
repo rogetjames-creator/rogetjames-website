@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CityPage from "./CityPage";
+import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 
 // Reusable private-preview wrapper for a city/location page. Same admin
 // password gate as Stats/Media (content is still placeholder), then renders
@@ -31,6 +32,10 @@ export default function CityPreview({ city, label, slug }) {
   };
 
   useEffect(() => {
+    // One-click owner link: ...?preview=roj-open opens the page and remembers
+    // it in this browser, so no password is needed here or on the other city
+    // pages afterwards. ?preview=off re-locks.
+    if (ownerPreviewUnlocked()) { setAuthed(true); return; }
     const urlKey = new URLSearchParams(window.location.search).get("key");
     const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", slug);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import MelbourneCityPage from "./MelbourneCityPage";
 import MelbourneWordmark from "./MelbourneWordmark";
+import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 
 // ── Melbourne page data ───────────────────────────────────────
 // PLACEHOLDER content + images — a working template. James replaces
@@ -73,6 +74,10 @@ export default function MelbournePreview() {
   };
 
   useEffect(() => {
+    // One-click owner link: ...?preview=roj-open opens the page and remembers
+    // it in this browser, so no password is needed here or on the other city
+    // pages afterwards. ?preview=off re-locks.
+    if (ownerPreviewUnlocked()) { setAuthed(true); return; }
     const urlKey = new URLSearchParams(window.location.search).get("key");
     const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", "/melbourne");

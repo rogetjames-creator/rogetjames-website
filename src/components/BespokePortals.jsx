@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
+import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
@@ -109,26 +110,7 @@ const SIDE_PORTAL_CONCEPTS = {
 // Construction"). James unlocks those on the live site by visiting once with
 // ?preview=roj-open — that saves a flag in his browser so they stay open on
 // every later visit. ?preview=off re-locks. Nobody else ever sees them.
-const PREVIEW_PASS = "roj-open";
-function ownerPreviewUnlocked() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("preview");
-    if (q === "off") {
-      localStorage.removeItem("roj_bespoke_preview");
-      window.history.replaceState({}, "", window.location.pathname);
-      return false;
-    }
-    if (q === PREVIEW_PASS) {
-      localStorage.setItem("roj_bespoke_preview", "1");
-      // Strip the pass from the address bar so it isn't visible or shareable.
-      window.history.replaceState({}, "", window.location.pathname);
-    }
-    return localStorage.getItem("roj_bespoke_preview") === "1";
-  } catch {
-    return false;
-  }
-}
+// Shared with the private city pages — see src/utils/ownerPreview.js.
 
 const IS_DEV = import.meta.env.DEV || ownerPreviewUnlocked();
 
