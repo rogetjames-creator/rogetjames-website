@@ -73,7 +73,7 @@ export default function HeroPreview() {
 
   return (
     <main className="bg-charcoal">
-      <Hero previewWords />
+      <Hero />
     </main>
   );
 }

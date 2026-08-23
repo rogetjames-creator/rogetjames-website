@@ -113,13 +113,8 @@ const SEQUENCE = [
   ["METAL", "FORMS"],
   ["IDEAS", "FORMED"],
   ["",      "INSPIRED"],    // "ART inspired" — no left word, empty clears that slot
+  ["ORIGINAL", "CREATIONS"], // upper-left / lower-right, the default slots
 ];
-
-// Under consideration, shown ONLY on the /hero private preview: one more pair,
-// ORIGINAL upper-left and CREATIONS lower-right, in the default slots. Same
-// alphabet, same slots, same flip and same fly-in as every other pair. The live
-// home page runs SEQUENCE and never sees it.
-const PREVIEW_SEQUENCE = [...SEQUENCE, ["ORIGINAL", "CREATIONS"]];
 
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
 // artboard, honouring the slot's anchor.
@@ -129,8 +124,8 @@ function cellsFor(slot, key) {
   const left = slot.align === "right" ? slot.anchor - w.width : slot.anchor;
   return w.glyphs.map((g) => ({ d: g.d, x: left + g.x }));
 }
-const MEETS_CELLS  = Math.max(...PREVIEW_SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
-const DESIGN_CELLS = Math.max(...PREVIEW_SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
+const MEETS_CELLS  = Math.max(...SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
+const DESIGN_CELLS = Math.max(...SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
 
 const FLIP_EVERY = 6;      // seconds between word changes
 const FLIP_STAGGER = 0.07; // delay between consecutive letters
@@ -148,7 +143,7 @@ const DRIFT = [
   { el: ".hero-eyebrow", x: 0,    y: 12,  delay: 7.3  },
 ];
 
-export default function Hero({ previewWords = false }) {
+export default function Hero() {
   const sectionRef = useRef(null);
   // The live slide list: built-in slides with any /media hero uploads applied.
   // `hero-replace-<key>` uploads swap that slide; `hero` uploads are appended.
@@ -233,7 +228,6 @@ export default function Hero({ previewWords = false }) {
   useEffect(() => {
     if (!heroImageReady) return;
     const at = { i: 0 };
-    const SEQ = previewWords ? PREVIEW_SEQUENCE : SEQUENCE;
 
     const flipSlot = (slot, key) => {
       const host = document.getElementById(slot.id);
@@ -287,7 +281,7 @@ export default function Hero({ previewWords = false }) {
     // pair is not flipped into place: the words clear, then fly in one after the
     // other exactly as they do on first load. ART stays put throughout.
     const flyInOpening = () => {
-      const entry = SEQ[0];
+      const entry = SEQUENCE[0];
       const [l, r] = entry;
       gsap.timeline()
         .to(["#hero-meets", "#hero-design"], { opacity: 0, duration: 0.5, ease: "power2.in" })
@@ -301,9 +295,9 @@ export default function Hero({ previewWords = false }) {
     let interval;
     const start = setTimeout(() => {
       interval = setInterval(() => {
-        at.i = (at.i + 1) % SEQ.length;
+        at.i = (at.i + 1) % SEQUENCE.length;
         if (at.i === 0) { flyInOpening(); return; }
-        const entry = SEQ[at.i];
+        const entry = SEQUENCE[at.i];
         const [l, r] = entry;
         flipSlot(leftSlot(entry), l);
         flipSlot(rightSlot(entry), r);
