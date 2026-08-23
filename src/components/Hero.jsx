@@ -486,7 +486,10 @@ export default function Hero({ proposedWords = false }) {
                        transform={`translate(${c ? c.x : 0} ${rightSlot(SEQUENCE[0]).baseline}) scale(1 1)`}
                        style={c ? undefined : { opacity: 0 }}>
                       <path d={c ? c.d : ""} />
-        
+                    </g>
+                  );
+                })}
+              </g>
               {proposedWords && (
                 <>
                   <text
@@ -505,10 +508,6 @@ export default function Hero({ proposedWords = false }) {
                   </text>
                 </>
               )}
-            </g>
-                  );
-                })}
-              </g>
             </g>
           </svg>
 
