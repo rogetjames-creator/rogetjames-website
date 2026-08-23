@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ROGETjames — "ART meets design" mark, reference copy</title>
+<!--
+  REFERENCE COPY — not part of the site, not served, not built.
+
+  This is the "ART meets design" hero mark exactly as it runs on the live
+  home page: the same symbol path, the same outlined IvyMode letters, the
+  same slots, the same GSAP timings. Nothing here is a re-creation — every
+  value below was lifted straight out of the live source:
+
+    src/components/Hero.jsx        symbol, slots, sequence, all timings
+    src/components/heroWords.js    the outlined letters
+
+  Open it in any browser. It runs standalone (GSAP is inlined) so it can be
+  opened years from now with no build step and no network.
+
+  TO CHANGE THE MARK FOR REAL, edit the two source files above — this copy
+  is for looking at and trying things, and does not affect the website.
+
+  Regenerate after a change:  python3 concepts/hero-mark/build.py
+-->
+<style>
+  html,body{margin:0;height:100%%;background:#141414;display:grid;place-items:center}
+  svg{width:min(70vw,620px);height:auto;overflow:visible}
+  .note{position:fixed;left:16px;bottom:14px;font:11px/1.6 ui-sans-serif,system-ui;
+        color:#8b8b8b;letter-spacing:.14em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<svg id="mark" viewBox="18 150 1098 880" xmlns="http://www.w3.org/2000/svg" aria-label="ART meets design">
+  <g id="shadowed">
+    <path id="hero-art-symbol" d="%(ART)s"/>
+    <g id="hero-meets"></g>
+    <g id="hero-design"></g>
+  </g>
+</svg>
+<div class="note">reference copy — hero mark</div>
+
+<script>%(GSAP)s</script>
+<script>
+/* ---- lifted verbatim from src/components/heroWords.js ---- */
+const WORDS = {
+%(WORDBLOCKS)s
+};
+
+/* ---- lifted verbatim from src/components/Hero.jsx ---- */
+const WORD_FILL     = %(WORD_FILL)s;
+const SYMBOL_FILL   = %(SYMBOL_FILL)s;
+const SYMBOL_FILTER = %(SYMBOL_FILTER)s;
+const CAST_SHADOW   = %(CAST_SHADOW)s;
+
+const POSITIONS = {%(POSITIONS)s
+};
+const SEQUENCE = [%(SEQUENCE)s
+];
+
+const LEFT_ID  = "hero-meets";
+const RIGHT_ID = "hero-design";
+const leftSlot  = (e) => ({ id: LEFT_ID,  ...POSITIONS[e[2] || "aboveR"] });
+const rightSlot = (e) => ({ id: RIGHT_ID, ...POSITIONS[e[3] || "belowT"] });
+
+const FLIP_EVERY       = 6;
+const FLIP_STAGGER     = 0.07;
+const FLIP_DOWN        = 0.16;
+const FLIP_UP          = 0.2;
+const FLIP_START_DELAY = 9.5;
+
+function cellsFor(slot, key) {
+  const w = WORDS[key];
+  if (!w) return [];
+  const left = slot.align === "right" ? slot.anchor - w.width : slot.anchor;
+  return w.glyphs.map((g) => ({ d: g.d, x: left + g.x }));
+}
+const MEETS_CELLS  = Math.max(...SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
+const DESIGN_CELLS = Math.max(...SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
+
+/* build the letter cells, the same markup the React component renders */
+document.getElementById("shadowed").style.filter = CAST_SHADOW;
+const sym = document.getElementById("hero-art-symbol");
+sym.style.fill = SYMBOL_FILL; sym.style.filter = SYMBOL_FILTER; sym.style.opacity = 0;
+for (const [id, n, slotOf, wordAt] of [
+  [LEFT_ID,  MEETS_CELLS,  leftSlot,  0],
+  [RIGHT_ID, DESIGN_CELLS, rightSlot, 1],
+]) {
+  const host = document.getElementById(id);
+  host.style.fill = WORD_FILL; host.style.opacity = 0;
+  const slot = slotOf(SEQUENCE[0]);
+  const cells = cellsFor(slot, SEQUENCE[0][wordAt]);
+  for (let i = 0; i < n; i++) {
+    const c = cells[i];
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "flip-cell");
+    g.dataset.x = c ? c.x : 0;
+    g.setAttribute("transform", `translate(${c ? c.x : 0} ${slot.baseline}) scale(1 1)`);
+    if (!c) g.style.opacity = 0;
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("d", c ? c.d : "");
+    g.appendChild(p); host.appendChild(g);
+  }
+}
+
+/* ---- the flip, verbatim ---- */
+const flipSlot = (slot, key) => {
+  const host = document.getElementById(slot.id);
+  const cells = [...host.querySelectorAll(".flip-cell")];
+  const next = cellsFor(slot, key);
+  cells.forEach((cell, i) => {
+    const path = cell.querySelector("path");
+    const target = next[i];
+    const st = { sy: 1, x: parseFloat(cell.dataset.x || "0") };
+    const write = () => cell.setAttribute(
+      "transform", `translate(${st.x} ${slot.baseline}) scale(1 ${st.sy})`);
+    gsap.timeline({ delay: i * FLIP_STAGGER })
+      .to(st, { sy: 0, duration: FLIP_DOWN, ease: "power2.in", onUpdate: write })
+      .to(cell, { opacity: 0.55, duration: 0.01 }, "<0.14")
+      .add(() => {
+        path.setAttribute("d", target ? target.d : "");
+        if (target) { st.x = target.x; cell.dataset.x = target.x; }
+        write();
+      })
+      .to(st, { sy: target ? 1 : 0, duration: FLIP_UP, ease: "power2.out", onUpdate: write })
+      .to(cell, { opacity: target ? 1 : 0, duration: FLIP_UP * 0.6 }, "<");
+  });
+};
+
+const setSlot = (slot, key) => {
+  const host = document.getElementById(slot.id);
+  const cells = [...host.querySelectorAll(".flip-cell")];
+  const next = cellsFor(slot, key);
+  cells.forEach((cell, i) => {
+    const t = next[i];
+    cell.querySelector("path").setAttribute("d", t ? t.d : "");
+    if (t) cell.dataset.x = t.x;
+    cell.setAttribute("transform", `translate(${t ? t.x : 0} ${slot.baseline}) scale(1 1)`);
+    cell.style.opacity = t ? 1 : 0;
+  });
+};
+
+const flyInOpening = () => {
+  const entry = SEQUENCE[0];
+  const [l, r] = entry;
+  gsap.timeline()
+    .to(["#hero-meets", "#hero-design"], { opacity: 0, duration: 0.5, ease: "power2.in" })
+    .add(() => { setSlot(leftSlot(entry), l); setSlot(rightSlot(entry), r); })
+    .set("#hero-meets",  { x: -150 })
+    .set("#hero-design", { x: 150, y: 90 })
+    .to("#hero-meets",  { opacity: 1, x: 0,       duration: 1.5, ease: "power3.out" })
+    .to("#hero-design", { opacity: 1, x: 0, y: 0, duration: 1.5, ease: "power3.out" });
+};
+
+/* ---- the entrance, verbatim ---- */
+gsap.set("#hero-art-symbol", { opacity: 0 });
+gsap.set("#hero-meets",  { opacity: 0, x: -150 });
+gsap.set("#hero-design", { opacity: 0, x: 150, y: 90 });
+const tl = gsap.timeline();
+tl.to("#hero-art-symbol", { opacity: 1, duration: 4.2, ease: "sine.out" }, 0.6);
+tl.to("#hero-meets",  { opacity: 1, x: 0,       duration: 1.5, ease: "power3.out" }, 3.9);
+tl.to("#hero-design", { opacity: 1, x: 0, y: 0, duration: 1.5, ease: "power3.out" }, 5.4);
+
+const at = { i: 0 };
+setTimeout(() => setInterval(() => {
+  at.i = (at.i + 1) %% SEQUENCE.length;
+  if (at.i === 0) { flyInOpening(); return; }
+  const entry = SEQUENCE[at.i];
+  flipSlot(leftSlot(entry),  entry[0]);
+  flipSlot(rightSlot(entry), entry[1]);
+}, FLIP_EVERY * 1000), FLIP_START_DELAY * 1000);
+</script>
+</body>
+</html>
