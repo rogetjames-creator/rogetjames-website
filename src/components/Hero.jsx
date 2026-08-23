@@ -142,7 +142,11 @@ const DRIFT = [
   { el: ".hero-eyebrow", x: 0,    y: 12,  delay: 7.3  },
 ];
 
-export default function Hero() {
+// `proposedWords` is OFF everywhere except the /hero private preview. It adds
+// the two extra words James is considering for the mark — "original" top left,
+// "Creations" bottom right — set in IvyMode, entering on the same tweens as
+// MEETS and DESIGN. The live home page never passes it, so it is unaffected.
+export default function Hero({ proposedWords = false }) {
   const sectionRef = useRef(null);
   // The live slide list: built-in slides with any /media hero uploads applied.
   // `hero-replace-<key>` uploads swap that slide; `hero` uploads are appended.
@@ -348,6 +352,10 @@ export default function Hero() {
       gsap.set("#hero-art-symbol", { opacity: 0 });
       gsap.set("#hero-meets", { opacity: 0, x: -150 });
       gsap.set("#hero-design", { opacity: 0, x: 150, y: 90 });
+      if (proposedWords) {
+        gsap.set("#hero-word-original",  { opacity: 0, x: -150 });
+        gsap.set("#hero-word-creations", { opacity: 0, x: 150, y: 90 });
+      }
     };
 
     const runDrift = () => {
@@ -365,6 +373,12 @@ export default function Hero() {
       tl.to("#hero-art-symbol", { opacity: 1, duration: 4.2, ease: "sine.out" }, 0.6);
       tl.to("#hero-meets",  { opacity: 1, x: 0,        duration: 1.5, ease: "power3.out" }, 3.9);
       tl.to("#hero-design", { opacity: 1, x: 0, y: 0,  duration: 1.5, ease: "power3.out" }, 5.4);
+      if (proposedWords) {
+        // Same tween as MEETS and DESIGN — "original" arrives from the left
+        // like MEETS, "Creations" from the right like DESIGN.
+        tl.to("#hero-word-original",  { opacity: 1, x: 0,       duration: 1.5, ease: "power3.out" }, 6.6);
+        tl.to("#hero-word-creations", { opacity: 1, x: 0, y: 0, duration: 1.5, ease: "power3.out" }, 7.5);
+      }
     };
 
     const resetDrift = () => {
@@ -472,7 +486,26 @@ export default function Hero() {
                        transform={`translate(${c ? c.x : 0} ${rightSlot(SEQUENCE[0]).baseline}) scale(1 1)`}
                        style={c ? undefined : { opacity: 0 }}>
                       <path d={c ? c.d : ""} />
-                    </g>
+        
+              {proposedWords && (
+                <>
+                  <text
+                    id="hero-word-original"
+                    x="40" y="268"
+                    style={{ fill: WORD_FILL, opacity: 0, fontFamily: "var(--font-ivymode)", fontSize: 96, letterSpacing: "0.02em" }}
+                  >
+                    original
+                  </text>
+                  <text
+                    id="hero-word-creations"
+                    x="1098" y="980" textAnchor="end"
+                    style={{ fill: WORD_FILL, opacity: 0, fontFamily: "var(--font-ivymode)", fontSize: 96, letterSpacing: "0.02em" }}
+                  >
+                    Creations
+                  </text>
+                </>
+              )}
+            </g>
                   );
                 })}
               </g>

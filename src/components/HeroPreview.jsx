@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Hero from "./Hero";
+import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 
 // Private preview of the ORIGINAL "Art meets design" hero (the first hero, with
 // the animated ROJ logo). Reachable only at /hero behind the same admin password
@@ -32,6 +33,9 @@ export default function HeroPreview() {
   };
 
   useEffect(() => {
+    // One-click owner link: ...?preview=roj-open opens it without the password,
+    // same as the city pages.
+    if (ownerPreviewUnlocked()) { setAuthed(true); return; }
     const urlKey = new URLSearchParams(window.location.search).get("key");
     const saved = urlKey || (() => { try { return localStorage.getItem("stats_key"); } catch { return null; } })();
     if (urlKey) window.history.replaceState({}, "", "/hero");
@@ -69,7 +73,7 @@ export default function HeroPreview() {
 
   return (
     <main className="bg-charcoal">
-      <Hero />
+      <Hero proposedWords />
     </main>
   );
 }
