@@ -115,6 +115,12 @@ const SEQUENCE = [
   ["",      "INSPIRED"],    // "ART inspired" — no left word, empty clears that slot
 ];
 
+// Under consideration, shown ONLY on the /hero private preview: one more pair,
+// ORIGINAL upper-left and CREATIONS lower-right, in the default slots. Same
+// alphabet, same slots, same flip and same fly-in as every other pair. The live
+// home page runs SEQUENCE and never sees it.
+const PREVIEW_SEQUENCE = [...SEQUENCE, ["ORIGINAL", "CREATIONS"]];
+
 // Resolve a word to positioned cells: each letter's glyph plus its x on the
 // artboard, honouring the slot's anchor.
 function cellsFor(slot, key) {
@@ -123,8 +129,8 @@ function cellsFor(slot, key) {
   const left = slot.align === "right" ? slot.anchor - w.width : slot.anchor;
   return w.glyphs.map((g) => ({ d: g.d, x: left + g.x }));
 }
-const MEETS_CELLS  = Math.max(...SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
-const DESIGN_CELLS = Math.max(...SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
+const MEETS_CELLS  = Math.max(...PREVIEW_SEQUENCE.map(([l]) => (WORDS[l]?.glyphs.length) || 0));
+const DESIGN_CELLS = Math.max(...PREVIEW_SEQUENCE.map(([, r]) => (WORDS[r]?.glyphs.length) || 0));
 
 const FLIP_EVERY = 6;      // seconds between word changes
 const FLIP_STAGGER = 0.07; // delay between consecutive letters
@@ -142,11 +148,7 @@ const DRIFT = [
   { el: ".hero-eyebrow", x: 0,    y: 12,  delay: 7.3  },
 ];
 
-// `proposedWords` is OFF everywhere except the /hero private preview. It adds
-// the two extra words James is considering for the mark — "original" top left,
-// "Creations" bottom right — set in IvyMode, entering on the same tweens as
-// MEETS and DESIGN. The live home page never passes it, so it is unaffected.
-export default function Hero({ proposedWords = false }) {
+export default function Hero({ previewWords = false }) {
   const sectionRef = useRef(null);
   // The live slide list: built-in slides with any /media hero uploads applied.
   // `hero-replace-<key>` uploads swap that slide; `hero` uploads are appended.
@@ -231,6 +233,7 @@ export default function Hero({ proposedWords = false }) {
   useEffect(() => {
     if (!heroImageReady) return;
     const at = { i: 0 };
+    const SEQ = previewWords ? PREVIEW_SEQUENCE : SEQUENCE;
 
     const flipSlot = (slot, key) => {
       const host = document.getElementById(slot.id);
@@ -284,7 +287,7 @@ export default function Hero({ proposedWords = false }) {
     // pair is not flipped into place: the words clear, then fly in one after the
     // other exactly as they do on first load. ART stays put throughout.
     const flyInOpening = () => {
-      const entry = SEQUENCE[0];
+      const entry = SEQ[0];
       const [l, r] = entry;
       gsap.timeline()
         .to(["#hero-meets", "#hero-design"], { opacity: 0, duration: 0.5, ease: "power2.in" })
@@ -298,9 +301,9 @@ export default function Hero({ proposedWords = false }) {
     let interval;
     const start = setTimeout(() => {
       interval = setInterval(() => {
-        at.i = (at.i + 1) % SEQUENCE.length;
+        at.i = (at.i + 1) % SEQ.length;
         if (at.i === 0) { flyInOpening(); return; }
-        const entry = SEQUENCE[at.i];
+        const entry = SEQ[at.i];
         const [l, r] = entry;
         flipSlot(leftSlot(entry), l);
         flipSlot(rightSlot(entry), r);
@@ -352,10 +355,6 @@ export default function Hero({ proposedWords = false }) {
       gsap.set("#hero-art-symbol", { opacity: 0 });
       gsap.set("#hero-meets", { opacity: 0, x: -150 });
       gsap.set("#hero-design", { opacity: 0, x: 150, y: 90 });
-      if (proposedWords) {
-        gsap.set("#hero-word-original",  { opacity: 0, x: -150 });
-        gsap.set("#hero-word-creations", { opacity: 0, x: 150, y: 90 });
-      }
     };
 
     const runDrift = () => {
@@ -373,12 +372,6 @@ export default function Hero({ proposedWords = false }) {
       tl.to("#hero-art-symbol", { opacity: 1, duration: 4.2, ease: "sine.out" }, 0.6);
       tl.to("#hero-meets",  { opacity: 1, x: 0,        duration: 1.5, ease: "power3.out" }, 3.9);
       tl.to("#hero-design", { opacity: 1, x: 0, y: 0,  duration: 1.5, ease: "power3.out" }, 5.4);
-      if (proposedWords) {
-        // Same tween as MEETS and DESIGN — "original" arrives from the left
-        // like MEETS, "Creations" from the right like DESIGN.
-        tl.to("#hero-word-original",  { opacity: 1, x: 0,       duration: 1.5, ease: "power3.out" }, 6.6);
-        tl.to("#hero-word-creations", { opacity: 1, x: 0, y: 0, duration: 1.5, ease: "power3.out" }, 7.5);
-      }
     };
 
     const resetDrift = () => {
@@ -490,24 +483,6 @@ export default function Hero({ proposedWords = false }) {
                   );
                 })}
               </g>
-              {proposedWords && (
-                <>
-                  <text
-                    id="hero-word-original"
-                    x="40" y="268"
-                    style={{ fill: WORD_FILL, opacity: 0, fontFamily: "var(--font-ivymode)", fontSize: 96, letterSpacing: "0.02em" }}
-                  >
-                    original
-                  </text>
-                  <text
-                    id="hero-word-creations"
-                    x="1098" y="980" textAnchor="end"
-                    style={{ fill: WORD_FILL, opacity: 0, fontFamily: "var(--font-ivymode)", fontSize: 96, letterSpacing: "0.02em" }}
-                  >
-                    Creations
-                  </text>
-                </>
-              )}
             </g>
           </svg>
 
