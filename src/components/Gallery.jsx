@@ -341,14 +341,14 @@ const WALL_ART_SERIES = [
     id: "plume",
     label: "PLUMES",
     items: [
-      { name: "PLUME DECO Black",    img: "/images/plume/plume-deco-black.jpg", priceKey: "PLUME DECO" },
+      { name: "PLUME DECO",          img: "/images/plume/plume-deco-black.jpg" },
       { name: "PLUME DECO",          img: "/images/plume/plume-deco-rust2.jpg" },
-      { name: "PLUME DECO Pink",     img: "/images/plume/plume-deco-pink.jpg", priceKey: "PLUME DECO" },
+      { name: "PLUME DECO",          img: "/images/plume/plume-deco-pink.jpg" },
       { name: "FEATHER",             img: "/images/plume/feather.jpg" },
       { name: "FEATHER — Toivottaa", img: "/images/plume/feather-wish.jpg" },
       { name: "FLOCK O FEATHERS",    img: "/images/plume/flock-o-feathers.jpg", subtitle: "Hyvää · Toivottaa · Sinulle" },
-      { name: "PLUME DECO Rust",     img: "/images/uploads/1783237275228_qn3ggo.jpg", priceKey: "PLUME DECO", _new: true },
-      { name: "PLUME DECO Rust II",  img: "/images/uploads/1783237275228_3bixg9.jpg", priceKey: "PLUME DECO", _new: true },
+      { name: "PLUME DECO",          img: "/images/uploads/1783237275228_qn3ggo.jpg", _new: true },
+      { name: "PLUME DECO",          img: "/images/uploads/1783237275228_3bixg9.jpg", _new: true },
     ],
   },
   // ── JUNGLE COLLECTION ────────────────────
