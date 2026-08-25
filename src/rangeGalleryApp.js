@@ -9,6 +9,7 @@ import { RANGE_CSS } from "./components/rangeGalleryStyles";
 import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "./data/pricing";
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
+import { rangeSlug } from "./utils/rangeSlug";
 
 // The site's catalogues — single source of truth in src/catalogues.js, shared
 // with the nav bar and the client vault so every catalogue UI stays identical.
@@ -16,7 +17,7 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null, noPriceRanges = null, cortenOnly = false }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null, noPriceRanges = null, cortenOnly = false, basePath = null }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
@@ -223,8 +224,34 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   if (!pricing) document.getElementById(rootId).classList.add('no-price');
 
   try{history.scrollRestoration='manual';}catch{/* ignore */}
-  window.scrollTo(0,0);
-  window.addEventListener('load',()=>window.scrollTo(0,0));
+
+  // ---- One address per range ------------------------------------------------
+  // Each range has its own address (/wall-art/birds). Arriving on one opens the
+  // gallery at that range; scrolling from range to range keeps the address in
+  // step, so the address bar always matches what's on screen and any range can
+  // be linked to or shared. `basePath` off = old behaviour, nothing changes.
+  const wantedSlug = (() => {
+    if(!basePath) return null;
+    const p = location.pathname.replace(/\/+$/,'');
+    return p.startsWith(basePath + '/') ? p.slice(basePath.length + 1) : null;
+  })();
+  // True while a visitor who arrived on a range's own address is being settled
+  // onto it — the address must not flick back to the gallery's own meanwhile.
+  let landing = false;
+  const setAddress = (slug) => {
+    if(!basePath || landing) return;
+    const next = slug ? `${basePath}/${slug}` : basePath;
+    if(location.pathname.replace(/\/+$/,'') !== next){
+      try{ history.replaceState(null,'',next + location.search + location.hash); }catch{/* ignore */}
+    }
+  };
+
+  // Landing straight on a range means no jump to the top — that would throw the
+  // visitor back to the intro before they've seen anything.
+  if(!wantedSlug){
+    window.scrollTo(0,0);
+    window.addEventListener('load',()=>window.scrollTo(0,0));
+  }
   const app=document.getElementById('app'), now=document.getElementById('now');
   const nowDefault = `${label} · The ${rangeWord}`;
   const twoTone = txt => txt.split(' ').map((w,i)=>`<span class="${i===0?'w1':'w2'}">${w}</span>`).join(' ');
@@ -633,9 +660,58 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const io=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting){
     const l=e.target.dataset.label, i=e.target.dataset.idx;
     if(l) now.innerHTML=`<b>${String(i).padStart(2,'0')}</b> &nbsp; ${l}`; else now.textContent=nowDefault;
+    setAddress(l ? rangeSlug(l) : null);
   }});},{threshold:.55});
   posterEls.forEach(s=>io.observe(s));
   const introEl=document.querySelector('.intro'); introEl.dataset.label=''; io.observe(introEl);
+
+  // Arriving on a range's own address — open straight on it, no animation.
+  //
+  // The photos land after the page does, so the page keeps growing taller
+  // underneath for a second or two. A single jump would be left behind by that
+  // and the visitor would end up back at the intro, so hold the range in place
+  // until the page stops moving.
+  if(wantedSlug){
+    const target=rangeHandles.find(h=>rangeSlug(h.r.label)===wantedSlug);
+    if(target){
+      if(target.sec._initStage){ target.sec._initStage(); target.sec._initStage=null; }
+      landing=true;
+      // The page scrolls smoothly by default, which would turn this into a
+      // visible several-thousand-pixel glide past every other range. Off while
+      // landing, back on the moment it's done.
+      const rootStyle=document.documentElement.style, prevBehavior=rootStyle.scrollBehavior;
+      rootStyle.scrollBehavior='auto';
+      const land=()=>window.scrollTo(0,target.sec.offsetTop);
+      land();
+      // Re-land whenever the page's height actually changes — that's the only
+      // thing that can leave the visitor stranded, and watching for it directly
+      // is steadier than checking on a timer.
+      const ro=new ResizeObserver(land);
+      const tick=setInterval(land,150);
+      const onVisible=()=>{ if(!document.hidden){ land(); armFinish(); } };
+      const done=()=>{
+        if(!landing) return;
+        landing=false;
+        ro.disconnect();
+        clearInterval(tick);
+        rootStyle.scrollBehavior=prevBehavior;
+        window.removeEventListener('load',land);
+        document.removeEventListener('visibilitychange',onVisible);
+        ['wheel','touchstart','keydown'].forEach(e=>window.removeEventListener(e,done));
+      };
+      // Stop holding five seconds after the page is actually being looked at.
+      // A link opened in a background tab lays itself out only once it's brought
+      // forward, so counting down before then would give up too early.
+      let finishTimer=null;
+      const armFinish=()=>{ if(finishTimer) return; finishTimer=setTimeout(done,5000); };
+      ro.observe(app);
+      window.addEventListener('load',land);
+      document.addEventListener('visibilitychange',onVisible);
+      if(!document.hidden) armFinish();
+      // The visitor's own scroll always wins.
+      ['wheel','touchstart','keydown'].forEach(e=>window.addEventListener(e,done,{passive:true}));
+    }
+  }
 
   // ---- Up Close (Wall Art) --------------------------------------------------
   // Fetch the close-up detail shots (same live sources as the main gallery),

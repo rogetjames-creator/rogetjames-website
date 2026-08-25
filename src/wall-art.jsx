@@ -55,4 +55,5 @@ mountRangeGallery({
   section: "wall-art",
   rangeWord: "Editions",
   upClose: UPCLOSE,
+  basePath: "/wall-art",
 });
