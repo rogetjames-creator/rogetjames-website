@@ -8,11 +8,14 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // Slim vertical rectangles, one per gallery. Hover expands a panel out to reveal
 // its image; click goes to that gallery on the live site. Gallery name runs
 // vertically (bottom→top) in IVY MODE (assembled from the supplied alphabet),
-// light grey, 85% opaque (15% transparent), anchored bottom-LEFT so it stays
+// light grey, 85% opaque (15% transparent), anchored top-LEFT so it stays
 // left when a panel expands. Fixed letter size (STRIP_PX) so every name reads
 // the same size.
 const NAME_COLOR = "rgba(194,194,194,0.85)"; // light grey, 85% opaque
-const STRIP_PX = 12;                          // letter thickness — all names equal
+const STRIP_PX = 18;                          // letter thickness — all names equal
+// Shadow behind the lettering so it holds against a light photo. Two passes:
+// a tight dark core for edge definition, then a wide soft pool for lift.
+const NAME_SHADOW = "drop-shadow(0 1px 2px rgba(0,0,0,0.85)) drop-shadow(0 3px 14px rgba(0,0,0,0.65))";
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
@@ -23,7 +26,7 @@ function IvyWord({ name, className = "" }) {
     <svg
       viewBox={w.viewBox}
       className={className}
-      style={{ width: STRIP_PX, height: "auto", color: NAME_COLOR, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.5))" }}
+      style={{ width: STRIP_PX, height: "auto", color: NAME_COLOR, filter: NAME_SHADOW }}
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
@@ -103,8 +106,9 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                   <div className="absolute inset-0 bg-gradient-to-b from-graphite to-onyx" />
                 )}
 
-                {/* Gallery name — IVY MODE, bottom-LEFT, stays left on expand */}
-                <div className="absolute inset-0 flex items-end justify-start pb-6 pl-4 md:pl-5 pointer-events-none">
+                {/* Gallery name — IVY MODE, top-LEFT, stays left on expand.
+                    Reads bottom→top as before; only its position moved. */}
+                <div className="absolute inset-0 flex items-start justify-start pt-6 pl-4 md:pl-5 pointer-events-none">
                   <IvyWord name={p.name} />
                 </div>
               </a>
