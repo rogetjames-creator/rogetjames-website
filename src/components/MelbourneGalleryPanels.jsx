@@ -51,9 +51,9 @@ const PANELS = [
 
 // The panels are shared by every city page. `city` is the slug used in the
 // /media destination key, so each city gets its own set of pictures.
-// A city can drop a panel it does not want — Melbourne has no Concrete or
-// Concepts panel.
-const HIDDEN_BY_CITY = { melbourne: ["Concrete", "Concepts"] };
+// A city can drop a panel it does not want — Melbourne shows Wall Art,
+// Sculpture, Screens and Bespoke Sculpture only.
+const HIDDEN_BY_CITY = { melbourne: ["Concrete", "Concepts", "Commissions", "Projects"] };
 const panelsFor = (city) =>
   PANELS.filter((p) => !(HIDDEN_BY_CITY[city] || []).includes(p.name));
 
