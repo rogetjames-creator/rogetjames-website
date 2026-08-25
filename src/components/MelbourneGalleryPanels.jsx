@@ -51,20 +51,29 @@ const PANELS = [
 
 // The panels are shared by every city page. `city` is the slug used in the
 // /media destination key, so each city gets its own set of pictures.
-export const CITY_PANEL_NAMES = PANELS.map((p) => p.name);
+// A city can drop a panel it does not want — Melbourne has no Concrete or
+// Concepts panel.
+const HIDDEN_BY_CITY = { melbourne: ["Concrete", "Concepts"] };
+const panelsFor = (city) =>
+  PANELS.filter((p) => !(HIDDEN_BY_CITY[city] || []).includes(p.name));
+
+// Panel names a given city actually shows — /media only offers these as
+// upload destinations, so no photo can be filed to a panel that isn't there.
+export const CITY_PANEL_NAMES_FOR = (city) => panelsFor(city).map((p) => p.name);
 
 export default function MelbourneGalleryPanels({ city = "melbourne" }) {
   const [hover, setHover] = useState(null);
 
   // A photo uploaded to a panel REPLACES that panel's picture — newest wins.
-  const keys = useMemo(() => PANELS.map((p) => cityPanelKey(city, p.name)), [city]);
+  const shown = useMemo(() => panelsFor(city), [city]);
+  const keys = useMemo(() => shown.map((p) => cityPanelKey(city, p.name)), [shown, city]);
   const uploads = useUploadsByKey(keys);
   const panels = useMemo(
-    () => PANELS.map((p) => {
+    () => shown.map((p) => {
       const hits = uploads[cityPanelKey(city, p.name)];
       return hits?.length ? { ...p, img: hits[hits.length - 1].img } : p;
     }),
-    [uploads, city]
+    [uploads, shown, city]
   );
 
   return (

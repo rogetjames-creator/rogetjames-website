@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
 import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
-import { CITY_PANEL_NAMES } from "./MelbourneGalleryPanels";
+import { CITY_PANEL_NAMES_FOR } from "./MelbourneGalleryPanels";
 import { HERO_SLIDES } from "./heroSlides";
 import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey, cityHeroKey } from "../mediaDestinations";
 
@@ -52,7 +52,7 @@ const CITY_PANEL_GROUPS = CITY_PANEL_PAGES.map((c) => ({
   hint: `replaces the hero or a panel picture on the ${c.label} page`,
   items: [
     { key: cityHeroKey(c.slug), label: "Hero image (top of the page)" },
-    ...CITY_PANEL_NAMES.map((n) => ({ key: cityPanelKey(c.slug, n), label: n })),
+    ...CITY_PANEL_NAMES_FOR(c.slug).map((n) => ({ key: cityPanelKey(c.slug, n), label: n })),
   ],
 }));
 
