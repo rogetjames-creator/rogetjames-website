@@ -160,17 +160,23 @@ function compressToDataUrl(file) {
 function DestPicker({ selected, onToggle }) {
   return (
     <div>
+      {/* Choosing only ever ADDS. Re-choosing something already chosen keeps it
+          (never a dead row) — removing is done with the × on its chip below. */}
       <select
         value=""
-        onChange={(e) => { if (e.target.value) onToggle(e.target.value); }}
+        onChange={(e) => { const v = e.target.value; if (v && !selected.includes(v)) onToggle(v); }}
         className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-3 font-detail text-[13px] text-cream outline-none transition-colors cursor-pointer"
       >
-        <option value="" className="bg-jet">+ Choose where these go…</option>
+        <option value="" className="bg-jet">
+          {selected.length ? `Chosen: ${selected.map(labelForKey).join(" + ")} — tap to add another` : "+ Choose where these go…"}
+        </option>
         {DEST_GROUPS.map((g) => (
           <optgroup key={g.group} label={g.group} className="bg-jet">
             {g.items.map((d) => (
-              <option key={d.key} value={d.key} disabled={selected.includes(d.key)} className="bg-jet">
-                {d.label}
+              // Never disabled: a greyed row reads as "tapping doesn't work".
+              // A tick shows what's already chosen instead.
+              <option key={d.key} value={d.key} className="bg-jet">
+                {selected.includes(d.key) ? `✓ ${d.label}` : d.label}
               </option>
             ))}
           </optgroup>
