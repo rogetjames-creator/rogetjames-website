@@ -78,13 +78,29 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
   const [row, setRow] = useState(null);      // { w, h, gap }
   const [shapes, setShapes] = useState({});  // panel name -> width ÷ height
 
+  // Read the row's size. Called as the mouse ENTERS a panel — not from an
+  // effect — so the measurement is always there before it is needed. A resize
+  // observer alone was not enough: its callbacks ride on animation frames, so
+  // in a background or hidden window it may never deliver, and the panels
+  // would then be measured for the first time mid-hover.
+  // A zero reading (hidden tab, collapsed window) is ignored — the last good
+  // measurement is kept instead.
+  const measureRow = () => {
+    const el = rowRef.current;
+    if (!el || !el.clientWidth) return;
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+    setRow((prev) =>
+      prev && prev.w === el.clientWidth && prev.h === el.clientHeight && prev.gap === gap
+        ? prev
+        : { w: el.clientWidth, h: el.clientHeight, gap }
+    );
+  };
+
+  // Keep it current when the window is resized mid-hover.
   useEffect(() => {
     const el = rowRef.current;
     if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => {
-      const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
-      setRow({ w: el.clientWidth, h: el.clientHeight, gap });
-    });
+    const ro = new ResizeObserver(measureRow);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -104,16 +120,22 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
   // The width each panel should be right now, in pixels. Everything shares the
   // row evenly until one is hovered; that one opens to its picture's true width
   // and the others give up the difference between them.
+  //
+  // EVERY state is a pixel width, resting included. That matters: if closing
+  // switched back to letting flex share the row, the panel would snap shut
+  // instead of easing, the edges would jump under the cursor, and the panel now
+  // under it would open — on and on. Same model throughout, so it always eases.
   const n = panels.length;
   const spare = row ? Math.max(0, row.w - row.gap * (n - 1)) : 0;
-  const openShape = hover !== null ? shapes[panels[hover]?.name] : null;
-  const openWidth = openShape
-    ? Math.min(row.h * openShape, spare - MIN_COLLAPSED_PX * (n - 1))
-    : null;
   const widthOf = (i) => {
-    if (!spare) return null;                       // not measured yet
-    if (hover === null || !openWidth) return null; // even, or picture not sized yet
-    return i === hover ? openWidth : (spare - openWidth) / (n - 1);
+    if (!spare) return null;             // first paint, before the row is measured
+    if (hover === null) return spare / n; // resting — an even share each
+    const cap = spare - MIN_COLLAPSED_PX * (n - 1);
+    const shape = shapes[panels[hover]?.name];
+    // The picture's own width at panel height. Until it has loaded, open on a
+    // plain 5-to-1 share so the panel still moves.
+    const open = Math.min(shape ? row.h * shape : (spare * 5) / (n + 4), cap);
+    return i === hover ? open : (spare - open) / (n - 1);
   };
 
   return (
@@ -127,14 +149,18 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
               <a
                 key={p.name}
                 href={p.href}
-                onMouseEnter={() => setHover(i)}
+                onMouseEnter={() => { measureRow(); setHover(i); }}
                 onMouseLeave={() => setHover(null)}
                 className="group relative overflow-hidden rounded-lg cursor-pointer block"
                 style={
                   // Measured: each panel is given an exact width. Before that
                   // (and if a picture never loads) fall back to sharing the row.
                   px !== null
-                    ? { flex: `0 0 ${px}px`, transition: OPEN_EASE }
+                    // Shrink is allowed (0 1) so a fraction of a pixel of
+                    // rounding is absorbed rather than overflowing the row —
+                    // an overflow would raise a scrollbar, which resizes the
+                    // row, which recomputes the widths, on and on.
+                    ? { flex: `0 1 ${px}px`, transition: OPEN_EASE }
                     : { flexGrow: active ? 5 : 1, flexBasis: 0, transition: "flex-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1)" }
                 }
               >
