@@ -24,8 +24,8 @@ const MELBOURNE = {
   intro: [
     "Laser-cut wall art, privacy screens and sculpture in Corten steel and powdercoated aluminium — catalogue designs and bespoke commissions, cut in Victoria for Melbourne homes, gardens and commercial projects.",
     "ROGETjames is an Australian design and laser art practice. Every design is drawn in-house by James Roget: a catalogue of signature works in standard or custom sizes, and one-off commissions shaped to the space they are made for.",
-    "Melbourne work is cut in Victoria. Production runs in three states — VIC, WA and QLD — so pieces are made close to where they install. Drawings, material specification and finish are fixed by the practice and identical across all three.",
-    "Wall art in standard or custom sizes. Privacy and garden screens. Sculpture, from garden pieces to public and civic commissions. Corten steel or powdercoated aluminium. Three to six weeks from approved drawing, delivered Australia-wide.",
+    "Eighteen years of laser-cut architectural work — Mirvac Melbourne, Fiona Stanley Hospital, Centennial Park, Cottesloe Hotel with MJA Architects. Victorian work is cut in Victoria.",
+    "Corten steel or powdercoated aluminium, any Dulux or Interpon colour. Catalogue designs at standard or custom size, or an original drawn for the project. In-situ renders before fabrication, concept through to install. Three to six weeks.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
   projects: [
