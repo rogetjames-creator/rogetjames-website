@@ -23,7 +23,7 @@ const MELBOURNE = {
   // subhead; intro[1..] = the block below the eyebrow.
   intro: [
     "ROGETjames is an Australian design studio and laser art company that crafts custom metal wall art, privacy screens, and sculptures for residential and commercial spaces.",
-    "Led by Western Australian artist James Roget. Crafted from durable Corten steel and powder-coated aluminium.",
+    "Led by artist James Roget. Crafted from durable Corten steel and powder-coated aluminium.",
     "Laser Cut Wall Art in standard or custom sizes. Privacy Screens and Metal Garden Screens across various design collections. Laser Cut Sculpture and Bespoke Metal Sculpture Commissions for public, civic, and private projects.",
     "Operates from Perth, the Gold Coast, and Melbourne, with delivery available across Australia and internationally. Production lead time typically takes 3 to 6 weeks.",
   ],
