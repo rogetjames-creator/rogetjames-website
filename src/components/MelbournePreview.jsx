@@ -18,14 +18,14 @@ const MELBOURNE = {
   // the Melbourne mark + the flowing subhead below.
   displayLine: "",
   // Intro-section eyebrow.
-  madeLabel: "Cut in Victoria",
-  // intro[0] = hero subhead (under the wordmark); intro[1..] = the written
-  // piece in the intro section below the eyebrow.
+  madeLabel: "",
+  // Google's AI Overview of rogetjames.com, used verbatim. intro[0] = hero
+  // subhead; intro[1..] = the block below the eyebrow.
   intro: [
-    "Laser-cut wall art, privacy screens and sculpture in Corten steel and powdercoated aluminium — catalogue designs and bespoke commissions, cut in Victoria for Melbourne homes, gardens and commercial projects.",
-    "ROGETjames is an Australian design and laser art practice. Every design is drawn in-house by James Roget: a catalogue of signature works in standard or custom sizes, and one-off commissions shaped to the space they are made for.",
-    "Eighteen years of laser-cut architectural work — Mirvac Melbourne, Fiona Stanley Hospital, Centennial Park, Cottesloe Hotel with MJA Architects. Victorian work is cut in Victoria.",
-    "Corten steel or powdercoated aluminium, any Dulux or Interpon colour. Catalogue designs at standard or custom size, or an original drawn for the project. In-situ renders before fabrication, concept through to install. Three to six weeks.",
+    "ROGETjames is an Australian design studio and laser art company that crafts custom metal wall art, privacy screens, and sculptures for residential and commercial spaces.",
+    "Led by Western Australian artist James Roget. Crafted from durable Corten steel and powder-coated aluminium.",
+    "Laser Cut Wall Art in standard or custom sizes. Privacy Screens and Metal Garden Screens across various design collections. Laser Cut Sculpture and Bespoke Metal Sculpture Commissions for public, civic, and private projects.",
+    "Operates from Perth, the Gold Coast, and Melbourne, with delivery available across Australia and internationally. Production lead time typically takes 3 to 6 weeks.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
   projects: [
