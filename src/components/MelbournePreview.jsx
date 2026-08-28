@@ -24,8 +24,8 @@ const MELBOURNE = {
   intro: [
     "Laser-cut wall art, privacy screens and sculpture in Corten steel and powdercoated aluminium — catalogue designs and bespoke commissions, cut in Victoria for Melbourne homes, gardens and commercial projects.",
     "ROGETjames is an Australian design and laser art practice. Every design is drawn in-house by James Roget: a catalogue of signature works in standard or custom sizes, and one-off commissions shaped to the space they are made for.",
-    "Work destined for Melbourne is cut in Victoria. Producing in the state a piece is going to keeps the handling short, the freight simple and the timing honest — the same reason production runs across three states rather than one. The drawings, the material specification and the finish are set by the practice, so a piece is identical wherever it is made.",
-    "The range runs from a single wall work, through garden and privacy screens, to sculpture and architectural-scale commissions for architects, designers, developers, and public and civic projects. Most pieces take three to six weeks to produce, delivered anywhere in Australia.",
+    "Melbourne work is cut in Victoria. Production runs in three states — VIC, WA and QLD — so pieces are made close to where they install. Drawings, material specification and finish are fixed by the practice and identical across all three.",
+    "Wall art in standard or custom sizes. Privacy and garden screens. Sculpture, from garden pieces to public and civic commissions. Corten steel or powdercoated aluminium. Three to six weeks from approved drawing, delivered Australia-wide.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
   projects: [
