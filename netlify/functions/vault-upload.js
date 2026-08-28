@@ -109,6 +109,7 @@ export default async function handler(req) {
       if (typeof body.contact === "string") record.contact = body.contact;
       if (Array.isArray(body.links)) record.links = body.links.filter((l) => l && l.label && l.url).map((l) => ({ label: String(l.label), url: String(l.url) }));
       if (typeof body.name === "string" && body.name.trim()) record.name = body.name.trim();
+      if (typeof body.password === "string" && body.password.trim().length >= 4) record.password = body.password.trim();
       await store.setJSON(email, record);
       return json({ ok: true });
     }
