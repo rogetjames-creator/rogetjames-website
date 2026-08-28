@@ -4,5 +4,7 @@
 // file to `createRoot(...).render(<SculptureWall />)` (SculptureWall.jsx is untouched).
 import "./index.css";
 import { mountSculptureRange } from "./sculptureRange";
+import { trackGalleryOpen } from "./utils/trackGallery";
 
+trackGalleryOpen("Sculpture");
 mountSculptureRange();

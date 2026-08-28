@@ -17,7 +17,7 @@ export default async function handler(req, context) {
   let body;
   try { body = await req.json(); } catch { return json({ ok: true }, 200); }
 
-  const { type, item, series, postcode, state, isWA, material, size, price } = body;
+  const { type, item, series, postcode, state, isWA, material, size, price, gallery } = body;
   if (!type) return json({ ok: true }, 200);
 
   // Email James the moment a visitor enters a postcode to price a design — the
@@ -34,7 +34,8 @@ export default async function handler(req, context) {
   try {
     const record = {
       createdTime: new Date().toISOString(),
-      Type: type === "postcode" ? "Postcode Entered" : type === "add_to_quote" ? "Added to Quote" : "Viewed Pricing",
+      Type: type === "postcode" ? "Postcode Entered" : type === "add_to_quote" ? "Added to Quote" : type === "gallery" ? "Gallery Opened" : "Viewed Pricing",
+      ...(gallery && { Gallery: gallery }),
       ...(item && { Item: item }),
       ...(series && { Series: series }),
       ...(postcode && { Postcode: postcode }),

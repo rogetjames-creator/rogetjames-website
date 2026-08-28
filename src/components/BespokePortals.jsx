@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
+import { trackGalleryOpen } from "../utils/trackGallery";
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
@@ -131,6 +132,9 @@ export function CommissionsSection() {
     [concreteImages]
   );
 
+  // Opening one of these popups is a gallery view — count it for /stats.
+  const openAndCount = (setter, name) => () => { trackGalleryOpen(name); setter(true); };
+
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
@@ -202,23 +206,23 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={() => setSculptureOpen(true)} />
-        <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setReelsOpen(true)      : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setProjectsOpen(true)   : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={() => setConceptsOpen(true)} />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setProjectsOpen, "Projects")   : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
         {concreteImages.length > 0 && (
-          <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={() => setConcreteOpen(true)} />
+          <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
         )}
       </div>
 
       {/* Desktop — 4 portals in a row (Screens removed) */}
       <div className="bg-matt-black relative hidden md:flex items-center justify-center gap-24 py-10">
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setProjectsOpen(true)   : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   onOpen={() => setSculptureOpen(true)} />
-        <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? () => setReelsOpen(true)      : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    onOpen={() => setConceptsOpen(true)} />
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setProjectsOpen, "Projects")   : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
         {concreteImages.length > 0 && (
-          <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={() => setConcreteOpen(true)} />
+          <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
         )}
       </div>
 

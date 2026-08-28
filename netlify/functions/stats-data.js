@@ -54,6 +54,7 @@ export default async function handler(req, context) {
     if (f.Region) { summary.byRegion[f.Region] = (summary.byRegion[f.Region] || 0) + 1; if (when) noteLast(summary.lastByRegion, f.Region, when); }
     if (f.Item) { summary.byItem[f.Item] = (summary.byItem[f.Item] || 0) + 1; if (when) noteLast(summary.lastByItem, f.Item, when); }
     if (f.Postcode) { summary.byPostcode[f.Postcode] = (summary.byPostcode[f.Postcode] || 0) + 1; if (when) noteLast(summary.lastByPostcode, f.Postcode, when); }
+    if (f.Gallery) { summary.byGallery[f.Gallery] = (summary.byGallery[f.Gallery] || 0) + 1; if (when) noteLast(summary.lastByGallery, f.Gallery, when); }
   }
 
   // Q & Ai conversations, stored by chat-transcript.js.
@@ -74,7 +75,7 @@ export default async function handler(req, context) {
 }
 
 function emptySummary() {
-  return { total: 0, byType: {}, byRegion: {}, byItem: {}, byPostcode: {}, lastByType: {}, lastByRegion: {}, lastByItem: {}, lastByPostcode: {} };
+  return { total: 0, byType: {}, byRegion: {}, byItem: {}, byPostcode: {}, byGallery: {}, lastByType: {}, lastByRegion: {}, lastByItem: {}, lastByPostcode: {}, lastByGallery: {} };
 }
 
 // At most 10 login attempts per IP per 10-minute window, counted in Blobs so

@@ -3,6 +3,7 @@
 import "./index.css";
 import { mountRangeGallery } from "./rangeGalleryApp";
 import { RANGE_DATA } from "./data/rangeData";
+import { trackGalleryOpen } from "./utils/trackGallery";
 
 // Up Close detail shots — always part of the Wall Art gallery: pinned at the end
 // of each series' range and gathered into their own "UP CLOSE" range. Fetched
@@ -45,6 +46,8 @@ const UPCLOSE = {
 // button for that range. The detail panel still opens (image + name), ready
 // for the written piece James will add later.
 const NO_PRICE_RANGES = ["CUSTOM"];
+
+trackGalleryOpen("Wall Art");
 
 mountRangeGallery({
   rootId: "wall-art-root",
