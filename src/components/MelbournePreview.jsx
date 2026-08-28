@@ -4,27 +4,28 @@ import MelbourneWordmark from "./MelbourneWordmark";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 
 // ── Melbourne page data ───────────────────────────────────────
-// PLACEHOLDER content + images — a working template. James replaces
-// the copy, project titles/suburbs and images with real Melbourne
-// detail. Keep the wording genuinely distinct from other city pages.
+// Copy written fresh (Aug 2026) — deliberately shares nothing with the
+// earlier Melbourne wording or with the other city pages. It states what
+// the practice makes and that Victorian work is cut in Victoria; it never
+// places James himself anywhere, and never implies a studio to visit.
 const MELBOURNE = {
   name: "Melbourne",
   region: "VIC",
   // Hero wordmark in the supplied Ethnocentric font (SVG), replacing the
   // italic Playfair word. Colour/size are set on the wrapper in CityPage.
   heroMark: <MelbourneWordmark className="w-full h-auto" />,
-  // Optional bold line under the big italic "Melbourne." — left empty so the
-  // hero reads: "Melbourne." + the flowing subhead below.
+  // Optional bold line under the wordmark — left empty so the hero reads:
+  // the Melbourne mark + the flowing subhead below.
   displayLine: "",
-  // Intro-section eyebrow — "Made in Melbourne" (works are now fabricated locally).
-  madeLabel: "Made in Melbourne",
-  // intro[0] = hero subhead (under the wordmark); intro[1..] = the spiel shown
-  // in the intro section below the "Made in Melbourne" eyebrow.
+  // Intro-section eyebrow.
+  madeLabel: "Cut in Victoria",
+  // intro[0] = hero subhead (under the wordmark); intro[1..] = the written
+  // piece in the intro section below the eyebrow.
   intro: [
-    "Original laser-cut wall art, sculpture & architectural features — curated catalogues and bespoke works, crafted in Melbourne for Architects, Designers and discerning clients.",
-    "Melbourne represents an important chapter in James Roget's design journey. It was here that his early work in architectural features evolved alongside an original collection of artistic products, exhibited through a number of Melbourne's leading designer retailers. This formative period established the design philosophy that continues to define his work today—where art, architecture and landscape exist as a seamless expression of one another.",
-    "Relocating to Perth marked the next stage, with the establishment of Q Design Architectural Features and the creation of an extensive body of architectural artworks, sculptural forms and bespoke commissions for residential, commercial and public spaces throughout Australia.",
-    "As appreciation for James' work continued to grow in Victoria, fabrication naturally returned to Melbourne. Today, selected works are produced locally to the same exacting standards, preserving the integrity of the original design while providing Victorian collectors, architects and designers with locally fabricated pieces backed by more than three decades of creative practice.",
+    "Laser-cut wall art, privacy screens and sculpture in Corten steel and powdercoated aluminium — catalogue designs and bespoke commissions, cut in Victoria for Melbourne homes, gardens and commercial projects.",
+    "ROGETjames is an Australian design and laser art practice. Every design is drawn in-house by James Roget: a catalogue of signature works in standard or custom sizes, and one-off commissions shaped to the space they are made for.",
+    "Work destined for Melbourne is cut in Victoria. Producing in the state a piece is going to keeps the handling short, the freight simple and the timing honest — the same reason production runs across three states rather than one. The drawings, the material specification and the finish are set by the practice, so a piece is identical wherever it is made.",
+    "The range runs from a single wall work, through garden and privacy screens, to sculpture and architectural-scale commissions for architects, designers, developers, and public and civic projects. Most pieces take three to six weeks to produce, delivered anywhere in Australia.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
   projects: [
