@@ -1,18 +1,32 @@
 import { useState, useEffect } from "react";
 
-function CountTable({ title, data }) {
+// "12 Aug 2026" — the day something last happened, in Perth time.
+function shortDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("en-AU", { timeZone: "Australia/Perth", day: "numeric", month: "short", year: "numeric" });
+}
+
+function CountTable({ title, data, last }) {
   const entries = Object.entries(data || {}).sort((a, b) => b[1] - a[1]);
   if (!entries.length) return null;
   return (
     <div className="bg-white/8 border border-white/18 rounded-2xl p-6 mb-6">
       <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-4">{title}</p>
-      <div className="space-y-2">
-        {entries.map(([k, v]) => (
-          <div key={k} className="flex items-center justify-between">
-            <span className="font-detail text-sm text-cream/80">{k}</span>
-            <span className="font-heading text-sm font-semibold text-cream">{v}</span>
-          </div>
-        ))}
+      <div className="space-y-2.5">
+        {entries.map(([k, v]) => {
+          const when = shortDate((last || {})[k]);
+          return (
+            <div key={k} className="flex items-baseline justify-between gap-4">
+              <span className="font-detail text-sm text-cream/80">{k}</span>
+              <span className="flex items-baseline gap-3 shrink-0">
+                {when && <span className="font-detail text-[10px] text-cream/35 whitespace-nowrap">{when}</span>}
+                <span className="font-heading text-sm font-semibold text-cream">{v}</span>
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -208,10 +222,10 @@ export default function StatsPage() {
 
         <UpCloseUploader secret={secret} />
 
-        <CountTable title="Activity" data={summary.byType} />
-        <CountTable title="WA vs Interstate" data={summary.byRegion} />
-        <CountTable title="Items viewed / quoted" data={summary.byItem} />
-        <CountTable title="Postcodes" data={summary.byPostcode} />
+        <CountTable title="Activity" data={summary.byType} last={summary.lastByType} />
+        <CountTable title="WA vs Interstate" data={summary.byRegion} last={summary.lastByRegion} />
+        <CountTable title="Items viewed / quoted" data={summary.byItem} last={summary.lastByItem} />
+        <CountTable title="Postcodes" data={summary.byPostcode} last={summary.lastByPostcode} />
 
         <div className="bg-white/8 border border-white/18 rounded-2xl p-6">
           <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.2em] mb-4">Recent events</p>

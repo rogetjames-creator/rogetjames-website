@@ -43,12 +43,17 @@ export default async function handler(req, context) {
   records.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
   const summary = emptySummary();
+  // Records are sorted newest-first, so the first time a name is seen is also
+  // the most recent time it happened — that timestamp drives the "last seen"
+  // date shown beside each row on /stats.
+  const noteLast = (bucket, key, when) => { if (!bucket[key]) bucket[key] = when; };
   for (const f of records) {
     summary.total += 1;
-    if (f.Type) summary.byType[f.Type] = (summary.byType[f.Type] || 0) + 1;
-    if (f.Region) summary.byRegion[f.Region] = (summary.byRegion[f.Region] || 0) + 1;
-    if (f.Item) summary.byItem[f.Item] = (summary.byItem[f.Item] || 0) + 1;
-    if (f.Postcode) summary.byPostcode[f.Postcode] = (summary.byPostcode[f.Postcode] || 0) + 1;
+    const when = f.createdTime || null;
+    if (f.Type) { summary.byType[f.Type] = (summary.byType[f.Type] || 0) + 1; if (when) noteLast(summary.lastByType, f.Type, when); }
+    if (f.Region) { summary.byRegion[f.Region] = (summary.byRegion[f.Region] || 0) + 1; if (when) noteLast(summary.lastByRegion, f.Region, when); }
+    if (f.Item) { summary.byItem[f.Item] = (summary.byItem[f.Item] || 0) + 1; if (when) noteLast(summary.lastByItem, f.Item, when); }
+    if (f.Postcode) { summary.byPostcode[f.Postcode] = (summary.byPostcode[f.Postcode] || 0) + 1; if (when) noteLast(summary.lastByPostcode, f.Postcode, when); }
   }
 
   // Q & Ai conversations, stored by chat-transcript.js.
@@ -69,7 +74,7 @@ export default async function handler(req, context) {
 }
 
 function emptySummary() {
-  return { total: 0, byType: {}, byRegion: {}, byItem: {}, byPostcode: {} };
+  return { total: 0, byType: {}, byRegion: {}, byItem: {}, byPostcode: {}, lastByType: {}, lastByRegion: {}, lastByItem: {}, lastByPostcode: {} };
 }
 
 // At most 10 login attempts per IP per 10-minute window, counted in Blobs so
