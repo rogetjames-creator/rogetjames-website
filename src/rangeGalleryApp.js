@@ -431,20 +431,23 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     }
   }
 
-  // Screens preview: a second pill row lists EVERY design title, sitting directly
-  // under the range pills. Click a design pill to jump to its range and load that
-  // design in the stage. Off for Wall Art/Sculpture.
+  // A second pill row lists EVERY design title, sitting directly under the range
+  // pills. Click a design pill and that design opens in the popup on its own —
+  // its photos, its name and the range it belongs to — so you always know where
+  // you are, and closing puts you back exactly where you were.
   if(designPills){
     const dpWrap=document.getElementById('designPills');
     if(dpWrap){
       rangeHandles.forEach((handle)=>{
         handle.r.designs.forEach((des,di)=>{
           if(des._upclose) return;
+          if(!des.n) return;   // untitled pieces (Displays) get no pill
           const b=document.createElement('button'); b.type='button'; b.className='dpill'; b.textContent=des.n;
           b.addEventListener('click',()=>{
-            handle.sec.scrollIntoView({behavior:'smooth',block:'start'});
-            handle.show(di,0);
             dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
+            // Keep the range behind the popup in step, so closing lands on it.
+            handle.show(di,0);
+            openDetail(handle.ri,di,0);
           });
           dpWrap.appendChild(b);
         });

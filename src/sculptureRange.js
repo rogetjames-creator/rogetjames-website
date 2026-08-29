@@ -64,7 +64,7 @@ function injectSculptureUploads(data, uploads) {
 }
 
 function mount(data) {
-  mountRangeGallery({ rootId: "sculpture-root", data, label: "Sculpture", noun: "sculpture", section: "sculpture", noPriceRanges: NO_PRICE_LABELS, cortenOnly: true, basePath: "/sculpture" });
+  mountRangeGallery({ rootId: "sculpture-root", data, label: "Sculpture", noun: "sculpture", section: "sculpture", noPriceRanges: NO_PRICE_LABELS, cortenOnly: true, designPills: true, basePath: "/sculpture" });
 }
 
 export function mountSculptureRange() {

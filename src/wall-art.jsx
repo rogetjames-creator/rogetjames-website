@@ -57,6 +57,8 @@ mountRangeGallery({
   noun: "wall art",
   section: "wall-art",
   rangeWord: "Editions",
+  // "Designs" pill under the Editions row — unfolds every design title.
+  designPills: true,
   upClose: UPCLOSE,
   basePath: "/wall-art",
 });
