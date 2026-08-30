@@ -46,8 +46,8 @@ const SEARCH_INDEX = [
   { name: "LUMIER",              category: "Screens & Gates", section: "#collection", tab: "wall-art", img: `${CDN}/65df5eb8-8965-49e7-a31c-9fdd5db80da9_rw_1200.jpg` },
   { name: "XAVIER",              category: "Screens & Gates", section: "#collection", tab: "wall-art", img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg` },
 
-  { name: "Geometric Series",    category: "Wall Art", section: "#collection", tab: "wall-art", img: `${CDN}/1fcdb08d-cdb7-4792-8883-01100fee426d_rw_1200.jpg` },
-  { name: "VUELTA",              category: "Geometric Series", section: "#collection", tab: "wall-art", img: `${CDN}/1fcdb08d-cdb7-4792-8883-01100fee426d_rw_1200.jpg` },
+  { name: "Geometric Series",    category: "Wall Art", section: "#collection", tab: "wall-art", img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
+  { name: "VUELTA",              category: "Geometric Series", section: "#collection", tab: "wall-art", img: `${CDN}/c9cc882b-cd1b-4ea9-964a-3b0cddd3cb65_rw_1200.jpg` },
   { name: "ASLYIAM",             category: "Geometric Series", section: "#collection", tab: "wall-art", img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
   { name: "WATTLE",              category: "Geometric Series", section: "#collection", tab: "wall-art", img: `${CDN}/4f9d07e7-a1ba-4215-b4ed-86dee879d606_rw_600.jpg` },
   { name: "VAYA",                category: "Geometric Series", section: "#collection", tab: "wall-art", img: `${CDN}/2bcd6fe0-699f-4525-b006-5063523f80f3_rw_1200.jpg` },
