@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
+import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 
 const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
@@ -147,9 +148,14 @@ export default function SearchModal({ open, onClose }) {
         ...SCULPTURE_ITEMS.filter((it) => it && it.name && it.img).map((it) => (
           { name: it.name, category: "Sculpture", section: "#bespoke", tab: "sculpture", img: it.img }
         )),
-        ...CONCEPTS_ITEMS.filter((it) => it && it.name && it.img).map((it) => (
-          { name: it.name, category: "Concepts", section: "#bespoke", tab: "concepts", img: it.img }
-        )),
+        // Concepts is under construction — its works stay out of search for
+        // everyone but James (?preview=roj-open), the same as Projects and
+        // Commissions.
+        ...(ownerPreviewUnlocked()
+          ? CONCEPTS_ITEMS.filter((it) => it && it.name && it.img).map((it) => (
+            { name: it.name, category: "Concepts", section: "#bespoke", tab: "concepts", img: it.img }
+          ))
+          : []),
       ];
       setBespokeIndex(entries);
     }).catch(() => { /* search still works over the static index */ });
@@ -209,8 +215,9 @@ export default function SearchModal({ open, onClose }) {
 
     // Take the visitor to the actual work, not just the section. Bespoke works
     // open their gallery modal; collection works switch the gallery to the right
-    // tab. (Projects stays out — it's the under-construction bespoke category.)
-    const BESPOKE_MODAL_CATS = ["screens", "sculpture", "concepts"];
+    // tab. (Projects, Commissions and Concepts stay out — they are the
+    // under-construction bespoke categories.)
+    const BESPOKE_MODAL_CATS = ownerPreviewUnlocked() ? ["screens", "sculpture", "concepts"] : ["screens", "sculpture"];
     const GALLERY_TABS = ["wall-art", "sculpture"];
     if (item.section === "#bespoke" && BESPOKE_MODAL_CATS.includes(item.tab)) {
       window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: item.tab }));

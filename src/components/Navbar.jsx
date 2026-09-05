@@ -10,8 +10,8 @@ const CatPageViewer = lazy(() => import("./CatPageViewer"));
 const ClientPreview = lazy(() => import("./ClientPreview"));
 
 // Bespoke portals locked as "under construction" in production.
-// Sculpture and Concepts are public; Screens stays open.
-const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions"] : [];
+// Sculpture is public; Screens stays open.
+const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions", "concepts"] : [];
 
 // SVG icons for social
 function InstagramIcon() {

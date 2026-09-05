@@ -37,6 +37,16 @@ const NAV_COLS = [
       { label: "Links", href: "#discover-portals", event: "open-discover-portal-links" },
     ],
   },
+  {
+    title: "Locations",
+    links: [
+      { label: "Perth", href: "/perth" },
+      { label: "Melbourne", href: "/melbourne" },
+      { label: "Sydney", href: "/sydney" },
+      { label: "Adelaide", href: "/adelaide" },
+      { label: "Gold Coast", href: "/gold-coast" },
+    ],
+  },
 ];
 
 function scrollTo(href) {
@@ -47,8 +57,8 @@ function scrollTo(href) {
 
 // Bespoke categories locked as "under construction" in production — their
 // footer links only scroll to the section, never open a locked gallery.
-// Sculpture and Concepts are public.
-const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions"] : [];
+// Sculpture is public.
+const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions", "concepts"] : [];
 
 function handleLink(link) {
   // Real path (e.g. the Wall Art / Sculpture galleries at /wall-art) —

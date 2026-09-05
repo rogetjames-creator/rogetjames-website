@@ -105,8 +105,8 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
-// Private owner preview. Sculpture and Concepts are open to the public; the
-// remaining Bespoke portals (Projects, Commissions) are locked ("Under
+// Private owner preview. Sculpture is open to the public; the remaining
+// Bespoke portals (Projects, Commissions, Concepts) are locked ("Under
 // Construction"). James unlocks those on the live site by visiting once with
 // ?preview=roj-open — that saves a flag in his browser so they stay open on
 // every later visit. ?preview=off re-locks. Nobody else ever sees them.
@@ -144,8 +144,8 @@ export function CommissionsSection() {
       const cat = e.detail;
       if (cat === "screens")   { window.location.assign("/screens"); return; }
       if (cat === "sculpture") setSculptureOpen(true);
-      if (cat === "projects")  setProjectsOpen(true);
-      if (cat === "concepts")  setConceptsOpen(true);
+      if (cat === "projects")  { if (IS_DEV) setProjectsOpen(true); }
+      if (cat === "concepts")  { if (IS_DEV) setConceptsOpen(true); }
     };
     window.addEventListener("open-bespoke-category", handler);
     return () => window.removeEventListener("open-bespoke-category", handler);
@@ -171,8 +171,8 @@ export function CommissionsSection() {
   }, []);
 
   // Deep-link from other pages (e.g. the Melbourne page's gallery panels):
-  // ?open=<cat> opens that gallery directly. Public: screens / sculpture /
-  // concepts. Owner-only: projects / commissions (still under construction),
+  // ?open=<cat> opens that gallery directly. Public: screens / sculpture.
+  // Owner-only: projects / commissions / concepts (still under construction),
   // matching the portal locks.
   useEffect(() => {
     const which = new URLSearchParams(window.location.search).get("open");
@@ -181,7 +181,7 @@ export function CommissionsSection() {
     const opener = {
       screens:     () => { window.location.assign("/screens"); },
       sculpture:   () => setSculptureOpen(true),
-      concepts:    () => setConceptsOpen(true),
+      concepts:    () => { if (IS_DEV) setConceptsOpen(true); },
       projects:    () => { if (IS_DEV) setProjectsOpen(true); },
       commissions: () => { if (IS_DEV) setReelsOpen(true); },
     }[which];
@@ -208,7 +208,7 @@ export function CommissionsSection() {
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
         <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
         <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setProjectsOpen, "Projects")   : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
         {concreteImages.length > 0 && (
           <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
         )}
@@ -219,7 +219,7 @@ export function CommissionsSection() {
         <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setProjectsOpen, "Projects")   : undefined} />
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
         <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
         {concreteImages.length > 0 && (
           <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
         )}
