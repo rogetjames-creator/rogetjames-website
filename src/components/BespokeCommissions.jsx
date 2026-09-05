@@ -1066,7 +1066,6 @@ const CONCEPTS_ROWS = [
     name: "COTTESLOE RESIDENCE",
     items: [
       { name: "Cottesloe Residence", img: `${CDN}/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg` },
-      { name: "Cottesloe Residence", img: `${CDN}/d8d96ede-c60e-4b48-991b-b80f157db3a5_rw_1920.jpg` },
     ],
   },
 ];
