@@ -11,6 +11,7 @@ const PERTH = {
   // Heading face — Ivy Mode Regular.
   // Sizes give the same cap height as the MELBOURNE mark (cap ratio 0.728).
   heroTypeClass: "font-ivymode font-normal text-[34.3px] md:text-[58.0px] lg:text-[71.2px]",
+  heroStretch: 1.12,   // slight horizontal stretch
   displayLine: "",
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — designed and made in Perth for Architects, Designers and discerning clients across Western Australia.",
