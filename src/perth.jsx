@@ -8,9 +8,9 @@ import "./index.css";
 const PERTH = {
   name: "Perth",
   region: "WA",
-  // Heading face — Aviano Serif, from James's PERTH.svg.
-  // Sizes give the same cap height as the MELBOURNE mark.
-  heroTypeClass: "font-aviano font-normal text-[33.1px] md:text-[56.1px] lg:text-[68.8px]",
+  // Heading face — Ivy Mode Regular.
+  // Sizes give the same cap height as the MELBOURNE mark (cap ratio 0.728).
+  heroTypeClass: "font-ivymode font-normal text-[34.3px] md:text-[58.0px] lg:text-[71.2px]",
   displayLine: "",
   intro: [
     "Original laser-cut wall art, sculpture & architectural features — designed and made in Perth for Architects, Designers and discerning clients across Western Australia.",
