@@ -20,6 +20,8 @@ const PAGES = [
   { url: "/", file: "index.html" },
   { url: "/wall-art.html", file: "wall-art.html" },
   { url: "/sculpture.html", file: "sculpture.html" },
+  { url: "/screens.html", file: "screens.html" },
+  { url: "/bespoke-sculpture.html", file: "bespoke-sculpture.html" },
 ];
 
 const MIME_TYPES = {

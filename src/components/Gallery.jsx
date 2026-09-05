@@ -5,6 +5,7 @@ import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { altForSrc } from "../utils/imgAlt";
 import { checkWA, getState, STATE_NAMES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, PIECE_SIZES } from "../data/pricing";
 
 // Lazy — these three are only used inside the homepage's #collection portal
@@ -226,7 +227,7 @@ function ReelsPortal({ onOpen }) {
             opacity: editionsVisible ? 1 : 0,
             transition: "opacity 2s ease",
           }}>
-            <img src="/images/reels/editions.jpg" alt="" className="w-full h-full object-cover" />
+            <img src="/images/reels/editions.jpg" alt="ROGETjames Editions — original laser cut metal wall art" className="w-full h-full object-cover" />
           </div>
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: "linear-gradient(180deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.18) 32%, transparent 55%)",
@@ -1355,7 +1356,7 @@ function ScreensStrip() {
           <img
             key={i}
             src={src}
-            alt=""
+            alt={altForSrc(src)}
             className="h-full w-auto object-cover rounded"
             style={{ aspectRatio: "4/3", flexShrink: 0 }}
           />
@@ -3290,7 +3291,7 @@ export default function Gallery() {
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={src} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3304,7 +3305,7 @@ export default function Gallery() {
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={src} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3336,7 +3337,7 @@ export default function Gallery() {
             <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/wall-art"); }}>
-                  <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={src} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>

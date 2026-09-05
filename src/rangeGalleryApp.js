@@ -10,6 +10,7 @@ import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState,
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
 import { rangeSlug } from "./utils/rangeSlug";
+import { altForPiece, altForSrc } from "./utils/imgAlt";
 
 // The site's catalogues — single source of truth in src/catalogues.js, shared
 // with the nav bar and the client vault so every catalogue UI stays identical.
@@ -23,6 +24,9 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
+  // Photo descriptions for Google — see src/utils/imgAlt.js. Nothing visible.
+  const ALT_KIND = noun === "sculpture" ? "sculpture" : "wall";
+  const altOf = (des, r, gi) => altForPiece(des.n, r && r.label, ALT_KIND, data.imgs[gi]);
   // Reserve one extra slot for the standalone "UP CLOSE" range (Wall Art only).
   const TOTAL = RANGES.length + (upClose ? 1 : 0);
   const DESIGN_TOTAL = RANGES.reduce((s, r) => s + ((r.designs ? r.designs.length : 0) || r.count || 0), 0);
@@ -298,7 +302,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         if(full.complete && full.naturalWidth){ stImg.src=IMGS[gi]; stImg.style.opacity=1; alignCap(); }
       } else {
         stImg.style.opacity=0;
-        requestAnimationFrame(()=>{ stImg.src=IMGS[gi]; stImg.onload=()=>{ stImg.style.opacity=1; alignCap(); }; });
+        requestAnimationFrame(()=>{ stImg.src=IMGS[gi]; stImg.alt=altOf(des,r,gi); stImg.onload=()=>{ stImg.style.opacity=1; alignCap(); }; });
       }
       const extra=des.imgs.length>1?` &middot; ${vv+1}/${des.imgs.length}`:'';
       dn.innerHTML=`<b>${des.n}</b>${extra}`;
@@ -312,7 +316,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     function addThumb(dd,vv,extraCls){
       const t=document.createElement('div');
       t.className='thumb'+(vv>0?' var':'')+(extraCls?(' '+extraCls):''); t.dataset.d=dd; t.dataset.v=vv; t.title=r.designs[dd].n;
-      const im=document.createElement('img'); im.loading='lazy'; im.decoding='async'; im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=r.designs[dd].n; t.appendChild(im);
+      const im=document.createElement('img'); im.loading='lazy'; im.decoding='async'; im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=altOf(r.designs[dd],r,r.designs[dd].imgs[vv]); t.appendChild(im);
       t.addEventListener('mouseenter',()=>show(dd,vv));
       t.addEventListener('click',()=>show(dd,vv));
       tw.appendChild(t);
@@ -484,7 +488,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     // never showing an empty gap when there are only a few images.
     const minHalf=Math.max(covers.length, Math.ceil((window.innerWidth*1.4)/TILE)+1);
     let half=[]; while(half.length<minHalf) half=half.concat(covers);
-    half.concat(half).forEach(src=>{const el=document.createElement('div');el.className='tile';const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt='';el.appendChild(im);strip.appendChild(el);});
+    half.concat(half).forEach(src=>{const el=document.createElement('div');el.className='tile';const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=altForSrc(src);el.appendChild(im);strip.appendChild(el);});
     // Constant scroll speed (~80px/s) regardless of tile count — so it never crawls.
     strip.style.animationDuration=Math.max(24,Math.round((half.length*TILE)/80))+'s';
   }
@@ -518,7 +522,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const pcLocked = ()=> !!(postcodeInfo && postcodeInfo.postcode);
   const matId = ()=> /corten/i.test(selFinish||'') ? 'corten' : 'aluminium';
   const regionOf = (info)=> STATE_NAMES[info.state] || info.state || 'Australia';
-  function setOvImg(des,vv){ ovImg.src=IMGS[des.imgs[vv]]; curImg=THUMBS[des.imgs[vv]]; ovThumbs.querySelectorAll('.sh-th').forEach((t,j)=>t.classList.toggle('active',j===vv)); }
+  function setOvImg(des,vv,r){ ovImg.src=IMGS[des.imgs[vv]]; ovImg.alt=altForPiece(des.n, (r&&r.label)||curRange, ALT_KIND, data.imgs[des.imgs[vv]]); curImg=THUMBS[des.imgs[vv]]; ovThumbs.querySelectorAll('.sh-th').forEach((t,j)=>t.classList.toggle('active',j===vv)); }
   function renderPrices(){
     if(!pcLocked() || !selFinish){ pout.style.display='none'; return; }
     const isWA=postcodeInfo.isWA, mid=matId();
@@ -562,8 +566,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     ovRange.textContent=RANGES[ri].label; ovName.textContent=des.n;
     ovSub.textContent=des.imgs.length>1?`${des.imgs.length} images`:`Laser-cut ${noun}`;
     ovThumbs.innerHTML='';
-    des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt='';t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
-    setOvImg(des,vv||0);
+    des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt=altOf(des,RANGES[ri],gi);t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
+    setOvImg(des,vv||0,RANGES[ri]);
     curDes=des; curRange=RANGES[ri].label;
     // NEVER invent a size. A design with no measurements on record shows no
     // sizes at all — the old fallback filled in a generic 600x400/900x600/
@@ -616,7 +620,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     quote.forEach((it,i)=>{
       const row=document.createElement('div'); row.className='qrow';
       const meta=[it.series, it.material?.label, it.size?`${it.size.label} — ${it.size.dims}`:''].filter(Boolean).join(' &middot; ');
-      row.innerHTML=`<img src="${it.img}" alt=""><div class="qmeta"><div class="qn">${it.name}</div><div class="qd">${meta}</div></div><button class="qx" aria-label="Remove">&#10005;</button>`;
+      row.innerHTML=`<img src="${it.img}" alt="${it.name}"><div class="qmeta"><div class="qn">${it.name}</div><div class="qd">${meta}</div></div><button class="qx" aria-label="Remove">&#10005;</button>`;
       row.querySelector('.qx').addEventListener('click',()=>{ quote.splice(i,1); saveBasket(quote); updateQpill(); renderQuote(); });
       qlist.appendChild(row);
     });

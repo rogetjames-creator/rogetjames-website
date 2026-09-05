@@ -85,6 +85,17 @@
   to = "/#collection"
   status = 301
 
+# Two more old-site addresses Google still lists, which were returning 404s.
+[[redirects]]
+  from = "/fencing"
+  to = "/screens"
+  status = 301
+
+[[redirects]]
+  from = "/homebase-display"
+  to = "/#bespoke"
+  status = 301
+
 [[redirects]]
   from = "/api/chat"
   to = "/.netlify/functions/chat"
