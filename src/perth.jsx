@@ -19,6 +19,14 @@ const PERTH = {
     "We work face-to-face with Perth homeowners, builders and designers from first concept through to installation, and deliver Australia-wide from the workshop.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
+  // Hero pictures — they cross-fade, first to last and back round. Slide 1 is
+  // whatever is uploaded to Perth's hero spot at /media (the Home Base
+  // shopfront); slide 2 is the Corten teardrops in the fountain, the same
+  // photo the Melbourne page opens with.
+  heroSlides: [
+    "/images/hero/hero-marakesh-wide.jpg",
+    "/images/uploads/1787360688694_qcw4sh.jpg",
+  ],
   projects: [
     { src: "/images/hero/hero-gren-edge-1.jpg",        title: "GREN Edge — Wall Feature", detail: "Placeholder — replace with real Perth project" },
     { src: "/images/hero/hero-creeping-fig-grande.jpg", title: "Creeping Fig — Screen",    detail: "Placeholder — replace with real Perth project" },

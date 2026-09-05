@@ -50,7 +50,7 @@ function SectionTitle({ children }) {
 
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero, heroMark, heroTypeClass, heroStretch,
+    name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch,
     suburbs = [], services = [],
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
@@ -66,7 +66,17 @@ export default function CityPage({ city }) {
     return hits?.length ? hits[hits.length - 1].img : hero;
   }, [heroUploads, citySlug, hero]);
 
+  // The hero can hold more than one picture. Set `heroSlides: [...]` on the
+  // city and they cross-fade, first to last and back round. A photo uploaded
+  // to this city's hero spot still wins and takes the first slide.
+  const slides = useMemo(() => {
+    const list = heroSlides?.length ? [...heroSlides] : [hero];
+    list[0] = heroSrc;
+    return list.filter(Boolean);
+  }, [heroSlides, hero, heroSrc]);
+
   const rootRef = useRef(null);
+  const slidesRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -86,6 +96,27 @@ export default function CityPage({ city }) {
     return () => ctx.revert();
   }, []);
 
+  // Hero cross-fade — same timing and easing as the client-vault slideshow.
+  // One picture is held, then softly swapped for the next, round and round.
+  useEffect(() => {
+    if (slides.length < 2) return undefined;
+    const HOLD = 6;      // seconds each picture stays put
+    const FADE = 1.6;    // seconds the fade itself takes
+    let cleanup;
+    const ctx = gsap.context(() => {
+      const imgs = gsap.utils.toArray(".city-hero-slide");
+      imgs.forEach((el, i) => gsap.set(el, { opacity: i === 0 ? 1 : 0 }));
+      let at = 0;
+      const timer = setInterval(() => {
+        at = (at + 1) % imgs.length;
+        gsap.to(imgs, { opacity: 0, duration: FADE, ease: "power2.inOut" });
+        gsap.to(imgs[at], { opacity: 1, duration: FADE, ease: "power2.inOut" });
+      }, HOLD * 1000);
+      cleanup = () => clearInterval(timer);
+    }, rootRef);
+    return () => { cleanup?.(); ctx.revert(); };
+  }, [slides]);
+
   return (
     <div ref={rootRef} className="min-h-screen bg-matt-black text-cream font-body">
 
@@ -103,12 +134,19 @@ export default function CityPage({ city }) {
 
       {/* ── Hero — object-contain, mirrors the homepage hero ── */}
       <section className="relative h-dvh min-h-[560px] w-full overflow-hidden flex items-end bg-charcoal">
-        <img
-          src={netlifyImg(heroSrc, { w: 1600, q: 82 })}
-          alt={`ROGETjames laser cut work in ${name}`}
-          className="absolute inset-0 w-full h-full object-contain"
-          fetchpriority="high"
-        />
+        <div ref={slidesRef} className="absolute inset-0">
+          {slides.map((src, i) => (
+            <img
+              key={`${src}-${i}`}
+              src={netlifyImg(src, { w: 1600, q: 82 })}
+              alt={`ROGETjames laser cut work in ${name}`}
+              className="city-hero-slide absolute inset-0 w-full h-full object-contain"
+              style={{ opacity: i === 0 ? 1 : 0 }}
+              fetchpriority={i === 0 ? "high" : undefined}
+              loading={i === 0 ? undefined : "lazy"}
+            />
+          ))}
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-matt-black pointer-events-none" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-16 md:pb-24">
