@@ -10,13 +10,20 @@
 //
 //   BANKSIA Oldmanis — laser cut metal wall art, Australian Natives range, by ROGETjames
 //   PLUME DECO — laser cut metal wall art in powder-coated black, Plumes range, by ROGETjames
-//   MARAKESH — laser cut metal garden sculpture, The Classics range, by ROGETjames
+//   MARAKESH — laser cut Corten steel garden sculpture, The Classics range, by ROGETjames
 
 import { RANGE_DATA } from "../data/rangeData";
 import { SCULPTURE_DATA } from "../data/sculptureData";
 
 const WALL_ART = "laser cut metal wall art";
 const SCULPTURE = "laser cut metal garden sculpture";
+
+// Ranges made in one material, confirmed by James. The material replaces the
+// generic "metal" and beats any colour word in the file name.
+const RANGE_MATERIAL = {
+  "The Classics": "Corten steel",
+  "Bon Bons & Genie Bottles": "Corten steel",
+};
 
 // Colour read from the file name. These are powder-coat colours, not metals —
 // never write "in bronze" or "in copper", which would claim a material James
@@ -50,8 +57,12 @@ function tidyRange(label = "") {
 /** The description for one piece. `kind` is "wall" (default) or "sculpture". */
 export function altForPiece(name, rangeLabel, kind = "wall", src = "") {
   if (!name) return "ROGETjames";
-  const what = kind === "sculpture" ? SCULPTURE : WALL_ART;
-  const finish = finishOf(src);
+  const material = RANGE_MATERIAL[rangeLabel];
+  const generic = kind === "sculpture" ? SCULPTURE : WALL_ART;
+  // A known material replaces the generic "metal" — and no colour is added,
+  // because the material is the truthful thing to say about the piece.
+  const what = material ? generic.replace("metal", material) : generic;
+  const finish = material ? "" : finishOf(src);
   const range = tidyRange(rangeLabel || "");
   const parts = [`${name} — ${what}${finish ? ` in ${finish}` : ""}`];
   if (range) parts.push(`${range} range`);
