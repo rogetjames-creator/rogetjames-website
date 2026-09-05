@@ -25,10 +25,22 @@ const RANGE_MATERIAL = {
   "Bon Bons & Genie Bottles": "Corten steel",
 };
 
+// A file name saying "rust" means the piece is Corten steel — James's rule.
+// Treated as a material, not a colour: it replaces the generic "metal" and no
+// colour is added on top.
+const FILE_MATERIAL = [
+  [/\brust\d*\b|\bcorten\b/i, "Corten steel"],
+];
+
+function materialFromFile(src = "") {
+  const file = String(src).split("/").pop() || "";
+  for (const [re, word] of FILE_MATERIAL) if (re.test(file)) return word;
+  return "";
+}
+
 // Colour read from the file name. These are powder-coat colours, not metals —
 // never write "in bronze" or "in copper", which would claim a material James
-// does not make. Rust/Corten is deliberately absent: a rust-coloured file name
-// could be Corten steel or a rust powder-coat, and guessing gets it wrong.
+// does not make.
 const FINISHES = [
   [/\bbronze\b/i, "powder-coated bronze"],
   [/\bcopper\b/i, "powder-coated copper"],
@@ -57,7 +69,7 @@ function tidyRange(label = "") {
 /** The description for one piece. `kind` is "wall" (default) or "sculpture". */
 export function altForPiece(name, rangeLabel, kind = "wall", src = "") {
   if (!name) return "ROGETjames";
-  const material = RANGE_MATERIAL[rangeLabel];
+  const material = RANGE_MATERIAL[rangeLabel] || materialFromFile(src);
   const generic = kind === "sculpture" ? SCULPTURE : WALL_ART;
   // A known material replaces the generic "metal" — and no colour is added,
   // because the material is the truthful thing to say about the piece.
