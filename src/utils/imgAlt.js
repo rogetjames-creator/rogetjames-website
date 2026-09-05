@@ -9,7 +9,7 @@
 // rangeData.js / sculptureData.js, so it stays true as the ranges change.
 //
 //   BANKSIA Oldmanis — laser cut metal wall art, Australian Natives range, by ROGETjames
-//   PLUME DECO — laser cut metal wall art in black, Plumes range, by ROGETjames
+//   PLUME DECO — laser cut metal wall art in powder-coated black, Plumes range, by ROGETjames
 //   MARAKESH — laser cut metal garden sculpture, The Classics range, by ROGETjames
 
 import { RANGE_DATA } from "../data/rangeData";
@@ -18,17 +18,17 @@ import { SCULPTURE_DATA } from "../data/sculptureData";
 const WALL_ART = "laser cut metal wall art";
 const SCULPTURE = "laser cut metal garden sculpture";
 
-// Finish read from the file name — only words that actually appear there, so
-// nothing is invented about a piece.
+// Colour read from the file name. These are powder-coat colours, not metals —
+// never write "in bronze" or "in copper", which would claim a material James
+// does not make. Rust/Corten is deliberately absent: a rust-coloured file name
+// could be Corten steel or a rust powder-coat, and guessing gets it wrong.
 const FINISHES = [
-  [/\brust\d*\b|\bsabi\b/i, "rust patina"],
-  [/\bcorten\b/i, "Corten steel"],
-  [/\bbronze\b/i, "bronze"],
-  [/\bcopper\b/i, "copper"],
-  [/\bblack\b/i, "black"],
-  [/\bwhite\b/i, "white"],
-  [/\bpink\b/i, "pink"],
-  [/\bgold\b/i, "gold"],
+  [/\bbronze\b/i, "powder-coated bronze"],
+  [/\bcopper\b/i, "powder-coated copper"],
+  [/\bblack\b/i, "powder-coated black"],
+  [/\bwhite\b/i, "powder-coated white"],
+  [/\bpink\b/i, "powder-coated pink"],
+  [/\bgold\b/i, "powder-coated gold"],
 ];
 
 function finishOf(src = "") {
@@ -37,7 +37,6 @@ function finishOf(src = "") {
   return "";
 }
 
-// Title-case a range label that is stored shouting ("AUSTRALIAN NATIVES").
 function tidyRange(label = "") {
   if (!/[a-z]/.test(label)) {
     return label
