@@ -8,24 +8,34 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // Slim vertical rectangles, one per gallery. Hover expands a panel out to reveal
 // its image; click goes to that gallery on the live site. Gallery name runs
 // vertically (bottom→top) in IVY MODE (assembled from the supplied alphabet),
-// light grey, 85% opaque (15% transparent), on a dark pill anchored top-LEFT
-// so it stays left when a panel expands. Fixed letter size (STRIP_PX) so every
-// name reads the same size.
-const NAME_COLOR = "rgba(194,194,194,0.85)"; // light grey, 85% opaque
+// centred down the panel and anchored LEFT so it stays put as a panel opens
+// wide. Fixed letter size (STRIP_PX) so every name reads the same size.
+const NAME_COLOR = "rgba(194,194,194,0.85)";  // light grey at rest
+const NAME_COLOR_ON = "rgba(255,252,246,1)";  // lit, while the panel is open
 const STRIP_PX = 18;                          // letter thickness — all names equal
-// The lettering sits on a dark pill (below) rather than carrying a shadow —
-// a shadow was not enough to hold it against a pale photo.
+// No pill: the lettering carries a drop shadow so it holds against a pale
+// photo, and lights up — brighter, with a soft glow — on the open panel.
+const NAME_SHADOW =
+  "drop-shadow(0 0 2px rgba(0,0,0,0.95)) drop-shadow(0 2px 5px rgba(0,0,0,0.85)) drop-shadow(0 0 14px rgba(0,0,0,0.6))";
+const NAME_SHADOW_ON =
+  "drop-shadow(0 0 2px rgba(0,0,0,0.85)) drop-shadow(0 2px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(255,246,228,0.55)) drop-shadow(0 0 26px rgba(255,238,205,0.35))";
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
-function IvyWord({ name, className = "" }) {
+function IvyWord({ name, className = "", lit = false }) {
   const w = IVY_WORDS[name.toUpperCase()];
   if (!w) return null;
   return (
     <svg
       viewBox={w.viewBox}
       className={className}
-      style={{ width: STRIP_PX, height: "auto", color: NAME_COLOR }}
+      style={{
+        width: STRIP_PX,
+        height: "auto",
+        color: lit ? NAME_COLOR_ON : NAME_COLOR,
+        filter: lit ? NAME_SHADOW_ON : NAME_SHADOW,
+        transition: "color 0.55s ease, filter 0.55s ease",
+      }}
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
@@ -181,13 +191,12 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                   <div className="absolute inset-0 bg-gradient-to-b from-graphite to-onyx" />
                 )}
 
-                {/* Gallery name — IVY MODE, top-LEFT, stays left on expand.
-                    It sits on a dark pill that runs out of the TOP of the panel:
-                    square across the top, fully rounded at the bottom. */}
-                <div className="absolute top-0 left-4 md:left-5 pointer-events-none">
-                  <div className="flex justify-center rounded-b-full bg-black/55 backdrop-blur-[2px] px-3 pt-6 pb-5">
-                    <IvyWord name={p.name} />
-                  </div>
+                {/* Gallery name — IVY MODE, centred down the panel and held
+                    LEFT so it stays put as the panel opens. No pill: a drop
+                    shadow holds it against the photo, and it lights up while
+                    the panel is open. */}
+                <div className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <IvyWord name={p.name} lit={active} />
                 </div>
               </a>
             );
