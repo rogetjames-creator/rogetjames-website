@@ -12,9 +12,9 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // wide. Fixed letter size (STRIP_PX) so every name reads the same size.
 const NAME_COLOR = "#FFFFFF";                 // bright white, always
 const STRIP_PX = 18;                          // letter thickness — all names equal
-// No pill and no shadow. What marks the open panel is a soft dark band that
-// slides in from the LEFT behind the name as the panel opens, so the white
-// lettering lifts off the photo. Same easing and timing as the panel itself.
+// No pill and no shadow. What marks the open panel is a hard-edged dark band
+// that slides in from the LEFT behind the name as the panel opens, so the
+// white lettering lifts off the photo. Same easing and timing as the panel.
 const SCRIM_PX = 104;                         // how far the band reaches in
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
@@ -192,10 +192,9 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                   className="absolute inset-y-0 left-0 pointer-events-none"
                   style={{
                     width: SCRIM_PX,
-                    background: "linear-gradient(to right, rgba(0,0,0,0.72), rgba(0,0,0,0.5) 55%, rgba(0,0,0,0))",
+                    background: "rgba(0,0,0,0.62)",
                     transform: active ? "translateX(0)" : `translateX(-${SCRIM_PX}px)`,
-                    opacity: active ? 1 : 0,
-                    transition: "transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease",
+                    transition: "transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
                   }}
                 />
 
