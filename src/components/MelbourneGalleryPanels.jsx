@@ -10,15 +10,16 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // vertically (bottom→top) in IVY MODE (assembled from the supplied alphabet),
 // centred down the panel and anchored LEFT so it stays put as a panel opens
 // wide. Fixed letter size (STRIP_PX) so every name reads the same size.
-const NAME_COLOR = "#FFFFFF";                 // bright white at rest
-const NAME_COLOR_ON = "#D4A75C";              // clay gold, lifted brighter, while open
+const NAME_COLOR = "#FFFFFF";                 // bright white, always
 const STRIP_PX = 18;                          // letter thickness — all names equal
-// No pill and no shadow — plain lettering. The open panel's name turns clay
-// gold, which is the only thing that marks it.
+// No pill and no shadow. What marks the open panel is a soft dark band that
+// slides in from the LEFT behind the name as the panel opens, so the white
+// lettering lifts off the photo. Same easing and timing as the panel itself.
+const SCRIM_PX = 104;                         // how far the band reaches in
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
-function IvyWord({ name, className = "", lit = false }) {
+function IvyWord({ name, className = "" }) {
   const w = IVY_WORDS[name.toUpperCase()];
   if (!w) return null;
   return (
@@ -28,8 +29,7 @@ function IvyWord({ name, className = "", lit = false }) {
       style={{
         width: STRIP_PX,
         height: "auto",
-        color: lit ? NAME_COLOR_ON : NAME_COLOR,
-        transition: "color 0.55s ease",
+        color: NAME_COLOR,
       }}
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
@@ -186,12 +186,24 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                   <div className="absolute inset-0 bg-gradient-to-b from-graphite to-onyx" />
                 )}
 
+                {/* The band behind the name — slides in from the left as the
+                    panel opens, and back out as it closes. */}
+                <div
+                  className="absolute inset-y-0 left-0 pointer-events-none"
+                  style={{
+                    width: SCRIM_PX,
+                    background: "linear-gradient(to right, rgba(0,0,0,0.72), rgba(0,0,0,0.5) 55%, rgba(0,0,0,0))",
+                    transform: active ? "translateX(0)" : `translateX(-${SCRIM_PX}px)`,
+                    opacity: active ? 1 : 0,
+                    transition: "transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease",
+                  }}
+                />
+
                 {/* Gallery name — IVY MODE, centred down the panel and held
-                    LEFT so it stays put as the panel opens. No pill: a drop
-                    shadow holds it against the photo, and it lights up while
-                    the panel is open. */}
+                    LEFT so it stays put as the panel opens. Sits in front of
+                    the band. */}
                 <div className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <IvyWord name={p.name} lit={active} />
+                  <IvyWord name={p.name} />
                 </div>
               </a>
             );
