@@ -83,6 +83,7 @@ export default defineConfig({
         'screens': resolve(__dirname, 'screens.html'),
         'screens-range': resolve(__dirname, 'screens-range.html'),
         'bespoke-sculpture': resolve(__dirname, 'bespoke-sculpture.html'),
+        'projects': resolve(__dirname, 'projects.html'),
       },
       output: {
         manualChunks: {
