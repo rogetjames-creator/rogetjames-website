@@ -191,7 +191,6 @@ const COMMISSIONS = {
         { name: "Centennial Park — Final Concept", img: `${CDN}/437cf607-c821-4331-8874-d47ecda32ca3_rw_1920.jpg` },
         { name: "Centennial Park — Concepts",  img: `${CDN}/8b43f372-e1ca-4882-b630-bc0d985db4a7_rw_1200.jpg` },
         { name: "Cottesloe Residence",         img: `${CDN}/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg` },
-        { name: "Cottesloe Residence",         img: `${CDN}/d8d96ede-c60e-4b48-991b-b80f157db3a5_rw_1920.jpg` },
       ],
     },
   ],
