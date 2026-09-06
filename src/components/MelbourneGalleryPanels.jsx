@@ -15,7 +15,7 @@ const STRIP_PX = 18;                          // letter thickness — all names 
 // No pill and no shadow. What marks the open panel is a hard-edged dark band
 // that slides in from the LEFT behind the name as the panel opens, so the
 // white lettering lifts off the photo. Same easing and timing as the panel.
-const SCRIM_PX = 104;                         // how far the band reaches in
+const SCRIM_PX = 128;                         // how far the band reaches in
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
@@ -192,7 +192,7 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                   className="absolute inset-y-0 left-0 pointer-events-none"
                   style={{
                     width: SCRIM_PX,
-                    background: "rgba(0,0,0,0.62)",
+                    background: "rgba(0,0,0,0.5)",
                     transform: active ? "translateX(0)" : `translateX(-${SCRIM_PX}px)`,
                     transition: "transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)",
                   }}
@@ -201,7 +201,7 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                 {/* Gallery name — IVY MODE, centred down the panel and held
                     LEFT so it stays put as the panel opens. Sits in front of
                     the band. */}
-                <div className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <div className="absolute left-6 md:left-7 top-1/2 -translate-y-1/2 pointer-events-none">
                   <IvyWord name={p.name} />
                 </div>
               </a>
