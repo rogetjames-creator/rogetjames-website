@@ -11,7 +11,7 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // centred down the panel and anchored LEFT so it stays put as a panel opens
 // wide. Fixed letter size (STRIP_PX) so every name reads the same size.
 const NAME_COLOR = "rgba(194,194,194,0.85)";  // light grey at rest
-const NAME_COLOR_ON = "#9E7134";              // clay gold, while the panel is open
+const NAME_COLOR_ON = "#D4A75C";              // clay gold, lifted brighter, while open
 const STRIP_PX = 18;                          // letter thickness — all names equal
 // No pill and no shadow — plain lettering. The open panel's name turns clay
 // gold, which is the only thing that marks it.
