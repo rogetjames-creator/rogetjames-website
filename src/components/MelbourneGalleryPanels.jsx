@@ -11,14 +11,10 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // centred down the panel and anchored LEFT so it stays put as a panel opens
 // wide. Fixed letter size (STRIP_PX) so every name reads the same size.
 const NAME_COLOR = "rgba(194,194,194,0.85)";  // light grey at rest
-const NAME_COLOR_ON = "rgba(255,252,246,1)";  // lit, while the panel is open
+const NAME_COLOR_ON = "#9E7134";              // clay gold, while the panel is open
 const STRIP_PX = 18;                          // letter thickness — all names equal
-// No pill: the lettering carries a drop shadow so it holds against a pale
-// photo, and lights up — brighter, with a soft glow — on the open panel.
-const NAME_SHADOW =
-  "drop-shadow(0 0 2px rgba(0,0,0,0.95)) drop-shadow(0 2px 5px rgba(0,0,0,0.85)) drop-shadow(0 0 14px rgba(0,0,0,0.6))";
-const NAME_SHADOW_ON =
-  "drop-shadow(0 0 2px rgba(0,0,0,0.85)) drop-shadow(0 2px 6px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(255,246,228,0.55)) drop-shadow(0 0 26px rgba(255,238,205,0.35))";
+// No pill and no shadow — plain lettering. The open panel's name turns clay
+// gold, which is the only thing that marks it.
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
@@ -33,8 +29,7 @@ function IvyWord({ name, className = "", lit = false }) {
         width: STRIP_PX,
         height: "auto",
         color: lit ? NAME_COLOR_ON : NAME_COLOR,
-        filter: lit ? NAME_SHADOW_ON : NAME_SHADOW,
-        transition: "color 0.55s ease, filter 0.55s ease",
+        transition: "color 0.55s ease",
       }}
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
