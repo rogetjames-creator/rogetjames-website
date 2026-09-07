@@ -29,7 +29,7 @@
 // Sits under the piece's own spiel, on every page.
 export const BRAND_SPIEL = [
   "Step into the captivating world of ROGETjames iconic free form Wall Art Editions, where inspiration is found in wild landscapes and cultural motifs from home and afar.",
-  "The ROGETjames collection of wall art, garden sculptures and decorative screens effortlessly infuses drama and designer style into any setting, whether it's your indoor oasis or your outdoor retreat. Each piece is scrupulously crafted and made using the most durable and sustainable materials available, ensuring they stay stunning through sun, rain, or shine. Discover your unique outdoor style with ROGETjames, and let your outdoor space tell its own story.",
+  "The ROGETjames collection of wall art, garden sculptures and decorative screens effortlessly infuses drama and designer style into any setting, whether it's your indoor oasis or your outdoor retreat. Each piece is scrupulously crafted and made using the most durable and sustainable materials available, ensuring they stay stunning through sun, rain, or shine.",
 ];
 
 // The spiel for a whole subject — used by every piece it covers.
