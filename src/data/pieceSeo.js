@@ -21,6 +21,49 @@
 //  sentence, so a new piece is never left without a page.
 // ─────────────────────────────────────────────────────────────────────────
 
+
+// ─────────────────────────────────────────────────────────────────────────
+//  JAMES'S OWN WORDS — used on every piece page. Do not reword these.
+// ─────────────────────────────────────────────────────────────────────────
+
+// Sits under the piece's own spiel, on every page.
+export const BRAND_SPIEL = [
+  "Step into the captivating world of ROGETjames iconic free form Wall Art Editions, where inspiration is found in wild landscapes and cultural motifs from home and afar.",
+  "The ROGETjames collection of wall art, garden sculptures and decorative screens effortlessly infuses drama and designer style into any setting, whether it's your indoor oasis or your outdoor retreat. Each piece is scrupulously crafted and made here in Perth, using the most durable and sustainable materials available, ensuring they stay stunning through sun, rain, or shine. Discover your unique outdoor style with ROGETjames, and let your outdoor space tell its own story.",
+];
+
+// The spiel for a whole subject — used by every piece it covers.
+export const SUBJECT_SPIEL = {
+  banksia:
+    "Redefine your outdoor space with our stunning Banksia outdoor wall art piece, beautifully crafted to showcase the allure of Australia's native flora. Designed in-house, this chic, highly detailed interpretation of the iconic banksia flower adds a touch of natural beauty to your outdoor area, bringing the vibrant essence of the outdoors right to your doorstep.",
+};
+
+// "Material and colour options" — opens on the page.
+export const MATERIAL_COPY = [
+  {
+    id: "corten",
+    heading: "Corten steel",
+    text: "Corten Steel develops a unique natural patina that changes as it ages. It is important to note that the Corten steel may leach (drip rust) during the ageing process, and the bright orange tones that can appear initially will stabilise to a deeper, more even, rusted finish.",
+  },
+  {
+    id: "aluminium",
+    heading: "Aluminium",
+    text: "Aluminium won't age or leach like Corten steel, and the powder coated colour range is extensive. The Corten real 'rust' look can be achieved by choosing the Interpon Sable 'Corten' powder coat colour. Standard thickness 3 mm. We recommend choosing a textured, matte or satin finish for outdoor wall art — a glossy finish can reflect sunlight and show marks. For more colour options, view the colour chart in Catalogues on the menu.",
+  },
+];
+
+// "Tips for installation" — opens on the page. {fixings} is filled in with the
+// number that piece actually needs.
+export const INSTALL_TIPS = [
+  "Wall art can be delicate and should be transported flat to avoid any damage during transit. Please discuss installation and delivery requirements with our team to ensure your artwork arrives safely.",
+  "Mount the art a few centimetres out from the wall for stunning shadows during the day. You can also add lights for shadows at night.",
+  "Check the size of your art piece before you buy. Then, after using painter's tape to mark the size on your wall, step back and reflect on how it would suit your space.",
+  "Lead time approximately 4–6 weeks.",
+  "Powder coated stand-offs are available to purchase and can be powder-coated to match the piece.",
+  "{fixings} standoffs required.",
+];
+export const STANDOFF_LINK = "https://wgoutdoorlife.com.au/screen-standoffs/";
+
 // The searchable subject for each range — used when a piece has no subject
 // of its own, and for the range's own page.
 export const RANGE_SUBJECT = {

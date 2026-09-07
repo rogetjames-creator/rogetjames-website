@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, STANDOFF_LINK } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 
 const PREVIEW = true;
@@ -73,17 +73,19 @@ function sizesFor(name) {
 function wordsFor(rangeLabel, name) {
   const seo = PIECE_SEO[name] || {};
   const subject = seo.s || RANGE_SUBJECT[rangeLabel] || "Laser cut metal wall art";
+  // James's own spiel for a subject wins over anything written here.
+  const spiel = seo.spiel || (/^BANKSIA/i.test(name) ? SUBJECT_SPIEL.banksia : null);
   const text =
     seo.t ||
     `${subject} by James Roget, cut to order in powder-coated aluminium or natural Corten steel.`;
-  return { subject, text };
+  return { subject, text, spiel };
 }
 
 function page({ base, parent, kind }, range, design, imgs, siblings) {
   const name = design.n;
   const slug = pieceSlug(name);
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
-  const { subject, text } = wordsFor(range.label, name);
+  const { subject, text, spiel } = wordsFor(range.label, name);
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
@@ -113,7 +115,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
       {
         "@type": "Product",
         name: `${name} — ${subject}`,
-        description: text,
+        description: spiel || text,
         url,
         image: photos.map((p) => `${SITE}${p}`),
         brand: { "@type": "Brand", name: "ROGETjames" },
@@ -190,6 +192,21 @@ td{padding:11px 0;border-bottom:1px solid var(--rule);font-size:15px}
 td:first-child{font-family:var(--heading);font-weight:500;width:120px}
 td:nth-child(2){color:var(--dim);font-variant-numeric:tabular-nums}
 td:last-child{color:var(--faint);font-size:13px;text-align:right;font-family:var(--jost)}
+.brand{color:var(--dim);font-size:15px;margin-top:14px;max-width:52ch}
+.opener{border-top:1px solid var(--rule);margin-top:0}
+.opener:first-of-type{margin-top:30px}
+.opener summary{list-style:none;cursor:pointer;padding:18px 0;display:flex;align-items:center;justify-content:space-between;
+font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream)}
+.opener summary::-webkit-details-marker{display:none}
+.opener summary::after{content:"+";font-family:var(--body);font-size:18px;color:var(--clay-lit);line-height:1}
+.opener[open] summary::after{content:"–"}
+.opener .inner{padding:0 0 22px}
+.opener .fin{margin-bottom:16px}
+.opener .fin p{max-width:52ch}
+.tips{list-style:none;display:flex;flex-direction:column;gap:10px}
+.tips li{color:var(--dim);font-size:14px;padding-left:16px;position:relative;max-width:54ch}
+.tips li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--clay)}
+.tips a{color:var(--clay-lit);text-decoration:underline;text-underline-offset:3px}
 .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
 .btn{display:inline-block;border:1px solid rgba(158,113,52,.75);color:var(--clay-lit);padding:13px 26px;border-radius:999px;
 font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
@@ -228,20 +245,8 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
     <div>
       <span class="subject">${esc(subject)}</span>
       <h1>${esc(name)}</h1>
-      <p class="lede">${esc(text)}</p>
-
-      <div class="block">
-        <h2>Finish</h2>
-        <div class="finishes">
-          ${MATERIAL_OPTIONS.map((m) => {
-            const f = FINISHES[m.id];
-            if (!f) return "";
-            return `<div class="fin"><span class="sw ${m.id}"></span><div>
-              <h3>${esc(f.label)}</h3>
-              <p>${esc(f.note)}</p></div></div>`;
-          }).join("")}
-        </div>
-      </div>
+      <p class="lede">${esc(spiel || text)}</p>
+      ${BRAND_SPIEL.map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
 
       ${sizes.length ? `<div class="block">
         <h2>Sizes</h2>
@@ -250,6 +255,26 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
           <tr><td>Customised</td><td>On request</td><td></td></tr>
         </table>
       </div>` : `<div class="block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
+
+      <details class="opener">
+        <summary>Material and colour options</summary>
+        <div class="inner">
+          ${MATERIAL_COPY.map((m) => `<div class="fin"><span class="sw ${m.id}"></span><div>
+            <h3>${esc(m.heading)}</h3><p>${esc(m.text)}</p></div></div>`).join("")}
+        </div>
+      </details>
+
+      <details class="opener">
+        <summary>Tips for installation</summary>
+        <div class="inner"><ul class="tips">${(() => {
+        const f = sizes.find((z) => z.fixings)?.fixings;
+        return INSTALL_TIPS.map((t) => {
+          if (t.includes("{fixings}")) return f ? `<li>${esc(t.replace("{fixings}", f))}</li>` : "";
+          if (t.startsWith("Powder coated stand-offs")) return `<li><a href="${STANDOFF_LINK}" target="_blank" rel="noopener">Powder coated stand-offs</a>${esc(t.replace("Powder coated stand-offs", ""))}</li>`;
+          return `<li>${esc(t)}</li>`;
+        }).join("");
+      })()}</ul></div>
+      </details>
 
       <div class="cta">
         <a class="btn solid" href="${base}?piece=${encodeURIComponent(name)}">See pricing</a>
