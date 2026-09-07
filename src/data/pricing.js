@@ -361,30 +361,30 @@ export const PIECE_SIZES = {
   ],
   // ── Creeping Fig Series ────────────────────
   "AUTUMN": [
-    { id: "s", label: "Small",  dims: "1800 × 1000 mm", price: 1150, priceCorten: 1150 },
-    { id: "m", label: "Medium", dims: "2315 × 1195 mm", price: 1870, priceCorten: 1870 },
-    { id: "l", label: "Large",  dims: "2870 × 1490 mm", price: 2350, pricePC: 2550, priceCorten: 2350, priceCortenPC: 1900 },
+    { id: "s", label: "Small",  dims: "1800 × 1000 mm", fixings: 8, price: 1150, priceCorten: 1150 },
+    { id: "m", label: "Medium", dims: "2315 × 1195 mm", fixings: 9, price: 1870, priceCorten: 1870 },
+    { id: "l", label: "Large",  dims: "2870 × 1490 mm", fixings: 9, price: 2350, pricePC: 2550, priceCorten: 2350, priceCortenPC: 1900 },
   ],
   "FIGARO": [
-    { id: "s", label: "Small", dims: "2395 × 1330 mm", price: 1870, pricePC: 1870 },
-    { id: "l", label: "Large", dims: "2685 × 1490 mm", price: 2200, pricePC: 2200 },
+    { id: "s", label: "Small", dims: "2395 × 1330 mm", fixings: 12, price: 1870, pricePC: 1870 },
+    { id: "l", label: "Large", dims: "2685 × 1490 mm", fixings: 13, price: 2200, pricePC: 2200 },
   ],
   "GRANDE": [
-    { id: "l", label: "Standard", dims: "4150 × 1465 mm", price: 3200, pricePC: 3150, priceCortenPC: 2400 },
+    { id: "l", label: "Standard", dims: "4150 × 1465 mm", fixings: 18, price: 3200, pricePC: 3150, priceCortenPC: 2400 },
   ],
   "SPRING": [
-    { id: "l", label: "Standard", dims: "900 × 2400 mm" },
+    { id: "l", label: "Standard", dims: "900 × 2400 mm", fixings: 8 },
   ],
   "ONTIO": [
-    { id: "s", label: "Small", dims: "800 × 1000 mm" },
-    { id: "l", label: "Large", dims: "1420 × 1733 mm" },
+    { id: "s", label: "Small", dims: "800 × 1000 mm", fixings: 5 },
+    { id: "l", label: "Large", dims: "1420 × 1733 mm", fixings: 5 },
   ],
   "NUVINE": [
-    { id: "s", label: "Small", dims: "479 × 2390 mm",  fixings: 4, pricePC: 1250, priceCortenPC: 600 },
-    { id: "l", label: "Large", dims: "600 × 2990 mm",  fixings: 4, pricePC: 1500, priceCortenPC: 800 },
+    { id: "s", label: "Small", dims: "479 × 2390 mm",  fixings: 5, pricePC: 1250, priceCortenPC: 600 },
+    { id: "l", label: "Large", dims: "600 × 2990 mm",  fixings: 5, pricePC: 1500, priceCortenPC: 800 },
   ],
   "BUTTERFLY": [
-    { id: "l", label: "Standard", dims: "4371 × 1377 mm", price: 3900, pricePC: 3900 },
+    { id: "l", label: "Standard", dims: "4371 × 1377 mm", fixings: 18, price: 3900, pricePC: 3900 },
   ],
   // ── Screens ───────────────────────────────
   "JEAGER": [
