@@ -26,6 +26,7 @@ import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
 import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
+import { CATALOGUES } from "../src/catalogues.js";
 
 const PREVIEW = true;
 
@@ -260,7 +261,10 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
         <summary>Material and colour options</summary>
         <div class="inner">
           ${MATERIAL_COPY.map((m) => `<div class="fin"><span class="sw ${m.id}"></span><div>
-            <h3>${esc(m.heading)}</h3><p>${esc(m.text)}</p></div></div>`).join("")}
+            <h3>${esc(m.heading)}</h3><p>${esc(m.text).replace(
+              "view the colour chart in Catalogues on the menu",
+              `view the <a href="/catalogues/interpon-colours">Interpon</a> and <a href="/catalogues/dulux-colours">Dulux</a> colour charts`
+            )}</p></div></div>`).join("")}
         </div>
       </details>
 
@@ -381,6 +385,81 @@ if (!PREVIEW) {
     writeFileSync(sitemapPath, xml.replace("</urlset>", `${additions}\n</urlset>`), "utf-8");
   }
 }
+
+
+// ── The catalogues, each with its own address ─────────────────────────────
+// Same list the nav bar and the galleries use (src/catalogues.js) — the pages
+// here just give each one a web address so it can be linked to.
+const catSlug = (label) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+const catShell = (title, description, body, url) => `<!doctype html>
+<html lang="en" style="background:#020202"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}" />
+<meta name="robots" content="${PREVIEW ? "noindex, nofollow" : "index, follow"}" />
+<link rel="canonical" href="${url}" />
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Jost:wght@300;400&family=DM+Sans:wght@300;400&family=Plus+Jakarta+Sans:wght@400;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<style>
+:root{--matt:#020202;--pewter:#181818;--cream:#EDE8DF;--dim:rgba(237,232,223,.68);--faint:rgba(237,232,223,.42);
+--clay-lit:#D4A75C;--rule:rgba(237,232,223,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--matt);color:var(--cream);font-family:"DM Sans",sans-serif;font-weight:300;line-height:1.65}
+img{display:block;max-width:100%}a{color:inherit;text-decoration:none}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}@media(min-width:820px){.wrap{padding:0 48px}}
+header{border-bottom:1px solid var(--rule)}
+.hdr{display:flex;align-items:center;justify-content:space-between;height:74px}
+.mark{font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:19px}
+.mark i{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:400}
+nav{display:flex;gap:26px;font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.crumbs{display:flex;gap:9px;padding:18px 0;font-family:"Jost",sans-serif;font-size:12px;color:var(--faint)}
+h1{font-family:"Syne",sans-serif;font-weight:800;font-size:clamp(30px,4.5vw,54px);letter-spacing:-.02em;padding-top:22px}
+p.lede{color:var(--dim);max-width:60ch;margin-top:14px;padding-bottom:30px;border-bottom:1px solid var(--rule)}
+.pages{display:grid;gap:18px;grid-template-columns:1fr;padding:28px 0 70px}
+@media(min-width:760px){.pages{grid-template-columns:repeat(2,1fr)}}
+.pages img{width:100%;border-radius:10px;background:var(--pewter)}
+.cards{display:grid;gap:18px;grid-template-columns:1fr;padding:28px 0 70px}
+@media(min-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--pewter);border-radius:12px;overflow:hidden;display:block}
+.card img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top}
+.card b{display:block;font-family:"Syne",sans-serif;font-size:17px;padding:14px 16px 2px}
+.card span{display:block;font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding:0 16px 16px}
+footer{border-top:1px solid var(--rule);padding:30px 0 60px;font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+</style></head><body>
+<header><div class="wrap hdr"><a class="mark" href="/">ROGET<i>james</i></a>
+<nav><a href="/wall-art">Wall Art</a><a href="/sculpture">Sculpture</a><a href="/screens">Screens</a><a href="/catalogues">Catalogues</a></nav></div></header>
+${body}
+<footer><div class="wrap"><a href="/catalogues">← All catalogues</a></div></footer>
+</body></html>`;
+
+mkdirSync(join(DIST, "catalogues"), { recursive: true });
+for (const cat of CATALOGUES) {
+  const slug = catSlug(cat.label);
+  const url = `${SITE}/catalogues/${slug}`;
+  const isColour = /colour/i.test(cat.label);
+  const description = isColour
+    ? `${cat.label} for ROGETjames powder-coated aluminium wall art, sculpture and screens — the full powder coat colour chart.`
+    : `The ROGETjames ${cat.label.toLowerCase()} catalogue — laser cut designs in Corten steel and powder-coated aluminium, made to order in Australia.`;
+  const body = `<div class="wrap">
+    <div class="crumbs"><a href="/">Home</a> › <a href="/catalogues">Catalogues</a> › <span>${esc(cat.label)}</span></div>
+    <h1>${esc(cat.label)}</h1>
+    <p class="lede">${esc(description)}</p>
+    <div class="pages">${cat.pages.map((src, i) =>
+      `<img src="${img(src, 1000)}" alt="${esc(cat.label)} — page ${i + 1}" loading="${i < 2 ? "eager" : "lazy"}" />`).join("")}</div>
+  </div>`;
+  writeFileSync(join(DIST, "catalogues", `${slug}.html`), catShell(`${cat.label} | ROGETjames`, description, body, url), "utf-8");
+}
+const catIndexBody = `<div class="wrap">
+  <div class="crumbs"><a href="/">Home</a> › <span>Catalogues</span></div>
+  <h1>Catalogues</h1>
+  <p class="lede">The design catalogues and the powder coat colour charts, page by page.</p>
+  <div class="cards">${CATALOGUES.map((c) =>
+    `<a class="card" href="/catalogues/${catSlug(c.label)}"><img src="${img(c.pages[0], 800)}" alt="${esc(c.label)}" loading="lazy" /><b>${esc(c.label)}</b><span>${c.pages.length} pages</span></a>`).join("")}</div>
+</div>`;
+writeFileSync(join(DIST, "catalogues.html"),
+  catShell("Catalogues | ROGETjames", "ROGETjames design catalogues and the Dulux and Interpon powder coat colour charts.", catIndexBody, `${SITE}/catalogues`), "utf-8");
+console.log(`  ✓ ${CATALOGUES.length} catalogue pages + contents at /catalogues`);
 
 const unwritten = index.filter((i) => !i.written).map((i) => i.name);
 console.log(`  ✓ ${written} piece pages${PREVIEW ? " (preview — no-index, not in sitemap)" : " (live)"}`);

@@ -168,6 +168,11 @@
   status = 200
 
 [[redirects]]
+  from = "/catalogues"
+  to = "/catalogues.html"
+  status = 200
+
+[[redirects]]
   from = "/melbourne"
   to = "/melbourne.html"
   status = 200
