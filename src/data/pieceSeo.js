@@ -38,6 +38,22 @@ export const SUBJECT_SPIEL = {
     "Redefine your outdoor space with our stunning Banksia outdoor wall art piece, beautifully crafted to showcase the allure of Australia's native flora. Designed in-house, this chic, highly detailed interpretation of the iconic banksia flower adds a touch of natural beauty to your outdoor area, bringing the vibrant essence of the outdoors right to your doorstep.",
 };
 
+// The plant behind a piece, in James's words. Only where he has given it —
+// never worked out from a photograph.
+export const BOTANY = {
+  "BANKSIA Oldmanis": {
+    common: "Old Man Banksia",
+    scientific: "Banksia serrata",
+    family: "Proteaceae",
+  },
+};
+
+// The face a piece's name is set in. Adobe Fonts kit msz1oxa carries
+// bodoni-urw and joschmi; anything else falls back to the site's Syne.
+export const TITLE_FONT = {
+  banksia: "bodoni-urw",
+};
+
 // "Material and colour options" — opens on the page.
 export const MATERIAL_COPY = [
   {

@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 
@@ -87,6 +87,9 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const slug = pieceSlug(name);
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
   const { subject, text, spiel } = wordsFor(range.label, name);
+  const botany = BOTANY[name];
+  const isBanksia = /^BANKSIA/i.test(name);
+  const titleFont = isBanksia ? TITLE_FONT.banksia : null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
@@ -145,6 +148,7 @@ ${hero ? `<meta property="og:image" content="${SITE}${hero}" />` : ""}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Jost:wght@300;400&family=DM+Sans:ital,wght@0,300;0,400;1,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
+${titleFont ? `<link rel="stylesheet" href="https://use.typekit.net/msz1oxa.css" />` : ""}
 <script type="application/ld+json">
 ${JSON.stringify(schema, null, 2)}
 </script>
@@ -193,6 +197,11 @@ td{padding:11px 0;border-bottom:1px solid var(--rule);font-size:15px}
 td:first-child{font-family:var(--heading);font-weight:500;width:120px}
 td:nth-child(2){color:var(--dim);font-variant-numeric:tabular-nums}
 td:last-child{color:var(--faint);font-size:13px;text-align:right;font-family:var(--jost)}
+.botany{margin-top:18px;padding:14px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+display:flex;flex-direction:column;gap:6px;max-width:52ch}
+.botany div{display:flex;gap:14px;align-items:baseline}
+.botany dt{font-family:var(--jost);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);min-width:130px}
+.botany dd{font-size:15px;color:var(--cream)}
 .brand{color:var(--dim);font-size:15px;margin-top:14px;max-width:52ch}
 .opener{border-top:1px solid var(--rule);margin-top:0}
 .opener:first-of-type{margin-top:30px}
@@ -246,8 +255,13 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
 
     <div>
       <span class="subject">${esc(subject)}</span>
-      <h1>${esc(name)}</h1>
+      <h1${titleFont ? ` style="font-family:'${titleFont}',Georgia,serif;font-weight:400;letter-spacing:0"` : ""}>${esc(name)}</h1>
       <p class="lede">${esc(spiel || text)}</p>
+      ${botany ? `<dl class="botany">
+        <div><dt>Common name</dt><dd>${esc(botany.common)}</dd></div>
+        <div><dt>Scientific name</dt><dd><i>${esc(botany.scientific)}</i></dd></div>
+        <div><dt>Family</dt><dd>${esc(botany.family)}</dd></div>
+      </dl>` : ""}
       ${BRAND_SPIEL.map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
 
       ${sizes.length ? `<div class="block">
