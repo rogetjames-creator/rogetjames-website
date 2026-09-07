@@ -426,14 +426,24 @@ for (const gallery of GALLERIES) {
       mkdirSync(dir, { recursive: true });
       const slug = pieceSlug(design.n);
       writeFileSync(join(dir, `${slug}.html`), page(gallery, range, design, data.imgs, siblings), "utf-8");
+      const w = wordsFor(range.label, design.n);
       index.push({
         url: `${base}/${rangeSlug(range.label)}/${slug}`,
         name: design.n,
         range: range.label,
         parent: gallery.parent,
-        subject: wordsFor(range.label, design.n).subject,
+        subject: w.subject,
         img: data.imgs[design.imgs[0]],
         written: Boolean(PIECE_SEO[design.n]),
+        hasSpiel: Boolean(w.spiel),
+        hasFace: Boolean(
+          (TITLE_OVERRIDE[design.n] && TITLE_OVERRIDE[design.n].face) ||
+          RANGE_TITLE[range.label] ||
+          TITLE_FONT[design.n.split(" ")[0].toUpperCase()] ||
+          WORDMARKS[design.n.toUpperCase()] ||
+          WORDMARKS[design.n.split(" ")[0].toUpperCase()]
+        ),
+        hasPlant: Boolean(BOTANY[design.n] || RANGE_BOTANY[range.label]),
       });
       written++;
     }
@@ -466,18 +476,25 @@ a.card{display:block;background:var(--pewter);border-radius:10px;overflow:hidden
 a.card .im{aspect-ratio:1/1;overflow:hidden}
 a.card img{width:100%;height:100%;object-fit:cover}
 a.card b{display:block;font-weight:500;font-size:13px;padding:10px 12px 2px}
-a.card span{display:block;font-family:"Jost",sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:0 12px 12px}
+a.card span{display:block;font-family:"Jost",sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:0 12px 6px}
+a.card .tags{display:flex;gap:5px;flex-wrap:wrap;padding:0 12px 12px;font-style:normal}
+a.card .tags i{font-style:normal;font-family:"Jost",sans-serif;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+color:#D4A75C;border:1px solid rgba(212,167,92,.4);border-radius:20px;padding:2px 7px}
+a.card .tags i.none{color:rgba(237,232,223,.3);border-color:rgba(237,232,223,.18)}
 footer{padding:60px 0;color:var(--faint);font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
 </style></head><body><div class="wrap">
 <h1>Every piece, its own page</h1>
 <p class="lede">${written} pages, one per catalogued design. Hidden from Google and not in the sitemap
-until you say they go live. Click any piece to see its page as Google and a visitor would.</p>
+until you say they go live. Click any piece to open it. The tags say what each one has so far —
+<b>font</b> its own title face, <b>words</b> your spiel, <b>plant</b> its botanical lines. Keep this page
+open as your list; it rebuilds every time the site does.</p>
 ${groups.map((g) => {
   const rows = index.filter((i) => `${i.parent} — ${i.range}` === g);
   return `<h2>${esc(g)}</h2><span class="count">${rows.length} pieces</span>
   <div class="grid">${rows.map((r) => `<a class="card" href="${r.url}">
     <div class="im"><img src="${img(r.img, 400)}" alt="${esc(r.name)}" loading="lazy" /></div>
-    <b>${esc(r.name)}</b><span>${esc(r.subject)}</span></a>`).join("")}</div>`;
+    <b>${esc(r.name)}</b><span>${esc(r.subject)}</span>
+    <em class="tags">${[r.hasFace ? "font" : "", r.hasSpiel ? "words" : "", r.hasPlant ? "plant" : ""].filter(Boolean).map(t => `<i>${t}</i>`).join("") || `<i class="none">nothing yet</i>`}</em></a>`).join("")}</div>`;
 }).join("")}
 <footer>Preview only · nothing here is visible to Google</footer>
 </div></body></html>`;
