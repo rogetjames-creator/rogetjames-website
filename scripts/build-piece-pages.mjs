@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 
@@ -115,8 +115,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
   const { subject, text, spiel } = wordsFor(range.label, name);
   const botany = BOTANY[name];
-  const isBanksia = /^BANKSIA/i.test(name);
-  const titleFont = isBanksia ? TITLE_FONT.banksia : null;
+  const titleFont = TITLE_FONT[name.split(" ")[0].toUpperCase()] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
@@ -176,7 +175,7 @@ ${hero ? `<meta property="og:image" content="${SITE}${hero}" />` : ""}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Jost:wght@300;400&family=DM+Sans:ital,wght@0,300;0,400;1,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
-${titleFont ? `<link rel="stylesheet" href="https://use.typekit.net/msz1oxa.css" />` : ""}
+${titleFont ? `<link rel="stylesheet" href="https://use.typekit.net/${FONT_KIT}.css" />` : ""}
 <script type="application/ld+json">
 ${JSON.stringify(schema, null, 2)}
 </script>
@@ -221,7 +220,7 @@ aspect-ratio:var(--shape);outline:1px solid transparent;outline-offset:-1px;tran
 .thumbs .t img{width:100%;height:100%;object-fit:cover;display:block}
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
-h1 .face{font-family:"${"joschmi"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
+h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
 .lede{color:var(--dim);font-size:16px;margin-top:18px;max-width:52ch}
 .block{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule)}
@@ -321,6 +320,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         <div><dt>Common name</dt><dd>${esc(botany.common)}</dd></div>
         <div><dt>Scientific name</dt><dd><i>${esc(botany.scientific)}</i></dd></div>
         <div><dt>Family</dt><dd>${esc(botany.family)}</dd></div>
+        ${botany.type ? `<div><dt>Type</dt><dd>${esc(botany.type)}</dd></div>` : ""}
       </dl>` : ""}
       ${BRAND_SPIEL.map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
 

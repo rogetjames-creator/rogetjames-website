@@ -46,18 +46,26 @@ export const BOTANY = {
     scientific: "Banksia serrata",
     family: "Proteaceae",
   },
+  WANDOO: {
+    common: "Wandoo",
+    scientific: "Eucalyptus wandoo",
+    family: "Myrtaceae",
+    type: "Eucalyptus (gum) tree",
+  },
 };
 
-// The face a piece's name is set in. Joschmi is the Banksia type — it is the
-// font named in James's own BANKSIA.svg artwork. Adobe Fonts kit msz1oxa
-// carries it; anything without an entry falls back to the site's Syne.
+// The face a piece's name is set in — each one taken from James's own SVG
+// artwork for that piece, keyed by the first word of the name. Adobe Fonts
+// kit idb3goe carries them; anything without an entry falls back to Syne.
 //
-// On a Banksia the word BANKSIA is set in Joschmi and the qualifier (Card,
-// Round, Deco…) follows in the standard face, smaller. BANKSIA OLDMANIS is
-// the exception — the whole name is set in Joschmi, as in the artwork.
+// Where a name has a qualifier (Card, Round, Deco…) the first word is set in
+// the face and the qualifier follows in the standard face, smaller. Names
+// listed in FULL_TITLE_IN_FACE are set in the face end to end, as drawn.
 export const TITLE_FONT = {
-  banksia: "joschmi",
+  BANKSIA: "joschmi",              // BANKSIA.svg
+  WANDOO: "adorn-condensed-sans",  // WANDOO.svg
 };
+export const FONT_KIT = "idb3goe";
 export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];
 
 // "Material and colour options" — opens on the page.
