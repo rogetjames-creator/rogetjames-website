@@ -200,7 +200,13 @@ header{border-bottom:1px solid var(--rule)}
 .mark i{font-family:var(--drama);font-style:italic;font-weight:400}
 nav{display:flex;gap:26px;font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);flex-wrap:wrap}
 nav a:hover{color:var(--cream)}
+.crumbline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
 .crumbs{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:18px 0;font-family:var(--jost);font-size:12px;color:var(--faint)}
+.exit{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(237,232,223,.22);border-radius:999px;
+padding:8px 16px;font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);
+transition:border-color .3s ease,color .3s ease;flex:none}
+.exit i{font-style:normal;font-size:13px;line-height:1;color:var(--clay-lit)}
+.exit:hover{border-color:var(--clay-lit);color:var(--clay-lit)}
 .crumbs a:hover{color:var(--dim)}.crumbs span{color:var(--dim)}
 .piece{display:grid;gap:34px;grid-template-columns:1fr;padding:8px 0 60px}
 @media(min-width:900px){.piece{grid-template-columns:1.35fr 1fr;gap:56px}}
@@ -270,7 +276,10 @@ font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:upper
 .rel .cap{padding:12px 14px 16px}
 .rel .cap b{display:block;font-family:var(--heading);font-weight:500;font-size:14px}
 .rel .cap span{display:block;font-family:var(--jost);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:4px}
-footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jost);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+footer{border-top:1px solid var(--rule);padding:34px 0 60px}
+footer .back{display:inline-block;font-family:var(--jost);font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+color:var(--cream);border-bottom:1px solid rgba(212,167,92,.5);padding-bottom:4px;transition:color .3s ease,border-color .3s ease}
+footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
 </style>
 </head>
 <body>
@@ -280,7 +289,10 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
 </div></header>
 
 <div class="wrap">
-  <div class="crumbs"><a href="/">Home</a> › <a href="${base}">${esc(parent)}</a> › <a href="${base}/${rangeSlug(range.label)}">${esc(range.label)}</a> › <span>${esc(name)}</span></div>
+  <div class="crumbline">
+    <div class="crumbs"><a href="/">Home</a> › <a href="${base}">${esc(parent)}</a> › <a href="${base}/${rangeSlug(range.label)}">${esc(range.label)}</a> › <span>${esc(name)}</span></div>
+    <a class="exit" href="${base}/${rangeSlug(range.label)}" aria-label="${esc(`Close ${name} and return to ${range.label}`)}"><span>Close</span><i>✕</i></a>
+  </div>
 
   <div class="piece">
     <div class="shots">
@@ -367,7 +379,7 @@ ${siblings.length ? `<div class="related"><div class="wrap">
   </div>
 </div></div>` : ""}
 
-<footer><div class="wrap"><a href="${base}/${rangeSlug(range.label)}">← All of ${esc(range.label)}</a></div></footer>
+<footer><div class="wrap"><a class="back" href="${base}/${rangeSlug(range.label)}">← Return to ${esc(range.label)}</a></div></footer>
 </body>
 </html>`;
 }
