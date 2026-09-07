@@ -59,10 +59,9 @@ export const INSTALL_TIPS = [
   "Mount the art a few centimetres out from the wall for stunning shadows during the day. You can also add lights for shadows at night.",
   "Check the size of your art piece before you buy. Then, after using painter's tape to mark the size on your wall, step back and reflect on how it would suit your space.",
   "Lead time approximately 4–6 weeks.",
-  "Powder coated stand-offs are available to purchase and can be powder-coated to match the piece.",
+  "Powder coated stand-offs are available to purchase and can be powder-coated to match the piece.",  // no outside supplier is ever named
   "{fixings} standoffs required.",
 ];
-export const STANDOFF_LINK = "https://wgoutdoorlife.com.au/screen-standoffs/";
 
 // The searchable subject for each range — used when a piece has no subject
 // of its own, and for the range's own page.

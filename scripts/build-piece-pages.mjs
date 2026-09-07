@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, STANDOFF_LINK } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 
 const PREVIEW = true;
@@ -270,7 +270,6 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
         const f = sizes.find((z) => z.fixings)?.fixings;
         return INSTALL_TIPS.map((t) => {
           if (t.includes("{fixings}")) return f ? `<li>${esc(t.replace("{fixings}", f))}</li>` : "";
-          if (t.startsWith("Powder coated stand-offs")) return `<li><a href="${STANDOFF_LINK}" target="_blank" rel="noopener">Powder coated stand-offs</a>${esc(t.replace("Powder coated stand-offs", ""))}</li>`;
           return `<li>${esc(t)}</li>`;
         }).join("");
       })()}</ul></div>
