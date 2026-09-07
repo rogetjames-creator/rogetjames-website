@@ -330,11 +330,11 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
           return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(whole ? name : firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         // A range with its own prefix: CREEPING FIG, then the piece under it.
-        // Only for pieces whose name actually starts with that prefix — a
-        // VITAE — GREN keeps its own name.
-        if (rangeTitle && new RegExp(`^${rangeTitle.prefix}`, "i").test(name)) {
+        if (rangeTitle) {
           const rx = new RegExp(`^${rangeTitle.prefix}S?\\s*(—|-)?\\s*`, "i");
-          const rest = name.replace(rx, "").trim();
+          // Written the way James writes it: CREEPING FIG, then Autumn.
+          const rest = name.replace(rx, "").trim()
+            .replace(/\S+/g, (w) => (w.length > 3 && w === w.toUpperCase() ? w[0] + w.slice(1).toLowerCase() : w));
           return `<span class="face">${esc(rangeTitle.prefix)}</span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         if (!titleFont) return esc(name);
