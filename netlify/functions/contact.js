@@ -22,7 +22,7 @@ function rateLimited(ip) {
   return recent.length > MAX_PER_WINDOW;
 }
 
-exports.handler = async function(event) {
+export const handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method not allowed" };
   }
