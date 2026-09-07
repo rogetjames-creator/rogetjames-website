@@ -204,6 +204,7 @@ font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:upperc
 .opener .inner{padding:0 0 22px}
 .opener .fin{margin-bottom:16px}
 .opener .fin p{max-width:52ch}
+.fixpic{width:100%;border-radius:10px;margin:0 0 18px;background:var(--pewter)}
 .tips{list-style:none;display:flex;flex-direction:column;gap:10px}
 .tips li{color:var(--dim);font-size:14px;padding-left:16px;position:relative;max-width:54ch}
 .tips li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--clay)}
@@ -268,16 +269,23 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
         </div>
       </details>
 
-      <details class="opener">
+      ${kind === "wall" ? `<details class="opener">
         <summary>Tips for installation</summary>
-        <div class="inner"><ul class="tips">${(() => {
-        const f = sizes.find((z) => z.fixings)?.fixings;
+        <div class="inner"><img class="fixpic" src="${img("/images/fixings/standoffs.jpg", 700)}" alt="Powder coated stand-off fixings" loading="lazy" /><ul class="tips">${(() => {
+        // The standoff count comes from the catalogue, per size. Where the
+        // catalogue gives no count, the line is left off rather than guessed.
+        const counts = [...new Set(sizes.map((z) => z.fixings).filter(Boolean).map(String))];
+        const f = counts.length > 1 ? `${counts[0]}–${counts[counts.length - 1]}` : counts[0];
         return INSTALL_TIPS.map((t) => {
-          if (t.includes("{fixings}")) return f ? `<li>${esc(t.replace("{fixings}", f))}</li>` : "";
+          if (t.includes("{fixings}")) {
+            if (!f) return "";
+            const line = counts.length > 1 ? `${f} standoffs required, depending on size.` : `${f} standoffs required.`;
+            return `<li>${esc(line)}</li>`;
+          }
           return `<li>${esc(t)}</li>`;
         }).join("");
       })()}</ul></div>
-      </details>
+      </details>` : ""}
 
       <div class="cta">
         <a class="btn solid" href="${base}?piece=${encodeURIComponent(name)}">See pricing</a>

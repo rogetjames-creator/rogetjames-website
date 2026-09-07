@@ -68,8 +68,9 @@ export const PIECE_SIZES = {
     { id: "l", label: "Standard", dims: "Ø 1100 mm", fixings: 4 },
   ],
   "PETUNIA": [
-    { id: "s", label: "Small", dims: "1100 mm", fixings: 0 },
-    { id: "l", label: "Large", dims: "1700 mm", fixings: 0 },
+    // 12 fixings — from the Wall Art & Screens catalogue, Flowers & Blooms page.
+    { id: "s", label: "Small", dims: "1100 mm", fixings: 12 },
+    { id: "l", label: "Large", dims: "1700 mm", fixings: 12 },
   ],
   "DIAMOND BLOOM": [
     { id: "m", label: "Medium", dims: "1410 × 1597 mm", fixings: 4, price: 1145, pricePC: 1450, priceCorten: 1145, priceCortenPC: 1250 },
