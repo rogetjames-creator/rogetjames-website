@@ -254,7 +254,8 @@ export const PIECE_SIZES = {
     { id: "l", label: "Standard", dims: "Ø 1100 mm", fixings: 4 },
   ],
   "RAVI": [
-    { id: "l", label: "Standard", dims: "Ø 1200 mm" },
+    // 4 fixings — Wall Art & Screens catalogue, Neazar page.
+    { id: "l", label: "Standard", dims: "Ø 1200 mm", fixings: 4 },
   ],
   "RYE": [
     { id: "l", label: "Standard", dims: "Ø 800 mm", fixings: 4 },
@@ -380,8 +381,8 @@ export const PIECE_SIZES = {
     { id: "l", label: "Large", dims: "1420 × 1733 mm", fixings: 5 },
   ],
   "NUVINE": [
-    { id: "s", label: "Small", dims: "479 × 2390 mm",  fixings: 5, pricePC: 1250, priceCortenPC: 600 },
-    { id: "l", label: "Large", dims: "600 × 2990 mm",  fixings: 5, pricePC: 1500, priceCortenPC: 800 },
+    { id: "s", label: "Small", dims: "479 × 2390 mm",  fixings: 4, pricePC: 1250, priceCortenPC: 600 },
+    { id: "l", label: "Large", dims: "600 × 2990 mm",  fixings: 4, pricePC: 1500, priceCortenPC: 800 },
   ],
   "BUTTERFLY": [
     { id: "l", label: "Standard", dims: "4371 × 1377 mm", fixings: 18, price: 3900, pricePC: 3900 },
