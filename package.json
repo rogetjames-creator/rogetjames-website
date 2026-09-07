@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5173",
-    "build": "vite build && node scripts/build-range-pages.mjs && node scripts/prerender.mjs",
+    "build": "vite build && node scripts/build-range-pages.mjs && node scripts/build-piece-pages.mjs && node scripts/prerender.mjs",
     "build:quick": "vite build",
     "postinstall": "playwright install chromium",
     "lint": "eslint .",

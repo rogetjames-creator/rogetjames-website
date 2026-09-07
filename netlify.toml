@@ -161,6 +161,12 @@
   to = "/projects.html"
   status = 200
 
+# Contents page for the per-piece pages while they are in preview.
+[[redirects]]
+  from = "/pieces"
+  to = "/pieces.html"
+  status = 200
+
 [[redirects]]
   from = "/melbourne"
   to = "/melbourne.html"
