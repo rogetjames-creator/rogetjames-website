@@ -48,11 +48,17 @@ export const BOTANY = {
   },
 };
 
-// The face a piece's name is set in. Adobe Fonts kit msz1oxa carries
-// bodoni-urw and joschmi; anything else falls back to the site's Syne.
+// The face a piece's name is set in. Joschmi is the Banksia type — it is the
+// font named in James's own BANKSIA.svg artwork. Adobe Fonts kit msz1oxa
+// carries it; anything without an entry falls back to the site's Syne.
+//
+// On a Banksia the word BANKSIA is set in Joschmi and the qualifier (Card,
+// Round, Deco…) follows in the standard face, smaller. BANKSIA OLDMANIS is
+// the exception — the whole name is set in Joschmi, as in the artwork.
 export const TITLE_FONT = {
-  banksia: "bodoni-urw",
+  banksia: "joschmi",
 };
+export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];
 
 // "Material and colour options" — opens on the page.
 export const MATERIAL_COPY = [

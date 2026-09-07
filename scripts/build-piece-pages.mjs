@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 
@@ -174,13 +174,12 @@ nav a:hover{color:var(--cream)}
 .piece{display:grid;gap:34px;grid-template-columns:1fr;padding:8px 0 60px}
 @media(min-width:900px){.piece{grid-template-columns:1.35fr 1fr;gap:56px}}
 .shots{display:grid;gap:12px;align-content:start}
-.main{aspect-ratio:4/3;overflow:hidden;border-radius:14px;background:var(--pewter)}
-.main img{width:100%;height:100%;object-fit:cover}
-.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.thumbs div{aspect-ratio:1/1;overflow:hidden;border-radius:10px;background:var(--pewter)}
-.thumbs img{width:100%;height:100%;object-fit:cover}
+.shot{border-radius:14px;overflow:hidden;background:var(--pewter)}
+.shot img{width:100%;height:auto;display:block}
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
+h1 .face{font-family:"${"joschmi"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
+h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
 .lede{color:var(--dim);font-size:16px;margin-top:18px;max-width:52ch}
 .block{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule)}
 .block h2{font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:400}
@@ -248,14 +247,20 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
 
   <div class="piece">
     <div class="shots">
-      ${hero ? `<div class="main"><img src="${img(hero, 1400)}" alt="${esc(`${subject} — ${name} by ROGETjames`)}" fetchpriority="high" /></div>` : ""}
-      ${photos.length > 1 ? `<div class="thumbs">${photos.slice(0, 6).map((p, i) =>
-        `<div><img src="${img(p, 500)}" alt="${esc(`${name} — ${subject}, view ${i + 1}`)}" loading="lazy" /></div>`).join("")}</div>` : ""}
+      ${photos.map((src, i) => `<div class="shot"><img src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} /></div>`).join("")}
     </div>
 
     <div>
       <span class="subject">${esc(subject)}</span>
-      <h1${titleFont ? ` style="font-family:'${titleFont}',Georgia,serif;font-weight:400;letter-spacing:0"` : ""}>${esc(name)}</h1>
+      <h1>${(() => {
+        if (!titleFont) return esc(name);
+        // The whole name in the face — as James set it in the artwork.
+        if (FULL_TITLE_IN_FACE.includes(name))
+          return `<span class="face">${esc(name.toUpperCase())}</span>`;
+        // Otherwise: BANKSIA in the face, the qualifier after it, standard and smaller.
+        const [first, ...rest] = name.split(" ");
+        return `<span class="face">${esc(first)}</span>${rest.length ? `<span class="qual">${esc(rest.join(" "))}</span>` : ""}`;
+      })()}</h1>
       <p class="lede">${esc(spiel || text)}</p>
       ${botany ? `<dl class="botany">
         <div><dt>Common name</dt><dd>${esc(botany.common)}</dd></div>
