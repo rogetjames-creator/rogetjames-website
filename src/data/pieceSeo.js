@@ -198,7 +198,10 @@ export const PIECE_SEO = {
   "VITAE — GREN": { s: "Branch metal wall panel" },
 
   // ── FLOWERS & BLOOMS ──────────────────────────────────────────────────
-  RUE: { s: "Round floral metal wall art" },
+  RUE: {
+    s: "Round floral metal wall art",
+    spiel: "Rue is a uniquely poised abstract flowered feature that stands alone or in balance with a 3rd.",
+  },
   "RUE the 3rd": { s: "Round floral metal wall art" },
   OLIN: { s: "Round floral metal wall art" },
   PETUNIA: { s: "Floral metal wall art" },
