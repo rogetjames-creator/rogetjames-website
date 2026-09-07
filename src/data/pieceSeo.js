@@ -80,6 +80,10 @@ export const FULL_TITLE_IN_FACE = [];  // BANKSIA OLDMANIS is drawn — see word
 // follows in the standard face underneath.
 export const TITLE_OVERRIDE = {
   "VITAE — GREN": { face: "gloss-drop", word: "GREN", qual: "Vitae series" },
+  // RUE & RUE the 3rd.svg — both set in PF Marlet Display, the qualifier in
+  // the same face as James drew it.
+  RUE: { face: "pf-marlet-display", word: "RUE" },
+  "RUE the 3rd": { face: "pf-marlet-display", word: "RUE", qual: "the 3rd", qualInFace: true },
 };
 
 // Words that belong to a whole range rather than one piece.

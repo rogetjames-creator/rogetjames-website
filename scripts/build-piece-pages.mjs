@@ -228,6 +228,7 @@ h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400;letter
 h1 .mark{display:block;width:min(100%,${wordmark && wordmark.viewBox.split(" ")[2] > 9000 ? 560 : 420}px)}
 h1 .mark svg{width:100%;height:auto;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
+h1 .qual.inface{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400;font-size:.62em;letter-spacing:.01em;text-transform:none}
 .lede{color:var(--dim);font-size:16px;margin-top:18px;max-width:52ch}
 .lede a{color:var(--clay-lit);border-bottom:1px solid rgba(212,167,92,.45);padding-bottom:1px}
 .lede a:hover{border-color:var(--clay-lit)}
@@ -317,7 +318,10 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
       <h1>${(() => {
         // A hand-set title wins over everything.
         if (override) {
-          return `<span class="face">${esc(override.word)}</span>${override.qual ? `<span class="qual">${esc(override.qual)}</span>` : ""}`;
+          const q = override.qual
+            ? `<span class="qual${override.qualInFace ? " inface" : ""}">${esc(override.qual)}</span>`
+            : "";
+          return `<span class="face">${esc(override.word)}</span>${q}`;
         }
         // Drawn artwork beats a typed name.
         if (wordmark) {
