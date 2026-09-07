@@ -63,6 +63,7 @@ export const BOTANY = {
 export const TITLE_FONT = {
   BANKSIA: "joschmi",              // BANKSIA.svg
   WANDOO: "adorn-condensed-sans",  // WANDOO.svg
+  // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
 export const FONT_KIT = "idb3goe";
 export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];

@@ -27,6 +27,7 @@ import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
 import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
+import { WORDMARKS } from "../src/data/wordmarks.js";
 
 const PREVIEW = true;
 
@@ -112,7 +113,9 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
   const { subject, spiel } = wordsFor(range.label, name);
   const botany = BOTANY[name];
-  const titleFont = TITLE_FONT[name.split(" ")[0].toUpperCase()] || null;
+  const firstWord = name.split(" ")[0].toUpperCase();
+  const titleFont = TITLE_FONT[firstWord] || null;
+  const wordmark = WORDMARKS[firstWord] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
@@ -218,6 +221,8 @@ aspect-ratio:var(--shape);outline:1px solid transparent;outline-offset:-1px;tran
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
 h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
+h1 .mark{display:block;width:min(100%,420px)}
+h1 .mark svg{width:100%;height:auto;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
 .lede{color:var(--dim);font-size:16px;margin-top:18px;max-width:52ch}
 .block{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule)}
@@ -304,6 +309,11 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
     <div>
       <span class="subject">${esc(subject)}</span>
       <h1>${(() => {
+        // Drawn artwork beats a typed name.
+        if (wordmark) {
+          const rest = name.split(" ").slice(1).join(" ");
+          return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
+        }
         if (!titleFont) return esc(name);
         // The whole name in the face — as James set it in the artwork.
         if (FULL_TITLE_IN_FACE.includes(name))
