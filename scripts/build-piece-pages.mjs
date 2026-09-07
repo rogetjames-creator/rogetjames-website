@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
@@ -113,9 +113,12 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
   const { subject, spiel, links } = wordsFor(range.label, name);
   const botany = BOTANY[name] || RANGE_BOTANY[range.label];
+  const override = TITLE_OVERRIDE[name] || null;
   const rangeTitle = RANGE_TITLE[range.label] || null;
   const firstWord = name.split(" ")[0].toUpperCase();
-  const titleFont = rangeTitle ? rangeTitle.face : (TITLE_FONT[firstWord] || null);
+  const titleFont = override ? override.face
+    : rangeTitle ? rangeTitle.face
+    : (TITLE_FONT[firstWord] || null);
   const wordmark = WORDMARKS[firstWord] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
@@ -312,6 +315,10 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
     <div>
       <span class="subject">${esc(subject)}</span>
       <h1>${(() => {
+        // A hand-set title wins over everything.
+        if (override) {
+          return `<span class="face">${esc(override.word)}</span>${override.qual ? `<span class="qual">${esc(override.qual)}</span>` : ""}`;
+        }
         // Drawn artwork beats a typed name.
         if (wordmark) {
           const rest = name.split(" ").slice(1).join(" ");

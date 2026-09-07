@@ -76,6 +76,12 @@ export const TITLE_FONT = {
 export const FONT_KIT = "wlu3gtr";
 export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];
 
+// A piece whose title is set by hand: the word in its own face, and what
+// follows in the standard face underneath.
+export const TITLE_OVERRIDE = {
+  "VITAE — GREN": { face: "gloss-drop", word: "GREN", qual: "Vitae series" },
+};
+
 // Words that belong to a whole range rather than one piece.
 export const RANGE_SPIEL = {
   "CREEPING FIGS": SUBJECT_SPIEL.creepingFig,
