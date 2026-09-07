@@ -56,8 +56,7 @@ const GALLERIES = [
 const FINISHES = {
   aluminium: {
     label: "Powder-coated aluminium",
-    note: "Any Dulux or Interpon colour. Black, white and bronze are the usual three. Indoors or out, no maintenance, no staining.",
-    lead: true,
+    note: "Any Dulux or Interpon colour. Indoors or out, no maintenance, no staining.",
   },
   corten: {
     label: "Natural Corten steel",
@@ -238,7 +237,7 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
             const f = FINISHES[m.id];
             if (!f) return "";
             return `<div class="fin"><span class="sw ${m.id}"></span><div>
-              <h3>${esc(f.label)}${f.lead ? ` <em>— most ordered</em>` : ""}</h3>
+              <h3>${esc(f.label)}</h3>
               <p>${esc(f.note)}</p></div></div>`;
           }).join("")}
         </div>
@@ -248,9 +247,9 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
         <h2>Sizes</h2>
         <table>${sizes.map((s) =>
           `<tr><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td></tr>`).join("")}
-          <tr><td>Custom</td><td>Cut to your wall</td><td>On request</td></tr>
+          <tr><td>Customised</td><td>On request</td><td></td></tr>
         </table>
-      </div>` : `<div class="block"><h2>Sizes</h2><table><tr><td>Custom</td><td>Cut to your wall</td><td>On request</td></tr></table></div>`}
+      </div>` : `<div class="block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
 
       <div class="cta">
         <a class="btn solid" href="${base}?piece=${encodeURIComponent(name)}">See pricing</a>
