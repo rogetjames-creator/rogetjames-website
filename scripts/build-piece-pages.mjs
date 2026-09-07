@@ -49,6 +49,33 @@ const pieceSlug = (name) =>
 const img = (src, w) =>
   /^https?:|^data:/.test(src) ? src : `/.netlify/images?url=${encodeURIComponent(src)}&w=${w}&fm=webp&q=82`;
 
+
+// The real pixel size of a local photo, read straight out of the file, so a
+// frame can be given the picture's own shape instead of a guessed one.
+function imageRatio(src) {
+  try {
+    if (!src || /^https?:|^data:/.test(src)) return null;
+    const file = join(ROOT, "public", src.replace(/^\//, ""));
+    if (!existsSync(file)) return null;
+    const buf = readFileSync(file);
+    if (buf.length > 24 && buf.readUInt32BE(0) === 0x89504e47) {           // PNG
+      return buf.readUInt32BE(16) / buf.readUInt32BE(20);
+    }
+    if (buf[0] === 0xff && buf[1] === 0xd8) {                              // JPEG
+      let i = 2;
+      while (i < buf.length) {
+        if (buf[i] !== 0xff) { i++; continue; }
+        const marker = buf[i + 1];
+        if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+          return buf.readUInt16BE(i + 7) / buf.readUInt16BE(i + 5);        // width / height
+        }
+        i += 2 + buf.readUInt16BE(i + 2);
+      }
+    }
+  } catch { /* fall back to the default frame */ }
+  return null;
+}
+
 const GALLERIES = [
   { base: "/wall-art", parent: "Wall Art", data: RANGE_DATA, kind: "wall" },
   { base: "/sculpture", parent: "Sculpture", data: SCULPTURE_DATA, kind: "sculpture" },
@@ -93,6 +120,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
+  const ratio = imageRatio(photos[0]) || 1;
   const biggest = sizes.length ? sizes[sizes.length - 1].dims : "";
 
   const title = `${subject} — ${name} | ROGETjames`;
@@ -178,13 +206,12 @@ nav a:hover{color:var(--cream)}
 @media(min-width:900px){.piece{grid-template-columns:1.35fr 1fr;gap:56px}}
 .shots{display:grid;gap:12px;align-content:start}
 .gal{display:grid;gap:12px;align-content:start}
-.main{position:relative;height:clamp(320px,62vh,660px);border-radius:14px;overflow:hidden;background:var(--pewter)}
-.main .m{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;
-object-fit:contain;opacity:0;transition:opacity .45s ease}
+.main{position:relative;aspect-ratio:var(--shape);border-radius:14px;overflow:hidden;background:var(--pewter)}
+.main .m{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
 .main .m1{opacity:1}
 .thumbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px}
 .thumbs .t{padding:0;border:0;background:var(--pewter);border-radius:10px;overflow:hidden;cursor:pointer;
-aspect-ratio:1/1;outline:1px solid transparent;outline-offset:-1px;transition:outline-color .3s ease}
+aspect-ratio:var(--shape);outline:1px solid transparent;outline-offset:-1px;transition:outline-color .3s ease}
 .thumbs .t img{width:100%;height:100%;object-fit:cover;display:block}
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
@@ -257,7 +284,7 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
 
   <div class="piece">
     <div class="shots">
-      ${photos.length ? `<div class="gal">
+      ${photos.length ? `<div class="gal" style="--shape:${ratio.toFixed(4)}">
         <div class="main">
           ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
         </div>

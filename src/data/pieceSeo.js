@@ -81,7 +81,6 @@ export const INSTALL_TIPS = [
   "When handling try to lift vertically to avoid bending.",
   "Place the artwork on the wall in desired position, mark the designated holes on the wall and drill appropriate holes for fixing.",
   "Mount the art a few centimetres out from the wall for stunning shadows during the day. You can also add lights for shadows at night.",
-  "Check the size of your art piece before you buy. Then, after using painter's tape to mark the size on your wall, step back and reflect on how it would suit your space.",
   "Lead time approximately 3–6 weeks.",
   "Powder coated stand-offs are available to purchase and can be powder-coated to match the piece.",  // no outside supplier is ever named
   "{fixings} standoffs required.",
