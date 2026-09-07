@@ -71,9 +71,10 @@ export const BOTANY = {
 export const TITLE_FONT = {
   BANKSIA: "joschmi",              // BANKSIA.svg
   WANDOO: "adorn-condensed-sans",  // WANDOO.svg
+  PETUNIA: "grange",               // PETUNIA.svg — Grange Medium, stretched 1.21 wide
   // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
-export const FONT_KIT = "wlu3gtr";
+export const FONT_KIT = "jpa3pre";
 export const FULL_TITLE_IN_FACE = [];  // BANKSIA OLDMANIS is drawn — see wordmarks.js
 
 // A piece whose title is set by hand: the word in its own face, and what

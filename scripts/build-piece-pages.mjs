@@ -224,7 +224,7 @@ aspect-ratio:var(--shape);outline:1px solid transparent;outline-offset:-1px;tran
 .thumbs .t img{width:100%;height:100%;object-fit:cover;display:block}
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
-h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
+h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:${titleFont === "grange" ? 500 : 400};letter-spacing:.01em;display:block${titleFont === "grange" ? ";transform:scaleX(1.21);transform-origin:left center" : ""}}
 h1 .mark{display:block;width:min(100%,${wordmark && wordmark.viewBox.split(" ")[2] > 9000 ? 560 : 420}px)}
 h1 .mark svg{width:100%;height:auto;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
