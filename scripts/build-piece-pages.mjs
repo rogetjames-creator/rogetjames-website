@@ -103,17 +103,14 @@ function wordsFor(rangeLabel, name) {
   const subject = seo.s || RANGE_SUBJECT[rangeLabel] || "Laser cut metal wall art";
   // James's own spiel for a subject wins over anything written here.
   const spiel = seo.spiel || (/^BANKSIA/i.test(name) ? SUBJECT_SPIEL.banksia : null);
-  const text =
-    seo.t ||
-    `${subject} by James Roget, cut to order in powder-coated aluminium or natural Corten steel.`;
-  return { subject, text, spiel };
+  return { subject, spiel };
 }
 
 function page({ base, parent, kind }, range, design, imgs, siblings) {
   const name = design.n;
   const slug = pieceSlug(name);
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
-  const { subject, text, spiel } = wordsFor(range.label, name);
+  const { subject, spiel } = wordsFor(range.label, name);
   const botany = BOTANY[name];
   const titleFont = TITLE_FONT[name.split(" ")[0].toUpperCase()] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
@@ -146,7 +143,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
       {
         "@type": "Product",
         name: `${name} — ${subject}`,
-        description: spiel || text,
+        description: spiel || summary,
         url,
         image: photos.map((p) => `${SITE}${p}`),
         brand: { "@type": "Brand", name: "ROGETjames" },
@@ -315,7 +312,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         const [first, ...rest] = name.split(" ");
         return `<span class="face">${esc(first)}</span>${rest.length ? `<span class="qual">${esc(rest.join(" "))}</span>` : ""}`;
       })()}</h1>
-      <p class="lede">${esc(spiel || text)}</p>
+      ${spiel ? `<p class="lede">${esc(spiel)}</p>` : ""}
       ${botany ? `<dl class="botany">
         <div><dt>Common name</dt><dd>${esc(botany.common)}</dd></div>
         <div><dt>Scientific name</dt><dd><i>${esc(botany.scientific)}</i></dd></div>
