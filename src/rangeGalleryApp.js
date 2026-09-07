@@ -261,6 +261,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const twoTone = txt => txt.split(' ').map((w,i)=>`<span class="${i===0?'w1':'w2'}">${w}</span>`).join(' ');
   function ensureVisible(box, el){
     if(!box.classList.contains('of')) return;
+    box.style.scrollBehavior = 'smooth';
     const l=box.scrollLeft, rr=l+box.clientWidth, a=el.offsetLeft, b=a+el.offsetWidth;
     if(b>rr) box.scrollTo({left:b-box.clientWidth+18});
     else if(a<l) box.scrollTo({left:a-18});
@@ -333,11 +334,16 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     // Desktop: the strip has a hidden scrollbar and the page is vertical
     // scroll-snap, so a plain mouse wheel can't reach the overflow thumbs.
     // Translate vertical wheel into horizontal strip scroll when it overflows.
+    // The strip is set to scroll smoothly, which makes a wheel feel sluggish —
+    // every notch animates. Wheel steps go straight to the scroll position, and
+    // travel further per notch, so a long strip crosses quickly.
+    const WHEEL_STEP = 2.6;
     tw.addEventListener('wheel', e => {
       if(!tw.classList.contains('of')) return;
       const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
       if(!d) return;
-      tw.scrollLeft += d; e.preventDefault();
+      tw.style.scrollBehavior = 'auto';
+      tw.scrollLeft += d * WHEEL_STEP; e.preventDefault();
     }, { passive:false });
     // Screens: hover near either end of the thumb strip and it glides that way,
     // faster the closer to the edge — no need to fight the wheel near the ends.
