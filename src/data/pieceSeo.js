@@ -40,17 +40,23 @@ export const SUBJECT_SPIEL = {
 // The plant behind a piece, in James's words. Only where he has given it —
 // never worked out from a photograph.
 export const BOTANY = {
-  "BANKSIA Oldmanis": {
-    common: "Old Man Banksia",
-    scientific: "Banksia serrata",
-    family: "Proteaceae",
-  },
-  WANDOO: {
-    common: "Wandoo",
-    scientific: "Eucalyptus wandoo",
-    family: "Myrtaceae",
-    type: "Eucalyptus (gum) tree",
-  },
+  "BANKSIA Oldmanis": [
+    ["Common name", "Old Man Banksia"],
+    ["Scientific name", "Banksia serrata", { i: true }],
+    ["Family", "Proteaceae"],
+  ],
+  WANDOO: [
+    ["Common name", "Wandoo"],
+    ["Scientific name", "Eucalyptus wandoo", { i: true }],
+    ["Family", "Myrtaceae"],
+    ["Type", "Eucalyptus (gum) tree"],
+  ],
+  WATTLE: [
+    ["Common name", "Wattle"],
+    ["Scientific genus", "Acacia", { i: true }],
+    ["Family", "Fabaceae"],
+    ["Australia's national floral emblem", "Golden Wattle — Acacia pycnantha"],
+  ],
 };
 
 // The face a piece's name is set in — each one taken from James's own SVG
@@ -130,7 +136,11 @@ export const PIECE_SEO = {
   "BANKSIA Free Range — Custom": { s: "Custom banksia metal wall art" },
   "BANKSIA Round": { s: "Round banksia metal wall art" },
   "BANKSIA Deco": { s: "Banksia metal wall panel" },
-  WATTLE: { s: "Wattle metal wall art" },
+  WATTLE: {
+    s: "Wattle metal wall art",
+    spiel: "Wattle is one of ROGETjames most iconic original designs. The Wattle design can also be found in our screens gallery.",
+    links: [["screens gallery", "/screens"]],
+  },
 
   // ── CREEPING FIGS ─────────────────────────────────────────────────────
   AUTUMN: { s: "Creeping fig metal wall art" },

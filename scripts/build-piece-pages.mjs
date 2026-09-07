@@ -104,14 +104,14 @@ function wordsFor(rangeLabel, name) {
   const subject = seo.s || RANGE_SUBJECT[rangeLabel] || "Laser cut metal wall art";
   // James's own spiel for a subject wins over anything written here.
   const spiel = seo.spiel || (/^BANKSIA/i.test(name) ? SUBJECT_SPIEL.banksia : null);
-  return { subject, spiel };
+  return { subject, spiel, links: seo.links || [] };
 }
 
 function page({ base, parent, kind }, range, design, imgs, siblings) {
   const name = design.n;
   const slug = pieceSlug(name);
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
-  const { subject, spiel } = wordsFor(range.label, name);
+  const { subject, spiel, links } = wordsFor(range.label, name);
   const botany = BOTANY[name];
   const firstWord = name.split(" ")[0].toUpperCase();
   const titleFont = TITLE_FONT[firstWord] || null;
@@ -225,6 +225,8 @@ h1 .mark{display:block;width:min(100%,420px)}
 h1 .mark svg{width:100%;height:auto;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
 .lede{color:var(--dim);font-size:16px;margin-top:18px;max-width:52ch}
+.lede a{color:var(--clay-lit);border-bottom:1px solid rgba(212,167,92,.45);padding-bottom:1px}
+.lede a:hover{border-color:var(--clay-lit)}
 .block{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule)}
 .block h2{font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:400}
 .finishes{display:flex;flex-direction:column;gap:14px;margin-top:16px}
@@ -243,7 +245,7 @@ td:last-child{color:var(--faint);font-size:13px;text-align:right;font-family:var
 .botany{margin-top:18px;padding:14px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
 display:flex;flex-direction:column;gap:6px;max-width:52ch}
 .botany div{display:flex;gap:14px;align-items:baseline}
-.botany dt{font-family:var(--jost);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);min-width:130px}
+.botany dt{font-family:var(--jost);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);min-width:150px;flex:none}
 .botany dd{font-size:15px;color:var(--cream)}
 .brand{color:var(--dim);font-size:15px;margin-top:14px;max-width:52ch}
 .opener{border-top:1px solid var(--rule);margin-top:0}
@@ -322,13 +324,10 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         const [first, ...rest] = name.split(" ");
         return `<span class="face">${esc(first)}</span>${rest.length ? `<span class="qual">${esc(rest.join(" "))}</span>` : ""}`;
       })()}</h1>
-      ${spiel ? `<p class="lede">${esc(spiel)}</p>` : ""}
-      ${botany ? `<dl class="botany">
-        <div><dt>Common name</dt><dd>${esc(botany.common)}</dd></div>
-        <div><dt>Scientific name</dt><dd><i>${esc(botany.scientific)}</i></dd></div>
-        <div><dt>Family</dt><dd>${esc(botany.family)}</dd></div>
-        ${botany.type ? `<div><dt>Type</dt><dd>${esc(botany.type)}</dd></div>` : ""}
-      </dl>` : ""}
+      ${spiel ? `<p class="lede">${links.reduce((t, [words, href]) =>
+        t.replace(esc(words), `<a href="${href}">${esc(words)}</a>`), esc(spiel))}</p>` : ""}
+      ${botany ? `<dl class="botany">${botany.map(([label, value, opt]) =>
+        `<div><dt>${esc(label)}</dt><dd>${opt && opt.i ? `<i>${esc(value)}</i>` : esc(value)}</dd></div>`).join("")}</dl>` : ""}
       ${BRAND_SPIEL.map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
 
       ${sizes.length ? `<div class="block">
