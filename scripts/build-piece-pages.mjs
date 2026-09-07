@@ -318,8 +318,11 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
           return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         // A range with its own prefix: CREEPING FIG, then the piece under it.
-        if (rangeTitle) {
-          const rest = name.replace(/^CREEPING FIG(S)?\s*(—|-)?\s*/i, "").trim();
+        // Only for pieces whose name actually starts with that prefix — a
+        // VITAE — GREN keeps its own name.
+        if (rangeTitle && new RegExp(`^${rangeTitle.prefix}`, "i").test(name)) {
+          const rx = new RegExp(`^${rangeTitle.prefix}S?\\s*(—|-)?\\s*`, "i");
+          const rest = name.replace(rx, "").trim();
           return `<span class="face">${esc(rangeTitle.prefix)}</span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         if (!titleFont) return esc(name);
@@ -328,7 +331,8 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
           return `<span class="face">${esc(name.toUpperCase())}</span>`;
         // Otherwise: BANKSIA in the face, the qualifier after it, standard and smaller.
         const [first, ...rest] = name.split(" ");
-        return `<span class="face">${esc(first)}</span>${rest.length ? `<span class="qual">${esc(rest.join(" "))}</span>` : ""}`;
+        const tail = rest.join(" ").replace(/^[—-]\s*/, "");
+        return `<span class="face">${esc(first)}</span>${tail ? `<span class="qual">${esc(tail)}</span>` : ""}`;
       })()}</h1>
       ${spiel ? `<p class="lede">${links.reduce((t, [words, href]) =>
         t.replace(esc(words), `<a href="${href}">${esc(words)}</a>`), esc(spiel))}</p>` : ""}

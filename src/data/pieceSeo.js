@@ -73,12 +73,14 @@ export const TITLE_FONT = {
   WANDOO: "adorn-condensed-sans",  // WANDOO.svg
   // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
-export const FONT_KIT = "loj3gez";
+export const FONT_KIT = "wlu3gtr";
 export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];
 
 // Words that belong to a whole range rather than one piece.
 export const RANGE_SPIEL = {
   "CREEPING FIGS": SUBJECT_SPIEL.creepingFig,
+  BRANCHES:
+    "Gren is Norwegian for branches. This beautiful design is directly inspired by nature, which morphed into a range of formats to really complement a broad scope of settings. Its flow and delicate intricacy is what really makes it an art form.",
 };
 
 export const RANGE_BOTANY = {
@@ -95,6 +97,7 @@ export const RANGE_BOTANY = {
 // title reads CREEPING FIG (singular) with the piece name under it.
 export const RANGE_TITLE = {
   "CREEPING FIGS": { prefix: "CREEPING FIG", face: "pf-marlet-display" },
+  BRANCHES: { prefix: "GREN", face: "gloss-drop" },  // GREN.svg
 };
 
 // "Material and colour options" — opens on the page.
