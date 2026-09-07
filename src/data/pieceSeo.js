@@ -165,7 +165,8 @@ export const PIECE_SEO = {
   // ── AUSTRALIAN NATIVES ────────────────────────────────────────────────
   "BANKSIA Card": { s: "Banksia metal wall art" },
   // Oldmanis carries the Banksia spiel without its closing clause.
-  "BANKSIA Oldmanis": { s: "Banksia metal wall art", spiel: "Redefine your outdoor space with our stunning Banksia outdoor wall art piece, beautifully crafted to showcase the allure of Australia's native flora. Designed in-house, this chic, highly detailed interpretation of the iconic banksia flower adds articulate styling and an elegant posturing to outdoor and indoor settings that behooves an upright piece." },
+  // Runs on from the title — starts on the dots, lower case, deliberately.
+  "BANKSIA Oldmanis": { s: "Banksia metal wall art", spiel: "...redefines an outdoor and indoor space. Beautifully crafted to showcase the allure of Australia's native flora. Designed in-house, this chic, highly detailed interpretation of the iconic banksia flower adds articulate styling and an elegant posturing to outdoor and indoor settings that behooves an upright piece." },
   WANDOO: { s: "Gum leaves metal wall art" },
   "BANKSIA Free Range": { s: "Banksia metal wall art" },
   "BANKSIA Rec Landscape": { s: "Banksia metal wall art" },
