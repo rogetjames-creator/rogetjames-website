@@ -317,8 +317,15 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       const t=document.createElement('div');
       t.className='thumb'+(vv>0?' var':'')+(extraCls?(' '+extraCls):''); t.dataset.d=dd; t.dataset.v=vv; t.title=r.designs[dd].n;
       const im=document.createElement('img'); im.loading='lazy'; im.decoding='async'; im.src=THUMBS[r.designs[dd].imgs[vv]]; im.alt=altOf(r.designs[dd],r,r.designs[dd].imgs[vv]); t.appendChild(im);
-      t.addEventListener('mouseenter',()=>show(dd,vv));
-      t.addEventListener('click',()=>show(dd,vv));
+      // Hover only swaps the big picture once the pointer SETTLES on a thumb.
+      // Sweeping across the strip on the way to "Details & prices" used to swap
+      // the design out from under the click; a short dwell stops that, and the
+      // swap is still instant on a click or a tap.
+      let dwell = null;
+      const clearDwell = () => { if (dwell) { clearTimeout(dwell); dwell = null; } };
+      t.addEventListener('mouseenter', () => { clearDwell(); dwell = setTimeout(() => show(dd, vv), 130); });
+      t.addEventListener('mouseleave', clearDwell);
+      t.addEventListener('click', () => { clearDwell(); show(dd, vv); });
       tw.appendChild(t);
       return t;
     }

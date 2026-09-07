@@ -64,9 +64,10 @@ a.logo i{font-family:Georgia,serif;font-style:italic;font-weight:500}
 .thumbs::-webkit-scrollbar{display:none}
 .thumbs-wrap{position:relative}
 .thumbs-wrap.of::after{content:"";position:absolute;top:0;right:0;bottom:0;width:52px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--bg));opacity:.9}
-.thumb{flex:0 0 auto;width:62px;height:62px;border-radius:9px;overflow:hidden;border:1px solid var(--hair);cursor:pointer;transition:transform .25s,border-color .25s;position:relative}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.thumb:hover{transform:translateY(-4px) scale(1.05);border-color:rgba(237,232,223,.4)}
+.thumb{flex:0 0 auto;width:62px;height:62px;border-radius:9px;overflow:hidden;border:1px solid var(--hair);cursor:pointer;transition:border-color .25s;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.thumb:hover{border-color:rgba(237,232,223,.4)}
+.thumb:hover img{transform:scale(1.08)}
 .thumb.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
 .thumb.var::after{content:"";position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.9}
 /* return to top */
