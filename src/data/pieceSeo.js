@@ -202,7 +202,10 @@ export const PIECE_SEO = {
     s: "Round floral metal wall art",
     spiel: "Rue is a uniquely poised abstract flowered feature that stands alone or in balance with a 3rd.",
   },
-  "RUE the 3rd": { s: "Round floral metal wall art" },
+  "RUE the 3rd": {
+    s: "Round floral metal wall art",
+    spiel: "Rue is a uniquely poised abstract flowered feature that stands alone or in balance with a 3rd.",
+  },
   OLIN: { s: "Round floral metal wall art" },
   PETUNIA: { s: "Floral metal wall art" },
   "DIAMOND BLOOM": { s: "Floral metal wall art" },
