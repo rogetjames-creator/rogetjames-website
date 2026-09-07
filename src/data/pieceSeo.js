@@ -33,6 +33,8 @@ export const BRAND_SPIEL = [
 
 // The spiel for a whole subject — used by every piece it covers.
 export const SUBJECT_SPIEL = {
+  creepingFig:
+    "What originated from a custom design — Creeping Fig Spring — spawned into a growing range of organic free form designs. A quiet wanderer, creeping across the surface like tendrils of art claiming a bare wall.",
   banksia:
     "Redefine your outdoor space with our stunning Banksia outdoor wall art piece, beautifully crafted to showcase the allure of Australia's native flora. Designed in-house, this chic, highly detailed interpretation of the iconic banksia flower adds a touch of natural beauty to your outdoor area, bringing the vibrant essence of the outdoors right to your doorstep.",
 };
@@ -71,8 +73,29 @@ export const TITLE_FONT = {
   WANDOO: "adorn-condensed-sans",  // WANDOO.svg
   // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
-export const FONT_KIT = "idb3goe";
+export const FONT_KIT = "loj3gez";
 export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];
+
+// Words that belong to a whole range rather than one piece.
+export const RANGE_SPIEL = {
+  "CREEPING FIGS": SUBJECT_SPIEL.creepingFig,
+};
+
+export const RANGE_BOTANY = {
+  "CREEPING FIGS": [
+    ["Common name", "Creeping Fig"],
+    ["Scientific name", "Ficus pumila", { i: true }],
+    ["Family", "Moraceae"],
+    ["Type", "Climbing / creeping evergreen vine"],
+  ],
+};
+
+// A range whose pieces are titled "<prefix> — <piece>", the prefix set in its
+// own face. James's CREEPING FIGS.svg is drawn in PF Marlet Display, and the
+// title reads CREEPING FIG (singular) with the piece name under it.
+export const RANGE_TITLE = {
+  "CREEPING FIGS": { prefix: "CREEPING FIG", face: "pf-marlet-display" },
+};
 
 // "Material and colour options" — opens on the page.
 export const MATERIAL_COPY = [

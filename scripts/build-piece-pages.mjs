@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
@@ -103,7 +103,7 @@ function wordsFor(rangeLabel, name) {
   const seo = PIECE_SEO[name] || {};
   const subject = seo.s || RANGE_SUBJECT[rangeLabel] || "Laser cut metal wall art";
   // James's own spiel for a subject wins over anything written here.
-  const spiel = seo.spiel || (/^BANKSIA/i.test(name) ? SUBJECT_SPIEL.banksia : null);
+  const spiel = seo.spiel || RANGE_SPIEL[rangeLabel] || (/^BANKSIA/i.test(name) ? SUBJECT_SPIEL.banksia : null);
   return { subject, spiel, links: seo.links || [] };
 }
 
@@ -112,9 +112,10 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const slug = pieceSlug(name);
   const url = `${SITE}${base}/${rangeSlug(range.label)}/${slug}`;
   const { subject, spiel, links } = wordsFor(range.label, name);
-  const botany = BOTANY[name];
+  const botany = BOTANY[name] || RANGE_BOTANY[range.label];
+  const rangeTitle = RANGE_TITLE[range.label] || null;
   const firstWord = name.split(" ")[0].toUpperCase();
-  const titleFont = TITLE_FONT[firstWord] || null;
+  const titleFont = rangeTitle ? rangeTitle.face : (TITLE_FONT[firstWord] || null);
   const wordmark = WORDMARKS[firstWord] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
@@ -315,6 +316,11 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         if (wordmark) {
           const rest = name.split(" ").slice(1).join(" ");
           return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
+        }
+        // A range with its own prefix: CREEPING FIG, then the piece under it.
+        if (rangeTitle) {
+          const rest = name.replace(/^CREEPING FIG(S)?\s*(—|-)?\s*/i, "").trim();
+          return `<span class="face">${esc(rangeTitle.prefix)}</span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         if (!titleFont) return esc(name);
         // The whole name in the face — as James set it in the artwork.
