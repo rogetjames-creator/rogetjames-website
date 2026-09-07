@@ -464,6 +464,7 @@ const contents = `<!doctype html>
 --clay-lit:#D4A75C;--rule:rgba(237,232,223,.10)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--matt);color:var(--cream);font-family:"DM Sans",sans-serif;font-weight:300;line-height:1.6}
+a{color:inherit;text-decoration:none}
 .wrap{max-width:1200px;margin:0 auto;padding:0 24px}@media(min-width:820px){.wrap{padding:0 48px}}
 h1{font-family:"Syne",sans-serif;font-weight:800;font-size:clamp(30px,4vw,52px);letter-spacing:-.02em;padding-top:56px}
 p.lede{color:var(--dim);max-width:62ch;margin-top:16px;padding-bottom:34px;border-bottom:1px solid var(--rule)}
