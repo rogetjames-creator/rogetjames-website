@@ -153,6 +153,9 @@ ${titleFont ? `<link rel="stylesheet" href="https://use.typekit.net/msz1oxa.css"
 ${JSON.stringify(schema, null, 2)}
 </script>
 <style>
+${photos.length > 1 ? photos.map((_, i) =>
+  `.gal:has(.t${i + 1}:hover) .m${i + 1},.gal:has(.t${i + 1}:focus) .m${i + 1}{opacity:1;z-index:2}
+.gal:has(.t${i + 1}:hover) .t${i + 1},.gal:has(.t${i + 1}:focus) .t${i + 1}{outline-color:var(--clay-lit)}`).join("\n") : ""}
 :root{--matt:#020202;--jet:#0B0B0B;--pewter:#181818;--cream:#EDE8DF;--dim:rgba(237,232,223,.68);
 --faint:rgba(237,232,223,.42);--clay:#9E7134;--clay-lit:#D4A75C;--rule:rgba(237,232,223,.10);
 --syne:"Syne",sans-serif;--jost:"Jost",sans-serif;--body:"DM Sans",sans-serif;
@@ -174,8 +177,15 @@ nav a:hover{color:var(--cream)}
 .piece{display:grid;gap:34px;grid-template-columns:1fr;padding:8px 0 60px}
 @media(min-width:900px){.piece{grid-template-columns:1.35fr 1fr;gap:56px}}
 .shots{display:grid;gap:12px;align-content:start}
-.shot{border-radius:14px;overflow:hidden;background:var(--pewter)}
-.shot img{width:100%;height:auto;display:block}
+.gal{display:grid;gap:12px;align-content:start}
+.main{position:relative;height:clamp(320px,62vh,660px);border-radius:14px;overflow:hidden;background:var(--pewter)}
+.main .m{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;
+object-fit:contain;opacity:0;transition:opacity .45s ease}
+.main .m1{opacity:1}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px}
+.thumbs .t{padding:0;border:0;background:var(--pewter);border-radius:10px;overflow:hidden;cursor:pointer;
+aspect-ratio:1/1;outline:1px solid transparent;outline-offset:-1px;transition:outline-color .3s ease}
+.thumbs .t img{width:100%;height:100%;object-fit:cover;display:block}
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
 h1 .face{font-family:"${"joschmi"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
@@ -247,7 +257,13 @@ footer{border-top:1px solid var(--rule);padding:34px 0 60px;font-family:var(--jo
 
   <div class="piece">
     <div class="shots">
-      ${photos.map((src, i) => `<div class="shot"><img src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} /></div>`).join("")}
+      ${photos.length ? `<div class="gal">
+        <div class="main">
+          ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
+        </div>
+        ${photos.length > 1 ? `<div class="thumbs">${photos.map((src, i) =>
+          `<button class="t t${i + 1}" type="button" aria-label="${esc(`${name}, view ${i + 1}`)}"><img src="${img(src, 400)}" alt="" loading="lazy" /></button>`).join("")}</div>` : ""}
+      </div>` : ""}
     </div>
 
     <div>
