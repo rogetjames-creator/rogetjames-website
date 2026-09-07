@@ -119,7 +119,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const titleFont = override ? override.face
     : rangeTitle ? rangeTitle.face
     : (TITLE_FONT[firstWord] || null);
-  const wordmark = WORDMARKS[firstWord] || null;
+  const wordmark = WORDMARKS[name.toUpperCase()] || WORDMARKS[firstWord] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
@@ -225,7 +225,7 @@ aspect-ratio:var(--shape);outline:1px solid transparent;outline-offset:-1px;tran
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
 h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400;letter-spacing:.01em;display:block}
-h1 .mark{display:block;width:min(100%,420px)}
+h1 .mark{display:block;width:min(100%,${wordmark && wordmark.viewBox.split(" ")[2] > 9000 ? 560 : 420}px)}
 h1 .mark svg{width:100%;height:auto;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
 .lede{color:var(--dim);font-size:16px;margin-top:18px;max-width:52ch}
@@ -321,8 +321,9 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         }
         // Drawn artwork beats a typed name.
         if (wordmark) {
-          const rest = name.split(" ").slice(1).join(" ");
-          return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
+          const whole = !!WORDMARKS[name.toUpperCase()];
+          const rest = whole ? "" : name.split(" ").slice(1).join(" ");
+          return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(whole ? name : firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         // A range with its own prefix: CREEPING FIG, then the piece under it.
         // Only for pieces whose name actually starts with that prefix — a

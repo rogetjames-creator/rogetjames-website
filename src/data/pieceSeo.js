@@ -74,7 +74,7 @@ export const TITLE_FONT = {
   // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
 export const FONT_KIT = "wlu3gtr";
-export const FULL_TITLE_IN_FACE = ["BANKSIA Oldmanis"];
+export const FULL_TITLE_IN_FACE = [];  // BANKSIA OLDMANIS is drawn — see wordmarks.js
 
 // A piece whose title is set by hand: the word in its own face, and what
 // follows in the standard face underneath.
