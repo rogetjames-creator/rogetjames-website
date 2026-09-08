@@ -69,7 +69,7 @@ function Footer() {
           href="/#contact"
           className="inline-block mt-8 border border-clay/70 text-clay-light rounded-full px-8 py-3.5 font-detail text-[11px] uppercase tracking-[0.24em] hover:bg-clay/10 transition-colors"
         >
-          Request a Quote
+          Start a conversation
         </a>
       </div>
     </footer>
@@ -221,7 +221,7 @@ export function ProjectCasePage({ slug }) {
       <Header />
 
       {/* Hero — full colour, full bleed */}
-      <section className="relative h-[72vh] min-h-[500px] w-full overflow-hidden bg-charcoal flex items-end">
+      <section className="relative h-[58vh] min-h-[400px] w-full overflow-hidden bg-charcoal flex items-end">
         <img
           src={netlifyImg(project.hero, { w: 2000, q: 84 })}
           alt={project.name}
@@ -229,7 +229,7 @@ export function ProjectCasePage({ slug }) {
           fetchpriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-matt-black pointer-events-none" />
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-14 md:pb-20">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-8 md:pb-12">
           <span className="pj-h inline-flex items-center gap-2.5 font-detail text-[11px] uppercase tracking-[0.28em] text-clay-light" style={{ opacity: 0 }}>
             <i className="w-[7px] h-[7px] bg-clay not-italic" /> Project
           </span>
@@ -239,12 +239,21 @@ export function ProjectCasePage({ slug }) {
         </div>
       </section>
 
-      {/* Breadcrumb */}
+      {/* Breadcrumb + the way out */}
       <div className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="flex items-center gap-2.5 py-5 font-detail text-xs text-cream/45">
-          <a href="/" className="hover:text-cream/80 transition-colors">Home</a> ›
-          <a href="/projects" className="hover:text-cream/80 transition-colors">Projects</a> ›
-          <span className="text-cream/85">{project.name}</span>
+        <div className="flex items-center justify-between gap-4 flex-wrap py-5">
+          <div className="flex items-center gap-2.5 font-detail text-xs text-cream/45">
+            <a href="/" className="hover:text-cream/80 transition-colors">Home</a> ›
+            <a href="/projects" className="hover:text-cream/80 transition-colors">Projects</a> ›
+            <span className="text-cream/85">{project.name}</span>
+          </div>
+          <a
+            href="/projects"
+            aria-label={`Close ${project.name} and return to Projects`}
+            className="flex-none inline-flex items-center gap-2.5 rounded-full border border-cream/20 px-4 py-2 font-detail text-[11px] uppercase tracking-[0.2em] text-cream hover:border-clay-light hover:text-clay-light transition-colors"
+          >
+            Close <i className="not-italic text-[13px] leading-none text-clay-light">✕</i>
+          </a>
         </div>
       </div>
       <div className="w-full h-px bg-white/10" />
@@ -384,6 +393,12 @@ export function ProjectCasePage({ slug }) {
 
       {/* Previous / next */}
       <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="w-full h-px bg-white/10" />
+        <div className="py-7">
+          <a href="/projects" className="inline-block font-detail text-[13px] uppercase tracking-[0.18em] text-cream border-b border-clay/50 pb-1 hover:text-clay-light hover:border-clay-light transition-colors">
+            ← Return to Projects
+          </a>
+        </div>
         <div className="w-full h-px bg-white/10" />
         <div className="flex justify-between gap-6 py-8 font-detail text-[11px] uppercase tracking-[0.2em] text-cream/50">
           <a href={`/projects?p=${prev.slug}`} className="group">
