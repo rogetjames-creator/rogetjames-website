@@ -482,12 +482,14 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             aria-label={locked ? `${portal.label} — under construction` : portal.label}
           >
             <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
-              {videos ? videos.map((v, i) => (
+              {locked ? (
+                <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 50% 35%, #1b1b1b 0%, #0d0d0d 55%, #050505 100%)" }} />
+              ) : videos ? videos.map((v, i) => (
                 <video key={v.src} src={v.src} autoPlay muted loop playsInline
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
-              )) : portal.slides.map((slide, i) => {
+              )) : (portal.slides || []).map((slide, i) => {
                 const src = typeof slide === "string" ? slide : slide.src;
                 const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
                 const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
