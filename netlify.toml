@@ -173,6 +173,11 @@
   status = 200
 
 [[redirects]]
+  from = "/fonts"
+  to = "/fonts.html"
+  status = 200
+
+[[redirects]]
   from = "/melbourne"
   to = "/melbourne.html"
   status = 200
