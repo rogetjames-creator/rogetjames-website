@@ -81,6 +81,11 @@ export const RANGE_SEO = {
     summary:
       "Laser cut figurative wall art in Corten steel and aluminium — the Vasuki serpent, Mohala blossom panel and Geo Leaf. Made to order in Australia.",
   },
+  NEAZAR: {
+    title: "Knotwork & Pattern Metal Wall Art | ROGETjames",
+    summary:
+      "Laser cut knotwork, city-line and shell pattern wall art in Corten steel or powder-coated aluminium — the Neazar series by James Roget. Made to order in Australia.",
+  },
   PENDANTS: {
     title: "Circle & Orbit Metal Wall Art — Pendants | ROGETjames",
     summary:
@@ -117,4 +122,4 @@ export const RANGE_SEO = {
 
 // The ranges built live from uploaded photos rather than fixed data. They can't
 // have a page written ahead of time, so the build step skips them.
-export const LIVE_RANGES = ["UP CLOSE", "Fire Sculptures", "DISPLAYS", "CLIENT IMAGES", "NEAZAR"];
+export const LIVE_RANGES = ["UP CLOSE", "Fire Sculptures", "DISPLAYS", "CLIENT IMAGES"];

@@ -166,6 +166,7 @@ export const RANGE_SUBJECT = {
   THERUS: "Coastal metal wall art",
   IKONA: "Sculptural metal wall art",
   PENDANTS: "Tall metal wall panel",
+  NEAZAR: "Pattern metal wall art",
   OBLIATIONES: "Round metal wall art",
   BIRDS: "Bird metal wall art",
   RETRO: "Retro metal wall art",
@@ -253,7 +254,7 @@ export const PIECE_SEO = {
   // ── THERUS ────────────────────────────────────────────────────────────
   SEAWEED: { s: "Coastal metal wall art" },
   "ZON ZEE": { s: "Coastal metal wall art" },
-  NEA: { s: "Coastal metal wall art" },
+  NEA: { s: "Shell metal wall art" },
 
   // ── IKONA ─────────────────────────────────────────────────────────────
   VASUKI: { s: "Large sculptural metal wall art" },
@@ -262,10 +263,10 @@ export const PIECE_SEO = {
 
   // ── PENDANTS ──────────────────────────────────────────────────────────
   LIBRATUM: { s: "Tall metal wall panel" },
-  METROPOLIS: { s: "Metal wall panel" },
+  METROPOLIS: { s: "City line metal wall art" },
   BENIN: { s: "Tall metal wall panel" },
   SANUR: { s: "Tall metal wall panel" },
-  SALAMANKA: { s: "Metal wall panel" },
+  SALAMANKA: { s: "Knotwork metal wall art" },
 
   // ── OBLIATIONES ───────────────────────────────────────────────────────
   OBLIATIONES: { s: "Round metal wall art" },
