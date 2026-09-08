@@ -7,6 +7,7 @@ import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
 import { altForSrc } from "../utils/imgAlt";
 import { checkWA, getState, STATE_NAMES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, PIECE_SIZES } from "../data/pricing";
+import { netlifyImg } from "../utils/img";
 
 // Lazy — these three are only used inside the homepage's #collection portal
 // cluster (never by FeatureWall.jsx, which imports WALL_ART_COVERS/DetailCard
@@ -659,7 +660,7 @@ function SlidingThumb({ slides, alt, active, focus }) {
   return (
     <div className="w-full h-full relative">
       {slides.map((src, i) => (
-        <img key={src} src={src} alt={alt} loading="lazy" decoding="async"
+        <img key={src} src={netlifyImg(src, { w: 900, q: 78 })} alt={alt} loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ opacity: i === cur ? 1 : 0, transition: 'opacity 0.8s ease', objectPosition: focus || 'center center' }}
         />
@@ -1278,7 +1279,7 @@ function GridCard({ item, idx, cat, onOpen, onDetail, onDrill, rowActive }) {
       {item.slides ? (
         <SlidingThumb slides={item.slides} alt={imgAlt} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={imgAlt} loading="lazy" decoding="async"
+        <img src={netlifyImg(item.img, { w: 800, q: 78 })} alt={imgAlt} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1309,7 +1310,7 @@ function WallArtCard({ item, idx, series, onOpen, onDetail, onDrill, rowActive }
       {item.slides ? (
         <SlidingThumb slides={item.slides} alt={imgAlt} active={rowActive} focus={item.focus} />
       ) : (
-        <img src={item.img} alt={imgAlt} loading="lazy" decoding="async"
+        <img src={netlifyImg(item.img, { w: 800, q: 78 })} alt={imgAlt} loading="lazy" decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={item.focus ? { objectPosition: item.focus } : undefined} />
       )}
@@ -1539,7 +1540,7 @@ function DrillView({ item, seriesLabel, onClose, onExpand }) {
             <div key={i} onClick={onExpand}
               className="group cursor-pointer aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
               style={{ opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-              <img src={src} alt={pieceAlt(item.name, seriesLabel)} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <img src={netlifyImg(src, { w: 800, q: 78 })} alt={pieceAlt(item.name, seriesLabel)} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
             </div>
           ))}
         </div>
@@ -1829,7 +1830,7 @@ function GalleryContent({ containerRef, query = "", onCloseAll, initialTab }) {
                   className="gallery-card group cursor-pointer rounded-xl overflow-hidden bg-cream-dark relative aspect-square"
                   onClick={() => openLightbox([item], 0, item._series)}
                 >
-                  <img src={item.img} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                  <img src={netlifyImg(item.img, { w: 800, q: 78 })} alt={`${item.name} — ROGETjames`} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                     <p className="text-cream font-heading font-semibold text-xs" style={{ wordSpacing: "-0.05em" }}>{item.name}</p>
@@ -2449,7 +2450,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 {upCloseImages.map((item, i) => (
                   <div key={i} className="group relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80 }}>
-                    <img src={item.src} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img src={netlifyImg(item.src, { w: 800, q: 78 })} alt={item.name || `Up close ${i + 1}`} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                 ))}
               </div>
@@ -2621,7 +2622,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                       <div key={i} onClick={() => { setSearchQuery(""); jumpToItem(it._seriesId, iIdx, 0); }}
                         className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 transition-all duration-200"
                         style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.4s ease forwards", animationDelay: `${(i * 0.04).toFixed(2)}s` }}>
-                        <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <img src={netlifyImg(it.img, { w: 800, q: 78 })} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                           <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                         </div>
@@ -2646,7 +2647,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 <div key={i} onClick={() => { if (it._closeup) { setDetailZoom(it.img); return; } const s = filteredSeries.find(s => s.id === it._seriesId); if (s) { setDrilledSeries(s); setTab(it._seriesId); setCardIdx(iIdx); setSlideIdx(it._slideIdx ?? 0); } }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: `fadeIn 0.6s ease forwards`, animationDelay: `${delay}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={netlifyImg(it.img, { w: 800, q: 78 })} alt={it.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none flex items-end p-1.5">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
                   </div>

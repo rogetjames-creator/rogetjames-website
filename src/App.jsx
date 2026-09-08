@@ -60,10 +60,26 @@ import Services from "./components/Services";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ChatWidget from "./components/ChatWidget";
-const Gallery            = lazy(() => import("./components/Gallery"));
-const BespokeCommissions = lazy(() => import("./components/BespokeCommissions"));
-const DiscoverPortals    = lazy(() => import("./components/DiscoverPortals"));
-const CommissionsSection = lazy(() => import("./components/BespokePortals").then(m => ({ default: m.CommissionsSection })));
+// Everything below the fold waits until the hero has had the connection to
+// itself. Without this the gallery, portals and their code download alongside
+// the hero photograph and hold the opening picture back by seconds. Nothing
+// about the page changes — these sections are off screen until you scroll.
+const afterHero = (load) => () =>
+  new Promise((resolve) => {
+    const go = () => resolve(load());
+    if (typeof window === "undefined") return go();
+    // whichever comes first: the browser goes idle, the visitor scrolls, or 2.5s
+    let done = false;
+    const once = () => { if (done) return; done = true; window.removeEventListener("scroll", once); go(); };
+    window.addEventListener("scroll", once, { once: true, passive: true });
+    setTimeout(once, 2500);
+    if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(once, { timeout: 2500 });
+  });
+
+const Gallery            = lazy(afterHero(() => import("./components/Gallery")));
+const BespokeCommissions = lazy(afterHero(() => import("./components/BespokeCommissions")));
+const DiscoverPortals    = lazy(afterHero(() => import("./components/DiscoverPortals")));
+const CommissionsSection = lazy(afterHero(() => import("./components/BespokePortals").then(m => ({ default: m.CommissionsSection }))));
 
 gsap.registerPlugin(ScrollTrigger);
 

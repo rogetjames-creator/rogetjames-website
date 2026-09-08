@@ -5,6 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 import { useUploadsByKey } from "../utils/mediaUploads";
 import { MEDIA_KEYS } from "../mediaDestinations";
+import { netlifyImg } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -418,10 +419,14 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
   const videos = portal.videos || (portal.video ? [{ src: portal.video, title: portal.videoTitle, detail: portal.videoDetail }] : null);
   const canOpen = videos || portal.popup || portal.popupType;
 
+  // The portals are small circles. Fetch the pictures at the size they are
+  // actually shown, not at full size — same picture, a fraction of the weight.
+  const portalImg = (src) => netlifyImg(src, { w: Math.min(900, Math.round(size * 2.4)), q: 78 });
+
   useEffect(() => {
     portal.slides.forEach(slide => {
       const src = typeof slide === "string" ? slide : slide?.src;
-      if (src) { const img = new Image(); img.src = src; }
+      if (src) { const img = new Image(); img.src = portalImg(src); }
     });
   }, []);
 
@@ -492,7 +497,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
                 const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
                 return (
-                  <img key={i} src={src} alt="" role="presentation" className="absolute inset-0 w-full h-full object-cover"
+                  <img key={i} src={portalImg(src)} alt="" role="presentation" className="absolute inset-0 w-full h-full object-cover"
                     style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} />
                 );
               })}
