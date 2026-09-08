@@ -37,16 +37,6 @@ const NAV_COLS = [
       { label: "Links", href: "#discover-portals", event: "open-discover-portal-links" },
     ],
   },
-  {
-    title: "Locations",
-    links: [
-      { label: "Perth", href: "/perth" },
-      { label: "Melbourne", href: "/melbourne" },
-      { label: "Sydney", href: "/sydney" },
-      { label: "Adelaide", href: "/adelaide" },
-      { label: "Gold Coast", href: "/gold-coast" },
-    ],
-  },
 ];
 
 function scrollTo(href) {
