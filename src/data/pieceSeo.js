@@ -53,6 +53,11 @@ export const BOTANY = {
     ["Family", "Myrtaceae"],
     ["Type", "Eucalyptus (gum) tree"],
   ],
+  "DIAMOND BLOOM": [
+    ["Common name", "Ginkgo / Maidenhair Tree"],
+    ["Scientific name", "Ginkgo biloba", { i: true }],
+    ["Family", "Ginkgoaceae"],
+  ],
   WATTLE: [
     ["Common name", "Wattle"],
     ["Scientific genus", "Acacia", { i: true }],
@@ -74,7 +79,7 @@ export const TITLE_FONT = {
   PETUNIA: "grange",               // PETUNIA.svg — Grange Medium, stretched 1.21 wide
   // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
-export const FONT_KIT = "jpa3pre";
+export const FONT_KIT = "ano2imi";
 export const FULL_TITLE_IN_FACE = [];  // BANKSIA OLDMANIS is drawn — see wordmarks.js
 
 // A piece whose title is set by hand: the word in its own face, and what
@@ -106,6 +111,17 @@ export const RANGE_BOTANY = {
 // A range whose pieces are titled "<prefix> — <piece>", the prefix set in its
 // own face. James's CREEPING FIGS.svg is drawn in PF Marlet Display, and the
 // title reads CREEPING FIG (singular) with the piece name under it.
+// A whole range set in one face — the piece's own name, end to end, no prefix.
+// James picked these from /fonts.
+export const RANGE_FACE = {
+  PENDANTS: { face: "casablanca-urw", weight: 300 },
+  "B EDITIONS": { face: "organda-mn", weight: 700 },
+  JUNGLE: { face: "ars-nova", weight: 400 },
+  THERUS: { face: "ivymode", weight: 400 },
+  BIRDS: { face: "scotch-display-compressed", weight: 500, italic: true },
+  RETRO: { face: "artdeco-mn", weight: 400 },
+};
+
 export const RANGE_TITLE = {
   "CREEPING FIGS": { prefix: "CREEPING FIG", face: "pf-marlet-display" },
   BRANCHES: { prefix: "GREN", face: "gloss-drop" },  // GREN.svg
@@ -209,7 +225,10 @@ export const PIECE_SEO = {
   },
   OLIN: { s: "Round floral metal wall art" },
   PETUNIA: { s: "Floral metal wall art" },
-  "DIAMOND BLOOM": { s: "Floral metal wall art" },
+  "DIAMOND BLOOM": {
+    s: "Ginkgo leaf metal wall art",
+    spiel: "Diamond Bloom is derived from our Shiogi screen. Ginkgo leaves.",
+  },
   FUEILLES: { s: "Round leaf metal wall art" },
   FERLICE: { s: "Round floral metal wall art" },
   "PALM RAJA": { s: "Palm metal wall art" },

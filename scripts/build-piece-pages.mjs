@@ -24,7 +24,7 @@ import { fileURLToPath } from "url";
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE } from "../src/data/pieceSeo.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE, RANGE_FACE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
@@ -115,9 +115,11 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const botany = BOTANY[name] || RANGE_BOTANY[range.label];
   const override = TITLE_OVERRIDE[name] || null;
   const rangeTitle = RANGE_TITLE[range.label] || null;
+  const rangeFace = RANGE_FACE[range.label] || null;
   const firstWord = name.split(" ")[0].toUpperCase();
   const titleFont = override ? override.face
     : rangeTitle ? rangeTitle.face
+    : rangeFace ? rangeFace.face
     : (TITLE_FONT[firstWord] || null);
   const wordmark = WORDMARKS[name.toUpperCase()] || WORDMARKS[firstWord] || null;
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
@@ -224,7 +226,7 @@ aspect-ratio:var(--shape);outline:1px solid transparent;outline-offset:-1px;tran
 .thumbs .t img{width:100%;height:100%;object-fit:cover;display:block}
 .subject{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
 h1{font-family:var(--syne);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.04;margin-top:10px}
-h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:${titleFont === "grange" ? 500 : 400};letter-spacing:.01em;display:block${titleFont === "grange" ? ";transform:scaleX(1.21);transform-origin:left center" : ""}}
+h1 .face{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:${rangeFace ? rangeFace.weight : (titleFont === "grange" ? 500 : 400)};${rangeFace && rangeFace.italic ? "font-style:italic;" : ""}letter-spacing:.01em;display:block${titleFont === "grange" ? ";transform:scaleX(1.21);transform-origin:left center" : ""}}
 h1 .mark{display:block;width:min(100%,${wordmark && wordmark.viewBox.split(" ")[2] > 9000 ? 560 : 420}px)}
 h1 .mark svg{width:100%;height:auto;display:block}
 h1 .qual{display:block;font-family:var(--syne);font-weight:700;font-size:.5em;letter-spacing:-.01em;color:var(--dim);margin-top:6px}
@@ -329,6 +331,8 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
           const rest = whole ? "" : name.split(" ").slice(1).join(" ");
           return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(whole ? name : firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
+        // A range set entirely in one face — the whole name, as chosen.
+        if (rangeFace) return `<span class="face">${esc(name)}</span>`;
         // A range with its own prefix: CREEPING FIG, then the piece under it.
         if (rangeTitle) {
           const rx = new RegExp(`^${rangeTitle.prefix}S?\\s*(—|-)?\\s*`, "i");
