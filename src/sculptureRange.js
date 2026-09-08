@@ -10,11 +10,12 @@ const DEST_TO_LABEL = {
   leafs: "Leaf Sculptures",
   bonbons: "Bon Bons & Genie Bottles",
   fire: "Fire Sculptures",
-  // Displays are OUT of the Sculpture gallery — the photos still show in the
-  // Screens gallery and the Projects portal, which read the same key.
+  // Shared "Displays" set — the same photos also show under DISPLAYS in the
+  // Screens gallery and the Projects portal.
+  displays: "DISPLAYS",
 };
 // Categories shown without any prices/quote (view-only).
-const NO_PRICE_LABELS = ["Fire Sculptures"];
+const NO_PRICE_LABELS = ["Fire Sculptures", "DISPLAYS"];
 
 async function fetchSculptureUploads() {
   try {
@@ -50,7 +51,10 @@ function injectSculptureUploads(data, uploads) {
       const gi = idxOf(u.src);
       if (range.designs.some((d) => d.imgs.includes(gi))) return; // dedupe within the range
       const di = range.designs.length;
-      const cleanName = (u.name || "").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase() || label;
+      // Displays carry NO title — just the photo. Every other range shows the
+      // given name in capitals.
+      const isDisplays = label === "DISPLAYS";
+      const cleanName = isDisplays ? "" : ((u.name || "").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase() || label);
       range.designs.push({ n: cleanName, imgs: [gi], noPrice: u.noPrice });   // appended at the END
       range.flat.push([di, 0]);
       range.count = range.designs.length;
