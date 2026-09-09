@@ -207,7 +207,6 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <button class="addq" id="addQ" disabled>Add to quote</button>
         <p class="addq-hint" id="addqHint">Select a finish and a size to add to your quote.</p>
       </div>
-      <a class="sh-more" id="ovMore" href="#" hidden>More about this design &rarr;</a>
     </div>
   </div>
 </div>
@@ -244,6 +243,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   // True while a visitor who arrived on a range's own address is being settled
   // onto it — the address must not flick back to the gallery's own meanwhile.
   let landing = false;
+  const pieceHref = (rangeLabel, name) => `${basePath}/${rangeSlug(rangeLabel)}/${pieceSlug(name)}`;
   const setAddress = (slug) => {
     if(!basePath || landing) return;
     const next = slug ? `${basePath}/${slug}` : basePath;
@@ -375,7 +375,14 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     stage.addEventListener('touchend',e=>{ const t=e.changedTouches[0], dx=t.clientX-_sx, dy=t.clientY-_sy;
       if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)*1.4){ _swiped=true; step(dx<0?1:-1); } },{passive:true});
     stImg.addEventListener('click',()=>{ if(_swiped){ _swiped=false; return; } step(1); });
-    sec.querySelector('.detail-btn').addEventListener('click',()=>openDetail(ri,curP.d,curP.v));
+    sec.querySelector('.detail-btn').addEventListener('click',()=>{
+      // The design's own page is the details page — its words, its sizes, its
+      // materials and installation notes, and its own See pricing button.
+      // Galleries without pages of their own (Screens) keep the popup.
+      const des=r.designs[curP.d];
+      if(basePath && des && des.n){ window.location.assign(pieceHref(r.label,des.n)); return; }
+      openDetail(ri,curP.d,curP.v);
+    });
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
     const [d0,v0]=r.flat[0];
     // Eagerly load the first couple of ranges' hero images; defer the rest until
@@ -466,6 +473,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
             dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
             // Keep the range behind the popup in step, so closing lands on it.
             handle.show(di,0);
+            if(basePath && des.n){ window.location.assign(pieceHref(handle.r.label,des.n)); return; }
             openDetail(handle.ri,di,0);
           });
           dpWrap.appendChild(b);
@@ -528,7 +536,6 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         ovRange=document.getElementById('ovRange'), ovSub=document.getElementById('ovSub'),
         ovFinish=document.getElementById('ovFinish'), ovSizes=document.getElementById('ovSizes'),
         addQ=document.getElementById('addQ'), addqHint=document.getElementById('addqHint'),
-        ovMore=document.getElementById('ovMore'),
         gateForm=document.getElementById('gateForm'), pc=document.getElementById('pc'),
         gerr=document.getElementById('gerr'), pout=document.getElementById('pout'), ghint=document.getElementById('ghint'),
         pregion=document.getElementById('pregion'), prows=document.getElementById('prows');
@@ -599,14 +606,6 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     gateSetup(); updateAddState();
     // Price-free range: hide the sizes/gate/quote in the detail sheet — just image + name.
     ov.classList.toggle('no-price', isNoPriceRange(RANGES[ri].label) || !!des.noPrice);
-    // Every design has a page of its own — its words, its title face, its
-    // photographs. Send people there from here; nothing else pointed at them.
-    // Only the galleries with a basePath have those pages (Screens does not).
-    if(ovMore){
-      const has = basePath && des.n && des.imgs && des.imgs.length;
-      ovMore.hidden = !has;
-      if(has) ovMore.href = `${basePath}/${rangeSlug(RANGES[ri].label)}/${pieceSlug(des.n)}`;
-    }
     ov.classList.add('open'); document.body.classList.add('locked');
   }
   function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }
@@ -702,6 +701,27 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   // underneath for a second or two. A single jump would be left behind by that
   // and the visitor would end up back at the intro, so hold the range in place
   // until the page stops moving.
+  // "See pricing" on a design's own page comes back here as ?piece=<name>.
+  // Land on that design's range and open its postcode gate — the one place a
+  // price is ever shown.
+  (() => {
+    const wanted=(new URLSearchParams(location.search).get('piece')||'').trim();
+    if(!wanted) return;
+    let found=null;
+    rangeHandles.forEach((h)=>{
+      if(found) return;
+      const di=h.r.designs.findIndex(d=>d.n && d.n.toLowerCase()===wanted.toLowerCase());
+      if(di>=0) found={h,di};
+    });
+    if(!found) return;
+    // Drop the parameter so a refresh or a share doesn't re-open the gate.
+    try{ history.replaceState(null,'',location.pathname+location.hash); }catch{/* ignore */}
+    if(found.h.sec._initStage){ found.h.sec._initStage(); found.h.sec._initStage=null; }
+    found.h.show(found.di,0);
+    window.scrollTo(0,found.h.sec.offsetTop);
+    setTimeout(()=>openDetail(found.h.ri,found.di,0),400);
+  })();
+
   if(wantedSlug){
     const target=rangeHandles.find(h=>rangeSlug(h.r.label)===wantedSlug);
     if(target){

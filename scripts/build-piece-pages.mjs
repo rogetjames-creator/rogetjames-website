@@ -23,7 +23,7 @@ import { fileURLToPath } from "url";
 
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
-import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
+import { PIECE_SIZES, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "../src/data/pricing.js";
 import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE, RANGE_FACE, PIECE_FACE, DEFAULT_FACE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { pieceSlug } from "../src/utils/pieceSlug.js";
@@ -31,6 +31,10 @@ import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
 
 const PREVIEW = false;
+
+// The ranges the galleries show no price for — kept in step with
+// src/wall-art.jsx (NO_PRICE_RANGES) and src/sculptureRange.js (NO_PRICE_LABELS).
+const NO_PRICE_RANGES = ["CUSTOM", "Fire Sculptures", "DISPLAYS"];
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -90,7 +94,13 @@ const FINISHES = {
 function sizesFor(name) {
   const tiers = PIECE_SIZES[name];
   if (!tiers || !tiers.length) return [];
-  return tiers.map((t) => ({ label: t.label, dims: t.dims, fixings: t.fixings }));
+  // Both prices travel with the size but are never printed into the page —
+  // they are read by the gate's script only once a postcode has been entered.
+  return tiers.map((t) => ({
+    label: t.label, dims: t.dims, fixings: t.fixings,
+    wa: priceFor(t, "aluminium", true),
+    other: priceFor(t, "aluminium", false),
+  }));
 }
 
 function wordsFor(rangeLabel, name) {
@@ -127,6 +137,9 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const photos = design.imgs.map((i) => imgs[i]).filter(Boolean);
   const hero = photos[0];
   const sizes = sizesFor(name);
+  // Ranges the galleries price, and the finishes each gallery offers.
+  const noPrice = NO_PRICE_RANGES.includes(range.label) || !!design.noPrice || !sizes.length;
+  const cortenOnly = base === "/sculpture";
   const ratio = imageRatio(photos[0]) || 1;
   const biggest = sizes.length ? sizes[sizes.length - 1].dims : "";
 
@@ -278,6 +291,25 @@ font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:upper
 .btn.solid{background:rgba(158,113,52,.14)}
 .btn:hover{background:rgba(158,113,52,.22)}
 .gate{font-family:var(--jost);font-size:11px;letter-spacing:.1em;color:var(--faint);margin-top:12px;text-transform:uppercase}
+.pricing{margin-top:20px;border:1px solid var(--rule);border-radius:14px;padding:20px;background:rgba(0,0,0,.22);max-width:520px}
+.pricing[hidden]{display:none}
+.plab{font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
+.phint{font-size:12px;color:var(--dim);margin-top:6px}
+.finishes{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.chip{font-family:var(--jost);font-size:11px;letter-spacing:.06em;color:var(--dim);border:1px solid rgba(237,232,223,.22);
+border-radius:30px;padding:9px 15px;background:none;cursor:pointer;transition:.2s}
+.chip:hover{border-color:rgba(237,232,223,.45);color:var(--cream)}
+.chip.sel{border-color:var(--clay-lit);color:var(--cream);background:rgba(158,113,52,.18)}
+#pcForm{display:flex;gap:8px}
+#pcIn{flex:1;min-width:0;background:#0c0b0a;border:1px solid rgba(237,232,223,.18);border-radius:9px;color:var(--cream);
+font-family:var(--body);font-size:14px;padding:11px 13px;letter-spacing:.12em}
+#pcIn:focus{outline:none;border-color:var(--clay-lit)}
+.go{background:rgba(158,113,52,.9);color:#fff;border:none;border-radius:9px;padding:0 18px;cursor:pointer;
+font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.go:hover{background:var(--clay-lit)}
+.perr{color:#d98b6a;font-size:11px;margin-top:8px;min-height:13px}
+.pnote{font-size:11px;color:var(--faint);margin-top:12px;line-height:1.5}
+td.price{text-align:right;color:var(--clay-lit);font-variant-numeric:tabular-nums;letter-spacing:.06em;white-space:nowrap}
 .related{border-top:1px solid var(--rule);padding:48px 0 70px}
 .rel-grid{display:grid;gap:16px;grid-template-columns:repeat(2,1fr);margin-top:20px}
 @media(min-width:820px){.rel-grid{grid-template-columns:repeat(4,1fr)}}
@@ -362,9 +394,9 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
 
       ${sizes.length ? `<div class="block">
         <h2>Sizes</h2>
-        <table>${sizes.map((s) =>
-          `<tr><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td></tr>`).join("")}
-          <tr><td>Customised</td><td>On request</td><td></td></tr>
+        <table>${sizes.map((s, i) =>
+          `<tr><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td><td class="price" data-i="${i}"></td></tr>`).join("")}
+          <tr><td>Customised</td><td>On request</td><td></td><td class="price"></td></tr>
         </table>
       </div>` : `<div class="block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
 
@@ -398,9 +430,24 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
       </details>` : ""}
 
       <div class="cta">
-        <a class="btn solid" href="${base}?piece=${encodeURIComponent(name)}">See pricing</a>
+        ${noPrice ? "" : `<button class="btn solid" id="seePricing" type="button">See pricing</button>`}
         <a class="btn" href="/#contact">Enquire</a>
       </div>
+      ${noPrice ? "" : `
+      <div class="pricing" id="pricing" hidden>
+        <p class="plab">Pricing</p>
+        <p class="phint" id="phint">Choose a finish, then enter your postcode to see pricing for your area.</p>
+        <div class="finishes" id="finishes">
+          ${cortenOnly ? "" : `<button class="chip" type="button" data-fin="Aluminium — Powder Coated">Aluminium — Powder Coated</button>`}
+          <button class="chip" type="button" data-fin="Natural Corten Steel">Natural Corten Steel</button>
+        </div>
+        <form id="pcForm" autocomplete="off">
+          <input id="pcIn" inputmode="numeric" maxlength="4" placeholder="Postcode" aria-label="Postcode" />
+          <button class="go" type="submit">Show pricing</button>
+        </form>
+        <p class="perr" id="perr"></p>
+        <p class="pnote" id="pnote" hidden>Prices are shown against each size above. Fixings &amp; freight to be confirmed.</p>
+      </div>`}
       <p class="gate">Pricing opens once you enter your postcode</p>
     </div>
   </div>
@@ -416,6 +463,67 @@ ${siblings.length ? `<div class="related"><div class="wrap">
 </div></div>` : ""}
 
 <footer><div class="wrap"><a class="back" href="${base}/${rangeSlug(range.label)}">← Return to ${esc(range.label)}</a></div></footer>
+${noPrice ? "" : `<script>
+(function(){
+  // The postcode gate. A price is never in the page until a postcode has been
+  // entered, and never in the address. The two postcode functions below are
+  // the gallery's own, written out at build time, so they cannot drift from it.
+  var SIZES = ${JSON.stringify(sizes.map((z) => ({ wa: z.wa, other: z.other })))};
+  var NAMES = ${JSON.stringify(STATE_NAMES)};
+  var checkWA = ${checkWA.toString()};
+  var getState = ${getState.toString()};
+  var KEY = "roj_postcode";
+  var open = document.getElementById("seePricing");
+  var box  = document.getElementById("pricing");
+  var hint = document.getElementById("phint");
+  var errE = document.getElementById("perr");
+  var note = document.getElementById("pnote");
+  var form = document.getElementById("pcForm");
+  var input= document.getElementById("pcIn");
+  var chips= [].slice.call(document.querySelectorAll("#finishes .chip"));
+  var cells= [].slice.call(document.querySelectorAll("td.price[data-i]"));
+  var finish = null, info = null;
+  try { var raw = localStorage.getItem(KEY); if (raw) info = JSON.parse(raw); } catch (e) { info = null; }
+  var region = function(){ return (info && (NAMES[info.state] || info.state)) || "Australia"; };
+  var locked = function(){ return !!(info && info.postcode); };
+
+  function paint(){
+    if (!locked() || !finish) { cells.forEach(function(c){ c.textContent = ""; }); note.hidden = true; return; }
+    cells.forEach(function(c){
+      var row = SIZES[+c.dataset.i] || {};
+      var v = info.isWA ? row.wa : row.other;
+      c.textContent = (v || v === 0) ? "A$" + Number(v).toLocaleString() : "POA";
+    });
+    note.hidden = false;
+    hint.textContent = "Prices for " + region() + " — " + finish + ".";
+  }
+  function setHint(){
+    if (locked()) { form.hidden = true; hint.textContent = "Prices for " + region() + ". Choose a finish."; }
+    else { form.hidden = false; hint.textContent = "Choose a finish, then enter your postcode to see pricing for your area."; }
+  }
+  if (open) open.addEventListener("click", function(){
+    box.hidden = false; setHint(); paint();
+    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (!locked()) setTimeout(function(){ input.focus(); }, 350);
+  });
+  chips.forEach(function(c){
+    c.addEventListener("click", function(){
+      finish = c.dataset.fin;
+      chips.forEach(function(x){ x.classList.toggle("sel", x === c); });
+      errE.textContent = ""; paint();
+    });
+  });
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    if (!finish) { errE.textContent = "Select a finish first."; return; }
+    var v = (input.value || "").trim();
+    if (!/^\\d{4}$/.test(v)) { errE.textContent = "Enter a 4-digit Australian postcode."; return; }
+    info = { postcode: v, isWA: checkWA(v), state: getState(v), isAdmin: false };
+    try { localStorage.setItem(KEY, JSON.stringify(info)); } catch (err) { /* private browsing */ }
+    errE.textContent = ""; form.hidden = true; paint();
+  });
+})();
+</script>`}
 </body>
 </html>`;
 }
