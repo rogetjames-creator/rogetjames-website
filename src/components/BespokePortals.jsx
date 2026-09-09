@@ -177,8 +177,16 @@ export function CommissionsSection() {
     [stripSeed, concreteImages]
   );
   const halfway    = Math.ceil(stripImages.length / 2);
-  const leftDup    = [...stripImages.slice(0, halfway), ...stripImages.slice(0, halfway)];
-  const rightDup   = [...stripImages.slice(halfway),    ...stripImages.slice(halfway)];
+  const leftHalf   = stripImages.slice(0, halfway);
+  const rightHalf  = stripImages.slice(halfway);
+  const leftDup    = [...leftHalf,  ...leftHalf];
+  const rightDup   = [...rightHalf, ...rightHalf];
+  // Each half loops its own set, so a fixed time would move the shorter half
+  // slower than the longer one — the two sides visibly drifting apart. Timing
+  // each half by how many pictures it carries keeps both at one speed.
+  const SECS_PER_PICTURE = 4.6;
+  const leftSecs   = `${(leftHalf.length  * SECS_PER_PICTURE).toFixed(1)}s`;
+  const rightSecs  = `${(rightHalf.length * SECS_PER_PICTURE).toFixed(1)}s`;
 
   // A marquee that keeps running while nobody is looking at it costs frames
   // everywhere else on the page. Stop it whenever the section is off screen.
@@ -310,7 +318,7 @@ export function CommissionsSection() {
 
           {/* Left half of the strip */}
           <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s", animationPlayState: stripVisible ? "running" : "paused" }}>
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: leftSecs, animationPlayState: stripVisible ? "running" : "paused" }}>
               {leftDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
                   <img src={netlifyImg(src, PORTAL_IMG)} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" decoding="async" fetchPriority="low" />
@@ -324,7 +332,7 @@ export function CommissionsSection() {
 
           {/* Right half of the strip — runs the same way, left to right */}
           <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s", animationPlayState: stripVisible ? "running" : "paused" }}>
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: rightSecs, animationPlayState: stripVisible ? "running" : "paused" }}>
               {rightDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
                   <img src={netlifyImg(src, PORTAL_IMG)} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" decoding="async" fetchPriority="low" />
