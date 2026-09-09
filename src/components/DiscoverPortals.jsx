@@ -423,6 +423,16 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
   // actually shown, not at full size — same picture, a fraction of the weight.
   const portalImg = (src) => netlifyImg(src, { w: Math.min(900, Math.round(size * 2.4)), q: 78 });
 
+  // The frame around a portal was a fixed 9px whatever the circle's size. On a
+  // full-size portal that reads as a fine rim; on a portal shrunk down for a
+  // phone the same 9px reads as a heavy border. Below full size the frame now
+  // scales with the circle so the proportions stay the same. At 166px and up
+  // the numbers are identical to before — every portal on the desktop site is
+  // untouched.
+  const framePad  = Math.max(3, Math.min(9, Math.round(size * 9 / 166)));
+  const ringInner = Math.max(2, Math.min(4, Math.round(size * 4 / 166)));
+  const ringOuter = Math.max(3, Math.min(6, Math.round(size * 6 / 166)));
+
   useEffect(() => {
     portal.slides.forEach(slide => {
       const src = typeof slide === "string" ? slide : slide?.src;
@@ -473,15 +483,15 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             className={`group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-black ${locked ? "cursor-not-allowed" : "cursor-pointer"}`}
             style={{
               borderRadius: "50%",
-              padding: "9px",
+              padding: `${framePad}px`,
               background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
               boxShadow: (glowing && !noGlow)
                 ? goldHover
-                  ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)"
+                  ? `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)`
                   : ringOnly
-                    ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.55)"
-                    : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)"
-                : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
+                    ? `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.55)`
+                    : `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)`
+                : `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.22)`,
               transition: "box-shadow 0.6s ease",
             }}
             aria-label={locked ? `${portal.label} — under construction` : portal.label}
@@ -524,7 +534,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               </div>
             </div>
           {arcLabel && (() => {
-            const fr = 9; // frame padding px
+            const fr = framePad; // frame padding px
             // SVG covers the image circle only (inside the frame padding)
             const cx = size / 2;
             const cy = size / 2;
@@ -647,7 +657,7 @@ export default function DiscoverPortals() {
               <MiniPortal
                 key={portal.id}
                 portal={p}
-                size={isMobile ? Math.round((portal.size ?? 166) * 0.4) : (portal.size ?? 166)}
+                size={isMobile ? Math.round((portal.size ?? 166) * 0.37) : (portal.size ?? 166)}
                 onOpen={getOnOpen(portal)}
                 hoverLabel="View"
               />
