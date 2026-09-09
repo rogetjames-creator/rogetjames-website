@@ -254,7 +254,9 @@ export function CommissionsSection() {
 
   return (
     <section id="bespoke" ref={sectionRef} className="bg-graphite">
-      <div className="px-8 pt-12 pb-10 text-center">
+      {/* Extra bottom space on desktop only — the Sculpture portal is lifted up
+          into the strip and would otherwise sit right on the Bespoke title. */}
+      <div className="px-8 pt-12 pb-10 md:pb-20 text-center">
         <span className="font-detail text-xs text-cream/55 uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
           <span className="inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Bespoke</span>
