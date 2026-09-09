@@ -29,7 +29,7 @@ import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
 
-const PREVIEW = true;
+const PREVIEW = false;
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -489,8 +489,10 @@ a.card .tags i.none{color:rgba(237,232,223,.3);border-color:rgba(237,232,223,.18
 footer{padding:60px 0;color:var(--faint);font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
 </style></head><body><div class="wrap">
 <h1>Every piece, its own page</h1>
-<p class="lede">${written} pages, one per catalogued design. Hidden from Google and not in the sitemap
-until you say they go live. Click any piece to open it. The tags say what each one has so far —
+<p class="lede">${written} pages, one per catalogued design. ${PREVIEW
+  ? "Hidden from Google and not in the sitemap until you say they go live."
+  : "Live — every one is open to Google and listed in the sitemap."}
+Click any piece to open it. The tags say what each one has so far —
 <b>font</b> its own title face, <b>words</b> your spiel, <b>plant</b> its botanical lines. Keep this page
 open as your list; it rebuilds every time the site does.</p>
 ${groups.map((g) => {
