@@ -80,6 +80,11 @@ export const TITLE_FONT = {
   // WATTLE is drawn, not typed — see src/data/wordmarks.js.
 };
 export const FONT_KIT = "ano2imi";
+
+// The face used by anything that has not been given one of its own — no
+// wordmark drawn for it, no face set for its range, no face set for its name.
+// NEAZAR, IKONA and the rest sit here until James picks something for them.
+export const DEFAULT_FACE = { face: "ivymode", weight: 400 };
 export const FULL_TITLE_IN_FACE = [];  // BANKSIA OLDMANIS is drawn — see wordmarks.js
 
 // A piece whose title is set by hand: the word in its own face, and what
