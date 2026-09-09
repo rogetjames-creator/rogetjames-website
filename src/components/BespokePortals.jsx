@@ -116,6 +116,13 @@ const SIDE_PORTAL_CONCEPTS = {
 // is not clickable, exactly as the portals themselves still are.
 const slideSrc = (s) => (typeof s === "string" ? s : s?.src);
 
+// The strip asks for its photos at exactly the size the 170px portals ask for
+// (MiniPortal uses size x 2.4). Same address, so the strip and the portals
+// share one download instead of fetching two different sizes of the same
+// picture — on a page already carrying ~200 images that is the difference
+// between the strip filling in at once and trickling in.
+const PORTAL_IMG = { w: 408, q: 78 };
+
 const BESPOKE_STRIP_IMAGES = [
   ...SIDE_PORTAL_RIGHT.slides,
   ...SIDE_PORTAL_PROJECTS.slides,
@@ -172,6 +179,17 @@ export function CommissionsSection() {
   const halfway    = Math.ceil(stripImages.length / 2);
   const leftDup    = [...stripImages.slice(0, halfway), ...stripImages.slice(0, halfway)];
   const rightDup   = [...stripImages.slice(halfway),    ...stripImages.slice(halfway)];
+
+  // A marquee that keeps running while nobody is looking at it costs frames
+  // everywhere else on the page. Stop it whenever the section is off screen.
+  const [stripVisible, setStripVisible] = useState(false);
+  useEffect(() => {
+    const el = stripAreaRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => setStripVisible(e.isIntersecting), { rootMargin: "200px" });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   // Gate reveal — two black panels slide apart from the centre on scroll in,
   // the same 8s linear opening used on the Collection strip.
@@ -292,10 +310,10 @@ export function CommissionsSection() {
 
           {/* Left half of the strip */}
           <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s" }}>
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s", animationPlayState: stripVisible ? "running" : "paused" }}>
               {leftDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                  <img src={netlifyImg(src, { w: 440, q: 78 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, PORTAL_IMG)} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" decoding="async" fetchPriority="low" />
                 </div>
               ))}
             </div>
@@ -306,10 +324,10 @@ export function CommissionsSection() {
 
           {/* Right half of the strip — runs the same way, left to right */}
           <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s" }}>
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s", animationPlayState: stripVisible ? "running" : "paused" }}>
               {rightDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                  <img src={netlifyImg(src, { w: 440, q: 78 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, PORTAL_IMG)} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" decoding="async" fetchPriority="low" />
                 </div>
               ))}
             </div>
