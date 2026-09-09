@@ -120,11 +120,19 @@ export const RANGE_BOTANY = {
 // James picked these from /fonts.
 export const RANGE_FACE = {
   PENDANTS: { face: "casablanca-urw", weight: 300 },
+  NEAZAR: { face: "casablanca-urw", weight: 300 },
   "B EDITIONS": { face: "organda-mn", weight: 700 },
+  OBLIATIONES: { face: "organda-mn", weight: 700 },
   JUNGLE: { face: "ars-nova", weight: 400 },
   THERUS: { face: "ivymode", weight: 400 },
   BIRDS: { face: "scotch-display-compressed", weight: 500, italic: true },
   RETRO: { face: "artdeco-mn", weight: 400 },
+};
+
+// A single piece in its own face, overriding whatever its range is set in.
+// Shaped exactly like RANGE_FACE.
+export const PIECE_FACE = {
+  JEAGER: { face: "organda-mn", weight: 700 },   // Organda MN Bold, inside RETRO
 };
 
 export const RANGE_TITLE = {
