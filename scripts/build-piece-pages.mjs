@@ -26,6 +26,7 @@ import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS } from "../src/data/pricing.js";
 import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE, RANGE_FACE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
+import { pieceSlug } from "../src/utils/pieceSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
 
@@ -38,13 +39,6 @@ const SITE = "https://rogetjames.com";
 const esc = (s) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-// A piece's address: /wall-art/<range>/<piece>
-const pieceSlug = (name) =>
-  String(name)
-    .toLowerCase()
-    .replace(/—/g, "-")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 
 // Serve photos through the Netlify image service, same as the galleries.
 const img = (src, w) =>

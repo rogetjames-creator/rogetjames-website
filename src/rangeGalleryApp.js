@@ -3,6 +3,7 @@
 // label, current nav item and catalogue differ.
 import { createElement } from "react";
 import { createRoot } from "react-dom/client";
+import { pieceSlug } from "./utils/pieceSlug.js";
 import { netlifyImg } from "./utils/img";
 import CatPageViewer from "./components/CatPageViewer";
 import { RANGE_CSS } from "./components/rangeGalleryStyles";
@@ -206,6 +207,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         <button class="addq" id="addQ" disabled>Add to quote</button>
         <p class="addq-hint" id="addqHint">Select a finish and a size to add to your quote.</p>
       </div>
+      <a class="sh-more" id="ovMore" href="#" hidden>More about this design &rarr;</a>
     </div>
   </div>
 </div>
@@ -526,6 +528,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         ovRange=document.getElementById('ovRange'), ovSub=document.getElementById('ovSub'),
         ovFinish=document.getElementById('ovFinish'), ovSizes=document.getElementById('ovSizes'),
         addQ=document.getElementById('addQ'), addqHint=document.getElementById('addqHint'),
+        ovMore=document.getElementById('ovMore'),
         gateForm=document.getElementById('gateForm'), pc=document.getElementById('pc'),
         gerr=document.getElementById('gerr'), pout=document.getElementById('pout'), ghint=document.getElementById('ghint'),
         pregion=document.getElementById('pregion'), prows=document.getElementById('prows');
@@ -596,6 +599,14 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     gateSetup(); updateAddState();
     // Price-free range: hide the sizes/gate/quote in the detail sheet — just image + name.
     ov.classList.toggle('no-price', isNoPriceRange(RANGES[ri].label) || !!des.noPrice);
+    // Every design has a page of its own — its words, its title face, its
+    // photographs. Send people there from here; nothing else pointed at them.
+    // Only the galleries with a basePath have those pages (Screens does not).
+    if(ovMore){
+      const has = basePath && des.n && des.imgs && des.imgs.length;
+      ovMore.hidden = !has;
+      if(has) ovMore.href = `${basePath}/${rangeSlug(RANGES[ri].label)}/${pieceSlug(des.n)}`;
+    }
     ov.classList.add('open'); document.body.classList.add('locked');
   }
   function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }

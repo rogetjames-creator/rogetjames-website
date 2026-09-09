@@ -137,6 +137,11 @@ a.logo i{font-family:Georgia,serif;font-style:italic;font-weight:500}
 .addq:disabled{opacity:.4;cursor:not-allowed}
 .addq.added{background:#3f6f4a}
 .addq-hint{font-size:11px;color:var(--cream-dim);text-align:center;margin:0}
+/* "More about this design" — to that design's own page. Stays visible on a
+   price-free range, where the sizes/gate/quote are all hidden. */
+.sh-more{display:inline-flex;align-items:center;gap:9px;margin-top:22px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(192,140,70,.45);padding-bottom:5px;transition:.2s}
+.sh-more:hover{color:var(--cream);border-bottom-color:var(--cream)}
+.sh-more[hidden]{display:none}
 /* quote pill in top bar */
 .qpill{display:none;align-items:center;gap:8px;padding:9px 16px;border-radius:30px;border:1px solid #c08c46;background:#9E7134;color:#F2F0E9;font-family:inherit;font-size:10px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
 .qpill.show{display:inline-flex}
