@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
+import { netlifyImg } from "../utils/img";
 import { trackGalleryOpen } from "../utils/trackGallery";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -294,7 +295,7 @@ export function CommissionsSection() {
             <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s" }}>
               {leftDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, { w: 440, q: 78 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>
@@ -308,7 +309,7 @@ export function CommissionsSection() {
             <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s" }}>
               {rightDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, { w: 440, q: 78 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>
