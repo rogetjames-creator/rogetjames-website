@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 import { trackGalleryOpen } from "../utils/trackGallery";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
@@ -105,6 +109,28 @@ const SIDE_PORTAL_CONCEPTS = {
   ],
 };
 
+// The sliding strip behind the Sculpture portal shows the pictures from every
+// Bespoke portal at once — Sculpture, Projects, Concepts, Commissions, and any
+// Concrete uploads, which are added at render time. Decorative only: the strip
+// is not clickable, exactly as the portals themselves still are.
+const slideSrc = (s) => (typeof s === "string" ? s : s?.src);
+
+const BESPOKE_STRIP_IMAGES = [
+  ...SIDE_PORTAL_RIGHT.slides,
+  ...SIDE_PORTAL_PROJECTS.slides,
+  ...SIDE_PORTAL_CONCEPTS.slides,
+  ...COMMISSIONS_GALLERY.map((i) => i.src),
+].map(slideSrc).filter(Boolean);
+
+const shuffled = (arr) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
 // Private owner preview. Sculpture is open to the public; the remaining
 // Bespoke portals (Projects, Commissions, Concepts) are locked ("Under
 // Construction"). James unlocks those on the live site by visiting once with
@@ -130,6 +156,35 @@ export function CommissionsSection() {
     () => ({ ...SIDE_PORTAL_CONCRETE, slides: concreteImages.map((i) => i.img) }),
     [concreteImages]
   );
+
+  // Sliding strip — same shape as the Collection strip on the home page, but
+  // both halves run the one way, left to right. Shuffled once per visit.
+  const sectionRef   = useRef(null);
+  const stripAreaRef = useRef(null);
+  const gateLeftRef  = useRef(null);
+  const gateRightRef = useRef(null);
+  const [stripSeed] = useState(() => shuffled(BESPOKE_STRIP_IMAGES));
+  const stripImages = useMemo(
+    () => (concreteImages.length ? shuffled([...stripSeed, ...concreteImages.map((i) => i.img)]) : stripSeed),
+    [stripSeed, concreteImages]
+  );
+  const halfway    = Math.ceil(stripImages.length / 2);
+  const leftDup    = [...stripImages.slice(0, halfway), ...stripImages.slice(0, halfway)];
+  const rightDup   = [...stripImages.slice(halfway),    ...stripImages.slice(halfway)];
+
+  // Gate reveal — two black panels slide apart from the centre on scroll in,
+  // the same 8s linear opening used on the Collection strip.
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (!gateLeftRef.current || !gateRightRef.current || !stripAreaRef.current) return;
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: stripAreaRef.current, start: "top bottom", toggleActions: "play none none none" },
+      });
+      tl.to(gateLeftRef.current,  { x: "-100%", duration: 8, ease: "none" }, 0);
+      tl.to(gateRightRef.current, { x: "100%",  duration: 8, ease: "none" }, 0);
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
 
   // Opening one of these popups is a gallery view — count it for /stats.
   const openAndCount = (setter, name) => () => { trackGalleryOpen(name); setter(true); };
@@ -198,7 +253,7 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" className="bg-graphite">
+    <section id="bespoke" ref={sectionRef} className="bg-graphite">
       <div className="px-8 pt-12 pb-10 text-center">
         <span className="font-detail text-xs text-cream/55 uppercase tracking-[0.2em]">Commissions</span>
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3">
@@ -218,15 +273,63 @@ export function CommissionsSection() {
         )}
       </div>
 
-      {/* Desktop — 4 portals in a row (Screens removed) */}
-      <div className="bg-matt-black relative hidden md:flex items-center justify-center gap-24 py-10">
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={170} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
-        <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
-        {concreteImages.length > 0 && (
-          <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
-        )}
+      {/* Desktop — laid out like the Collection section on the home page:
+          Sculpture floats in the centre of a sliding strip at the same size and
+          in the same place as Wall Art there, with Projects, Concepts and
+          Commissions in a row beneath at the size they have always been. */}
+      <div className="bg-matt-black relative hidden md:flex flex-col items-center">
+
+        {/* Faint rule above strip */}
+        <div className="w-full h-px bg-white/20 mb-4" />
+
+        <div ref={stripAreaRef} className="relative flex items-stretch h-52 w-full px-0 gap-0">
+          {/* Gate panels — slide outward from centre on scroll into view */}
+          <div ref={gateLeftRef}  className="absolute inset-y-0 left-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
+          <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
+
+          {/* Left half of the strip */}
+          <div className="flex-1 overflow-hidden" aria-hidden="true">
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s" }}>
+              {leftDup.map((src, i) => (
+                <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
+                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Centre spacer — keeps strip images clear of the portal column */}
+          <div className="flex-none" style={{ width: "338px" }} />
+
+          {/* Right half of the strip — runs the same way, left to right */}
+          <div className="flex-1 overflow-hidden" aria-hidden="true">
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: "78s" }}>
+              {rightDup.map((src, i) => (
+                <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
+                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Faint rule below strip */}
+        <div className="w-full h-px bg-white/20 mt-4" />
+
+        {/* Negative margin lifts Sculpture up to float in the strip centre —
+            the same -274px the Wall Art portal uses in the Collection. */}
+        <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
+          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={288} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+
+          <div className="flex items-center justify-center gap-24">
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : undefined} />
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
+            <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
+            {concreteImages.length > 0 && (
+              <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="w-full h-px bg-white/10" />
