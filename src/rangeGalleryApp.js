@@ -294,7 +294,9 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       </div>
       ${descriptions && descriptions[r.label] ? `<p class="p-desc">${descriptions[r.label]}</p>` : ''}
       <div class="stage"><img alt=""></div>
-      <div class="capline"><span class="dname"></span><button class="detail-btn">${(pricing && !isNoPriceRange(r.label)) ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</button></div>
+      <div class="capline"><span class="dname"></span>${basePath
+        ? `<a class="detail-btn" href="${basePath}">${(pricing && !isNoPriceRange(r.label)) ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</a>`
+        : `<button class="detail-btn" type="button">${viewLabel || "View"} &rarr;</button>`}</div>
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
@@ -339,6 +341,12 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
         // conversation, so say so rather than "View".
         const noPage=basePath && des.n && PAGES && !hasPage(r.label,des.n);
         detailBtn.innerHTML=(noPage?'Enquire':(pricing?(viewOnly?(viewLabel||'View'):'Details &amp; prices'):(viewLabel||'View')))+' &rarr;';
+        // A real address, not a click handler — a search engine follows links,
+        // it cannot press buttons. Every design page was invisible to Google
+        // because this was a <button>.
+        if(basePath && detailBtn.tagName === 'A'){
+          detailBtn.href = (des.n && hasPage(r.label,des.n)) ? pieceHref(r.label,des.n) : '/#contact';
+        }
       }
       let act=null;
       tw.querySelectorAll('.thumb').forEach(t=>{const on=(+t.dataset.d===dd&&+t.dataset.v===vv);t.classList.toggle('active',on);if(on)act=t;});
@@ -403,13 +411,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     stage.addEventListener('touchend',e=>{ const t=e.changedTouches[0], dx=t.clientX-_sx, dy=t.clientY-_sy;
       if(Math.abs(dx)>40 && Math.abs(dx)>Math.abs(dy)*1.4){ _swiped=true; step(dx<0?1:-1); } },{passive:true});
     stImg.addEventListener('click',()=>{ if(_swiped){ _swiped=false; return; } step(1); });
-    sec.querySelector('.detail-btn').addEventListener('click',()=>{
-      // The design's own page is the details page — its words, its sizes, its
-      // materials and installation notes, and its own See pricing button.
+    sec.querySelector('.detail-btn').addEventListener('click',(e)=>{
+      // With a basePath the button IS a link — let the browser follow it.
       // Galleries without pages of their own (Screens) keep the popup.
-      const des=r.designs[curP.d];
-      if(des && des.n && hasPage(r.label,des.n)){ window.location.assign(pieceHref(r.label,des.n)); return; }
-      if(basePath){ window.location.assign('/#contact'); return; }
+      if(basePath) return;
+      e.preventDefault();
       openDetail(ri,curP.d,curP.v);
     });
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
@@ -513,6 +519,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
             if(des.n && hasPage(handle.r.label,des.n)){ window.location.assign(pieceHref(handle.r.label,des.n)); return; }
             if(basePath){ window.location.assign('/#contact'); return; }
             openDetail(handle.ri,di,0);
+            return;
           });
           dpWrap.appendChild(b);
         });

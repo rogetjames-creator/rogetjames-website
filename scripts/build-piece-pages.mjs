@@ -632,7 +632,10 @@ for (const gallery of GALLERIES) {
   for (const range of data.ranges) {
     const designs = (range.designs || []).filter((d) => d.n && d.imgs?.length && !HIDDEN_PIECES.includes(d.n));
     for (const design of designs) {
-      const siblings = designs.filter((d) => d.n !== design.n).slice(0, 4);
+      // Every other piece in the range, not just the first four — the tail of
+      // a big range was left with nothing pointing at it, so neither a visitor
+      // nor a search engine could ever walk to it.
+      const siblings = designs.filter((d) => d.n !== design.n);
       const dir = join(DIST, base.replace(/^\//, ""), rangeSlug(range.label));
       mkdirSync(dir, { recursive: true });
       const slug = pieceSlug(design.n);

@@ -57,7 +57,7 @@ a.logo i{font-family:Georgia,serif;font-style:italic;font-weight:500}
 .capline{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
 .dname{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--cream-dim)}
 .dname b{color:var(--cream);font-weight:600}
-.detail-btn{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--cream);border:1px solid rgba(237,232,223,.32);border-radius:30px;padding:7px 16px;background:none;cursor:pointer;transition:.25s}
+.detail-btn{display:inline-block;text-decoration:none;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--cream);border:1px solid rgba(237,232,223,.32);border-radius:30px;padding:7px 16px;background:none;cursor:pointer;transition:.25s}
 .detail-btn:hover{background:var(--clay);border-color:var(--clay)}
 .thumbs{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}
 .thumbs.of{justify-content:flex-start}
