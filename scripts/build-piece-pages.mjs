@@ -522,13 +522,17 @@ ${noPrice ? "" : `<script>
       c.textContent = (v || v === 0) ? "A$" + Number(v).toLocaleString() : "POA";
     });
     note.hidden = false;
-    hint.textContent = "Prices for " + region() + ".";
+    hint.hidden = true;
   }
   function setHint(){
     var one = chips.length === 1;
+    hint.hidden = false;
     if (locked()) {
+      // The postcode is already known — never announce a state back at anyone.
+      // The work is made for the whole country.
       form.hidden = true;
-      hint.textContent = one ? "Prices for " + region() + "." : "Prices for " + region() + ". Choose a finish.";
+      hint.textContent = one ? "" : "Choose a finish.";
+      if (one) hint.hidden = true;
     } else {
       form.hidden = false;
       hint.textContent = one ? "Enter your postcode to see pricing for your area."
