@@ -26,8 +26,14 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 // Sits under the piece's own spiel, on every page.
+// The opening line is about the Wall Art Editions, so it belongs on wall art
+// pages only — it was appearing on the sculpture pages too. Removed from
+// sculpture on James's instruction, 2026-09-10.
+export const WALL_ART_SPIEL =
+  "Step into the captivating world of ROGETjames iconic free form Wall Art Editions, where inspiration is found in wild landscapes and cultural motifs from home and afar.";
+
+// Said of the whole collection, so it sits on every piece page.
 export const BRAND_SPIEL = [
-  "Step into the captivating world of ROGETjames iconic free form Wall Art Editions, where inspiration is found in wild landscapes and cultural motifs from home and afar.",
   "The ROGETjames collection of wall art, garden sculptures and decorative screens effortlessly infuses drama and designer style into any setting, whether an indoor oasis or outdoor retreat. Each piece is scrupulously crafted and made using the most durable and sustainable materials available, ensuring they stay stunning through sun, rain, or shine.",
 ];
 

@@ -36,6 +36,11 @@ export const SIZE_TIERS = [
   { id: "l", label: "Large",  dims: "1200 × 800 mm" },
 ];
 
+// Sculpture is Corten steel by default. These ranges are also made in
+// powder-coated aluminium, so both finishes are offered on their pages.
+// Owner directive 2026-09-10.
+export const BOTH_FINISH_RANGES = ["Leaf Sculptures"];
+
 export const MATERIAL_OPTIONS = [
   { id: "aluminium", label: "Aluminium Powder Coated" },
   { id: "corten",    label: "Natural Corten Steel" },

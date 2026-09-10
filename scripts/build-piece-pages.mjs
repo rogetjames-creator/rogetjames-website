@@ -23,8 +23,8 @@ import { fileURLToPath } from "url";
 
 import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
-import { PIECE_SIZES, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "../src/data/pricing.js";
-import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE, RANGE_FACE, PIECE_FACE, DEFAULT_FACE } from "../src/data/pieceSeo.js";
+import { PIECE_SIZES, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES, BOTH_FINISH_RANGES } from "../src/data/pricing.js";
+import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, WALL_ART_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE, RANGE_FACE, PIECE_FACE, DEFAULT_FACE } from "../src/data/pieceSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { pieceSlug } from "../src/utils/pieceSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
@@ -139,7 +139,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const sizes = sizesFor(name);
   // Ranges the galleries price, and the finishes each gallery offers.
   const noPrice = NO_PRICE_RANGES.includes(range.label) || !!design.noPrice || !sizes.length;
-  const cortenOnly = base === "/sculpture";
+  const cortenOnly = base === "/sculpture" && !BOTH_FINISH_RANGES.includes(range.label);
   const ratio = imageRatio(photos[0]) || 1;
   const biggest = sizes.length ? sizes[sizes.length - 1].dims : "";
 
@@ -407,7 +407,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         t.replace(esc(words), `<a href="${href}">${esc(words)}</a>`), esc(spiel))}</p>` : ""}
       ${botany ? `<dl class="botany">${botany.map(([label, value, opt]) =>
         `<div><dt>${esc(label)}</dt><dd>${opt && opt.i ? `<i>${esc(value)}</i>` : esc(value)}</dd></div>`).join("")}</dl>` : ""}
-      ${BRAND_SPIEL.map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
+      ${(base === "/wall-art" ? [WALL_ART_SPIEL, ...BRAND_SPIEL] : BRAND_SPIEL).map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
 
       ${sizes.length ? `<div class="block">
         <h2>Sizes</h2>
