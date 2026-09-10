@@ -3,7 +3,7 @@ import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Galler
 import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
 import { CITY_PANEL_NAMES_FOR } from "./MelbourneGalleryPanels";
 import { HERO_SLIDES } from "./heroSlides";
-import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey, cityHeroKey } from "../mediaDestinations";
+import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey, cityHeroKey, SCREEN_APPLICATIONS, applicationKey } from "../mediaDestinations";
 
 // Every screen design name, self-maintaining from the live screen covers — add
 // a design and it shows up here. Typing/tapping one of these as the upload's
@@ -78,6 +78,11 @@ const LIVE_DEST_GROUPS = [
     items: [{ key: MEDIA_KEYS.concrete, label: "Concrete" }],
   },
   { group: "Screens", hint: "shows on the Screens page", items: [{ key: MEDIA_KEYS.screens, label: "Screens" }] },
+  {
+    group: "Screens · Applications",
+    hint: "the ways a design gets used — a photo here gathers under that application on the Screens page",
+    items: SCREEN_APPLICATIONS.map((a) => ({ key: applicationKey(a.id), label: a.label })),
+  },
   {
     group: "Projects",
     hint: "shows in the Projects gallery — pick which project it belongs to",

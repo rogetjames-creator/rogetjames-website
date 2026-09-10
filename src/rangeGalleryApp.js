@@ -62,6 +62,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .rpill:hover{color:#fff;border-color:rgba(237,232,223,.55);background:rgba(237,232,223,.1)}
 .rpill.upclose{border-color:rgba(158,113,52,.6);color:#d6b483}
 .rpill.upclose:hover{border-color:rgba(158,113,52,.9);color:#f0d9b6}
+.dpill.appx.empty{opacity:.45;cursor:default}
 .rpill.rp-open{color:#f0d9b6;border-color:rgba(158,113,52,.7);background:rgba(158,113,52,.12)}
 .designpills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:840px;margin:-4px auto 16px;padding:0 12px}
 .designpills:empty{display:none}
@@ -448,7 +449,15 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   if(applications && applications.length){
     const pills=document.getElementById('appPills'), wrap=document.getElementById('appWrap');
     if(pills&&wrap){
-      applications.forEach(a=>{ const b=document.createElement('button'); b.type='button'; b.className='dpill appx'; b.textContent=a; pills.appendChild(b); });
+      applications.forEach(a=>{
+        const b=document.createElement('button'); b.type='button'; b.className='dpill appx'; b.textContent=a;
+        // The application's own range carries the same name. Once James has put
+        // photos against it the pill scrolls there; until then it sits quiet.
+        const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(a).toLowerCase());
+        if(target){ b.addEventListener('click',()=>target.sec.scrollIntoView({behavior:'smooth',block:'start'})); }
+        else { b.classList.add('empty'); b.disabled=true; }
+        pills.appendChild(b);
+      });
       const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';
       const sync=()=>{ t.textContent='Applications '+(pills.classList.contains('collapsed')?'▾':'▴'); };
       sync(); t.addEventListener('click',()=>{ pills.classList.toggle('collapsed'); sync(); });

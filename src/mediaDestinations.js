@@ -58,6 +58,21 @@ export const cityPanelKey = (citySlug, panelName) =>
 export const cityHeroKey = (citySlug) => cityPanelKey(citySlug, "hero");
 export const projectKey = (projectCategory) => `${PROJECT_PREFIX}${projectCategory}`;
 
+// The Screens gallery's "Applications" row — the ways a design gets used.
+// Each is its own upload spot; photos placed there gather under that
+// application at the end of the Screens gallery, and its pill scrolls to them.
+// The labels are the pills themselves (src/screensRange.js `applications`).
+export const SCREEN_APPLICATIONS = [
+  { id: "decoration", label: "Decoration" },
+  { id: "gates",      label: "Gates" },
+  { id: "fencing",    label: "Fencing" },
+  { id: "dividers",   label: "Dividers" },
+  { id: "privacy",    label: "Privacy" },
+  { id: "pergolas",   label: "Pergolas" },
+];
+export const APPLICATION_PREFIX = "application-";
+export const applicationKey = (id) => `${APPLICATION_PREFIX}${id}`;
+
 // Parked destinations: these intentionally have NO gallery yet. They are shown
 // in a separate "won't go live yet" group in the uploader so it is always
 // obvious the photo needs placing before it appears anywhere.

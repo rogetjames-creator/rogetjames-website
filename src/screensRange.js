@@ -3,6 +3,7 @@
 // (src/screens-range.jsx). Call mountScreensRange(rootId) with the page's root id.
 import { mountRangeGallery } from "./rangeGalleryApp";
 import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
+import { SCREEN_APPLICATIONS, applicationKey } from "./mediaDestinations";
 
 // Place each /media upload into EVERY category (destination) it was tagged with —
 // e.g. an image tagged both "icons" and "light-features" appears in both ranges —
@@ -107,7 +108,10 @@ async function fetchScreenUploads() {
       .then((r) => (r.ok ? r.json() : [])).catch(() => []);
     // Any screen-related tag counts: the generic "screens" OR a specific screen
     // category (icons / architectural / … / light-features / mirrors).
-    const screenKeys = new Set([...SCREEN_COVERS.map((c) => c.id), "screens", "displays"]);
+    const screenKeys = new Set([
+      ...SCREEN_COVERS.map((c) => c.id), "screens", "displays",
+      ...SCREEN_APPLICATIONS.map((a) => applicationKey(a.id)),
+    ]);
     // "classics" is ALSO a Sculpture category, so a bare "classics" tag is a
     // sculpture upload, not a screen one — only treat it as a screen when the
     // generic "screens" tag is present too. (Prevents sculpture photos leaking
@@ -151,6 +155,24 @@ function buildDisplaysCover(uploads) {
   return { id: "displays", label: "Displays", img: pieces.length ? pieces[0].img : "", pieces };
 }
 
+// An application James has put photos against → its own range at the end of the
+// gallery, named exactly as its pill so the pill can find it. An application
+// with no photos yet makes no range, and its pill simply does nothing.
+function buildApplicationCovers(uploads) {
+  return SCREEN_APPLICATIONS.map((a) => {
+    const key = applicationKey(a.id);
+    const seen = new Set();
+    const pieces = [];
+    for (const u of uploads) {
+      if (!(u.dests || []).includes(key)) continue;
+      if (!u.src || seen.has(u.src)) continue;
+      seen.add(u.src);
+      pieces.push({ name: u.name || "", img: u.src, slides: [u.src] });
+    }
+    return { id: key, label: a.label, img: pieces.length ? pieces[0].img : "", pieces };
+  }).filter((c) => c.pieces.length);
+}
+
 export function mountScreensRange(rootId) {
   let mounted = false;
   const mountWith = (c) => {
@@ -163,10 +185,13 @@ export function mountScreensRange(rootId) {
   const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 900);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
+    const appKeys = new Set(SCREEN_APPLICATIONS.map((a) => applicationKey(a.id)));
+    const isApp = (u) => (u.dests || []).some((d) => appKeys.has(d));
     const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
-    const rest = uploads.filter((u) => !(u.dests || []).includes("displays"));
+    const rest = uploads.filter((u) => !(u.dests || []).includes("displays") && !isApp(u));
     let covers = rest.length ? injectUploads(SCREEN_COVERS, rest) : SCREEN_COVERS;
     if (displays.length) covers = [...covers, buildDisplaysCover(displays)];
+    covers = [...covers, ...buildApplicationCovers(uploads.filter(isApp))];
     mountWith(covers);
   }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS); });
 }
@@ -187,7 +212,7 @@ function _mount(rootId, data) {
     // About spiel — James's approved copy.
     aboutHtml: `<p>Original curated, adaptive designs from a practice built over twenty years. Each pattern is diligently crafted for its category, spanning a broad range of styles and customised for purpose, be it Wall Decor &middot; Entrance Gates &middot; Security Gates Automated &middot; Fencing &middot; Infills &middot; Dividers &middot; Privacy Screens &middot; Awnings &middot; Light Features — to complement and enhance architectural, interior and landscape settings.</p>`,
     // Applications the designs are used for.
-    applications: ["Decoration", "Gates", "Fencing", "Dividers", "Privacy", "Pergolas"],
+    applications: SCREEN_APPLICATIONS.map((a) => a.label),
     // "The Art of Shadows & Light" popup.
     story: {
       label: "The Art of Shadows & Light",
