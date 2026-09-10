@@ -250,6 +250,12 @@ h1 .qual.inface{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400
 .lede a{color:var(--clay-lit);border-bottom:1px solid rgba(212,167,92,.45);padding-bottom:1px}
 .lede a:hover{border-color:var(--clay-lit)}
 .block{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule)}
+.sizes-block{margin-top:28px;padding:22px 22px 8px;border:1px solid rgba(158,113,52,.42);border-radius:14px;
+background:rgba(158,113,52,.06)}
+.sizes-block h2{color:var(--clay-lit)}
+.sizes-block table{margin-top:10px}
+.sizes-block td{border-bottom-color:rgba(158,113,52,.20)}
+.sizes-block tr:last-child td{border-bottom:none}
 .block h2{font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:400}
 .finishes{display:flex;flex-direction:column;gap:14px;margin-top:16px}
 .fin{display:flex;gap:14px;align-items:flex-start}
@@ -409,14 +415,6 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         `<div><dt>${esc(label)}</dt><dd>${opt && opt.i ? `<i>${esc(value)}</i>` : esc(value)}</dd></div>`).join("")}</dl>` : ""}
       ${(base === "/wall-art" ? [WALL_ART_SPIEL, ...BRAND_SPIEL] : BRAND_SPIEL).map((para) => `<p class="brand">${esc(para)}</p>`).join("")}
 
-      ${sizes.length ? `<div class="block">
-        <h2>Sizes</h2>
-        <table>${sizes.map((s, i) =>
-          `<tr class="${noPrice ? "" : "sz"}" data-i="${i}"><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td><td class="price" data-i="${i}"></td></tr>`).join("")}
-          <tr><td>Customised</td><td>On request</td><td></td><td class="price"></td></tr>
-        </table>
-      </div>` : `<div class="block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
-
       <details class="opener">
         <summary>Material and colour options</summary>
         <div class="inner">
@@ -445,6 +443,14 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         }).join("");
       })()}</ul></div>
       </details>` : ""}
+
+      ${sizes.length ? `<div class="block sizes-block">
+        <h2>Sizes</h2>
+        <table>${sizes.map((s, i) =>
+          `<tr class="${noPrice ? "" : "sz"}" data-i="${i}"><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td><td class="price" data-i="${i}"></td></tr>`).join("")}
+          <tr><td>Customised</td><td>On request</td><td></td><td class="price"></td></tr>
+        </table>
+      </div>` : `<div class="block sizes-block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
 
       <div class="cta">
         ${noPrice ? "" : `<button class="btn solid" id="seePricing" type="button">See pricing</button>`}
