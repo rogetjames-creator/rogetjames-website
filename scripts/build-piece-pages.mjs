@@ -261,7 +261,7 @@ h1 .qual.inface{font-family:"${titleFont || "Syne"}",var(--syne);font-weight:400
 .fin em{font-style:normal;color:var(--clay-lit)}
 table{width:100%;border-collapse:collapse;margin-top:14px}
 td{padding:11px 0;border-bottom:1px solid var(--rule);font-size:15px}
-td:first-child{font-family:var(--heading);font-weight:500;width:120px}
+td:first-child{font-family:var(--body);font-weight:500;width:120px}
 td:nth-child(2){color:var(--dim);font-variant-numeric:tabular-nums}
 td:last-child{color:var(--faint);font-size:13px;text-align:right;font-family:var(--jost)}
 .botany{margin-top:18px;padding:14px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
