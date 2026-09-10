@@ -433,14 +433,35 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
   const ringInner = Math.max(2, Math.min(4, Math.round(size * 4 / 166)));
   const ringOuter = Math.max(3, Math.min(6, Math.round(size * 6 / 166)));
 
+  // A portal used to fetch every photograph in its slideshow the moment the
+  // page opened — dozens of pictures nobody had scrolled to yet, all queueing
+  // in front of the hero. Nothing is asked for until the portal is close to
+  // being looked at, and then only the picture showing and the one after it.
+  const nearRef = useRef(null);
+  const [near, setNear] = useState(() => typeof IntersectionObserver !== "function");
   useEffect(() => {
-    portal.slides.forEach(slide => {
-      const src = typeof slide === "string" ? slide : slide?.src;
-      if (src) { const img = new Image(); img.src = portalImg(src); }
-    });
+    const el = nearRef.current;
+    if (!el || typeof IntersectionObserver !== "function") return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setNear(true); obs.disconnect(); } },
+      { rootMargin: "400px" });
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
+  // The one going out, the one showing, the one coming next — nothing else.
+  // The outgoing one has to keep its picture or the crossfade would cut.
+  const slideCount = portal.slides.length;
+  const loaded = useMemo(() => {
+    const set = new Set([0]);
+    if (near && slideCount) {
+      set.add(cur);
+      set.add((cur + 1) % slideCount);
+      set.add((cur - 1 + slideCount) % slideCount);
+    }
+    return set;
+  }, [near, cur, slideCount]);
 
   useEffect(() => {
+    if (!near) return;
     if (videos) {
       timerRef.current = setInterval(() => setCur(p => (p + 1) % videos.length), 8000);
       return () => clearInterval(timerRef.current);
@@ -451,13 +472,13 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
       3400 + Math.random() * 800
     );
     return () => clearInterval(timerRef.current);
-  }, [portal.slides.length, videos?.length]);
+  }, [near, portal.slides.length, videos?.length]);
 
   useEffect(() => () => clearTimeout(tapTimerRef.current), []);
 
   return (
     <>
-      <div className="flex flex-col items-center gap-3">
+      <div ref={nearRef} className="flex flex-col items-center gap-3">
         {/* Wrapper gives us a clean relative context outside the button's border-radius clipping */}
         <div style={{ position: "relative", display: "inline-block" }}>
           {/* Radiating lines — outside the button so border-radius can't clip them */}
@@ -498,7 +519,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
           >
             <div className="relative overflow-hidden" style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%" }}>
               {videos ? videos.map((v, i) => (
-                <video key={v.src} src={v.src} autoPlay muted loop playsInline
+                <video key={v.src} src={near ? v.src : undefined} preload={near ? "auto" : "none"} autoPlay muted loop playsInline
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
@@ -507,7 +528,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
                 const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
                 return (
-                  <img key={i} src={portalImg(src)} alt="" role="presentation" className="absolute inset-0 w-full h-full object-cover"
+                  <img key={i} src={loaded.has(i) ? portalImg(src) : undefined} alt="" role="presentation" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover"
                     style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} />
                 );
               })}
