@@ -221,7 +221,7 @@ header{border-bottom:1px solid var(--rule)}
 nav{display:flex;gap:26px;font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);flex-wrap:wrap}
 nav a:hover{color:var(--cream)}
 .crumbline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
-.crumbs{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:18px 0;font-family:var(--jost);font-size:12px;color:var(--faint)}
+.crumbs{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:18px 0;font-family:var(--jost);font-size:12px;color:var(--dim)}
 .exit{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(237,232,223,.22);border-radius:999px;
 padding:8px 16px;font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);
 transition:border-color .3s ease,color .3s ease;flex:none}
@@ -256,7 +256,7 @@ background:rgba(158,113,52,.06)}
 .sizes-block table{margin-top:10px}
 .sizes-block td{border-bottom-color:rgba(158,113,52,.20)}
 .sizes-block tr:last-child td{border-bottom:none}
-.block h2{font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);font-weight:400}
+.block h2{font-family:var(--jost);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);font-weight:400}
 .finishes{display:flex;flex-direction:column;gap:14px;margin-top:16px}
 .fin{display:flex;gap:14px;align-items:flex-start}
 .sw{width:34px;height:34px;border-radius:50%;flex:none;margin-top:2px}
@@ -269,7 +269,7 @@ table{width:100%;border-collapse:collapse;margin-top:14px}
 td{padding:11px 0;border-bottom:1px solid var(--rule);font-size:15px}
 td:first-child{font-family:var(--body);font-weight:500;width:120px}
 td:nth-child(2){color:var(--dim);font-variant-numeric:tabular-nums}
-td:last-child{color:var(--faint);font-size:13px;text-align:right;font-family:var(--jost)}
+td:last-child{color:var(--dim);font-size:13px;text-align:right;font-family:var(--jost)}
 .botany{margin-top:18px;padding:14px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
 display:flex;flex-direction:column;gap:6px;max-width:52ch}
 .botany div{display:flex;gap:14px;align-items:baseline}
@@ -292,6 +292,12 @@ font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:upperc
 .tips li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;background:var(--clay)}
 .tips a{color:var(--clay-lit);text-decoration:underline;text-underline-offset:3px}
 .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+.cta-enquire,.cta-price{justify-content:center;margin-top:24px}
+.cta-price{margin-bottom:2px}
+.pricing{text-align:center}
+.pricing .finishes{justify-content:center}
+.pricing #pcForm{max-width:330px;margin:0 auto}
+.psize{text-align:left}
 .btn{display:inline-block;border:1px solid rgba(158,113,52,.75);color:var(--clay-lit);padding:13px 26px;border-radius:999px;
 font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
 .btn.solid{background:rgba(158,113,52,.14)}
@@ -300,7 +306,7 @@ font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:upper
 .pricing{margin-top:20px;border:1px solid var(--rule);border-radius:14px;padding:20px;background:rgba(0,0,0,.22);max-width:520px}
 .pricing[hidden]{display:none}
 .plab{font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay-lit)}
-.phint{font-size:12px;color:var(--dim);margin-top:6px}
+.phint{font-size:13px;color:var(--dim);margin-top:6px;line-height:1.55}
 .finishes{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
 .chip{font-family:var(--jost);font-size:11px;letter-spacing:.06em;color:var(--dim);border:1px solid rgba(237,232,223,.22);
 border-radius:30px;padding:9px 15px;background:none;cursor:pointer;transition:.2s}
@@ -313,8 +319,8 @@ font-family:var(--body);font-size:14px;padding:11px 13px;letter-spacing:.12em}
 .go{background:rgba(158,113,52,.9);color:#fff;border:none;border-radius:9px;padding:0 18px;cursor:pointer;
 font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
 .go:hover{background:var(--clay-lit)}
-.perr{color:#d98b6a;font-size:11px;margin-top:8px;min-height:13px}
-.pnote{font-size:11px;color:var(--faint);margin-top:12px;line-height:1.5}
+.perr{color:#e8a184;font-size:13px;margin-top:8px;min-height:15px}
+.pnote{font-size:13px;color:var(--dim);margin-top:12px;line-height:1.55}
 td.price{text-align:right;color:var(--clay-lit);font-variant-numeric:tabular-nums;letter-spacing:.06em;white-space:nowrap}
 tr.sz{cursor:pointer}
 tr.sz td:first-child{position:relative;padding-left:22px}
@@ -329,7 +335,7 @@ font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:upper
 .addq:hover:not(:disabled){background:var(--clay-lit)}
 .addq:disabled{opacity:.4;cursor:not-allowed}
 .addq.added{background:#3f6f4a}
-.aqhint{font-size:11px;color:var(--faint);text-align:center;margin-top:9px}
+.aqhint{font-size:13px;color:var(--dim);text-align:center;margin-top:10px;line-height:1.5}
 .toquote{display:block;text-align:center;margin-top:10px;font-family:var(--jost);font-size:11px;letter-spacing:.2em;
 text-transform:uppercase;color:var(--clay-lit)}
 .toquote[hidden]{display:none}
@@ -444,6 +450,10 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
       })()}</ul></div>
       </details>` : ""}
 
+      <div class="cta cta-enquire">
+        <a class="btn" href="/#contact">Enquire</a>
+      </div>
+
       ${sizes.length ? `<div class="block sizes-block">
         <h2>Sizes</h2>
         <table>${sizes.map((s, i) =>
@@ -452,9 +462,8 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         </table>
       </div>` : `<div class="block sizes-block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
 
-      <div class="cta">
+      <div class="cta cta-price">
         ${noPrice ? "" : `<button class="btn solid" id="seePricing" type="button">See pricing</button>`}
-        <a class="btn" href="/#contact">Enquire</a>
       </div>
       ${noPrice ? "" : `
       <div class="pricing" id="pricing" hidden>
