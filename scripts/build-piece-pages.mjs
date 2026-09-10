@@ -298,8 +298,8 @@ font-family:var(--jost);font-size:11px;letter-spacing:.2em;text-transform:upperc
 .pricing .finishes{justify-content:center}
 .pricing #pcForm{max-width:330px;margin:0 auto}
 .psize{text-align:left}
-.btn{display:inline-block;border:1px solid rgba(158,113,52,.75);color:var(--clay-lit);padding:13px 26px;border-radius:999px;
-font-family:var(--jost);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.btn{display:inline-block;border:1px solid rgba(158,113,52,.75);color:var(--clay-lit);padding:8px 18px;border-radius:999px;
+font-family:var(--jost);font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
 .btn.solid{background:rgba(158,113,52,.14)}
 .btn:hover{background:rgba(158,113,52,.22)}
 .gate{font-family:var(--jost);font-size:11px;letter-spacing:.1em;color:var(--faint);margin-top:12px;text-transform:uppercase}
