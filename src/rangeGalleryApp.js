@@ -298,6 +298,10 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
     const detailBtn=sec.querySelector('.detail-btn');
+    // Displays have no button — the photograph itself opens larger.
+    stImg.addEventListener('click',()=>{
+      if(r.designs[curP.d] && !r.designs[curP.d].n) openDetail(ri,curP.d,curP.v);
+    });
     function alignCap(){ const w=stImg.getBoundingClientRect().width; if(w>4) capline.style.width=Math.round(w)+'px'; }
     capAligners.push(alignCap);
     let curP={d:0,v:0};
@@ -325,9 +329,10 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       // A design flagged no-price (e.g. a view-only uploaded photo) shows "View"
       // instead of "Details & prices", even inside a priced range.
       if(detailBtn){
-        // Displays are photographs with no title, no size and no price —
-        // there is nothing to open, so they carry no button at all.
+        // Displays are photographs with no title, no size and no price — no
+        // button, the photograph itself opens larger.
         detailBtn.style.display = des.n ? '' : 'none';
+        stImg.style.cursor = des.n ? '' : 'zoom-in';
         const viewOnly=isNoPriceRange(r.label)||des.noPrice;
         // No page written for this one — there is nothing to show but a
         // conversation, so say so rather than "View".
