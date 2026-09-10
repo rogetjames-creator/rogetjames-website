@@ -41,8 +41,6 @@ export const BRAND_SPIEL = [
 export const SUBJECT_SPIEL = {
   creepingFig:
     "What originated from a custom design — Creeping Fig Spring — spawned into a growing range of organic free form designs. A quiet wanderer, creeping across the surface like tendrils of art claiming a bare wall.",
-  banksia:
-    "Redefine your outdoor space with our stunning Banksia outdoor wall art piece, beautifully crafted to showcase the allure of Australia's native flora. Designed in-house, this chic, highly detailed interpretation of the iconic banksia flower adds a touch of natural beauty to your outdoor area, bringing the vibrant essence of the outdoors right to your doorstep.",
 };
 
 // The plant behind a piece, in James's words. Only where he has given it —

@@ -107,7 +107,7 @@ function wordsFor(rangeLabel, name) {
   const seo = PIECE_SEO[name] || {};
   const subject = seo.s || RANGE_SUBJECT[rangeLabel] || "Laser cut metal wall art";
   // James's own spiel for a subject wins over anything written here.
-  const spiel = seo.spiel || RANGE_SPIEL[rangeLabel] || (/^BANKSIA/i.test(name) ? SUBJECT_SPIEL.banksia : null);
+  const spiel = seo.spiel || RANGE_SPIEL[rangeLabel] || null;
   return { subject, spiel, links: seo.links || [] };
 }
 
