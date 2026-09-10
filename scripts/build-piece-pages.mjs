@@ -311,9 +311,13 @@ font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:upper
 .pnote{font-size:11px;color:var(--faint);margin-top:12px;line-height:1.5}
 td.price{text-align:right;color:var(--clay-lit);font-variant-numeric:tabular-nums;letter-spacing:.06em;white-space:nowrap}
 tr.sz{cursor:pointer}
+tr.sz td:first-child{position:relative;padding-left:22px}
+tr.sz td:first-child::before{content:"";position:absolute;left:0;top:50%;width:11px;height:11px;margin-top:-6px;
+border:1px solid rgba(237,232,223,.35);border-radius:50%;transition:.2s}
 tr.sz:hover td{color:var(--cream)}
+tr.sz:hover td:first-child::before{border-color:var(--clay-lit)}
 tr.sz.sel td{color:var(--clay-lit)}
-tr.sz.sel td:first-child{position:relative}
+tr.sz.sel td:first-child::before{border-color:var(--clay-lit);background:var(--clay-lit);box-shadow:inset 0 0 0 2px var(--matt)}
 .addq{width:100%;margin-top:16px;background:rgba(158,113,52,.9);color:#fff;border:none;border-radius:12px;padding:15px;cursor:pointer;
 font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:uppercase;transition:.25s}
 .addq:hover:not(:disabled){background:var(--clay-lit)}
@@ -501,7 +505,11 @@ ${noPrice ? "" : `<script>
   var input= document.getElementById("pcIn");
   var chips= [].slice.call(document.querySelectorAll("#finishes .chip"));
   var cells= [].slice.call(document.querySelectorAll("td.price[data-i]"));
-  var finish = null, info = null;
+  var finish = null, info = null, size = null;
+  var rows = [].slice.call(document.querySelectorAll("tr.sz"));
+  var addQ = document.getElementById("addQ");
+  var aqh  = document.getElementById("aqhint");
+  var toQ  = document.getElementById("toQuote");
   try { var raw = localStorage.getItem(KEY); if (raw) info = JSON.parse(raw); } catch (e) { info = null; }
   var region = function(){ return (info && (NAMES[info.state] || info.state)) || "Australia"; };
   var locked = function(){ return !!(info && info.postcode); };
@@ -514,14 +522,26 @@ ${noPrice ? "" : `<script>
       c.textContent = (v || v === 0) ? "A$" + Number(v).toLocaleString() : "POA";
     });
     note.hidden = false;
-    hint.textContent = "Prices for " + region() + " — " + finish + ".";
+    hint.textContent = "Prices for " + region() + ".";
   }
   function setHint(){
-    if (locked()) { form.hidden = true; hint.textContent = "Prices for " + region() + ". Choose a finish."; }
-    else { form.hidden = false; hint.textContent = "Choose a finish, then enter your postcode to see pricing for your area."; }
+    var one = chips.length === 1;
+    if (locked()) {
+      form.hidden = true;
+      hint.textContent = one ? "Prices for " + region() + "." : "Prices for " + region() + ". Choose a finish.";
+    } else {
+      form.hidden = false;
+      hint.textContent = one ? "Enter your postcode to see pricing for your area."
+                             : "Choose a finish, then enter your postcode to see pricing for your area.";
+    }
   }
+  // A range made in one finish only — Corten — has nothing to choose between,
+  // so it is chosen already rather than asking.
+  if (chips.length === 1) { finish = chips[0].dataset.fin; chips[0].classList.add("sel"); }
   if (open) open.addEventListener("click", function(){
-    box.hidden = false; setHint(); paint();
+    box.hidden = false;
+    if (size === null && rows.length) { size = 0; rows[0].classList.add("sel"); }
+    setHint(); paint(); addState();
     box.scrollIntoView({ behavior: "smooth", block: "nearest" });
     if (!locked()) setTimeout(function(){ input.focus(); }, 350);
   });
@@ -545,11 +565,6 @@ ${noPrice ? "" : `<script>
 
   // Add to quote — the same basket the galleries and the contact form use,
   // so a piece added here is waiting in the quote request like any other.
-  var rows = [].slice.call(document.querySelectorAll("tr.sz"));
-  var addQ = document.getElementById("addQ");
-  var aqh  = document.getElementById("aqhint");
-  var toQ  = document.getElementById("toQuote");
-  var size = null;
   function basket(){ try { var a = JSON.parse(localStorage.getItem(BKEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
   function addState(){
     var ok = !!finish && size !== null;
