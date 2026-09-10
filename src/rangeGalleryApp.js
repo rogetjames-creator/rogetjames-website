@@ -325,6 +325,9 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       // A design flagged no-price (e.g. a view-only uploaded photo) shows "View"
       // instead of "Details & prices", even inside a priced range.
       if(detailBtn){
+        // Displays are photographs with no title, no size and no price —
+        // there is nothing to open, so they carry no button at all.
+        detailBtn.style.display = des.n ? '' : 'none';
         const viewOnly=isNoPriceRange(r.label)||des.noPrice;
         // No page written for this one — there is nothing to show but a
         // conversation, so say so rather than "View".

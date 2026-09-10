@@ -5,20 +5,6 @@ import { mountRangeGallery } from "./rangeGalleryApp";
 import { SCULPTURE_DATA } from "./data/sculptureData";
 
 // Media destination key → the range label it belongs in.
-// Photos James wants OFF the horizontal thumb strip. They stay in the gallery
-// — still in the range, still counted, still in the Screens gallery and the
-// Projects portal — they simply get no thumb on the strip.
-const HIDE_FROM_STRIP = [
-  "1787118567609_mynq6x",
-  "1787118567611_kxcvqs",
-  "1787118567625_gv4rhv",
-  "1787118567626_0w3je5",
-  "1787118567627_j62n7d",
-  "1787118567628_3r069e",
-  "1787118567628_awv18c",
-  "1787118567645_lcbyn6",
-];
-
 const DEST_TO_LABEL = {
   classics: "The Classics",
   leafs: "Leaf Sculptures",
@@ -57,7 +43,6 @@ function injectSculptureUploads(data, uploads) {
   };
   const idxOf = (src) => { let i = out.imgs.indexOf(src); if (i < 0) { i = out.imgs.length; out.imgs.push(src); } return i; };
   for (const u of uploads) {
-    const offStrip = HIDE_FROM_STRIP.some((id) => (u.src || "").includes(id));
     const labels = (u.dests || []).map((d) => DEST_TO_LABEL[d]).filter(Boolean);
     labels.forEach((label) => {
       let range = out.ranges.find((r) => r.label === label);
@@ -71,9 +56,7 @@ function injectSculptureUploads(data, uploads) {
       const isDisplays = label === "DISPLAYS";
       const cleanName = isDisplays ? "" : ((u.name || "").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim().toUpperCase() || label);
       range.designs.push({ n: cleanName, imgs: [gi], noPrice: u.noPrice });   // appended at the END
-      // `flat` is what the horizontal strip is built from — leave these out of
-      // it and the photo stays in the range without taking a thumb.
-      if (!offStrip) range.flat.push([di, 0]);
+      range.flat.push([di, 0]);
       range.count = range.designs.length;
     });
   }
