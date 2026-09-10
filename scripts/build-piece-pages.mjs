@@ -97,7 +97,7 @@ function sizesFor(name) {
   // Both prices travel with the size but are never printed into the page —
   // they are read by the gate's script only once a postcode has been entered.
   return tiers.map((t) => ({
-    label: t.label, dims: t.dims, fixings: t.fixings,
+    id: t.id, label: t.label, dims: t.dims, fixings: t.fixings,
     wa: priceFor(t, "aluminium", true),
     other: priceFor(t, "aluminium", false),
   }));
@@ -310,6 +310,19 @@ font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:upper
 .perr{color:#d98b6a;font-size:11px;margin-top:8px;min-height:13px}
 .pnote{font-size:11px;color:var(--faint);margin-top:12px;line-height:1.5}
 td.price{text-align:right;color:var(--clay-lit);font-variant-numeric:tabular-nums;letter-spacing:.06em;white-space:nowrap}
+tr.sz{cursor:pointer}
+tr.sz:hover td{color:var(--cream)}
+tr.sz.sel td{color:var(--clay-lit)}
+tr.sz.sel td:first-child{position:relative}
+.addq{width:100%;margin-top:16px;background:rgba(158,113,52,.9);color:#fff;border:none;border-radius:12px;padding:15px;cursor:pointer;
+font-family:var(--jost);font-size:11px;letter-spacing:.18em;text-transform:uppercase;transition:.25s}
+.addq:hover:not(:disabled){background:var(--clay-lit)}
+.addq:disabled{opacity:.4;cursor:not-allowed}
+.addq.added{background:#3f6f4a}
+.aqhint{font-size:11px;color:var(--faint);text-align:center;margin-top:9px}
+.toquote{display:block;text-align:center;margin-top:10px;font-family:var(--jost);font-size:11px;letter-spacing:.2em;
+text-transform:uppercase;color:var(--clay-lit)}
+.toquote[hidden]{display:none}
 .related{border-top:1px solid var(--rule);padding:48px 0 70px}
 .rel-grid{display:grid;gap:16px;grid-template-columns:repeat(2,1fr);margin-top:20px}
 @media(min-width:820px){.rel-grid{grid-template-columns:repeat(4,1fr)}}
@@ -395,7 +408,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
       ${sizes.length ? `<div class="block">
         <h2>Sizes</h2>
         <table>${sizes.map((s, i) =>
-          `<tr><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td><td class="price" data-i="${i}"></td></tr>`).join("")}
+          `<tr class="${noPrice ? "" : "sz"}" data-i="${i}"><td>${esc(s.label)}</td><td>${esc(s.dims)}</td><td>${s.fixings ? esc(s.fixings) + " fixings" : ""}</td><td class="price" data-i="${i}"></td></tr>`).join("")}
           <tr><td>Customised</td><td>On request</td><td></td><td class="price"></td></tr>
         </table>
       </div>` : `<div class="block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
@@ -447,6 +460,9 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         </form>
         <p class="perr" id="perr"></p>
         <p class="pnote" id="pnote" hidden>Prices are shown against each size above. Fixings &amp; freight to be confirmed.</p>
+        <button class="addq" id="addQ" type="button" disabled>Add to quote</button>
+        <p class="aqhint" id="aqhint">Choose a finish and a size to add to your quote.</p>
+        <a class="toquote" id="toQuote" href="/#contact" hidden>Go to your quote &rarr;</a>
       </div>`}
       <p class="gate">Pricing opens once you enter your postcode</p>
     </div>
@@ -468,7 +484,10 @@ ${noPrice ? "" : `<script>
   // The postcode gate. A price is never in the page until a postcode has been
   // entered, and never in the address. The two postcode functions below are
   // the gallery's own, written out at build time, so they cannot drift from it.
-  var SIZES = ${JSON.stringify(sizes.map((z) => ({ wa: z.wa, other: z.other })))};
+  var SIZES = ${JSON.stringify(sizes)};
+  var PIECE = ${JSON.stringify({ name, series: range.label, img: hero || "" })};
+  var MATS  = ${JSON.stringify(MATERIAL_OPTIONS)};
+  var BKEY  = "roj-quote-basket";
   var NAMES = ${JSON.stringify(STATE_NAMES)};
   var checkWA = ${checkWA.toString()};
   var getState = ${getState.toString()};
@@ -511,6 +530,7 @@ ${noPrice ? "" : `<script>
       finish = c.dataset.fin;
       chips.forEach(function(x){ x.classList.toggle("sel", x === c); });
       errE.textContent = ""; paint();
+      if (typeof addState === "function") addState();
     });
   });
   form.addEventListener("submit", function(e){
@@ -522,6 +542,47 @@ ${noPrice ? "" : `<script>
     try { localStorage.setItem(KEY, JSON.stringify(info)); } catch (err) { /* private browsing */ }
     errE.textContent = ""; form.hidden = true; paint();
   });
+
+  // Add to quote — the same basket the galleries and the contact form use,
+  // so a piece added here is waiting in the quote request like any other.
+  var rows = [].slice.call(document.querySelectorAll("tr.sz"));
+  var addQ = document.getElementById("addQ");
+  var aqh  = document.getElementById("aqhint");
+  var toQ  = document.getElementById("toQuote");
+  var size = null;
+  function basket(){ try { var a = JSON.parse(localStorage.getItem(BKEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function addState(){
+    var ok = !!finish && size !== null;
+    addQ.disabled = !ok;
+    aqh.textContent = ok ? "Add this design, finish and size to your quote."
+      : !finish ? "Choose a finish to add to your quote." : "Choose a size to add to your quote.";
+    if (basket().length) toQ.hidden = false;
+  }
+  rows.forEach(function(tr){
+    tr.addEventListener("click", function(){
+      size = +tr.dataset.i;
+      rows.forEach(function(x){ x.classList.toggle("sel", x === tr); });
+      if (box.hidden) { box.hidden = false; setHint(); paint(); }
+      addState();
+    });
+  });
+  addQ.addEventListener("click", function(){
+    if (!finish || size === null) return;
+    var t = SIZES[size];
+    var mat = /corten/i.test(finish) ? MATS[MATS.length - 1] : MATS[0];
+    var items = basket();
+    var dup = items.some(function(q){ return q.name === PIECE.name && q.size && q.size.id === t.id && q.material && q.material.id === mat.id; });
+    if (!dup) {
+      items.push({ id: PIECE.name + "-" + Date.now(), name: PIECE.name, series: PIECE.series,
+                   size: { id: t.id, label: t.label, dims: t.dims, fixings: t.fixings }, material: mat, img: PIECE.img });
+      try { localStorage.setItem(BKEY, JSON.stringify(items)); } catch (e) { /* ignore */ }
+    }
+    addQ.classList.add("added");
+    addQ.textContent = "Added to quote \\u2713";
+    toQ.hidden = false;
+    setTimeout(function(){ addQ.classList.remove("added"); addQ.textContent = "Add to quote"; }, 2200);
+  });
+  addState();
 })();
 </script>`}
 </body>
