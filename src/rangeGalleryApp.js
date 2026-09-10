@@ -244,6 +244,17 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   // onto it — the address must not flick back to the gallery's own meanwhile.
   let landing = false;
   const pieceHref = (rangeLabel, name) => `${basePath}/${rangeSlug(rangeLabel)}/${pieceSlug(name)}`;
+  // Which designs actually have a page. Ranges built from uploads (Fire
+  // Sculptures, Displays) have none, so those get Enquire instead — sending
+  // anyone to a page that was never written is a 404.
+  let PAGES = null;
+  fetch('/piece-pages.json', { cache: 'force-cache' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(list => { if (Array.isArray(list)) { PAGES = new Set(list); relabel(); } })
+    .catch(() => {});
+  const hasPage = (rangeLabel, name) => !!(basePath && name && PAGES && PAGES.has(pieceHref(rangeLabel, name)));
+  const relabelers = [];
+  const relabel = () => relabelers.forEach(fn => fn());
   const setAddress = (slug) => {
     if(!basePath || landing) return;
     const next = slug ? `${basePath}/${slug}` : basePath;
@@ -290,6 +301,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     function alignCap(){ const w=stImg.getBoundingClientRect().width; if(w>4) capline.style.width=Math.round(w)+'px'; }
     capAligners.push(alignCap);
     let curP={d:0,v:0};
+    // Once the list of real pages has arrived, the button's wording is settled.
+    relabelers.push(()=>show(curP.d,curP.v));
     function show(dd,vv){
       curP={d:dd,v:vv};
       const des=r.designs[dd];
@@ -311,7 +324,13 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       dn.innerHTML=`<b>${des.n}</b>${extra}`;
       // A design flagged no-price (e.g. a view-only uploaded photo) shows "View"
       // instead of "Details & prices", even inside a priced range.
-      if(pricing && detailBtn){ const viewOnly=isNoPriceRange(r.label)||des.noPrice; detailBtn.innerHTML=(viewOnly?(viewLabel||'View'):'Details &amp; prices')+' &rarr;'; }
+      if(detailBtn){
+        const viewOnly=isNoPriceRange(r.label)||des.noPrice;
+        // No page written for this one — there is nothing to show but a
+        // conversation, so say so rather than "View".
+        const noPage=basePath && des.n && PAGES && !hasPage(r.label,des.n);
+        detailBtn.innerHTML=(noPage?'Enquire':(pricing?(viewOnly?(viewLabel||'View'):'Details &amp; prices'):(viewLabel||'View')))+' &rarr;';
+      }
       let act=null;
       tw.querySelectorAll('.thumb').forEach(t=>{const on=(+t.dataset.d===dd&&+t.dataset.v===vv);t.classList.toggle('active',on);if(on)act=t;});
       if(act) ensureVisible(tw,act);
@@ -380,7 +399,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       // materials and installation notes, and its own See pricing button.
       // Galleries without pages of their own (Screens) keep the popup.
       const des=r.designs[curP.d];
-      if(basePath && des && des.n){ window.location.assign(pieceHref(r.label,des.n)); return; }
+      if(des && des.n && hasPage(r.label,des.n)){ window.location.assign(pieceHref(r.label,des.n)); return; }
+      if(basePath){ window.location.assign('/#contact'); return; }
       openDetail(ri,curP.d,curP.v);
     });
     app.appendChild(sec); posterEls.push(sec); thumbBoxes.push(tw);
@@ -473,7 +493,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
             dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
             // Keep the range behind the popup in step, so closing lands on it.
             handle.show(di,0);
-            if(basePath && des.n){ window.location.assign(pieceHref(handle.r.label,des.n)); return; }
+            if(des.n && hasPage(handle.r.label,des.n)){ window.location.assign(pieceHref(handle.r.label,des.n)); return; }
+            if(basePath){ window.location.assign('/#contact'); return; }
             openDetail(handle.ri,di,0);
           });
           dpWrap.appendChild(b);

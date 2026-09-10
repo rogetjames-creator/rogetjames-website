@@ -695,6 +695,13 @@ ${groups.map((g) => {
 </div></body></html>`;
 writeFileSync(join(DIST, "pieces.html"), contents, "utf-8");
 
+// ── the list of addresses that actually exist ─────────────────────────────
+// The galleries read this before sending anyone to a design's page. Ranges
+// built from uploads (Fire Sculptures, Displays) have no page, and without
+// this the gallery would walk visitors into a 404.
+writeFileSync(join(DIST, "piece-pages.json"),
+  JSON.stringify(index.map((i) => i.url)), "utf-8");
+
 // ── sitemap, only once they are live ──────────────────────────────────────
 if (!PREVIEW) {
   const sitemapPath = join(DIST, "sitemap.xml");
