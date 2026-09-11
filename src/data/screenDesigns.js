@@ -74,10 +74,11 @@ export const SCREEN_DESIGNS = [
     name: "EROS",
     items: [
       { name: "EROS",               img: `${CDN}/3e02a9f2-e096-472b-85f8-567a453a710c_rw_1200.jpg` },
-      { name: "EROS Pool Compliant", img: `${CDN}/b4e3f929-4c8f-433b-a535-3500ca5058a3_rw_1200.jpg`, slides: [`${CDN}/b4e3f929-4c8f-433b-a535-3500ca5058a3_rw_1200.jpg`, `${CDN}/53ed3716-9227-4116-b4b6-be2973bbb29e_rw_1200.jpg`], tags: ["fencing", "gates", "residential"] },
+      { name: "EROS Pool Compliant", img: `${CDN}/b4e3f929-4c8f-433b-a535-3500ca5058a3_rw_1200.jpg`, slides: [`${CDN}/b4e3f929-4c8f-433b-a535-3500ca5058a3_rw_1200.jpg`, `${CDN}/53ed3716-9227-4116-b4b6-be2973bbb29e_rw_1200.jpg`], tags: ["residential"] },
+      { name: "EROS",                img: `${CDN}/53ed3716-9227-4116-b4b6-be2973bbb29e_rw_1200.jpg`, tags: ["fencing", "residential"] },
       { name: "EROS",               img: `${CDN}/ee61c9e8-2d02-434f-9751-5b00c0142edd_rw_1200.jpg` },
       { name: "EROS",               img: "/images/eros/eros-1.jpg", tags: ["fencing", "residential"] },
-      { name: "EROS",               img: "/images/eros/eros-2.jpg", tags: ["fencing", "gates", "residential"] },
+      { name: "EROS",               img: "/images/eros/eros-2.jpg", tags: ["fencing", "residential"] },
       { name: "EROS Canopy / Pergola", img: "/images/eros/eros-3.jpg", tags: ["pergola", "residential"] },
       { name: "EROS Pool Gate",        img: "/images/eros/eros-4.jpg", tags: ["gates", "residential"] },
     ],
