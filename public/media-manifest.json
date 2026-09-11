@@ -313,10 +313,11 @@
   },
   {
     "id": "1785936773170_lbq7tk",
-    "name": "ASLYIAM - Cellar door  also put in light features",
+    "name": "ASLYIAM Cellar Door",
     "destinations": [
       "screens",
-      "icons"
+      "icons",
+      "light-features"
     ],
     "note": "remove https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/90166d8d-2652-40c1-8b4f-b0c9a35778af_rw_1200.jpg replace",
     "createdTime": "2026-08-05T13:32:53.170Z",

@@ -507,11 +507,22 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   if(designPills){
     const dpWrap=document.getElementById('designPills');
     if(dpWrap){
+      // One pill per design, A–Z. A design that sits in several sections was
+      // getting a pill for each — VIASI three times, WATTLE three times — and
+      // in whatever order the sections happened to fall.
+      const byName=new Map();
       rangeHandles.forEach((handle)=>{
         handle.r.designs.forEach((des,di)=>{
           if(des._upclose) return;
           if(!des.n) return;   // untitled pieces (Displays) get no pill
-          const b=document.createElement('button'); b.type='button'; b.className='dpill'; b.textContent=des.n;
+          const key=String(des.n).trim().toLowerCase();
+          if(!byName.has(key)) byName.set(key,{name:String(des.n).trim(),handle,di,des});
+        });
+      });
+      [...byName.values()]
+        .sort((a,b)=>a.name.localeCompare(b.name,'en',{sensitivity:'base'}))
+        .forEach(({name,handle,di,des})=>{
+          const b=document.createElement('button'); b.type='button'; b.className='dpill'; b.textContent=name;
           b.addEventListener('click',()=>{
             dpWrap.querySelectorAll('.dpill').forEach(x=>x.classList.toggle('active',x===b));
             // Keep the range behind the popup in step, so closing lands on it.
@@ -519,11 +530,9 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
             if(des.n && hasPage(handle.r.label,des.n)){ window.location.assign(pieceHref(handle.r.label,des.n)); return; }
             if(basePath){ window.location.assign('/#contact'); return; }
             openDetail(handle.ri,di,0);
-            return;
           });
           dpWrap.appendChild(b);
         });
-      });
       // "Designs" toggle — the pill list is collapsed by default (saves space) and
       // expands under the category pills when clicked.
       const tog=document.createElement('button'); tog.type='button'; tog.className='rpill dtoggle';
