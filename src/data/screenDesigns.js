@@ -41,11 +41,11 @@ export const SCREEN_DESIGNS = [
     tabs: ["icons", "organics"],
     items: [
       { name: "VIASI", img: `${CDN}/db223306-7723-48dc-a4e6-df471493fab8_rw_1920.jpg`, tags: ["light features", "residential", "display homes"] },
-      { name: "VIASI", img: `${CDN}/8dd14241-86af-4d62-8a14-6987e02de827_rw_1920.jpg`, tags: ["fencing", "gates", "residential"] },
+      { name: "VIASI", img: `${CDN}/8dd14241-86af-4d62-8a14-6987e02de827_rw_1920.jpg`, tags: ["fencing", "residential"] },
       { name: "VIASI", img: `${CDN}/37079841-e329-43a9-81ab-614b04773986_rw_1200.jpg`, slides: [`${CDN}/37079841-e329-43a9-81ab-614b04773986_rw_1200.jpg`, `${CDN}/6bac8b33-cc48-4d67-ad5e-f4f6de63ebf5_rw_1200.jpg`, `${CDN}/1d4392ab-4a58-4537-b7ce-9fb1823860dd_rw_1200.jpg`], tags: ["fencing", "gates", "residential"] },
       { name: "VIASI", img: "/images/viasi/viasi-1.jpg", tags: ["fencing", "gates", "residential"] },
       { name: "VIASI", img: "/images/viasi/viasi-3.jpg", tags: ["fencing", "gates", "residential"] },
-      { name: "VIASI", img: "/images/viasi/viasi-4.jpg", tags: ["fencing", "gates", "residential"] },
+      { name: "VIASI", img: "/images/viasi/viasi-4.jpg", tags: ["fencing", "residential"] },
     ],
   },
 
@@ -76,10 +76,10 @@ export const SCREEN_DESIGNS = [
       { name: "EROS",               img: `${CDN}/3e02a9f2-e096-472b-85f8-567a453a710c_rw_1200.jpg` },
       { name: "EROS Pool Compliant", img: `${CDN}/b4e3f929-4c8f-433b-a535-3500ca5058a3_rw_1200.jpg`, slides: [`${CDN}/b4e3f929-4c8f-433b-a535-3500ca5058a3_rw_1200.jpg`, `${CDN}/53ed3716-9227-4116-b4b6-be2973bbb29e_rw_1200.jpg`], tags: ["fencing", "gates", "residential"] },
       { name: "EROS",               img: `${CDN}/ee61c9e8-2d02-434f-9751-5b00c0142edd_rw_1200.jpg` },
-      { name: "EROS",               img: "/images/eros/eros-1.jpg", tags: ["fencing", "gates", "residential"] },
+      { name: "EROS",               img: "/images/eros/eros-1.jpg", tags: ["fencing", "residential"] },
       { name: "EROS",               img: "/images/eros/eros-2.jpg", tags: ["fencing", "gates", "residential"] },
       { name: "EROS Canopy / Pergola", img: "/images/eros/eros-3.jpg", tags: ["pergola", "residential"] },
-      { name: "EROS Pool Gate",        img: "/images/eros/eros-4.jpg", tags: ["fencing", "gates", "residential"] },
+      { name: "EROS Pool Gate",        img: "/images/eros/eros-4.jpg", tags: ["gates", "residential"] },
     ],
   },
   {
@@ -145,8 +145,8 @@ export const SCREEN_DESIGNS = [
     name: "CUSTOM",
     items: [
       { name: "CUSTOM", img: `${CDN}/0c753703-bc6a-444c-ba4e-b7983f836b30_rw_1200.jpg`, tags: ["gates", "residential"] },
-      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-1.jpg", tags: ["fencing", "gates", "residential"] },
-      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-2.jpg", tags: ["fencing", "gates", "residential"] },
+      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-1.jpg", tags: ["fencing", "residential"] },
+      { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-2.jpg", tags: ["fencing", "residential"] },
     ],
   },
   { name: "BLOOM", tabs: ["icons", "organics"], items: [
