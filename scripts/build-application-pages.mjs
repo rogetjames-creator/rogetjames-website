@@ -70,13 +70,22 @@ function designsFor(app) {
   const want = new Set(app.tags.map(norm));
   const out = [];
   for (const d of SCREEN_DESIGNS) {
-    const tags = new Set([...(d.tags || []).map(norm),
-                          ...(d.items || []).flatMap((i) => (i.tags || []).map(norm))]);
-    if (![...want].some((t) => tags.has(t))) continue;
-    // the design's own photo for this use, if one is tagged that way
-    const hit = (d.items || []).find((i) => (i.tags || []).map(norm).some((t) => want.has(t)));
-    const photo = (hit && (hit.img || (hit.slides || [])[0])) || (d.items || [])[0]?.img;
-    if (photo) out.push({ name: d.name, img: photo });
+    // Every photograph of this design that is tagged for this use — a design
+    // with three gate photos belongs on the gates page three times, not once.
+    const hits = (d.items || []).filter((i) => (i.tags || []).map(norm).some((t) => want.has(t)));
+    if (hits.length) {
+      for (const i of hits) {
+        for (const src of (i.slides && i.slides.length ? i.slides : [i.img])) {
+          if (src) out.push({ name: d.name, img: src });
+        }
+      }
+      continue;
+    }
+    // Tagged at the design rather than the photo — show its opening picture.
+    if ((d.tags || []).map(norm).some((t) => want.has(t))) {
+      const photo = (d.items || [])[0]?.img;
+      if (photo) out.push({ name: d.name, img: photo });
+    }
   }
   const key = applicationKey(app.id);
   for (const u of uploads) {
@@ -96,7 +105,7 @@ for (const app of SCREEN_APPLICATIONS) {
   const url = `${SITE}/screens/${app.id}`;
   const others = SCREEN_APPLICATIONS.filter((a) => a.id !== app.id && designsFor(a).length);
   const title = `${heading} | ROGETjames`;
-  const desc = `${blurb} ${designs.length} designs, made to order in Australia by James Roget.`.trim();
+  const desc = `${blurb} ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs, made to order in Australia by James Roget.`.trim();
 
   const html = `<!doctype html>
 <html lang="en" style="background:#020202"><head>
@@ -181,7 +190,7 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
     <span class="kicker">Screens &middot; ${esc(app.label)}</span>
     <h1>${esc(heading)}</h1>
     <p class="lede">${esc(blurb)}</p>
-    <p class="count">${designs.length} design${designs.length === 1 ? "" : "s"}</p>
+    <p class="count">${designs.length} photograph${designs.length === 1 ? "" : "s"} &middot; ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs</p>
   </div>
   <div class="grid">
     ${designs.map((d) => `<a class="card" href="/screens">
