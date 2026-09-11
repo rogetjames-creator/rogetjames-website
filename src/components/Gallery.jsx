@@ -144,6 +144,19 @@ function ReelsPortal({ onOpen }) {
   const portalReels = [...PORTAL_REELS, ...extraReels.filter((x) => !PORTAL_REELS.some((b) => b.id === x.id))];
   const allReels = [...REELS, ...extraReels.filter((x) => !REELS.some((b) => b.id === x.id))];
 
+  // The reel used to start downloading the moment the home page opened, ahead
+  // of the hero and before anyone had scrolled anywhere near it. Nothing is
+  // asked for until the portal is within reach of being looked at.
+  const [reelNear, setReelNear] = useState(() => typeof IntersectionObserver !== "function");
+  useEffect(() => {
+    const el = portalRef.current;
+    if (!el || typeof IntersectionObserver !== "function") return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setReelNear(true); obs.disconnect(); } },
+      { rootMargin: "500px" });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   // Scroll trigger — show EDITIONS intro on first enter
   useEffect(() => {
     const el = portalRef.current;
@@ -165,10 +178,10 @@ function ReelsPortal({ onOpen }) {
   // on load even though it's marked muted.
   useEffect(() => {
     const v = videoRef.current;
-    if (!v) return;
+    if (!v || !reelNear) return;
     v.muted = true;
     v.play().catch(() => {});
-  }, [curReel]);
+  }, [curReel, reelNear]);
 
   // Between-reel transition: EDITIONS fades in, then next reel starts
   const handleVideoEnd = () => {
@@ -218,8 +231,9 @@ function ReelsPortal({ onOpen }) {
           <video
             ref={(el) => { videoRef.current = el; if (el) el.muted = true; }}
             key={curReel}
-            src={(portalReels[curReel] || portalReels[0]).video}
-            autoPlay muted playsInline preload="auto"
+            src={reelNear ? (portalReels[curReel] || portalReels[0]).video : undefined}
+            poster={reelNear ? ((portalReels[curReel] || portalReels[0]).thumb || undefined) : undefined}
+            autoPlay muted playsInline preload={reelNear ? "auto" : "none"}
             onEnded={handleVideoEnd}
             className="absolute inset-0 w-full h-full object-cover"
           />
