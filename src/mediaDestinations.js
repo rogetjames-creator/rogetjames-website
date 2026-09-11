@@ -62,13 +62,17 @@ export const projectKey = (projectCategory) => `${PROJECT_PREFIX}${projectCatego
 // Each is its own upload spot; photos placed there gather under that
 // application at the end of the Screens gallery, and its pill scrolls to them.
 // The labels are the pills themselves (src/screensRange.js `applications`).
+// `tags` are the words already used against the screen designs in
+// src/data/screenDesigns.js — so a design's applications are read from the data
+// that is already there, and an upload to one of these spots adds to the same
+// pile. Spelling varies in the data (divider/dividers), so each is listed.
 export const SCREEN_APPLICATIONS = [
-  { id: "decoration", label: "Decoration" },
-  { id: "gates",      label: "Gates" },
-  { id: "fencing",    label: "Fencing" },
-  { id: "dividers",   label: "Dividers" },
-  { id: "privacy",    label: "Privacy" },
-  { id: "pergolas",   label: "Pergolas" },
+  { id: "wall-decor", label: "Wall Decor", tags: ["wall decor", "wall decoration", "decoration"] },
+  { id: "gates",      label: "Gates",      tags: ["gates", "gate"] },
+  { id: "fencing",    label: "Fencing",    tags: ["fencing", "fence", "infill", "infills"] },
+  { id: "dividers",   label: "Dividers",   tags: ["dividers", "divider"] },
+  { id: "privacy",    label: "Privacy",    tags: ["privacy screens", "privacy"] },
+  { id: "pergolas",   label: "Pergolas",   tags: ["pergolas", "pergola"] },
 ];
 export const APPLICATION_PREFIX = "application-";
 export const applicationKey = (id) => `${APPLICATION_PREFIX}${id}`;
