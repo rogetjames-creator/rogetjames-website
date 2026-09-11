@@ -42,9 +42,9 @@ export const SCREEN_DESIGNS = [
     items: [
       { name: "VIASI", img: `${CDN}/db223306-7723-48dc-a4e6-df471493fab8_rw_1920.jpg`, tags: ["light features", "residential", "display homes"] },
       { name: "VIASI", img: `${CDN}/8dd14241-86af-4d62-8a14-6987e02de827_rw_1920.jpg`, tags: ["fencing", "residential"] },
-      { name: "VIASI", img: `${CDN}/37079841-e329-43a9-81ab-614b04773986_rw_1200.jpg`, slides: [`${CDN}/37079841-e329-43a9-81ab-614b04773986_rw_1200.jpg`, `${CDN}/6bac8b33-cc48-4d67-ad5e-f4f6de63ebf5_rw_1200.jpg`, `${CDN}/1d4392ab-4a58-4537-b7ce-9fb1823860dd_rw_1200.jpg`], tags: ["fencing", "residential"] },
+      { name: "VIASI", img: `${CDN}/37079841-e329-43a9-81ab-614b04773986_rw_1200.jpg`, slides: [`${CDN}/37079841-e329-43a9-81ab-614b04773986_rw_1200.jpg`, `${CDN}/6bac8b33-cc48-4d67-ad5e-f4f6de63ebf5_rw_1200.jpg`, `${CDN}/1d4392ab-4a58-4537-b7ce-9fb1823860dd_rw_1200.jpg`], tags: ["residential"] },
       { name: "VIASI", img: "/images/viasi/viasi-1.jpg", tags: ["fencing", "residential"] },
-      { name: "VIASI", img: "/images/viasi/viasi-3.jpg", tags: ["fencing", "residential"] },
+      { name: "VIASI", img: "/images/viasi/viasi-3.jpg", tags: ["residential"] },
       { name: "VIASI", img: "/images/viasi/viasi-4.jpg", tags: ["fencing", "residential"] },
     ],
   },
