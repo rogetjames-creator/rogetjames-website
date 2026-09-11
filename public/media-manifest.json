@@ -317,7 +317,8 @@
     "destinations": [
       "screens",
       "icons",
-      "light-features"
+      "light-features",
+      "application-gates"
     ],
     "note": "remove https://rogetjames.com/.netlify/images?url=%2Fimages%2Fcdn-gallery/90166d8d-2652-40c1-8b4f-b0c9a35778af_rw_1200.jpg replace",
     "createdTime": "2026-08-05T13:32:53.170Z",
@@ -429,8 +430,11 @@
   },
   {
     "id": "1787050257368_67b02v",
-    "name": "Wattle light features - Applecross - 1200px.jpg",
-    "destinations": [],
+    "name": "WATTLE",
+    "destinations": [
+      "screens",
+      "light-features"
+    ],
     "note": "Auto-replaced images/wattle/wattle-5.jpg in place (upload instruction).",
     "createdTime": "2026-08-18T10:50:57.369Z",
     "path": "images/wattle/wattle-5.jpg"
