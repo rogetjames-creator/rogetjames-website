@@ -81,11 +81,10 @@ function designsFor(app) {
       }
       continue;
     }
-    // Tagged at the design rather than the photo — show its opening picture.
-    if ((d.tags || []).map(norm).some((t) => want.has(t))) {
-      const photo = (d.items || [])[0]?.img;
-      if (photo) out.push({ name: d.name, img: photo });
-    }
+    // A tag on the design rather than on a photograph says the design is used
+    // this way but not which picture shows it. Showing its opening photo was a
+    // guess, and it put a wall-decor picture on the pergolas page. Nothing is
+    // shown unless a photograph itself carries the tag.
   }
   const key = applicationKey(app.id);
   for (const u of uploads) {
