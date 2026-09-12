@@ -283,8 +283,19 @@ a.dpill{display:inline-block;text-decoration:none}
   // Landing straight on a range means no jump to the top — that would throw the
   // visitor back to the intro before they've seen anything.
   if(!wantedSlug){
+    // Open at the top — but only until the visitor does something. The page
+    // finishes loading its photographs long after it is usable, and the old
+    // "scroll to top on load" then yanked anyone who had already clicked a pill
+    // and landed on a range back to the intro, untouched.
+    try{ history.scrollRestoration='manual'; }catch{/* not supported */}
     window.scrollTo(0,0);
-    window.addEventListener('load',()=>window.scrollTo(0,0));
+    let moved=false;
+    const mark=()=>{ moved=true; };
+    window.addEventListener('wheel',mark,{passive:true,once:true});
+    window.addEventListener('touchstart',mark,{passive:true,once:true});
+    window.addEventListener('keydown',mark,{once:true});
+    document.addEventListener('click',mark,{capture:true,once:true});
+    window.addEventListener('load',()=>{ if(!moved) window.scrollTo(0,0); });
   }
   const app=document.getElementById('app'), now=document.getElementById('now');
   const nowDefault = `${label} · The ${rangeWord}`;
