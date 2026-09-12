@@ -972,11 +972,29 @@ a.dpill{display:inline-block;text-decoration:none}
       rangeHandles.forEach(h=>{
         const id=upClose.seriesId&&upClose.seriesId[h.r.label]; if(!id) return;
         const ups=uploadsForSeries(id); if(!ups.length) return;
+        const sameName=(a,b)=>String(a||'').toUpperCase().replace(/[^A-Z0-9]/g,'')===String(b||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
         for(const u of ups){
           const gi=giFor(u.src);
           if(h.r.designs.some(d=>d.imgs.includes(gi))) continue;
+          const nm=tidyName(u.name);
+          // A photograph of a design already in this range joins THAT design —
+          // another Spring belongs beside Spring, not on the end next to the
+          // close-ups. Only a new title starts a new piece, and that goes last.
+          const at=nm?h.r.designs.findIndex(d=>!d._upclose&&sameName(d.n,nm)):-1;
+          if(at>=0){
+            const vi=h.r.designs[at].imgs.length;
+            h.r.designs[at].imgs.push(gi);
+            // Sit it beside that design's own photographs in the strip, not on
+            // the end of the range.
+            let last=-1; h.r.flat.forEach(([dd],k)=>{ if(dd===at) last=k; });
+            if(last>=0) h.r.flat.splice(last+1,0,[at,vi]); else h.r.flat.push([at,vi]);
+            const el=h.addThumb(at,vi);
+            const sibs=[...h.tw.querySelectorAll('.thumb')].filter(x=>+x.dataset.d===at&&x!==el);
+            if(sibs.length&&el) h.tw.insertBefore(el,sibs[sibs.length-1].nextSibling);
+            continue;
+          }
           const di=h.r.designs.length;
-          h.r.designs.push({ n: tidyName(u.name)||h.r.label, imgs:[gi] });
+          h.r.designs.push({ n: nm||h.r.label, imgs:[gi] });
           h.r.flat.push([di,0]);
           h.addThumb(di,0);
         }
