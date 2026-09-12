@@ -12,7 +12,7 @@ export const SCREEN_DESIGNS = [
     name: "ASLYIAM", sectionStart: "THE ICONS",
     items: [
       { name: "ASLYIAM Gate",          img: `${CDN}/bb795500-d407-424b-bc89-a099f1c7a24f_rw_1200.jpg`, tags: ["gates"] },
-      { name: "ASLYIAM Cellar Door", img: "/images/uploads/1785936773170_lbq7tk.jpg", tags: ["light features"] },
+      { name: "ASLYIAM", img: "/images/uploads/1785936773170_lbq7tk.jpg", tags: ["light features", "gates"] },
       { name: "ASLYIAM Gate", img: `${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, tags: ["gates"], slides: [`${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, `${CDN}/f9a69d89-d090-4620-ad47-1569381a5503_rw_1200.jpg`] },
     ],
   },
