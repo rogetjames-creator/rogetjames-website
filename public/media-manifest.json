@@ -968,5 +968,16 @@
     "note": "",
     "createdTime": "2026-09-12T07:03:32.223Z",
     "path": "images/uploads/1789196612222_pzttgx.jpg"
+  },
+  {
+    "id": "1789215535334_98wit9",
+    "name": "ERGO - divider doubleview 1200px.jpg",
+    "destinations": [
+      "screens",
+      "application-dividers"
+    ],
+    "note": "",
+    "createdTime": "2026-09-12T12:18:55.351Z",
+    "path": "images/uploads/1789215535334_98wit9.jpg"
   }
 ]
