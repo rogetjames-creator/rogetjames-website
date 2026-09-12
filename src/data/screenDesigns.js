@@ -33,8 +33,9 @@ export const SCREEN_DESIGNS = [
     name: "ROANDER",
     tabs: ["icons", "classics"],
     items: [
-      { name: "ROANDER", img: "/images/roander/roander-1.jpg", pos: "20% center" },
-      { name: "ROANDER", img: `${CDN}/b6751fc7-b7c7-4f41-b84d-bb501d184e62_rw_1920.jpg`, slides: [`${CDN}/b6751fc7-b7c7-4f41-b84d-bb501d184e62_rw_1920.jpg`, `${CDN}/f5e2a05d-f862-4427-983a-bfd5b700a9e2_rw_1200.jpg`, `${CDN}/8f61889e-8e26-41b7-9f63-af05771238f7_rw_1200.jpg`] },
+      { name: "ROANDER", img: "/images/roander/roander-1.jpg", pos: "20% center", tags: ["wall decor"] },
+      { name: "ROANDER", img: `${CDN}/b6751fc7-b7c7-4f41-b84d-bb501d184e62_rw_1920.jpg`, tags: ["gates", "fencing"] },
+      { name: "ROANDER", img: `${CDN}/f5e2a05d-f862-4427-983a-bfd5b700a9e2_rw_1200.jpg`, slides: [`${CDN}/f5e2a05d-f862-4427-983a-bfd5b700a9e2_rw_1200.jpg`, `${CDN}/8f61889e-8e26-41b7-9f63-af05771238f7_rw_1200.jpg`] },
     ],
   },
   {

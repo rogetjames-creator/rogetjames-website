@@ -195,7 +195,7 @@ a.dpill{display:inline-block;text-decoration:none}
       <h2 class="sh-name" id="ovName"></h2>
       <p class="sh-sub" id="ovSub"></p>
       <div class="sh-block sh-apps" id="ovApps" style="display:none">
-        <div class="sh-lab">Used for <span class="sh-lab-alt">&mdash; view as</span></div>
+        <div class="sh-lab" id="ovAppsLab">Used for</div>
         <div class="sh-opts" id="ovAppPills"></div>
       </div>
       <div class="sh-block">
@@ -712,6 +712,10 @@ a.dpill{display:inline-block;text-decoration:none}
           });
           row.appendChild(el);
         });
+        // "view as" only when there is somewhere else to go — a design used
+        // one way says what it is used for and leaves it there.
+        const lab=document.getElementById('ovAppsLab');
+        if(lab) lab.innerHTML='Used for'+(apps.length>1?' <span class="sh-lab-alt">&mdash; view as</span>':'');
         box.style.display=apps.length?'':'none';
         markApps(des, data.imgs[des.imgs[vv||0]]);
       }
