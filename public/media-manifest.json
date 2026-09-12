@@ -957,5 +957,16 @@
     "note": "Auto-replaced images/cdn-gallery/0cb8128a-5efd-4474-851e-636aa772a9b4_rw_1920.jpg in place (upload instruction).",
     "createdTime": "2026-09-12T07:02:55.508Z",
     "path": "images/cdn-gallery/0cb8128a-5efd-4474-851e-636aa772a9b4_rw_1920.jpg"
+  },
+  {
+    "id": "1789196612222_pzttgx",
+    "name": "LUMIER",
+    "destinations": [
+      "screens",
+      "application-dividers"
+    ],
+    "note": "",
+    "createdTime": "2026-09-12T07:03:32.223Z",
+    "path": "images/uploads/1789196612222_pzttgx.jpg"
   }
 ]
