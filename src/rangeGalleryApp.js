@@ -68,6 +68,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
 .designpills:empty{display:none}
 .dpill{font-family:var(--font-detail,inherit);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(237,232,223,.62);background:rgba(237,232,223,.03);border:1px solid rgba(237,232,223,.14);border-radius:999px;padding:4px 11px;cursor:pointer;transition:color .18s,border-color .18s,background .18s;white-space:nowrap;line-height:1}
 .dpill:hover{color:#fff;border-color:rgba(237,232,223,.5);background:rgba(237,232,223,.1)}
+a.dpill{display:inline-block;text-decoration:none}
 .dpill.active{color:#f0d9b6;border-color:rgba(158,113,52,.7);background:rgba(158,113,52,.1)}
 .dtoggle-wrap{display:flex;justify-content:center;margin:-2px 0 12px}
 .dtoggle-wrap:empty{display:none}
@@ -456,12 +457,17 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     const pills=document.getElementById('appPills'), wrap=document.getElementById('appWrap');
     if(pills&&wrap){
       applications.forEach(a=>{
-        const b=document.createElement('button'); b.type='button'; b.className='dpill appx'; b.textContent=a;
-        // The application's own range carries the same name. Once James has put
-        // photos against it the pill scrolls there; until then it sits quiet.
-        const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(a).toLowerCase());
-        if(target){ b.addEventListener('click',()=>target.sec.scrollIntoView({behavior:'smooth',block:'start'})); }
-        else { b.classList.add('empty'); b.disabled=true; }
+        const text=typeof a==='string'?a:a.label, href=typeof a==='string'?null:a.href;
+        // A real link when the application has a page of its own — Google follows
+        // links, not buttons. Clicking still scrolls to that application's range
+        // in the gallery when it has photos here; an application with no photos
+        // in the gallery yet opens its page instead of sitting dead.
+        const b=document.createElement(href?'a':'button');
+        if(href) b.href=href; else b.type='button';
+        b.className='dpill appx'; b.textContent=text;
+        const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(text).toLowerCase());
+        if(target){ b.addEventListener('click',(e)=>{ if(e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); target.sec.scrollIntoView({behavior:'smooth',block:'start'}); }); }
+        else if(!href){ b.classList.add('empty'); b.disabled=true; }
         pills.appendChild(b);
       });
       const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';

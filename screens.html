@@ -56,6 +56,27 @@
   </head>
   <body>
     <div id="screens-root"></div>
+
+    <!-- Every way a screen is used has a page of its own. Real links, always in
+         the page — this is what a search engine follows, and how someone
+         looking for "laser cut gates" lands somewhere that answers it. -->
+    <nav class="appfoot" aria-label="Screens by application">
+      <span>Screens by application</span>
+      <a href="/screens/wall-decor">Wall Decor</a>
+      <a href="/screens/gates">Gates</a>
+      <a href="/screens/fencing">Fencing</a>
+      <a href="/screens/dividers">Dividers</a>
+      <a href="/screens/privacy">Privacy</a>
+      <a href="/screens/pergolas">Pergolas</a>
+    </nav>
+    <style>
+      .appfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 18px;
+        padding:42px 24px 54px;background:#020202;font-family:"Jost","Plus Jakarta Sans",sans-serif;
+        font-size:10px;letter-spacing:.2em;text-transform:uppercase;border-top:1px solid rgba(237,232,223,.08)}
+      .appfoot span{color:rgba(237,232,223,.38)}
+      .appfoot a{color:rgba(237,232,223,.62);text-decoration:none;transition:color .2s}
+      .appfoot a:hover{color:#D4A75C}
+    </style>
     <noscript>
       <div style="max-width:820px;margin:2rem auto;padding:1rem;font-family:sans-serif;color:#F2F0E9;background:#020202">
         <h1>Laser Cut Privacy Screens &amp; Metal Garden Screens — ROGETjames</h1>
