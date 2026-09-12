@@ -108,7 +108,7 @@ function buildScreenRangeData(covers) {
 // and would hold up the first render.
 async function fetchScreenUploads() {
   try {
-    const manifest = await fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
+    const manifest = await fetch("/media-manifest.json", { cache: "no-cache" })
       .then((r) => (r.ok ? r.json() : [])).catch(() => []);
     // Any screen-related tag counts: the generic "screens" OR a specific screen
     // category (icons / architectural / … / light-features / mirrors).
@@ -203,10 +203,10 @@ export function mountScreensRange(rootId) {
   };
   // Mount once — with /media uploads placed by their destinations if the fetch
   // returns quickly, otherwise fall back to the static covers so it never hangs.
-  // The photo list is a small static file. Waiting a beat for it is far better
-  // than mounting a gallery with the uploads and application ranges missing —
-  // that is what made a Gates pill jump to nothing.
-  const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 3000);
+  // Never make the page wait: if the photo list is slow, the gallery opens
+  // without it. The list itself is preloaded in the page head, so in practice
+  // it is already here. (An application with no section then opens its page.)
+  const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 700);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
     const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
