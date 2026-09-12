@@ -4,11 +4,14 @@
 import { mountRangeGallery } from "./rangeGalleryApp";
 import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
 import { SCREEN_APPLICATIONS, applicationKey } from "./mediaDestinations";
+import { SCREEN_DESIGNS } from "./data/screenDesigns";
 
-// Place each /media upload into EVERY category (destination) it was tagged with —
-// e.g. an image tagged both "icons" and "light-features" appears in both ranges —
-// plus its title's home range for the general "screens" destination. This honours
-// multi-category uploads instead of only matching one spot by title.
+// Place each /media upload into EVERY place it belongs — one photograph can be
+// cross-referenced many times over: every category (destination) it was tagged
+// with, AND the range where its design already lives (so a photo named AUDA
+// joins the AUDA design in THE INDIES), AND its application range/page. A photo
+// tagged only for an application whose title matches no design stays with that
+// application alone — it never invents a design.
 function injectUploads(covers, uploads) {
   const rangeIds = new Set(covers.map((c) => c.id));
   const norm = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -24,17 +27,18 @@ function injectUploads(covers, uploads) {
     if (existing) existing.slides.push(src);
     else range.pieces.push({ name, slides: [src] });
   };
+  const appKeys = new Set(SCREEN_APPLICATIONS.map((a) => applicationKey(a.id)));
   for (const u of uploads) {
     const name = u.name || "Screen";
-    const cats = (u.dests || []).filter((d) => rangeIds.has(d));
+    const dests = u.dests || [];
+    const cats = dests.filter((d) => rangeIds.has(d));
     cats.forEach((cat) => addTo(byId[cat], name, u.src));
-    // general "screens" destination (or no category chosen) → its title's home
-    // range, or Icons if it's a brand-new design with no category.
-    if ((u.dests || []).includes("screens") || cats.length === 0) {
-      const home = out.find((c) => c.pieces.some((p) => norm(p.name) === norm(name)));
-      if (home) addTo(home, name, u.src);
-      else if (cats.length === 0) addTo(byId.icons, name, u.src);
-    }
+    // Always join the design of the same name wherever it already lives — that
+    // is the cross-reference: the photo shows under its design's pill as well
+    // as under every category and application it was tagged for.
+    const home = out.find((c) => c.pieces.some((p) => norm(p.name) === norm(name)));
+    if (home) addTo(home, name, u.src);
+    else if (cats.length === 0 && !dests.some((d) => appKeys.has(d))) addTo(byId.icons, name, u.src);
   }
   out.forEach((c) => { c.pieces.forEach((p) => { p.img = p.slides[0]; }); c.img = c.pieces.length ? c.pieces[0].img : c.img; });
   return out;
@@ -159,15 +163,32 @@ function buildDisplaysCover(uploads) {
 // gallery, named exactly as its pill so the pill can find it. An application
 // with no photos yet makes no range, and its pill simply does nothing.
 function buildApplicationCovers(uploads) {
+  const normTag = (t) => String(t || "").toLowerCase().trim();
   return SCREEN_APPLICATIONS.map((a) => {
     const key = applicationKey(a.id);
+    const want = new Set(a.tags.map(normTag));
     const seen = new Set();
     const pieces = [];
+    const add = (name, src) => {
+      if (!src || seen.has(src)) return;
+      seen.add(src);
+      const existing = pieces.find((p) => p.name && name && p.name.toUpperCase() === name.toUpperCase());
+      if (existing) { existing.slides.push(src); return; }
+      pieces.push({ name: name || "", img: src, slides: [src] });
+    };
+    // Every photograph already tagged for this use in the design list — the
+    // same rule the /screens/<application> pages follow: the photograph itself
+    // must carry the tag, never the design as a whole.
+    for (const d of SCREEN_DESIGNS) {
+      for (const it of d.items || []) {
+        if (!(it.tags || []).map(normTag).some((t) => want.has(t))) continue;
+        for (const src of (it.slides && it.slides.length ? it.slides : [it.img])) add(d.name, src);
+      }
+    }
+    // …plus anything uploaded straight to this application through /media.
     for (const u of uploads) {
       if (!(u.dests || []).includes(key)) continue;
-      if (!u.src || seen.has(u.src)) continue;
-      seen.add(u.src);
-      pieces.push({ name: u.name || "", img: u.src, slides: [u.src] });
+      add(u.name || "", u.src);
     }
     return { id: key, label: a.label, img: pieces.length ? pieces[0].img : "", pieces };
   }).filter((c) => c.pieces.length);
@@ -185,13 +206,13 @@ export function mountScreensRange(rootId) {
   const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 900);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
-    const appKeys = new Set(SCREEN_APPLICATIONS.map((a) => applicationKey(a.id)));
-    const isApp = (u) => (u.dests || []).some((d) => appKeys.has(d));
     const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
-    const rest = uploads.filter((u) => !(u.dests || []).includes("displays") && !isApp(u));
+    // An application photo is NOT taken out of the ranges — it belongs in both:
+    // under its design's pill and on its application page.
+    const rest = uploads.filter((u) => !(u.dests || []).includes("displays"));
     let covers = rest.length ? injectUploads(SCREEN_COVERS, rest) : SCREEN_COVERS;
     if (displays.length) covers = [...covers, buildDisplaysCover(displays)];
-    covers = [...covers, ...buildApplicationCovers(uploads.filter(isApp))];
+    covers = [...covers, ...buildApplicationCovers(uploads)];
     mountWith(covers);
   }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS); });
 }
