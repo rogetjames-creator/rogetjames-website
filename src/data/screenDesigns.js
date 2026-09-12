@@ -11,9 +11,9 @@ export const SCREEN_DESIGNS = [
   {
     name: "ASLYIAM", sectionStart: "THE ICONS",
     items: [
-      { name: "ASLYIAM Gate",          img: `${CDN}/bb795500-d407-424b-bc89-a099f1c7a24f_rw_1200.jpg`, tags: ["gates"] },
+      { name: "ASLYIAM",               img: `${CDN}/bb795500-d407-424b-bc89-a099f1c7a24f_rw_1200.jpg`, tags: ["gates"] },
       { name: "ASLYIAM", img: "/images/uploads/1785936773170_lbq7tk.jpg", tags: ["light features", "gates"] },
-      { name: "ASLYIAM Gate", img: `${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, tags: ["gates"], slides: [`${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, `${CDN}/f9a69d89-d090-4620-ad47-1569381a5503_rw_1200.jpg`] },
+      { name: "ASLYIAM", img: `${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, tags: ["gates"], slides: [`${CDN}/783b12fc-1521-44f3-afa8-17b4f1a5e85c_rw_1200.jpg`, `${CDN}/f9a69d89-d090-4620-ad47-1569381a5503_rw_1200.jpg`] },
     ],
   },
   {
@@ -24,9 +24,9 @@ export const SCREEN_DESIGNS = [
       { name: "LUCARIO", img: `${CDN}/bf29f83d-b73c-4e2e-89b6-bc0f97489251_rw_1200.jpg`, slides: [`${CDN}/bf29f83d-b73c-4e2e-89b6-bc0f97489251_rw_1200.jpg`, `${CDN}/dfb5f9eb-ba6e-4863-9a8f-e75c77d22339_rw_1200.jpg`] },
       { name: "LUCARIO TDL Landscapes", img: `${CDN}/586176b6-66ff-45c4-afd7-59eaa3da6181_rw_1920.jpg` },
       { name: "LUCARIO Dividers",       img: `${CDN}/0176062d-e9cc-4ed6-8b71-cb1b361b688b_rw_1200.jpg` },
-      { name: "LUCARIO Gate",           img: `${CDN}/d8769e63-8cec-44d3-991f-cee986bc6360_rw_1200.jpg`, tags: ["gates"] },
-      { name: "LUCARIO Gate",           img: `${CDN}/35fe8b17-6414-4ac4-bc5d-977e3feb1ac2_rw_1200.jpg`, tags: ["gates"] },
-      { name: "LUCARIO Gate",           img: "/images/uploads/1786750075607_2ukqm2.jpg", tags: ["gates"] },
+      { name: "LUCARIO",                img: `${CDN}/d8769e63-8cec-44d3-991f-cee986bc6360_rw_1200.jpg`, tags: ["gates"] },
+      { name: "LUCARIO",                img: `${CDN}/35fe8b17-6414-4ac4-bc5d-977e3feb1ac2_rw_1200.jpg`, tags: ["gates"] },
+      { name: "LUCARIO",                img: "/images/uploads/1786750075607_2ukqm2.jpg", tags: ["gates"] },
     ],
   },
   {
