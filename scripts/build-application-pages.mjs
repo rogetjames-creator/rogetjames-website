@@ -23,7 +23,7 @@ import { fileURLToPath } from "url";
 import { SCREEN_DESIGNS } from "../src/data/screenDesigns.js";
 import { SCREEN_APPLICATIONS, applicationKey } from "../src/mediaDestinations.js";
 
-const PREVIEW = true;
+const PREVIEW = false;
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");

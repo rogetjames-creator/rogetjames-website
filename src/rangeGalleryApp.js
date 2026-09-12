@@ -29,8 +29,12 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const ALT_KIND = noun === "sculpture" ? "sculpture" : "wall";
   const altOf = (des, r, gi) => altForPiece(des.n, r && r.label, ALT_KIND, data.imgs[gi]);
   // Reserve one extra slot for the standalone "UP CLOSE" range (Wall Art only).
-  const TOTAL = RANGES.length + (upClose ? 1 : 0);
-  const DESIGN_TOTAL = RANGES.reduce((s, r) => s + ((r.designs ? r.designs.length : 0) || r.count || 0), 0);
+  // An "application" section (Gates, Fencing, …) is not a range of its own — it
+  // is the same designs shown by what they are used for. It is never counted as
+  // a range and never gets a range pill; it belongs under Applications only.
+  const REAL_RANGES = RANGES.filter((r) => !r._app);
+  const TOTAL = REAL_RANGES.length + (upClose ? 1 : 0);
+  const DESIGN_TOTAL = REAL_RANGES.reduce((s, r) => s + ((r.designs ? r.designs.length : 0) || r.count || 0), 0);
 
   if (!_stylesInjected) {
     _stylesInjected = true;
@@ -287,9 +291,10 @@ a.dpill{display:inline-block;text-decoration:none}
     const sec=document.createElement('section');
     sec.className='poster'; sec.dataset.label=r.label; sec.dataset.idx=(ri+1);
     const idx=String(ri+1).padStart(2,'0'), tot=String(TOTAL).padStart(2,'0');
+    const head=r._app?`<span class="p-idx">Used for</span>`:`<span class="p-idx">${idx}<span class="of"> / ${tot}</span></span>`;
     sec.innerHTML=`
       <div class="p-head">
-        <span class="p-idx">${idx}<span class="of"> / ${tot}</span></span>
+        ${head}
         <h2 class="p-name">${twoTone(r.label)}</h2>
         <span class="p-count">${r.count} design${r.count!==1?'s':''}</span>
       </div>
@@ -439,7 +444,7 @@ a.dpill{display:inline-block;text-decoration:none}
     b.addEventListener('click',()=>{ targetEl.scrollIntoView({behavior:'smooth',block:'start'}); });
     pillWrap.appendChild(b); return b;
   }
-  rangeHandles.forEach(h=>addPill(h.r.label,h.sec));
+  rangeHandles.forEach(h=>{ if(!h.r._app) addPill(h.r.label,h.sec); });
 
   // Screens: "About" panel above the categories — a toggle pill that opens a spiel.
   if(aboutHtml){

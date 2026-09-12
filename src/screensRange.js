@@ -95,7 +95,7 @@ function buildScreenRangeData(covers) {
     // flat = the slideshow order: every variant of every design, broad.
     const flat = [];
     designs.forEach((d, di) => d.imgs.forEach((_, vi) => flat.push([di, vi])));
-    return { label: sec.label.toUpperCase(), count: designs.length, designs, flat };
+    return { label: sec.label.toUpperCase(), count: designs.length, designs, flat, _app: !!sec.app };
   }).filter((r) => r.designs.length > 0);
   return { imgs, ranges };
 }
@@ -190,7 +190,7 @@ function buildApplicationCovers(uploads) {
       if (!(u.dests || []).includes(key)) continue;
       add(u.name || "", u.src);
     }
-    return { id: key, label: a.label, img: pieces.length ? pieces[0].img : "", pieces };
+    return { id: key, label: a.label, img: pieces.length ? pieces[0].img : "", pieces, app: true };
   }).filter((c) => c.pieces.length);
 }
 
