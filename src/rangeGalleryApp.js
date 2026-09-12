@@ -47,7 +47,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     sNoPrice.textContent = ".no-price #qpill,.no-price .sh-sub,.no-price .sh-block,.no-price .gate,.no-price .sh-actions{display:none!important}"
       + ".no-price .sh-block.sh-apps{display:block!important}"
       + ".sh-apps .sh-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}"
-      + ".sh-apps a.sh-chip{text-decoration:none}";
+      + ".sh-apps a.sh-chip{text-decoration:none}"
+      + ".sh-apps a.sh-chip.sel{color:#f0d9b6;border-color:rgba(212,167,92,.85);background:rgba(158,113,52,.16)}";
     document.head.appendChild(sNoPrice);
     const s2 = document.createElement("style");
     s2.textContent = `
@@ -487,7 +488,7 @@ a.dpill{display:inline-block;text-decoration:none}
           const target=findTarget();
           if(!target) return;                       // no photos here yet → its page
           e.preventDefault();
-          target.sec.scrollIntoView({behavior:'smooth',block:'start'});
+          target.sec.scrollIntoView({block:'start'});
         });
         if(!href && !findTarget()){ b.classList.add('empty'); b.disabled=true; }
         pills.appendChild(b);
@@ -627,7 +628,16 @@ a.dpill{display:inline-block;text-decoration:none}
   const pcLocked = ()=> !!(postcodeInfo && postcodeInfo.postcode);
   const matId = ()=> /corten/i.test(selFinish||'') ? 'corten' : 'aluminium';
   const regionOf = (info)=> STATE_NAMES[info.state] || info.state || 'Australia';
-  function setOvImg(des,vv,r){ ovImg.src=IMGS[des.imgs[vv]]; ovImg.alt=altForPiece(des.n, (r&&r.label)||curRange, ALT_KIND, data.imgs[des.imgs[vv]]); curImg=THUMBS[des.imgs[vv]]; ovThumbs.querySelectorAll('.sh-th').forEach((t,j)=>t.classList.toggle('active',j===vv)); }
+  function setOvImg(des,vv,r){ ovImg.src=IMGS[des.imgs[vv]]; ovImg.alt=altForPiece(des.n, (r&&r.label)||curRange, ALT_KIND, data.imgs[des.imgs[vv]]); curImg=THUMBS[des.imgs[vv]]; ovThumbs.querySelectorAll('.sh-th').forEach((t,j)=>t.classList.toggle('active',j===vv)); markApps(des, data.imgs[des.imgs[vv]]); }
+  // Light up the use that the photograph on screen actually shows — look at the
+  // gate photo and Gates lifts; step to the fence shot and Fencing lifts.
+  function markApps(des,src){
+    if(!designApplications) return;
+    const row=document.getElementById('ovAppPills'); if(!row) return;
+    const apps=designApplications(des.n,src)||[];
+    const on=new Set(apps.filter(a=>a.on).map(a=>a.label));
+    row.querySelectorAll('.sh-chip').forEach(el=>el.classList.toggle('sel',on.has(el.dataset.app)));
+  }
   function renderPrices(){
     if(!pcLocked() || !selFinish){ pout.style.display='none'; return; }
     const isWA=postcodeInfo.isWA, mid=matId();
@@ -682,16 +692,19 @@ a.dpill{display:inline-block;text-decoration:none}
       if(box&&row){
         row.innerHTML='';
         apps.forEach(a=>{
-          const el=document.createElement('a'); el.className='sh-chip'; el.textContent=a.label; el.href=a.href;
+          const el=document.createElement('a'); el.className='sh-chip'; el.dataset.app=a.label; el.textContent=a.label; el.href=a.href;
           const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(a.label).toLowerCase());
           el.addEventListener('click',(e)=>{
             if(e.metaKey||e.ctrlKey||e.shiftKey||!target) return;
             e.preventDefault(); closeDetail();
-            target.sec.scrollIntoView({behavior:'smooth',block:'start'});
+            // Land on it, don't fly there — a glide across the whole gallery
+            // is dizzying.
+            target.sec.scrollIntoView({block:'start'});
           });
           row.appendChild(el);
         });
         box.style.display=apps.length?'':'none';
+        markApps(des, data.imgs[des.imgs[vv||0]]);
       }
     }
     // NEVER invent a size. A design with no measurements on record shows no

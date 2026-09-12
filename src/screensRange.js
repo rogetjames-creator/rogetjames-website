@@ -204,28 +204,37 @@ function buildApplicationCovers(uploads) {
 function buildDesignApplications(uploads) {
   const normTag = (t) => String(t || "").toLowerCase().trim();
   const normName = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-  const map = new Map();
-  const add = (name, app) => {
-    const k = normName(name);
-    if (!k) return;
-    if (!map.has(k)) map.set(k, new Set());
-    map.get(k).add(app.id);
+  const byDesign = new Map();   // design name → applications it is used for
+  const byPhoto = new Map();    // one photograph → the uses IT shows
+  const push = (map, key, id) => {
+    if (!key) return;
+    if (!map.has(key)) map.set(key, new Set());
+    map.get(key).add(id);
   };
   for (const a of SCREEN_APPLICATIONS) {
     const want = new Set(a.tags.map(normTag));
     for (const d of SCREEN_DESIGNS) {
       for (const it of d.items || []) {
-        if ((it.tags || []).map(normTag).some((t) => want.has(t))) add(d.name, a);
+        if (!(it.tags || []).map(normTag).some((t) => want.has(t))) continue;
+        push(byDesign, normName(d.name), a.id);
+        for (const src of (it.slides && it.slides.length ? it.slides : [it.img])) push(byPhoto, src, a.id);
       }
     }
     const key = applicationKey(a.id);
-    for (const u of uploads) if ((u.dests || []).includes(key)) add(u.name, a);
+    for (const u of uploads) {
+      if (!(u.dests || []).includes(key)) continue;
+      push(byDesign, normName(u.name), a.id);
+      push(byPhoto, u.src, a.id);
+    }
   }
-  return (name) => {
-    const ids = map.get(normName(name));
+  // Called with the design's name and, when one is on screen, the photograph
+  // being looked at — the pill for what THAT photograph shows is marked.
+  return (name, src) => {
+    const ids = byDesign.get(normName(name));
     if (!ids) return [];
+    const here = byPhoto.get(src) || new Set();
     return SCREEN_APPLICATIONS.filter((a) => ids.has(a.id))
-      .map((a) => ({ label: a.label, href: `/screens/${a.id}` }));
+      .map((a) => ({ label: a.label, href: `/screens/${a.id}`, on: here.has(a.id) }));
   };
 }
 
