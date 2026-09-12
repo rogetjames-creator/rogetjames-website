@@ -194,19 +194,51 @@ function buildApplicationCovers(uploads) {
   }).filter((c) => c.pieces.length);
 }
 
+// Which applications a design is used for — read from the tags already written
+// against each photograph, plus anything uploaded straight to an application.
+// This is what the "Used for" pills in a design's detail sheet show: click one
+// and you see every design used that way.
+function buildDesignApplications(uploads) {
+  const normTag = (t) => String(t || "").toLowerCase().trim();
+  const normName = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const map = new Map();
+  const add = (name, app) => {
+    const k = normName(name);
+    if (!k) return;
+    if (!map.has(k)) map.set(k, new Set());
+    map.get(k).add(app.id);
+  };
+  for (const a of SCREEN_APPLICATIONS) {
+    const want = new Set(a.tags.map(normTag));
+    for (const d of SCREEN_DESIGNS) {
+      for (const it of d.items || []) {
+        if ((it.tags || []).map(normTag).some((t) => want.has(t))) add(d.name, a);
+      }
+    }
+    const key = applicationKey(a.id);
+    for (const u of uploads) if ((u.dests || []).includes(key)) add(u.name, a);
+  }
+  return (name) => {
+    const ids = map.get(normName(name));
+    if (!ids) return [];
+    return SCREEN_APPLICATIONS.filter((a) => ids.has(a.id))
+      .map((a) => ({ label: a.label, href: `/screens/${a.id}` }));
+  };
+}
+
 export function mountScreensRange(rootId) {
   let mounted = false;
-  const mountWith = (c) => {
+  const mountWith = (c, uploads) => {
     if (mounted) return;
     mounted = true;
-    _mount(rootId, buildScreenRangeData(c));
+    _mount(rootId, buildScreenRangeData(c), buildDesignApplications(uploads || []));
   };
   // Mount once — with /media uploads placed by their destinations if the fetch
   // returns quickly, otherwise fall back to the static covers so it never hangs.
   // Never make the page wait: if the photo list is slow, the gallery opens
   // without it. The list itself is preloaded in the page head, so in practice
   // it is already here. (An application with no section then opens its page.)
-  const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 700);
+  const fallback = setTimeout(() => mountWith(SCREEN_COVERS, []), 700);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
     const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
@@ -216,11 +248,11 @@ export function mountScreensRange(rootId) {
     let covers = rest.length ? injectUploads(SCREEN_COVERS, rest) : SCREEN_COVERS;
     if (displays.length) covers = [...covers, buildDisplaysCover(displays)];
     covers = [...covers, ...buildApplicationCovers(uploads)];
-    mountWith(covers);
-  }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS); });
+    mountWith(covers, uploads);
+  }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS, []); });
 }
 
-function _mount(rootId, data) {
+function _mount(rootId, data, designApplications) {
   mountRangeGallery({
     rootId,
     data,
@@ -239,6 +271,8 @@ function _mount(rootId, data) {
     // Each application also has a page of its own (/screens/gates, …) — the pill
     // is a real link to it, so the pages are reachable and crawlable.
     applications: SCREEN_APPLICATIONS.map((a) => ({ label: a.label, href: `/screens/${a.id}` })),
+    // The ways THIS design is used, shown as pills inside its detail sheet.
+    designApplications,
     // "The Art of Shadows & Light" popup.
     story: {
       label: "The Art of Shadows & Light",

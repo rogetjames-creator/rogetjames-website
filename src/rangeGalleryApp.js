@@ -19,7 +19,7 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, descriptions = null, story = null, noPriceRanges = null, cortenOnly = false, basePath = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, cortenOnly = false, basePath = null }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
@@ -187,6 +187,10 @@ a.dpill{display:inline-block;text-decoration:none}
       <div class="sh-eyebrow" id="ovRange"></div>
       <h2 class="sh-name" id="ovName"></h2>
       <p class="sh-sub" id="ovSub"></p>
+      <div class="sh-block sh-apps" id="ovApps" style="display:none">
+        <div class="sh-lab">Used for</div>
+        <div class="sh-opts" id="ovAppPills"></div>
+      </div>
       <div class="sh-block">
         <div class="sh-lab">Sizes — made to order &middot; select one</div>
         <div class="sh-sizes" id="ovSizes"></div>
@@ -665,6 +669,26 @@ a.dpill{display:inline-block;text-decoration:none}
     des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt=altOf(des,RANGES[ri],gi);t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
     setOvImg(des,vv||0,RANGES[ri]);
     curDes=des; curRange=RANGES[ri].label;
+    // Screens: the ways THIS design is used — click one to see every design
+    // used that way. Real links, so each application page is reachable.
+    if(designApplications){
+      const apps=designApplications(des.n)||[];
+      const box=document.getElementById('ovApps'), row=document.getElementById('ovAppPills');
+      if(box&&row){
+        row.innerHTML='';
+        apps.forEach(a=>{
+          const el=document.createElement('a'); el.className='sh-chip'; el.textContent=a.label; el.href=a.href;
+          const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(a.label).toLowerCase());
+          el.addEventListener('click',(e)=>{
+            if(e.metaKey||e.ctrlKey||e.shiftKey||!target) return;
+            e.preventDefault(); closeDetail();
+            target.sec.scrollIntoView({behavior:'smooth',block:'start'});
+          });
+          row.appendChild(el);
+        });
+        box.style.display=apps.length?'':'none';
+      }
+    }
     // NEVER invent a size. A design with no measurements on record shows no
     // sizes at all — the old fallback filled in a generic 600x400/900x600/
     // 1200x800 and presented it as that piece's real dimensions.
