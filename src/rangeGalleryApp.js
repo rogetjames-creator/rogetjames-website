@@ -486,10 +486,11 @@ a.dpill{display:inline-block;text-decoration:none}
         const findTarget=()=>rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(text).toLowerCase());
         b.addEventListener('click',(e)=>{
           if(e.metaKey||e.ctrlKey||e.shiftKey) return;
-          const target=findTarget();
-          if(!target) return;                       // no photos here yet → its page
+          // A plain click NEVER leaves the gallery — the link is there for
+          // Google and for opening the page deliberately in a new tab.
           e.preventDefault();
-          landOn(target.sec);
+          const target=findTarget();
+          if(target) landOn(target.sec);
         });
         if(!href && !findTarget()){ b.classList.add('empty'); b.disabled=true; }
         pills.appendChild(b);
@@ -716,8 +717,9 @@ a.dpill{display:inline-block;text-decoration:none}
           // not the top of the pergolas section.
           const dIn=target?target.r.designs.findIndex(x=>String(x.n||'').trim().toLowerCase()===String(des.n||'').trim().toLowerCase()):-1;
           el.addEventListener('click',(e)=>{
-            if(e.metaKey||e.ctrlKey||e.shiftKey||!target||dIn<0) return;
-            e.preventDefault();
+            if(e.metaKey||e.ctrlKey||e.shiftKey) return;
+            e.preventDefault();                      // never jump off the gallery
+            if(!target||dIn<0) return;
             // Move behind the popup — solid black, no scrolling to watch — then
             // lift it: you are in that application's full range, standing on the
             // photograph that took you there.
