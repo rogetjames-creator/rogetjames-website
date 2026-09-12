@@ -702,13 +702,16 @@ a.dpill{display:inline-block;text-decoration:none}
           // not the top of the pergolas section.
           const dIn=target?target.r.designs.findIndex(x=>String(x.n||'').trim().toLowerCase()===String(des.n||'').trim().toLowerCase()):-1;
           el.addEventListener('click',(e)=>{
-            if(e.metaKey||e.ctrlKey||e.shiftKey||!target) return;
-            e.preventDefault(); closeDetail();
-            if(dIn>=0) target.show(dIn,0);
-            // Land on it, don't fly there — a glide across the whole gallery
-            // is dizzying.
+            if(e.metaKey||e.ctrlKey||e.shiftKey||!target||dIn<0) return;
+            e.preventDefault();
+            // The popup never closes: it goes solid black for a moment, the
+            // gallery behind is moved to that design used that way, and the
+            // sheet reopens on it. No scrolling to watch.
+            ov.classList.add('switching');
+            target.show(dIn,0);
             target.sec.scrollIntoView({block:'start'});
-            if(dIn>=0) setTimeout(()=>openDetail(target.ri,dIn,0),260);
+            openDetail(target.ri,dIn,0);
+            setTimeout(()=>ov.classList.remove('switching'),300);
           });
           row.appendChild(el);
         });

@@ -86,6 +86,10 @@ a.logo i{font-family:Georgia,serif;font-style:italic;font-weight:500}
 /* detail overlay */
 .ov{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(6,6,5,.86);backdrop-filter:blur(8px)}
 .ov.open{display:flex}
+/* Moving between uses happens behind the popup: the backdrop goes solid for a
+   moment so the gallery jumping about underneath is never seen. */
+.ov{transition:background .18s linear}
+.ov.switching{background:#060605;backdrop-filter:none}
 .sheet{position:relative;width:min(1120px,96vw);max-height:92vh;background:var(--card);border:1px solid var(--hair);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:1.2fr .85fr}
 .sheet .close{position:absolute;top:14px;right:14px;z-index:6;width:38px;height:38px;border-radius:50%;border:1px solid var(--hair);background:rgba(0,0,0,.45);color:var(--cream);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .sh-media{background:#0c0b0a;display:flex;flex-direction:column;min-height:0}
