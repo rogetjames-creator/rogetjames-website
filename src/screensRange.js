@@ -33,12 +33,15 @@ function injectUploads(covers, uploads) {
     const dests = u.dests || [];
     const cats = dests.filter((d) => rangeIds.has(d));
     cats.forEach((cat) => addTo(byId[cat], name, u.src));
-    // Always join the design of the same name wherever it already lives — that
-    // is the cross-reference: the photo shows under its design's pill as well
-    // as under every category and application it was tagged for.
-    const home = out.find((c) => c.pieces.some((p) => norm(p.name) === norm(name)));
-    if (home) addTo(home, name, u.src);
-    else if (cats.length === 0 && !dests.some((d) => appKeys.has(d))) addTo(byId.icons, name, u.src);
+    // A photo with no category of its own — the general "screens" tag, or only
+    // an application — joins the design of the same name wherever it lives, so
+    // it shows under that design's pill too. A photo that WAS given a category
+    // stays in the category chosen for it and nowhere else.
+    if (dests.includes("screens") || cats.length === 0) {
+      const home = out.find((c) => c.pieces.some((p) => norm(p.name) === norm(name)));
+      if (home) addTo(home, name, u.src);
+      else if (cats.length === 0 && !dests.some((d) => appKeys.has(d))) addTo(byId.icons, name, u.src);
+    }
   }
   out.forEach((c) => { c.pieces.forEach((p) => { p.img = p.slides[0]; }); c.img = c.pieces.length ? c.pieces[0].img : c.img; });
   return out;
