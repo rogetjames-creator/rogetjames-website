@@ -489,7 +489,7 @@ a.dpill{display:inline-block;text-decoration:none}
           const target=findTarget();
           if(!target) return;                       // no photos here yet → its page
           e.preventDefault();
-          target.sec.scrollIntoView({block:'start'});
+          landOn(target.sec);
         });
         if(!href && !findTarget()){ b.classList.add('empty'); b.disabled=true; }
         pills.appendChild(b);
@@ -677,12 +677,26 @@ a.dpill{display:inline-block;text-decoration:none}
       ghint.textContent = 'Choose a finish, then enter your postcode to see pricing for your area.';
     }
   }
+  // Jumping to a section can drift as photographs above it finish loading and
+  // change the page height. Land, then correct twice while the veil is up.
+  function landOn(sec){
+    const go=()=>sec.scrollIntoView({block:'start'});
+    go(); requestAnimationFrame(go);
+    setTimeout(go,120); setTimeout(go,260);
+  }
   function openDetail(ri,dd,vv){
     const des=RANGES[ri].designs[dd];
     ovRange.textContent=RANGES[ri].label; ovName.textContent=des.n;
     ovSub.textContent=des.imgs.length>1?`${des.imgs.length} images`:`Laser-cut ${noun}`;
     ovThumbs.innerHTML='';
-    des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt=altOf(des,RANGES[ri],gi);t.appendChild(im);t.addEventListener('click',()=>setOvImg(des,j));ovThumbs.appendChild(t);});
+    des.imgs.forEach((gi,j)=>{const t=document.createElement('div');t.className='sh-th';const im=document.createElement('img');im.loading='lazy';im.decoding='async';im.src=THUMBS[gi];im.alt=altOf(des,RANGES[ri],gi);t.appendChild(im);
+      t.addEventListener('click',()=>setOvImg(des,j));
+      // Run the cursor across the thumbs and the main image follows — a short
+      // dwell first, so passing over them on the way somewhere else does nothing.
+      let dwell=null;
+      t.addEventListener('mouseenter',()=>{ dwell=setTimeout(()=>setOvImg(des,j),110); });
+      t.addEventListener('mouseleave',()=>{ clearTimeout(dwell); });
+      ovThumbs.appendChild(t);});
     setOvImg(des,vv||0,RANGES[ri]);
     curDes=des; curRange=RANGES[ri].label;
     // Screens: the ways THIS design is used — click one to see every design
@@ -704,21 +718,20 @@ a.dpill{display:inline-block;text-decoration:none}
           el.addEventListener('click',(e)=>{
             if(e.metaKey||e.ctrlKey||e.shiftKey||!target||dIn<0) return;
             e.preventDefault();
-            // The popup never closes: it goes solid black for a moment, the
-            // gallery behind is moved to that design used that way, and the
-            // sheet reopens on it. No scrolling to watch.
+            // Move behind the popup — solid black, no scrolling to watch — then
+            // lift it: you are in that application's full range, standing on the
+            // photograph that took you there.
             ov.classList.add('switching');
             target.show(dIn,0);
-            target.sec.scrollIntoView({block:'start'});
-            openDetail(target.ri,dIn,0);
-            setTimeout(()=>ov.classList.remove('switching'),300);
+            landOn(target.sec);
+            setTimeout(()=>{ closeDetail(); ov.classList.remove('switching'); },320);
           });
           row.appendChild(el);
         });
         // "view as" only when there is somewhere else to go — a design used
         // one way says what it is used for and leaves it there.
         const lab=document.getElementById('ovAppsLab');
-        if(lab) lab.innerHTML='Used for'+(apps.length>1?' <span class="sh-lab-alt">&mdash; view as</span>':'');
+        if(lab) lab.textContent='View';
         box.style.display=apps.length?'':'none';
         markApps(des, data.imgs[des.imgs[vv||0]]);
       }
