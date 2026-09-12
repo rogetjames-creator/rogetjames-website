@@ -465,9 +465,17 @@ a.dpill{display:inline-block;text-decoration:none}
         const b=document.createElement(href?'a':'button');
         if(href) b.href=href; else b.type='button';
         b.className='dpill appx'; b.textContent=text;
-        const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(text).toLowerCase());
-        if(target){ b.addEventListener('click',(e)=>{ if(e.metaKey||e.ctrlKey||e.shiftKey) return; e.preventDefault(); target.sec.scrollIntoView({behavior:'smooth',block:'start'}); }); }
-        else if(!href){ b.classList.add('empty'); b.disabled=true; }
+        // Look the range up at CLICK time, not now — a range that arrives late
+        // (uploads still loading) must still be jumped to, not navigated past.
+        const findTarget=()=>rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(text).toLowerCase());
+        b.addEventListener('click',(e)=>{
+          if(e.metaKey||e.ctrlKey||e.shiftKey) return;
+          const target=findTarget();
+          if(!target) return;                       // no photos here yet → its page
+          e.preventDefault();
+          target.sec.scrollIntoView({behavior:'smooth',block:'start'});
+        });
+        if(!href && !findTarget()){ b.classList.add('empty'); b.disabled=true; }
         pills.appendChild(b);
       });
       const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';

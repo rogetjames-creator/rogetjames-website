@@ -203,7 +203,10 @@ export function mountScreensRange(rootId) {
   };
   // Mount once — with /media uploads placed by their destinations if the fetch
   // returns quickly, otherwise fall back to the static covers so it never hangs.
-  const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 900);
+  // The photo list is a small static file. Waiting a beat for it is far better
+  // than mounting a gallery with the uploads and application ranges missing —
+  // that is what made a Gates pill jump to nothing.
+  const fallback = setTimeout(() => mountWith(SCREEN_COVERS), 3000);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
     const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
