@@ -42,7 +42,12 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     // Expand-only mode: hide every pricing/quote element so the detail sheet is
     // just the enlarged image + its name.
     const sNoPrice = document.createElement("style");
-    sNoPrice.textContent = ".no-price #qpill,.no-price .sh-sub,.no-price .sh-block,.no-price .gate,.no-price .sh-actions{display:none!important}";
+    // A price-free gallery hides sizes, pricing and the quote — but NOT the
+    // "Used for" pills: they are the whole point of a screen's detail sheet.
+    sNoPrice.textContent = ".no-price #qpill,.no-price .sh-sub,.no-price .sh-block,.no-price .gate,.no-price .sh-actions{display:none!important}"
+      + ".no-price .sh-block.sh-apps{display:block!important}"
+      + ".sh-apps .sh-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}"
+      + ".sh-apps a.sh-chip{text-decoration:none}";
     document.head.appendChild(sNoPrice);
     const s2 = document.createElement("style");
     s2.textContent = `
