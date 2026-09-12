@@ -48,7 +48,8 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       + ".no-price .sh-block.sh-apps{display:block!important}"
       + ".sh-apps .sh-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}"
       + ".sh-apps a.sh-chip{text-decoration:none}"
-      + ".sh-apps a.sh-chip.sel{color:#f0d9b6;border-color:rgba(212,167,92,.85);background:rgba(158,113,52,.16)}";
+      + ".sh-apps a.sh-chip.sel{color:#f0d9b6;border-color:rgba(212,167,92,.85);background:rgba(158,113,52,.16)}"
+      + ".sh-lab-alt{opacity:.55}";
     document.head.appendChild(sNoPrice);
     const s2 = document.createElement("style");
     s2.textContent = `
@@ -194,7 +195,7 @@ a.dpill{display:inline-block;text-decoration:none}
       <h2 class="sh-name" id="ovName"></h2>
       <p class="sh-sub" id="ovSub"></p>
       <div class="sh-block sh-apps" id="ovApps" style="display:none">
-        <div class="sh-lab">Used for</div>
+        <div class="sh-lab">Used for <span class="sh-lab-alt">&mdash; view as</span></div>
         <div class="sh-opts" id="ovAppPills"></div>
       </div>
       <div class="sh-block">
@@ -692,14 +693,22 @@ a.dpill{display:inline-block;text-decoration:none}
       if(box&&row){
         row.innerHTML='';
         apps.forEach(a=>{
-          const el=document.createElement('a'); el.className='sh-chip'; el.dataset.app=a.label; el.textContent=a.label; el.href=a.href;
+          const el=document.createElement('a'); el.className='sh-chip'; el.dataset.app=a.label; el.textContent=a.label;
+          // The link points at this design ON that application's page, so a
+          // shared link (and Google) lands on Vuelta's pergola, not the top.
+          el.href=a.href+'#'+String(des.n||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
           const target=rangeHandles.find(h=>String(h.r.label).toLowerCase()===String(a.label).toLowerCase());
+          // The pill takes you to THIS design used that way — Vuelta's pergola,
+          // not the top of the pergolas section.
+          const dIn=target?target.r.designs.findIndex(x=>String(x.n||'').trim().toLowerCase()===String(des.n||'').trim().toLowerCase()):-1;
           el.addEventListener('click',(e)=>{
             if(e.metaKey||e.ctrlKey||e.shiftKey||!target) return;
             e.preventDefault(); closeDetail();
+            if(dIn>=0) target.show(dIn,0);
             // Land on it, don't fly there — a glide across the whole gallery
             // is dizzying.
             target.sec.scrollIntoView({block:'start'});
+            if(dIn>=0) setTimeout(()=>openDetail(target.ri,dIn,0),260);
           });
           row.appendChild(el);
         });

@@ -192,9 +192,14 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
     <p class="count">${designs.length} photograph${designs.length === 1 ? "" : "s"} &middot; ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs</p>
   </div>
   <div class="grid">
-    ${designs.map((d) => `<a class="card" href="/screens">
+    ${(() => { const seen = new Set(); return designs.map((d) => {
+      const slug = String(d.name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      // The first photograph of each design carries its name as an anchor, so
+      // /screens/pergolas#vuelta lands on Vuelta rather than the top of the page.
+      const id = slug && !seen.has(slug) ? (seen.add(slug), ` id="${slug}"`) : "";
+      return `<a class="card"${id} href="/screens">
       <div class="im"><img src="${img(d.img, 700)}" alt="${esc(d.name || app.label)} — ${esc(heading.toLowerCase())} by ROGETjames" loading="lazy" /></div>
-      ${d.name ? `<b>${esc(d.name)}</b>` : ""}<span>${esc(app.label)}</span></a>`).join("")}
+      ${d.name ? `<b>${esc(d.name)}</b>` : ""}<span>${esc(app.label)}</span></a>`; }).join(""); })()}
   </div>
   ${others.length ? `<div class="also">
     <div class="lab">Also used for</div>
