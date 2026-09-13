@@ -23,4 +23,5 @@ export const HERO_SLIDES = [
   { key: "seaweed",          src: "/images/hero/hero-seaweed.jpg",               label: "Seaweed" },
   { key: "vasuki",           src: "/images/hero/hero-vasuki.jpg",                label: "Vasuki" },
   { key: "bambu",            src: "/images/hero/hero-bambu.jpg",                 label: "Bambu" },
+  { key: "custom-natives",   src: "/images/uploads/1787318316506_7mce56.jpg",     label: "Custom Natives" },
 ];
