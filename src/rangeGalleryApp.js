@@ -415,17 +415,22 @@ a.dpill{display:inline-block;text-decoration:none}
     // faster the closer to the edge — no need to fight the wheel near the ends.
     if(!pricing){
       let raf=null, dir=0;
-      const EDGE=110, MAX=16;
+      // A wider reach and a much longer stride: at the very edge the strip
+      // travels about three times as fast as before, easing off as the pointer
+      // comes back in. The strip's own smooth-scroll is turned off while it
+      // glides — that was animating every single frame and holding it back.
+      const EDGE=150, MAX=44;
+      const speed=(t)=>Math.ceil(2 + t*t*MAX);        // t: 0 at the inner limit, 1 at the edge
       const loop=()=>{ if(dir){ tw.scrollLeft += dir; raf=requestAnimationFrame(loop); } else { raf=null; } };
       tw.addEventListener('mousemove', e => {
         if(!tw.classList.contains('of')){ dir=0; return; }
         const r2=tw.getBoundingClientRect(), x=e.clientX-r2.left;
-        if(x < EDGE)              dir = -Math.ceil((EDGE-x)/EDGE*MAX);
-        else if(x > r2.width-EDGE) dir =  Math.ceil((x-(r2.width-EDGE))/EDGE*MAX);
+        if(x < EDGE)              dir = -speed((EDGE-x)/EDGE);
+        else if(x > r2.width-EDGE) dir =  speed((x-(r2.width-EDGE))/EDGE);
         else                       dir = 0;
-        if(dir && !raf) raf=requestAnimationFrame(loop);
+        if(dir){ tw.style.scrollBehavior='auto'; if(!raf) raf=requestAnimationFrame(loop); }
       });
-      tw.addEventListener('mouseleave', ()=>{ dir=0; });
+      tw.addEventListener('mouseleave', ()=>{ dir=0; tw.style.scrollBehavior=''; });
     }
     function step(dir){
       const i=r.flat.findIndex(([d,v])=>d===curP.d&&v===curP.v);
