@@ -146,6 +146,7 @@ export const SCREEN_DESIGNS = [
   { name: "BANKSIA", sectionStart: "THE ORGANICS", items: [{ name: "BANKSIA", img: `${CDN}/d9839268-e16d-4adf-8591-580d484748b6_rw_1200.jpg` }] },
   {
     name: "CUSTOM",
+    tabs: ["custom"],
     items: [
       { name: "CUSTOM", img: `${CDN}/0c753703-bc6a-444c-ba4e-b7983f836b30_rw_1200.jpg`, tags: ["gates", "residential"] },
       { name: "CUSTOM — Hollingworth", img: "/images/custom/custom-hollingworth-1.jpg", tags: ["fencing", "residential"] },

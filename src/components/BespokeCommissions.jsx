@@ -1782,6 +1782,7 @@ const SCREEN_SECTION_LABELS = {
   indies: "The Indies",
   "light-features": "The Light Features",
   mirrors: "The Mirrors",
+  custom: "Custom",
 };
 
 // Whether an image counts as a "light feature" — same rule the live gallery's
