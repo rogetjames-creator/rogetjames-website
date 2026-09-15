@@ -511,7 +511,9 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 // The poster is what shows if the browser refuses to autoplay
                 // (it often does until the visitor has clicked something). Without
                 // it a blocked reel leaves a black circle instead of a picture.
-                <video key={v.src} src={near ? v.src : undefined} poster={v.poster || undefined} preload={near ? "auto" : "none"} autoPlay muted loop playsInline
+                // Through the resizer like everything else — sent whole these are
+                // megabytes of thumbnail for a 170px circle.
+                <video key={v.src} src={near ? v.src : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near ? "auto" : "none"} autoPlay muted loop playsInline
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
