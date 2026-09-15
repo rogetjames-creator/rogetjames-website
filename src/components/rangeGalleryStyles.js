@@ -18,8 +18,8 @@ a.logo i{font-family:Georgia,serif;font-style:italic;font-weight:500}
 .top .now b{color:var(--gold);font-weight:600}
 .pill-cat{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);text-decoration:none;border:1px solid rgba(237,232,223,.32);border-radius:30px;padding:8px 16px;transition:.25s;white-space:nowrap}
 .pill-cat:hover{background:var(--clay);border-color:var(--clay)}
-.x-esc{color:var(--cream);text-decoration:none;font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--hair)}
-.x-esc:hover{border-color:var(--gold);color:var(--gold)}
+.x-esc{color:var(--cream);text-decoration:none;font-size:19px;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--hair);background:rgba(255,255,255,.10)}
+.x-esc:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,255,255,.18)}
 @media(max-width:760px){.top .now,.pill-cat{display:none}}
 /* intro */
 .intro{position:relative;overflow:hidden;height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0}

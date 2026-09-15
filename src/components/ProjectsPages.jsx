@@ -41,8 +41,8 @@ function Header() {
           <a href="/#contact" className="hover:text-clay transition-colors">Contact</a>
           {/* Every other gallery has a way out; this page had none. */}
           <a href="/" aria-label="Close — back to site"
-             className="flex-none w-7 h-7 -mr-1 rounded-full flex items-center justify-center text-cream/50 hover:text-cream hover:bg-white/10 transition-colors">
-            <X size={15} />
+             className="flex-none -mr-1 p-2.5 rounded-full bg-white/10 text-cream hover:bg-white/20 transition-colors">
+            <X size={19} />
           </a>
         </nav>
       </div>

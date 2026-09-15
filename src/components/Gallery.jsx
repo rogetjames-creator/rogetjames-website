@@ -2080,7 +2080,7 @@ function GalleryModal({ onClose, initialTab }) {
             ⓘ
           </button>
           <button onClick={handleClose} className="flex-none p-2.5 rounded-full bg-white/10 text-cream hover:bg-white/20 transition-colors" aria-label="Close">
-            <X size={18} />
+            <X size={19} />
           </button>
         </div>
         {/* Scrollable body */}
