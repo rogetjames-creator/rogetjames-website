@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
+import { X } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { netlifyImg } from "../utils/img";
@@ -38,6 +39,11 @@ function Header() {
           <a href="/#collection" className="hover:text-cream transition-colors hidden sm:inline">Collection</a>
           <a href="/projects" className="hover:text-cream transition-colors">Projects</a>
           <a href="/#contact" className="hover:text-clay transition-colors">Contact</a>
+          {/* Every other gallery has a way out; this page had none. */}
+          <a href="/" aria-label="Close — back to site"
+             className="flex-none w-7 h-7 -mr-1 rounded-full flex items-center justify-center text-cream/50 hover:text-cream hover:bg-white/10 transition-colors">
+            <X size={15} />
+          </a>
         </nav>
       </div>
     </header>
@@ -118,12 +124,15 @@ export function ProjectsIndex() {
           <span className="pj-in inline-flex items-center gap-2.5 font-detail text-[11px] uppercase tracking-[0.28em] text-clay-light" style={{ opacity: 0 }}>
             <i className="w-[7px] h-[7px] bg-clay not-italic" /> Projects
           </span>
-          <h1 className="pj-in font-syne font-bold tracking-tight leading-[0.95] text-cream/95 text-[46px] md:text-[76px] lg:text-[92px] mt-4" style={{ ...SHADOW, opacity: 0 }}>
+          {/* Set to match every other section title on the site — the
+              Collection and Bespoke headings are 2xl/4xl/5xl. This was 92px. */}
+          <h1 className="pj-in font-syne font-bold tracking-tight text-cream/95 text-2xl md:text-4xl lg:text-5xl mt-4" style={{ ...SHADOW, opacity: 0 }}>
             Projects
           </h1>
           <p className="pj-in font-body text-cream/70 text-base md:text-lg leading-relaxed max-w-2xl mt-6" style={{ opacity: 0 }}>
-            Commissions delivered end to end — landscape and public art, architectural features,
-            sculpture, screens and gates. Designed, fabricated and installed by the studio.
+            Some of our significant projects over the years — landscape design, public art,
+            architectural features, sculpture, screens and gates. Designed and fabricated by
+            the studio.
           </p>
         </div>
       </section>
@@ -233,7 +242,7 @@ export function ProjectCasePage({ slug }) {
           <span className="pj-h inline-flex items-center gap-2.5 font-detail text-[11px] uppercase tracking-[0.28em] text-clay-light" style={{ opacity: 0 }}>
             <i className="w-[7px] h-[7px] bg-clay not-italic" /> Project
           </span>
-          <h1 className="pj-h font-syne font-bold tracking-tight leading-[0.95] text-cream/95 text-[40px] md:text-[68px] lg:text-[84px] mt-4" style={{ ...SHADOW, opacity: 0 }}>
+          <h1 className="pj-h font-syne font-bold tracking-tight text-cream/95 text-2xl md:text-4xl lg:text-5xl mt-4" style={{ ...SHADOW, opacity: 0 }}>
             {project.name}
           </h1>
         </div>
