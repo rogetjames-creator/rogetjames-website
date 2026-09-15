@@ -15,7 +15,8 @@ import {
 const BACKDROPS = [
   "/images/portals/art-mark-trip.jpg",
   "/images/portals/art-mark-ochre-light-shadow.jpg",
-  "/images/portals/art-mark-dark.jpg",
+  "/images/portals/art-mark-leaves.jpg",
+  "/images/portals/art-mark-tropics.jpg",
 ];
 const BACKDROP_FADE = 5;      // seconds of crossfade
 const BACKDROP_HOLD = 6000;   // ms each picture is held before the next fade
