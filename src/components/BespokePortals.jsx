@@ -404,7 +404,10 @@ export function CommissionsSection() {
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
         <MiniPortal portal={concretePortal}       size={180} hideLabel centerLabel="Concrete"    onOpen={openAndCount(setConcreteOpen, "Concrete")} />
-        {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
+        {/* Projects is always on the phone, last in the line. The public sees it
+            locked, as Under Construction; it opens for James only. */}
+        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"
+                    locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
       </div>
 
       {/* Desktop — laid out like the Collection section on the home page:
