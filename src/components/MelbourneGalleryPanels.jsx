@@ -63,7 +63,7 @@ const PANELS = [
 // Sculpture, Screens and Bespoke Sculpture only.
 const HIDDEN_BY_CITY = {
   melbourne: ["Concrete", "Concepts", "Projects"],
-  perth:     ["Concrete", "Concepts"],
+  perth:     ["Concrete"],
 };
 // A city can also show its own picture on a panel. An upload to that panel at
 // /media still wins over this — this is just the picture it starts with.
@@ -72,7 +72,8 @@ const IMG_BY_CITY = {
     "Wall Art": "/images/banksia/banksia-round-latest-1.jpg",
     Sculpture:  "/images/autumn-leaf/autumn-leaf-bali-2.jpg",
     Screens:    "/images/uploads/1787118567628_awv18c.jpg",
-    Projects:   "/images/fire/fire-pit-illuminated-fencing.jpg",
+    Projects:   "/images/hero/hero-marakesh-tall.jpg",
+    Concepts:   "/images/concepts/cottesloe-concept-1.jpg",
   },
 };
 const panelsFor = (city) =>
