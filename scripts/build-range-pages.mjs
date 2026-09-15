@@ -20,14 +20,16 @@ import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { RANGE_SEO, LIVE_RANGES } from "../src/data/rangeSeo.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
+import { pieceSlug } from "../src/utils/pieceSlug.js";
+import { PIECE_SEO } from "../src/data/pieceSeo.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
 const SITE = "https://rogetjames.com";
 
 const GALLERIES = [
-  { base: "/wall-art", shell: "wall-art.html", data: RANGE_DATA, parent: "Wall Art" },
-  { base: "/sculpture", shell: "sculpture.html", data: SCULPTURE_DATA, parent: "Sculpture" },
+  { base: "/wall-art", shell: "wall-art.html", data: RANGE_DATA, parent: "Wall Art", rootId: "wall-art-root" },
+  { base: "/sculpture", shell: "sculpture.html", data: SCULPTURE_DATA, parent: "Sculpture", rootId: "sculpture-root" },
 ];
 
 const esc = (s) =>
@@ -39,7 +41,41 @@ const setMeta = (html, attr, name, value) => {
   return re.test(html) ? html.replace(re, `$1${esc(value)}$2`) : html;
 };
 
-function buildPage(shellHtml, { base, parent }, range, seo, imgs) {
+
+// The words and links Google reads for a range.
+//
+// Until now these pages carried the gallery's own opening blurb — the same 107
+// words on all sixteen, and one link. Sixteen near-identical thin pages, which
+// is why each drew a single impression a quarter while the piece pages, which
+// are written out properly, draw none at all because nothing links to them.
+//
+// This writes the range's own headline, its own summary and a link to every
+// piece in it, into the element the gallery later takes over. It is the same
+// arrangement the piece pages use, and the same thing a visitor is shown once
+// the gallery loads — the pieces of this range, by name.
+function rangeBody({ base, parent }, range, seo, imgs) {
+  const rSlug = rangeSlug(range.label);
+  const designs = (range.designs || []).filter((d) => d.n);
+  const items = designs.map((d) => {
+    const subject = PIECE_SEO[d.n]?.s || `${d.n} metal ${parent.toLowerCase()}`;
+    const img = d.imgs?.[0] != null ? imgs[d.imgs[0]] : null;
+    return `<li><a href="${base}/${rSlug}/${pieceSlug(d.n)}">` +
+      (img ? `<img src="${esc(img)}" alt="${esc(d.n)} — ${esc(subject)}" loading="lazy" width="300" height="300" />` : "") +
+      `<strong>${esc(d.n)}</strong><span>${esc(subject)}</span></a></li>`;
+  }).join("\n      ");
+
+  return `<nav aria-label="Breadcrumb"><a href="/">Home</a> &rsaquo; <a href="${base}">${esc(parent)}</a> &rsaquo; <span>${esc(range.label)}</span></nav>
+    <h1>${esc(seo.title.split("|")[0].trim())}</h1>
+    <p>${esc(seo.summary)}</p>
+    <h2>${esc(range.label)} &mdash; ${designs.length} design${designs.length === 1 ? "" : "s"}</h2>
+    <ul>
+      ${items}
+    </ul>
+    <p><a href="${base}">All ${esc(parent)} ranges</a></p>`;
+}
+
+function buildPage(shellHtml, gallery, range, seo, imgs) {
+  const { base, parent } = gallery;
   const slug = rangeSlug(range.label);
   const url = `${SITE}${base}/${slug}`;
   const hero = range.designs?.[0]?.imgs?.[0];
@@ -100,7 +136,17 @@ function buildPage(shellHtml, { base, parent }, range, seo, imgs) {
   };
 
   const block = `\n    <script type="application/ld+json">\n${JSON.stringify(schema, null, 2)}\n    </script>\n  `;
-  return html.replace("</head>", `${block}</head>`);
+  html = html.replace("</head>", `${block}</head>`);
+
+  // The gallery replaces this element's contents the moment it loads
+  // (rangeGalleryApp.js). Until then it is what a crawler reads.
+  const rootRe = new RegExp(`(<div id="${gallery.rootId}"[^>]*>)[\\s\\S]*?(</div>)`, "i");
+  if (rootRe.test(html)) {
+    html = html.replace(rootRe, `$1${rangeBody(gallery, range, seo, imgs)}$2`);
+  } else {
+    console.warn(`  ! could not find #${gallery.rootId} in ${gallery.shell} — ${range.label} left without page words`);
+  }
+  return html;
 }
 
 let written = 0;
