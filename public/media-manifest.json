@@ -989,5 +989,15 @@
     "note": "apply the sizes 1500,1800,2100,2400 heights only and POA",
     "createdTime": "2026-09-13T05:13:22.472Z",
     "path": "images/uploads/1789276402472_hfdzyv.jpg"
+  },
+  {
+    "id": "1789442982297_4gmwj0",
+    "name": "UNITY IN DIVERSITY .jpg",
+    "destinations": [
+      "hero"
+    ],
+    "note": "Place in 8 th position",
+    "createdTime": "2026-09-15T03:29:42.297Z",
+    "path": "images/uploads/1789442982297_4gmwj0.jpg"
   }
 ]
