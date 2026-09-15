@@ -1065,5 +1065,15 @@
     "note": "Auto-replaced images/cdn-gallery/87c759cb-528b-4f7e-b17a-6646de8aedca_rw_1200.jpg in place (upload instruction).",
     "createdTime": "2026-09-15T06:33:52.957Z",
     "path": "images/cdn-gallery/87c759cb-528b-4f7e-b17a-6646de8aedca_rw_1200.jpg"
+  },
+  {
+    "id": "1789459721178_zhnuq7",
+    "name": "Fire pit & Illuminated fencing - 1200px.jpg",
+    "destinations": [
+      "project-homebase"
+    ],
+    "note": "put this in the bespoke horizontal slide show also",
+    "createdTime": "2026-09-15T08:08:41.179Z",
+    "path": "images/uploads/1789459721178_zhnuq7.jpg"
   }
 ]
