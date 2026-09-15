@@ -62,7 +62,7 @@
 
 [[redirects]]
   from = "/gates"
-  to = "/#collection"
+  to = "/screens/gates"
   status = 301
 
 [[redirects]]
@@ -77,7 +77,7 @@
 
 [[redirects]]
   from = "/concrete"
-  to = "/#collection"
+  to = "/?open=concrete"
   status = 301
 
 [[redirects]]
@@ -88,7 +88,7 @@
 # Two more old-site addresses Google still lists, which were returning 404s.
 [[redirects]]
   from = "/fencing"
-  to = "/screens"
+  to = "/screens/fencing"
   status = 301
 
 [[redirects]]
@@ -301,7 +301,7 @@
 
 [[redirects]]
   from = "/branches-gren"
-  to = "/#collection"
+  to = "/wall-art/branches/gren-edge"
   status = 301
 
 [[redirects]]
@@ -311,7 +311,7 @@
 
 [[redirects]]
   from = "/wattle"
-  to = "/#collection"
+  to = "/wall-art/australian-natives/wattle"
   status = 301
 
 # Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
