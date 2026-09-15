@@ -49,14 +49,45 @@ const img = (src, w) => {
 };
 const norm = (t) => String(t || "").toLowerCase().trim();
 
-// What each application is, in words — used for the page's own description.
+// What each application is, in words.
+//
+// [title, lede, body]. The title is what Google prints, so it names the thing,
+// the metal and the country the way the Wall Art range titles do — "Privacy
+// screens" alone told a search engine nothing about metal, Corten or Australia.
+// The body is a real paragraph: these pages carried 61 to 94 words against the
+// 150-plus a wall-art range page carries, which is thin enough to be judged
+// near-empty.
 const WORDS = {
-  "wall-decor": ["Wall decor screens", "Laser cut metal panels for walls, indoors and out — pattern, shadow and light on a bare surface."],
-  gates:        ["Laser cut gates", "Entrance gates, pedestrian gates and automated security gates, cut from your chosen pattern."],
-  fencing:      ["Laser cut fencing & infills", "Fence infills and panels that turn a boundary into part of the design."],
-  dividers:     ["Laser cut dividers", "Room dividers and garden dividers — separation without a wall."],
-  privacy:      ["Privacy screens", "Screens that hold privacy while keeping light and air moving through."],
-  pergolas:     ["Pergola screens", "Overhead and side panels for pergolas — shade that draws a pattern as the sun moves."],
+  "wall-decor": [
+    "Laser Cut Metal Wall Panels, Corten & Aluminium",
+    "Laser cut metal panels for walls, indoors and out — pattern, shadow and light on a bare surface.",
+    "A wall panel is the simplest way to bring one of the studio's patterns indoors or onto a facade. Cut from Corten steel, which weathers to a deep rust and holds it, or from aluminium powder-coated to any colour, each panel is made to the opening it fills. Mounted a little off the wall, the pattern throws a second drawing in shadow that moves through the day.",
+  ],
+  gates: [
+    "Laser Cut Metal Gates, Corten & Aluminium",
+    "Entrance gates, pedestrian gates and automated security gates, cut from your chosen pattern.",
+    "A gate is the first thing a visitor meets, and the one piece of a house that has to be beautiful and do a job. These are cut from solid Corten steel or powder-coated aluminium, sized to the opening and built to swing or slide, manually or on an automated track. Any pattern in the range can be cut into one, and the density can be opened up for airflow or closed down for privacy.",
+  ],
+  fencing: [
+    "Laser Cut Metal Fence Panels & Infills",
+    "Fence infills and panels that turn a boundary into part of the design.",
+    "A boundary does not have to be the dullest thing on a property. These infills drop into an existing frame or form a fence of their own, in Corten steel or powder-coated aluminium, carrying the same patterns as the wall art and the screens. Pool fencing, front boundaries and side returns are all made to measure, and the panel's open area can be tuned to the privacy and the airflow the site needs.",
+  ],
+  dividers: [
+    "Laser Cut Metal Room & Garden Dividers",
+    "Room dividers and garden dividers — separation without a wall.",
+    "A divider marks a change of space without closing it off. Indoors that might be an entry separated from a living area; outdoors, a courtyard set apart from a garden. Cut from Corten steel or powder-coated aluminium and freestanding or fixed, each one keeps sightlines and daylight moving through while still drawing a line. The pattern decides how much passes and how much is held.",
+  ],
+  privacy: [
+    "Laser Cut Metal Privacy Screens, Australia",
+    "Screens that hold privacy while keeping light and air moving through.",
+    "Privacy is usually solved with something solid and ugly. A laser cut screen does it with a pattern: dense enough at eye level to stop a sightline, open enough that light and breeze still come through. Made in Corten steel or powder-coated aluminium, sized to the opening, and fixed to a wall, a frame or its own posts. Overlooked balconies, boundaries and outdoor showers are the usual homes for them.",
+  ],
+  pergolas: [
+    "Laser Cut Pergola Screens & Shade Panels",
+    "Overhead and side panels for pergolas — shade that draws a pattern as the sun moves.",
+    "Overhead, a laser cut panel does something a solid roof cannot: it casts the pattern onto the floor beneath and moves it through the day. Cut from Corten steel or powder-coated aluminium and made to the frame's spans, these work as a whole roof, as an infill between beams, or as a side panel where afternoon sun comes in low. Shade and drawing at once.",
+  ],
 };
 
 // uploads placed against an application through /media
@@ -100,7 +131,7 @@ const built = [];
 for (const app of SCREEN_APPLICATIONS) {
   const designs = designsFor(app);
   if (!designs.length) continue;
-  const [heading, blurb] = WORDS[app.id] || [app.label, ""];
+  const [heading, blurb, body] = WORDS[app.id] || [app.label, "", ""];
   const url = `${SITE}/screens/${app.id}`;
   const others = SCREEN_APPLICATIONS.filter((a) => a.id !== app.id && designsFor(a).length);
   const title = `${heading} | ROGETjames`;
@@ -159,6 +190,7 @@ nav a:hover{color:var(--cream)}
 h1{font-family:var(--heading);font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:1.05;margin-top:10px}
 .lede{color:var(--dim);font-size:16px;margin-top:16px;max-width:56ch}
 .count{font-family:var(--jost);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:14px}
+.body{color:var(--dim);font-size:15.5px;line-height:1.75;margin-top:20px;max-width:64ch}
 .grid{display:grid;gap:16px;grid-template-columns:repeat(2,1fr);padding:34px 0 10px}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:1020px){.grid{grid-template-columns:repeat(4,1fr)}}
@@ -190,6 +222,7 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
     <h1>${esc(heading)}</h1>
     <p class="lede">${esc(blurb)}</p>
     <p class="count">${designs.length} photograph${designs.length === 1 ? "" : "s"} &middot; ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs</p>
+    ${body ? `<p class="body">${esc(body)}</p>` : ""}
   </div>
   <div class="grid">
     ${(() => { const seen = new Set(); return designs.map((d) => {
@@ -197,8 +230,8 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
       // The first photograph of each design carries its name as an anchor, so
       // /screens/pergolas#vuelta lands on Vuelta rather than the top of the page.
       const id = slug && !seen.has(slug) ? (seen.add(slug), ` id="${slug}"`) : "";
-      return `<a class="card"${id} href="/screens">
-      <div class="im"><img src="${img(d.img, 700)}" alt="${esc(d.name || app.label)} — ${esc(heading.toLowerCase())} by ROGETjames" loading="lazy" /></div>
+      return `<a class="card"${id} href="${slug ? `/screens#${slug}` : "/screens"}">
+      <div class="im"><img src="${img(d.img, 700)}" alt="${esc(d.name || app.label)} — laser cut metal ${esc(String(app.label).toLowerCase())} by ROGETjames" loading="lazy" /></div>
       ${d.name ? `<b>${esc(d.name)}</b>` : ""}<span>${esc(app.label)}</span></a>`; }).join(""); })()}
   </div>
   ${others.length ? `<div class="also">
