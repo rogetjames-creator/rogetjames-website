@@ -77,7 +77,7 @@ const SIDE_PORTAL_CONCRETE = {
   id: "side-concrete",
   label: "Concrete",
   sublabel: "",
-  slides: ["/images/concrete/lotus-portal.webp"],
+  slides: ["/images/concrete/lotus-portal.jpg"],
 };
 
 const SIDE_PORTAL_CONCEPTS = {
