@@ -9,7 +9,7 @@ import {
 // nothing around it: no circle, no pictures behind it, no flip-board. It
 // stands still and reads ART meets design. Used to close the city pages in
 // place of the words typed out.
-export default function ArtMeetsDesignMark({ width = "min(336px, 62vw)" }) {
+export default function ArtMeetsDesignMark({ width = "min(268px, 50vw)" }) {
   const opening = SEQUENCE[0];
   const lSlot = leftSlot(opening);
   const rSlot = rightSlot(opening);
