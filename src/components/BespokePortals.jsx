@@ -134,10 +134,10 @@ const shuffled = (arr) => {
   return a;
 };
 
-// Private owner preview. Sculpture and Reels are open to the public. Projects
-// and Concepts are not shown to the public at all — the public sees two
-// portals, not two more wearing an "Under Construction" sign. James sees all
-// four. He unlocks them on the live site by visiting once with
+// Private owner preview. Sculpture, Concepts, Reels and Concrete are open to
+// the public. Projects alone is not shown to them at all — no portal, rather
+// than one wearing an "Under Construction" sign. James sees all five. He
+// unlocks Projects on the live site by visiting once with
 // ?preview=roj-open — that saves a flag in his browser so they stay open on
 // every later visit. ?preview=off re-locks. Nobody else ever sees them.
 // Shared with the private city pages — see src/utils/ownerPreview.js.
@@ -263,7 +263,7 @@ export function CommissionsSection() {
     const opener = {
       screens:     () => { window.location.assign("/screens"); },
       sculpture:   () => setSculptureOpen(true),
-      concepts:    () => { if (IS_DEV) setConceptsOpen(true); },
+      concepts:    () => setConceptsOpen(true),
       projects:    () => { if (IS_DEV) window.location.assign("/projects"); },
       reels:       () => setReelsOpen(true),
     }[which];
@@ -289,10 +289,11 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
-        <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
+        <ArtMarkPortal size={230} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
         {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
-        {IS_DEV && <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />}
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={210} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
       </div>
 
@@ -350,9 +351,11 @@ export function CommissionsSection() {
               narrower desktop they wrap to a second line rather than running
               off the edge. */}
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-10 px-6 max-w-[1280px]">
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={170} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
             {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
-            {IS_DEV && <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />}
+            {/* Sculpture holds the middle of the row and stands a size above the
+                rest, so the eye lands on it first. */}
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={200} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
             <MiniPortal portal={reelsPortal}          size={170} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
             <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
           </div>
