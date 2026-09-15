@@ -74,7 +74,7 @@ const LIVE_DEST_GROUPS = [
   },
   {
     group: "Concrete",
-    hint: "the Concrete portal appears in Bespoke as soon as the first photo lands here",
+    hint: "the Concrete gallery in Bespoke — the portal is already there, this fills what opens behind it",
     items: [{ key: MEDIA_KEYS.concrete, label: "Concrete" }],
   },
   { group: "Screens", hint: "shows on the Screens page", items: [{ key: MEDIA_KEYS.screens, label: "Screens" }] },

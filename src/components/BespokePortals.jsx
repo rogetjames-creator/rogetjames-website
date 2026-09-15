@@ -341,9 +341,9 @@ export function CommissionsSection() {
 
         {/* Negative margin lifts Sculpture up to float in the strip centre —
             the same -274px the Wall Art portal uses in the Collection. */}
-        {/* gap-20 rather than gap-10: the row of five sits clearly below the
-            mark instead of crowding under it. */}
-        <div className="flex flex-col items-center gap-20 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
+        {/* The row of five sits well clear of the sliding strip the mark
+            floats in, rather than tucking up under it. */}
+        <div className="flex flex-col items-center gap-28 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
           <ArtMarkPortal size={288} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
 
           {/* Five portals at 170px need ~1200px to sit on one line. On a
