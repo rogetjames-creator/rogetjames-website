@@ -10,7 +10,8 @@ import { useUploadsByKey } from "../utils/mediaUploads";
 // vertically (bottom→top) in IVY MODE (assembled from the supplied alphabet),
 // centred down the panel and anchored LEFT so it stays put as a panel opens
 // wide. Fixed letter size (STRIP_PX) so every name reads the same size.
-const NAME_COLOR = "#FFFFFF";                 // bright white, always
+const NAME_COLOR      = "rgba(255,255,255,0.72)";  // at rest
+const NAME_COLOR_HOVER = "#FFFFFF";               // the panel you are on
 const STRIP_PX = 18;                          // letter thickness — all names equal
 // No pill and no shadow. What marks the open panel is a hard-edged dark band
 // that slides in from the LEFT behind the name as the panel opens, so the
@@ -19,7 +20,7 @@ const SCRIM_PX = 44;                          // thin — ends just after the le
 
 // One assembled IVY MODE word, sized to a fixed strip thickness (height auto so
 // longer names just run taller). fill:currentColor picks up NAME_COLOR.
-function IvyWord({ name, className = "" }) {
+function IvyWord({ name, className = "", active = false }) {
   const w = IVY_WORDS[name.toUpperCase()];
   if (!w) return null;
   return (
@@ -29,7 +30,8 @@ function IvyWord({ name, className = "" }) {
       style={{
         width: STRIP_PX,
         height: "auto",
-        color: NAME_COLOR,
+        color: active ? NAME_COLOR_HOVER : NAME_COLOR,
+        transition: "color 0.45s ease",
       }}
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
@@ -51,7 +53,6 @@ const PANELS = [
   { name: "Screens",           img: "/images/cdn-gallery/f940abcb-61e1-4097-8525-2be2df42c732_rw_1200.jpg",  href: "https://rogetjames.com/?open=screens" },
   { name: "Bespoke Sculpture", img: "/images/uploads/1785745463839_tie649.jpg",                              href: "https://rogetjames.com/?open=sculpture" },
   { name: "Projects",          img: "/images/eros/eros-3.jpg",                                              href: "https://rogetjames.com/?open=projects" },
-  { name: "Commissions",       img: "/images/cdn-gallery/e6796e77-b853-4fca-99ee-5915afe3f048_rw_1920.jpg",  href: "https://rogetjames.com/?open=commissions" },
   { name: "Concepts",          img: "/images/cdn-gallery/cdd20f14-69b8-4224-ab94-80bc4a4b42bf_rw_1200.jpg",  href: "https://rogetjames.com/?open=concepts" },
   { name: "Concrete",          img: null,                                                                     href: "https://rogetjames.com/#bespoke" },
 ];
@@ -61,8 +62,8 @@ const PANELS = [
 // A city can drop a panel it does not want — Melbourne shows Wall Art,
 // Sculpture, Screens and Bespoke Sculpture only.
 const HIDDEN_BY_CITY = {
-  melbourne: ["Concrete", "Concepts", "Commissions", "Projects"],
-  perth:     ["Concrete"],
+  melbourne: ["Concrete", "Concepts", "Projects"],
+  perth:     ["Concrete", "Concepts"],
 };
 const panelsFor = (city) =>
   PANELS.filter((p) => !(HIDDEN_BY_CITY[city] || []).includes(p.name));
@@ -207,7 +208,7 @@ export default function MelbourneGalleryPanels({ city = "melbourne" }) {
                     LEFT so it stays put as the panel opens. Sits in front of
                     the band. */}
                 <div className="absolute left-[14px] top-1/2 -translate-y-1/2 pointer-events-none">
-                  <IvyWord name={p.name} />
+                  <IvyWord name={p.name} active={active} />
                 </div>
               </a>
             );
