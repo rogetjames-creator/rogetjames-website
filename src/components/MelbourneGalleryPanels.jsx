@@ -65,8 +65,18 @@ const HIDDEN_BY_CITY = {
   melbourne: ["Concrete", "Concepts", "Projects"],
   perth:     ["Concrete", "Concepts"],
 };
+// A city can also show its own picture on a panel. An upload to that panel at
+// /media still wins over this — this is just the picture it starts with.
+const IMG_BY_CITY = {
+  perth: { Sculpture: "/images/autumn-leaf/autumn-leaf-bali-2.jpg" },
+};
 const panelsFor = (city) =>
-  PANELS.filter((p) => !(HIDDEN_BY_CITY[city] || []).includes(p.name));
+  PANELS
+    .filter((p) => !(HIDDEN_BY_CITY[city] || []).includes(p.name))
+    .map((p) => {
+      const img = IMG_BY_CITY[city]?.[p.name];
+      return img ? { ...p, img } : p;
+    });
 
 // Panel names a given city actually shows — /media only offers these as
 // upload destinations, so no photo can be filed to a panel that isn't there.
