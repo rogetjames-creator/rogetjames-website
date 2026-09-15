@@ -497,6 +497,27 @@ h1, h2, h3 {
   animation: marquee-scroll-right 32s linear infinite;
 }
 
+/* The Bespoke strip loops on an exact pixel distance rather than -50% of the
+   track. Half of a doubled row is six pixels short of a whole tile (the last
+   gap is missing), so a percentage loop hitches by six pixels every cycle.
+   --loop is set to one full set's width in whole pixels, and translate3d keeps
+   the row on the graphics card so nothing else on the page can stutter it. */
+@keyframes marquee-loop-right {
+  from { transform: translate3d(calc(var(--loop) * -1), 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+.marquee-loop-right {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  animation: marquee-loop-right var(--loop-secs, 60s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-loop-right { animation: none; }
+}
+
 .marquee-track-fast {
   will-change: transform;
   animation: marquee-scroll 24s linear infinite;

@@ -130,12 +130,19 @@ const PORTAL_IMG = { w: 560, q: 88 };
 // untouched and still turns through all 17.
 const STRIP_CONCEPTS = SIDE_PORTAL_CONCEPTS.slides.filter((_, i) => i % 3 === 0);
 
+// Pictures that cannot survive the strip's square crop. The Shire of Peel
+// panorama — James's Waroona project, the one whose film is waroona.mp4 — is
+// 1920x336; cut to a square tile it is blown up six times and reads as blur.
+// It stays in the Concepts portal, where it is shown whole.
+const STRIP_EXCLUDE = ["8157a7f2-763b-469d-bca4-dee47707d7da"];
+const keptInStrip = (src) => !STRIP_EXCLUDE.some((bad) => String(src || "").includes(bad));
+
 const BESPOKE_STRIP_IMAGES = [
   ...SIDE_PORTAL_RIGHT.slides,
   ...SIDE_PORTAL_PROJECTS.slides,
   ...STRIP_CONCEPTS,
   ...BESPOKE_STRIP_EXTRA.map((i) => i.src),
-].map(slideSrc).filter(Boolean);
+].map(slideSrc).filter(Boolean).filter(keptInStrip);
 
 const shuffled = (arr) => {
   const a = [...arr];
@@ -156,6 +163,22 @@ const shuffled = (arr) => {
 
 const IS_DEV = import.meta.env.DEV || ownerPreviewUnlocked();
 
+// The same rippling gold dot the Collection uses beside its pills.
+function GalleryDot() {
+  return (
+    <span style={{ position: "relative", width: 5, height: 5, flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#9e7134", border: "1px solid #9e7134", display: "block", flexShrink: 0 }} />
+      <span style={{
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)", width: 5, height: 5,
+        borderRadius: "50%", border: "0.5px solid #9e7134",
+        animation: "bcl-ripple 2.4s ease-out infinite", pointerEvents: "none",
+      }} />
+      <style>{`@keyframes bcl-ripple { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; } 100% { transform: translate(-50%,-50%) scale(8); opacity: 0; } }`}</style>
+    </span>
+  );
+}
+
 export function CommissionsSection() {
   const [sculptureOpen, setSculptureOpen] = useState(false);
   const [screensOpen, setScreensOpen] = useState(false);
@@ -163,6 +186,10 @@ export function CommissionsSection() {
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
   const [concreteOpen, setConcreteOpen] = useState(false);
+  // The section had the mark turning, five portals turning and the strip
+  // sliding, all at once. The portals stay out of sight until asked for, so
+  // what is moving when you arrive is the mark and the strip alone.
+  const [galleriesOpen, setGalleriesOpen] = useState(false);
   // The same Reels portal the Discover section shows, uploads already merged.
   const reelsPortal = useReelsPortal();
   const [initialScreensCat, setInitialScreensCat] = useState(false);
@@ -183,13 +210,33 @@ export function CommissionsSection() {
   const stripAreaRef = useRef(null);
   const gateLeftRef  = useRef(null);
   const gateRightRef = useRef(null);
+  const gateTlRef    = useRef(null);
   const [stripSeed] = useState(() => shuffled(BESPOKE_STRIP_IMAGES));
+  // Opening the galleries draws the two black panels back across the strip from
+  // the centre, closing it — the same movement that opened it, run backwards.
+  // Hiding them opens the strip again.
+  const gatesReadyRef = useRef(false);
+  useEffect(() => {
+    const l = gateLeftRef.current, r = gateRightRef.current;
+    if (!l || !r) return;
+    // Nothing to animate on first paint: the scroll-in reveal owns the panels
+    // until the galleries are asked for.
+    if (!gatesReadyRef.current) { gatesReadyRef.current = true; if (!galleriesOpen) return; }
+    if (galleriesOpen) gateTlRef.current?.pause();
+    // Slow, and eased at both ends — the panels drift rather than snap. The
+    // whole section is meant to breathe, so this is nearer the strip's own
+    // eight-second opening than to a UI transition.
+    gsap.to(l, { x: galleriesOpen ? "0%" : "-100%", duration: 3.4, ease: "sine.inOut" });
+    gsap.to(r, { x: galleriesOpen ? "0%" : "100%",  duration: 3.4, ease: "sine.inOut" });
+  }, [galleriesOpen]);
+
+  // Keyed on the photographs themselves, not on the lists that carry them —
+  // those lists are rebuilt on every redraw, and reshuffling the strip mid-slide
+  // restarts the movement, which is what made it stutter.
+  const extraKey = [...concreteImages.map((i) => i.img), ...stripUploads.map((i) => i.img)].join("|");
   const stripImages = useMemo(
-    () => {
-      const extra = [...concreteImages.map((i) => i.img), ...stripUploads.map((i) => i.img)];
-      return extra.length ? shuffled([...stripSeed, ...extra]) : stripSeed;
-    },
-    [stripSeed, concreteImages, stripUploads]
+    () => (extraKey ? shuffled([...stripSeed, ...extraKey.split("|")]) : stripSeed),
+    [stripSeed, extraKey]
   );
   const halfway    = Math.ceil(stripImages.length / 2);
   const leftHalf   = stripImages.slice(0, halfway);
@@ -202,6 +249,12 @@ export function CommissionsSection() {
   const SECS_PER_PICTURE = 4.6;
   const leftSecs   = `${(leftHalf.length  * SECS_PER_PICTURE).toFixed(1)}s`;
   const rightSecs  = `${(rightHalf.length * SECS_PER_PICTURE).toFixed(1)}s`;
+  // A tile is as wide as the strip is tall (h-52 = 208px) and the gap is 12px,
+  // so one whole set travels exactly this far. Whole pixels, so the loop point
+  // lands on a tile edge and the picture never shifts by half a pixel.
+  const STRIP_STEP = 220;
+  const leftLoop   = `${leftHalf.length  * STRIP_STEP}px`;
+  const rightLoop  = `${rightHalf.length * STRIP_STEP}px`;
 
   // A marquee that keeps running while nobody is looking at it costs frames
   // everywhere else on the page. Stop it whenever the section is off screen.
@@ -243,6 +296,7 @@ export function CommissionsSection() {
       });
       tl.to(gateLeftRef.current,  { x: "-100%", duration: 8, ease: "none" }, 0);
       tl.to(gateRightRef.current, { x: "100%",  duration: 8, ease: "none" }, 0);
+      gateTlRef.current = tl;
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -356,8 +410,8 @@ export function CommissionsSection() {
           <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
 
           {/* Left half of the strip */}
-          <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: leftSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
+          <div className="flex-1 overflow-hidden" aria-hidden="true" style={{ contain: "paint" }}>
+            <div className="marquee-loop-right flex gap-3 h-full" style={{ width: "max-content", "--loop": leftLoop, "--loop-secs": leftSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
               {leftDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
                   <img src={stripVisible ? netlifyImg(src, PORTAL_IMG) : undefined} alt="" role="presentation" className="w-full h-full object-cover" decoding="async" fetchPriority="low" onLoad={onStripImgSettled} onError={onStripImgSettled} />
@@ -370,8 +424,8 @@ export function CommissionsSection() {
           <div className="flex-none" style={{ width: "338px" }} />
 
           {/* Right half of the strip — runs the same way, left to right */}
-          <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: rightSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
+          <div className="flex-1 overflow-hidden" aria-hidden="true" style={{ contain: "paint" }}>
+            <div className="marquee-loop-right flex gap-3 h-full" style={{ width: "max-content", "--loop": rightLoop, "--loop-secs": rightSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
               {rightDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
                   <img src={stripVisible ? netlifyImg(src, PORTAL_IMG) : undefined} alt="" role="presentation" className="w-full h-full object-cover" decoding="async" fetchPriority="low" onLoad={onStripImgSettled} onError={onStripImgSettled} />
@@ -388,13 +442,50 @@ export function CommissionsSection() {
             the same -274px the Wall Art portal uses in the Collection. */}
         {/* The row of five sits well clear of the sliding strip the mark
             floats in, rather than tucking up under it. */}
-        <div className="flex flex-col items-center gap-28 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
+        <div className="flex flex-col items-center gap-12 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
           <ArtMarkPortal size={288} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+
+          {/* The way in to the portals. Closed, nothing below the mark moves.
+              Built to match the Collection's Sculpture / Wall Art / Screens
+              pills exactly — same trace, same gold on hover, and the same
+              rippling dot either side. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <GalleryDot />
+            <button
+              type="button"
+              onClick={() => setGalleriesOpen(o => !o)}
+              aria-expanded={galleriesOpen}
+              onMouseEnter={e => { if (!galleriesOpen) { e.currentTarget.style.borderColor = "#9e7134"; e.currentTarget.style.color = "#f2f0e9"; } }}
+              onMouseLeave={e => { if (!galleriesOpen) { e.currentTarget.style.borderColor = "rgba(242,240,233,0.3)"; e.currentTarget.style.color = "rgba(242,240,233,0.85)"; } }}
+              className="pill-trace font-detail text-[10px] uppercase tracking-[0.22em] px-4 py-1.5 rounded-full border bg-transparent transition-colors duration-300"
+              style={{
+                borderColor: galleriesOpen ? "#9e7134" : "rgba(242,240,233,0.3)",
+                color: galleriesOpen ? "#f2f0e9" : "rgba(242,240,233,0.85)",
+                cursor: "pointer",
+                boxShadow: galleriesOpen ? "none" : "0 0 0 1px rgba(242,240,233,0.18)",
+              }}
+            >
+              {galleriesOpen ? "Hide Galleries" : "View Galleries"}
+            </button>
+            <GalleryDot />
+          </div>
 
           {/* Five portals at 170px need ~1200px to sit on one line. On a
               narrower desktop they wrap to a second line rather than running
               off the edge. */}
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-10 px-6 max-w-[1280px]">
+          {/* Always here, so the black holds its full height and nothing below
+              the section moves when the galleries are shown or hidden. Closed,
+              it is simply not visible and cannot be reached. */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-x-12 gap-y-10 px-6 max-w-[1280px]"
+            aria-hidden={!galleriesOpen}
+            style={{
+              visibility: galleriesOpen ? "visible" : "hidden",
+              opacity: galleriesOpen ? 1 : 0,
+              pointerEvents: galleriesOpen ? "auto" : "none",
+              transition: "opacity 2.4s cubic-bezier(0.33, 0, 0.2, 1) 0.9s",
+            }}
+          >
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
             {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
             {/* Sculpture holds the middle of the row and stands a size above the
