@@ -332,12 +332,13 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
-        <ArtMarkPortal size={230} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
-        {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
+        {/* Phone order, James's: Sculpture, Reels, Concepts, Concrete, Projects.
+            No mark portal here — it leads the desktop layout only. */}
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={210} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
-        <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
+        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
+        <MiniPortal portal={concretePortal}       size={180} hideLabel centerLabel="Concrete"    onOpen={openAndCount(setConcreteOpen, "Concrete")} />
+        {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
       </div>
 
       {/* Desktop — laid out like the Collection section on the home page:
