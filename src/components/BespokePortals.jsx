@@ -250,10 +250,14 @@ export function CommissionsSection() {
   useEffect(() => {
     const handler = (e) => {
       const cat = e.detail;
+      // One case per portal in this section, and the same rules: everything
+      // open to the public except Projects, which only James can reach.
       if (cat === "screens")   { window.location.assign("/screens"); return; }
       if (cat === "sculpture") setSculptureOpen(true);
+      if (cat === "concepts")  setConceptsOpen(true);
+      if (cat === "reels")     setReelsOpen(true);
+      if (cat === "concrete")  setConcreteOpen(true);
       if (cat === "projects")  { if (IS_DEV) window.location.assign("/projects"); }
-      if (cat === "concepts")  { if (IS_DEV) setConceptsOpen(true); }
     };
     window.addEventListener("open-bespoke-category", handler);
     return () => window.removeEventListener("open-bespoke-category", handler);
@@ -290,8 +294,9 @@ export function CommissionsSection() {
       screens:     () => { window.location.assign("/screens"); },
       sculpture:   () => setSculptureOpen(true),
       concepts:    () => setConceptsOpen(true),
-      projects:    () => { if (IS_DEV) window.location.assign("/projects"); },
       reels:       () => setReelsOpen(true),
+      concrete:    () => setConcreteOpen(true),
+      projects:    () => { if (IS_DEV) window.location.assign("/projects"); },
     }[which];
     if (!opener) return;
     const timer = setTimeout(() => {
