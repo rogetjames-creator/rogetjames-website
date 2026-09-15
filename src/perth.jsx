@@ -16,7 +16,7 @@ const PERTH = {
   intro: [
     "Laser cut metal wall art, sculpture and bespoke commissions for architects, builders and developers. Perth, Western Australia.",
     "ROGETjames designs and makes laser cut metal wall art, sculpture and bespoke commissions from a Perth studio. Materials are Corten steel and powdercoated aluminium. All work is made to order.",
-    "Projects include Homebase Design Centre, Frasers in Kings Park and the Cottesloe Beach Hotel, with public sculpture at Fiona Stanley Hospital Sculpture Park and Centennial Park.",
+    "Projects include Kings Park (Frasers), Homebase Design Centre and the Cottesloe Beach Hotel, with public sculpture at Fiona Stanley Hospital Sculpture Park and Centennial Park.",
     "We work with architects, builders and developers from concept through to installation. Design, fabrication, finish and fixing are handled in-house, to drawings and to program. Perth and Western Australia, delivered nationally.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
