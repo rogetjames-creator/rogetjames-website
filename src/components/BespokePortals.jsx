@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { useReelsPortal } from "../utils/reels";
+import ArtMarkPortal from "./ArtMarkPortal";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 import { netlifyImg } from "../utils/img";
@@ -291,9 +292,7 @@ export function CommissionsSection() {
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
         {IS_DEV && <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />}
-        {concreteImages.length > 0 && (
-          <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
-        )}
+        <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
       </div>
 
       {/* Desktop — laid out like the Collection section on the home page:
@@ -342,15 +341,17 @@ export function CommissionsSection() {
         {/* Negative margin lifts Sculpture up to float in the strip centre —
             the same -274px the Wall Art portal uses in the Collection. */}
         <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
-          <MiniPortal portal={SIDE_PORTAL_RIGHT} size={288} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+          <ArtMarkPortal size={288} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
 
-          <div className="flex items-center justify-center gap-24">
+          {/* Five portals at 170px need ~1200px to sit on one line. On a
+              narrower desktop they wrap to a second line rather than running
+              off the edge. */}
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-10 px-6 max-w-[1280px]">
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={170} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
             {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
             {IS_DEV && <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />}
             <MiniPortal portal={reelsPortal}          size={170} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
-            {concreteImages.length > 0 && (
-              <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
-            )}
+            <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
           </div>
         </div>
       </div>
