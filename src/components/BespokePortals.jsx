@@ -216,18 +216,30 @@ export function CommissionsSection() {
   // the centre, closing it — the same movement that opened it, run backwards.
   // Hiding them opens the strip again.
   const gatesReadyRef = useRef(false);
+  // Once the panels have met in the middle there is nothing to see behind them,
+  // so the pictures stop moving until they part again. Two things moving under
+  // a black panel is what made the wipe feel like it was fighting the slide.
+  const [stripCovered, setStripCovered] = useState(false);
   useEffect(() => {
     const l = gateLeftRef.current, r = gateRightRef.current;
     if (!l || !r) return;
     // Nothing to animate on first paint: the scroll-in reveal owns the panels
     // until the galleries are asked for.
     if (!gatesReadyRef.current) { gatesReadyRef.current = true; if (!galleriesOpen) return; }
-    if (galleriesOpen) gateTlRef.current?.pause();
+    gateTlRef.current?.pause();
     // Slow, and eased at both ends — the panels drift rather than snap. The
     // whole section is meant to breathe, so this is nearer the strip's own
-    // eight-second opening than to a UI transition.
-    gsap.to(l, { x: galleriesOpen ? "0%" : "-100%", duration: 3.4, ease: "sine.inOut" });
-    gsap.to(r, { x: galleriesOpen ? "0%" : "100%",  duration: 3.4, ease: "sine.inOut" });
+    // eight-second opening than to a UI transition. force3D hands the panels to
+    // the graphics card so a panel the width of half the screen is not repainted
+    // on every frame, and overwrite means a second press replaces the movement
+    // instead of stacking a second one on top of it.
+    const drift = { duration: 3.4, ease: "sine.inOut", force3D: true, overwrite: "auto" };
+    gsap.to(l, { ...drift, x: galleriesOpen ? "0%" : "-100%" });
+    gsap.to(r, { ...drift, x: galleriesOpen ? "0%" : "100%",
+      // The pictures start moving again the instant the panels begin to part,
+      // and only stop once the panels have fully met.
+      onStart:    () => { if (!galleriesOpen) setStripCovered(false); },
+      onComplete: () => { if (galleriesOpen)  setStripCovered(true);  } });
   }, [galleriesOpen]);
 
   // Keyed on the photographs themselves, not on the lists that carry them —
@@ -406,12 +418,20 @@ export function CommissionsSection() {
 
         <div ref={stripAreaRef} className="relative flex items-stretch h-52 w-full px-0 gap-0">
           {/* Gate panels — slide outward from centre on scroll into view */}
-          <div ref={gateLeftRef}  className="absolute inset-y-0 left-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
-          <div ref={gateRightRef} className="absolute inset-y-0 right-0 w-1/2 z-20 pointer-events-none" style={{ background: "#010101" }} />
+          {/* Each panel runs 40px past the centre and fades away over that last
+              40px. Closed, the two overlap so the centre stays solid black;
+              moving, the leading edge dissolves across the pictures instead of
+              drawing a hard line over them, which is what read as a jolt. */}
+          <div ref={gateLeftRef}  className="absolute inset-y-0 left-0 z-20 pointer-events-none"
+               style={{ width: "calc(50% + 40px)", willChange: "transform",
+                        background: "linear-gradient(to right, #010101 0, #010101 calc(100% - 40px), rgba(1,1,1,0) 100%)" }} />
+          <div ref={gateRightRef} className="absolute inset-y-0 right-0 z-20 pointer-events-none"
+               style={{ width: "calc(50% + 40px)", willChange: "transform",
+                        background: "linear-gradient(to left, #010101 0, #010101 calc(100% - 40px), rgba(1,1,1,0) 100%)" }} />
 
           {/* Left half of the strip */}
           <div className="flex-1 overflow-hidden" aria-hidden="true" style={{ contain: "paint" }}>
-            <div className="marquee-loop-right flex gap-3 h-full" style={{ width: "max-content", "--loop": leftLoop, "--loop-secs": leftSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
+            <div className="marquee-loop-right flex gap-3 h-full" style={{ width: "max-content", "--loop": leftLoop, "--loop-secs": leftSecs, animationPlayState: stripVisible && stripReady && !stripCovered ? "running" : "paused" }}>
               {leftDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
                   <img src={stripVisible ? netlifyImg(src, PORTAL_IMG) : undefined} alt="" role="presentation" className="w-full h-full object-cover" decoding="async" fetchPriority="low" onLoad={onStripImgSettled} onError={onStripImgSettled} />
@@ -425,7 +445,7 @@ export function CommissionsSection() {
 
           {/* Right half of the strip — runs the same way, left to right */}
           <div className="flex-1 overflow-hidden" aria-hidden="true" style={{ contain: "paint" }}>
-            <div className="marquee-loop-right flex gap-3 h-full" style={{ width: "max-content", "--loop": rightLoop, "--loop-secs": rightSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
+            <div className="marquee-loop-right flex gap-3 h-full" style={{ width: "max-content", "--loop": rightLoop, "--loop-secs": rightSecs, animationPlayState: stripVisible && stripReady && !stripCovered ? "running" : "paused" }}>
               {rightDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
                   <img src={stripVisible ? netlifyImg(src, PORTAL_IMG) : undefined} alt="" role="presentation" className="w-full h-full object-cover" decoding="async" fetchPriority="low" onLoad={onStripImgSettled} onError={onStripImgSettled} />
