@@ -1,21 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { useEffect, useState } from "react";
 import { netlifyImg } from "../utils/img";
 import {
   ART_SYMBOL, WORD_FILL, SYMBOL_FILL, SYMBOL_FILTER,
-  SEQUENCE, leftSlot, rightSlot, cellsFor, MEETS_CELLS, DESIGN_CELLS,
-  FLIP_EVERY, FLIP_STAGGER, FLIP_DOWN, FLIP_UP,
+  SEQUENCE, leftSlot, rightSlot, cellsFor,
 } from "./heroMark";
 
 // The ART meets design mark, playing inside a portal on black.
 //
-// Same mark and same flip-board as the hero, drawn from heroMark.js so there is
-// one set of letters and one sequence of phrases. What is different here: the
-// hero's long entrance is gone — this one is already assembled and simply keeps
-// turning — and every element is reached through a ref rather than a DOM id, so
-// the two marks can never animate each other.
-// What sits behind the mark, and how slowly it changes. The fade is the slow
-// part — a long dissolve rather than a slideshow that snaps.
+// The same mark the hero draws, from heroMark.js, but standing still: no
+// entrance and no flip-board, just ART meets design. The movement in this
+// portal belongs to the pictures behind it.
+// The mark itself is fixed here — ART meets design, and nothing else. What
+// moves is behind it: two pictures dissolving slowly into one another.
 const BACKDROPS = [
   "/images/portals/art-mark-trip.jpg",
   "/images/portals/art-mark-ochre-light-shadow.jpg",
@@ -25,49 +21,6 @@ const BACKDROP_HOLD = 6000;   // ms each picture is held before the next fade
 
 export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Sculpture" }) {
   const [backdrop, setBackdrop] = useState(0);
-  const leftRef = useRef(null);
-  const rightRef = useRef(null);
-
-  useEffect(() => {
-    const at = { i: 0 };
-
-    const hostFor = (slot) => (slot.side === "left" ? leftRef.current : rightRef.current);
-
-    const flipSlot = (slot, key) => {
-      const host = hostFor(slot);
-      if (!host) return;
-      const cells = [...host.querySelectorAll(".flip-cell")];
-      const next = cellsFor(slot, key);
-      cells.forEach((cell, i) => {
-        const path = cell.querySelector("path");
-        const target = next[i];
-        // Written by hand rather than through GSAP's transform system — the
-        // glyphs sit on a baseline of y=0, so scale(1, sy) folds the letter
-        // straight down onto the line and back, exactly as in the hero.
-        const st = { sy: 1, x: parseFloat(cell.dataset.x || "0") };
-        const write = () => cell.setAttribute(
-          "transform", `translate(${st.x} ${slot.baseline}) scale(1 ${st.sy})`);
-        gsap.timeline({ delay: i * FLIP_STAGGER })
-          .to(st, { sy: 0, duration: FLIP_DOWN, ease: "power2.in", onUpdate: write })
-          .to(cell, { opacity: 0.55, duration: 0.01 }, "<0.14")
-          .add(() => {
-            path.setAttribute("d", target ? target.d : "");
-            if (target) { st.x = target.x; cell.dataset.x = target.x; }
-            write();
-          })
-          .to(st, { sy: target ? 1 : 0, duration: FLIP_UP, ease: "power2.out", onUpdate: write })
-          .to(cell, { opacity: target ? 1 : 0, duration: FLIP_UP * 0.6 }, "<");
-      });
-    };
-
-    const id = setInterval(() => {
-      at.i = (at.i + 1) % SEQUENCE.length;
-      const entry = SEQUENCE[at.i];
-      flipSlot({ ...leftSlot(entry),  side: "left"  }, entry[0]);
-      flipSlot({ ...rightSlot(entry), side: "right" }, entry[1]);
-    }, FLIP_EVERY * 1000);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     if (BACKDROPS.length < 2) return;
@@ -108,7 +61,11 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
                 alt=""
                 role="presentation"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ opacity: i === backdrop ? 1 : 0, transition: `opacity ${BACKDROP_FADE}s ease-in-out` }}
+                // The pictures are circles drawn just inside their frame, which
+                // left a hairline of their own background showing at the portal's
+                // rim. Pushed out past the rim — a little is cropped, nothing of
+                // the picture that matters.
+                style={{ opacity: i === backdrop ? 1 : 0, transition: `opacity ${BACKDROP_FADE}s ease-in-out`, transform: "scale(1.06)" }}
               />
             ))}
 
@@ -121,29 +78,19 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
               style={{ width: "82%", height: "auto", overflow: "visible", position: "relative", zIndex: 2 }}
             >
               <path d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER }} />
-              <g ref={leftRef} style={{ fill: WORD_FILL }}>
-                {Array.from({ length: MEETS_CELLS }, (_, i) => {
-                  const c = cellsFor(lSlot, opening[0])[i];
-                  return (
-                    <g key={i} className="flip-cell" data-x={c ? c.x : 0}
-                       transform={`translate(${c ? c.x : 0} ${lSlot.baseline}) scale(1 1)`}
-                       style={c ? undefined : { opacity: 0 }}>
-                      <path d={c ? c.d : ""} />
-                    </g>
-                  );
-                })}
+              <g style={{ fill: WORD_FILL }}>
+                {cellsFor(lSlot, opening[0]).map((c, i) => (
+                  <g key={i} transform={`translate(${c.x} ${lSlot.baseline})`}>
+                    <path d={c.d} />
+                  </g>
+                ))}
               </g>
-              <g ref={rightRef} style={{ fill: WORD_FILL }}>
-                {Array.from({ length: DESIGN_CELLS }, (_, i) => {
-                  const c = cellsFor(rSlot, opening[1])[i];
-                  return (
-                    <g key={i} className="flip-cell" data-x={c ? c.x : 0}
-                       transform={`translate(${c ? c.x : 0} ${rSlot.baseline}) scale(1 1)`}
-                       style={c ? undefined : { opacity: 0 }}>
-                      <path d={c ? c.d : ""} />
-                    </g>
-                  );
-                })}
+              <g style={{ fill: WORD_FILL }}>
+                {cellsFor(rSlot, opening[1]).map((c, i) => (
+                  <g key={i} transform={`translate(${c.x} ${rSlot.baseline})`}>
+                    <path d={c.d} />
+                  </g>
+                ))}
               </g>
             </svg>
 
