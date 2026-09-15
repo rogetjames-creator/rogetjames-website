@@ -26,6 +26,28 @@ const SECTION_LABELS = Object.fromEntries(SCREEN_SECTIONS.map((s) => [s.id, `Scr
 
 const API = "/api/media-upload";
 
+// The ONLY instruction the server acts on is a replace: an intent word
+// (replace / remove / swap / change) together with a rogetjames.com image
+// address. Anything else typed in the Instructions box is stored against the
+// upload and never read by anything — so say so rather than let it look done.
+// Mirrors replaceTargetFromNote() in netlify/functions/media-upload.js.
+function instructionWillBeActedOn(text) {
+  const t = (text || "").trim();
+  if (!t) return true;                               // nothing typed, nothing lost
+  if (!/\b(replace|remove|swap|change)\b/i.test(t)) return false;
+  return (t.match(/https?:\/\/\S+/gi) || []).some((raw) => {
+    try {
+      const u = new URL(raw.replace(/[)\].,'"]+$/, ""));
+      if (!/(^|\.)rogetjames\.com$/i.test(u.hostname)) return false;
+      const path = u.pathname === "/.netlify/images"
+        ? decodeURIComponent(u.searchParams.get("url") || "")
+        : u.pathname;
+      return /^\/images\/.+\.(jpe?g|png|webp)$/i.test(path);
+    } catch { return false; }
+  });
+}
+
+
 // Destinations grouped by where they show on the site. These are built from the
 // SAME sources the live pages read, so a button can never point at a spot no
 // page shows:
@@ -634,7 +656,13 @@ export default function MediaPage() {
       try { json = await res.json(); }
       catch { json = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
       if (!res.ok || json.error) { setNote(json.error || `Upload failed (status ${res.status}).`); setPhase("compose"); return; }
-      setDoneInfo({ count: json.saved, dests: [...selectedDests] });
+      setDoneInfo({
+        count: json.saved,
+        dests: [...selectedDests],
+        // Told plainly rather than left looking done: the note is stored either
+        // way, but nothing on the site reads it.
+        ignoredInstruction: instructions.trim() && !json.replaced ? instructions.trim() : "",
+      });
       setPhase("done");
       await refresh();
     } catch (e) {
@@ -771,6 +799,17 @@ export default function MediaPage() {
               {doneInfo.count} photo{doneInfo.count === 1 ? "" : "s"} sent and now live in:
             </p>
             <p className="font-detail text-sm text-green-300 mb-5">{doneInfo.dests.map(labelForKey).join(" + ")}</p>
+            {doneInfo.ignoredInstruction && (
+              <div className="text-left bg-amber-500/12 border border-amber-400/40 rounded-xl px-4 py-3 mb-5">
+                <p className="font-detail text-[11px] text-amber-300 uppercase tracking-[0.18em] mb-1.5">Your instruction was not acted on</p>
+                <p className="font-detail text-[12.5px] text-cream/75 leading-relaxed mb-2">&ldquo;{doneInfo.ignoredInstruction}&rdquo;</p>
+                <p className="font-detail text-[12px] text-cream/60 leading-relaxed">
+                  The photo is saved and placed where you ticked. The only instruction that does
+                  anything here is a swap — <b>replace</b> plus the address of an image on this
+                  site. Anything else is kept as a note and nothing on the site reads it.
+                </p>
+              </div>
+            )}
             <button onClick={startNewBatch}
               className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light transition-all">
               + Start a new batch
@@ -858,7 +897,16 @@ export default function MediaPage() {
             </p>
             <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
               placeholder="To auto-swap an image on Send: replace this image - https://rogetjames.com/images/…/name.jpg"
-              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors mb-6 resize-y" />
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors resize-y" />
+            {!instructionWillBeActedOn(instructions) && (
+              <p className="font-detail text-[11.5px] text-amber-300/90 mt-2 mb-6 leading-relaxed">
+                This won&rsquo;t be acted on. The only instruction that does anything is a swap —
+                the word <b>replace</b> (or remove / swap / change) together with the address of an
+                image on this site. Everything else is kept as a note against the photo, and nothing
+                on the site reads it. To place this photo, tick a destination below.
+              </p>
+            )}
+            {instructionWillBeActedOn(instructions) && <div className="mb-6" />}
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label
