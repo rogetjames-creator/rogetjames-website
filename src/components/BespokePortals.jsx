@@ -67,14 +67,17 @@ const SIDE_PORTAL_PROJECTS = {
   ],
 };
 
-// Concrete's portal shows the uploaded concrete photos themselves — the slides
-// are filled in at render time from whatever has been placed there, so the
-// portal never needs a hand-picked image.
+// Concrete's portal wears James's carved lotus and nothing else. The picture
+// is cropped to the carving's own edge, so the portal's circle and the
+// carving's circle are the same circle — it fills the frame with nothing
+// cropped off it and no black behind it. Deliberately NOT part of the Concrete
+// gallery: photographs uploaded to Concrete go to the gallery, and the portal
+// keeps this face.
 const SIDE_PORTAL_CONCRETE = {
   id: "side-concrete",
   label: "Concrete",
   sublabel: "",
-  slides: [],
+  slides: ["/images/concrete/lotus-portal.webp"],
 };
 
 const SIDE_PORTAL_CONCEPTS = {
@@ -155,10 +158,8 @@ export function CommissionsSection() {
   // as the first photo is uploaded to it, and stays hidden until then. Its
   // spinning slides are those same uploads.
   const concreteImages = useConcreteImages();
-  const concretePortal = useMemo(
-    () => ({ ...SIDE_PORTAL_CONCRETE, slides: concreteImages.map((i) => i.img) }),
-    [concreteImages]
-  );
+  // The portal keeps its lotus whatever is uploaded to the Concrete gallery.
+  const concretePortal = SIDE_PORTAL_CONCRETE;
 
   // Sliding strip — same shape as the Collection strip on the home page, but
   // both halves run the one way, left to right. Shuffled once per visit.
