@@ -68,7 +68,10 @@ const HIDDEN_BY_CITY = {
 // A city can also show its own picture on a panel. An upload to that panel at
 // /media still wins over this — this is just the picture it starts with.
 const IMG_BY_CITY = {
-  perth: { Sculpture: "/images/autumn-leaf/autumn-leaf-bali-2.jpg" },
+  perth: {
+    "Wall Art": "/images/banksia/banksia-round-latest-1.jpg",
+    Sculpture:  "/images/autumn-leaf/autumn-leaf-bali-2.jpg",
+  },
 };
 const panelsFor = (city) =>
   PANELS
