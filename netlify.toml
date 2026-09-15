@@ -314,6 +314,85 @@
   to = "/wall-art/australian-natives/wattle"
   status = 301
 
+# Addresses from the old site that Google still ranks. Search Console shows
+# these pulling impressions on page one while returning "Page not found" —
+# /artworks ranks first for something and led nowhere. Each goes to the page
+# that replaced it, not the home page, so the ranking it earned carries over.
+[[redirects]]
+  from = "/artworks"
+  to = "/wall-art"
+  status = 301
+
+[[redirects]]
+  from = "/individual-designs"
+  to = "/wall-art"
+  status = 301
+
+[[redirects]]
+  from = "/copy-of-wall-art"
+  to = "/wall-art"
+  status = 301
+
+[[redirects]]
+  from = "/leaf-sculptures"
+  to = "/sculpture/leaf-sculptures"
+  status = 301
+
+[[redirects]]
+  from = "/creeping-fig-series"
+  to = "/wall-art/creeping-figs"
+  status = 301
+
+[[redirects]]
+  from = "/creeping-fig-series-2"
+  to = "/wall-art/creeping-figs"
+  status = 301
+
+[[redirects]]
+  from = "/viasi"
+  to = "/screens"
+  status = 301
+
+[[redirects]]
+  from = "/ferlie"
+  to = "/screens"
+  status = 301
+
+[[redirects]]
+  from = "/vaya"
+  to = "/screens"
+  status = 301
+
+[[redirects]]
+  from = "/roander"
+  to = "/screens"
+  status = 301
+
+[[redirects]]
+  from = "/light-it"
+  to = "/screens"
+  status = 301
+
+[[redirects]]
+  from = "/fencing-1"
+  to = "/screens/fencing"
+  status = 301
+
+[[redirects]]
+  from = "/commissions"
+  to = "/#bespoke"
+  status = 301
+
+[[redirects]]
+  from = "/agents"
+  to = "/#contact"
+  status = 301
+
+[[redirects]]
+  from = "/copy-of-catalogues"
+  to = "/catalogues"
+  status = 301
+
 # Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
 # and isn't matched by a rule above 301s to the homepage instead of hitting
 # Netlify's default 404. Real files (assets, images, the .html pages) are
@@ -322,6 +401,7 @@
   from = "/*"
   to = "/"
   status = 301
+  force = false
 
 # Security headers — applied to every route. The CSP allows only the sources
 # the site actually uses (self, Google Fonts, the myportfolio image CDN); there
