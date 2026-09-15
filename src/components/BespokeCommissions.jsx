@@ -3043,7 +3043,15 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
       )}
 
       {/* Grid view */}
-      {!searchQuery && itemIdx === null && (
+      {!searchQuery && itemIdx === null && items.length === 0 && (
+        <div className="flex-1 flex items-center justify-center px-10">
+          <div className="text-center">
+            <p className="font-detail text-[11px] text-cream/40 uppercase tracking-[0.22em]">{labelProp}</p>
+            <p className="font-detail text-[12px] text-cream/25 mt-3">No photographs here yet.</p>
+          </div>
+        </div>
+      )}
+      {!searchQuery && itemIdx === null && items.length > 0 && (
         <div className="flex-1 overflow-y-auto px-10 md:px-20 py-4" data-lenis-prevent>
           <div className="flex flex-wrap justify-center gap-2">
             {items.map((it, i) => (
