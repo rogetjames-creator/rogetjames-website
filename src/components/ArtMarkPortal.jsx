@@ -15,6 +15,7 @@ import {
 const BACKDROPS = [
   "/images/portals/art-mark-trip.jpg",
   "/images/portals/art-mark-ochre-light-shadow.jpg",
+  "/images/portals/art-mark-dark.jpg",
 ];
 const BACKDROP_FADE = 5;      // seconds of crossfade
 const BACKDROP_HOLD = 6000;   // ms each picture is held before the next fade
@@ -61,10 +62,9 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
                 alt=""
                 role="presentation"
                 className="absolute inset-0 w-full h-full object-cover"
-                // The pictures are circles drawn just inside their frame, which
-                // left a hairline of their own background showing at the portal's
-                // rim. Pushed out past the rim — a little is cropped, nothing of
-                // the picture that matters.
+                // Each picture is cropped to its own circle before it gets here,
+                // then pushed a little past the portal's rim so no edge of it can
+                // show. A sliver is cropped; nothing that matters.
                 style={{ opacity: i === backdrop ? 1 : 0, transition: `opacity ${BACKDROP_FADE}s ease-in-out`, transform: "scale(1.06)" }}
               />
             ))}
