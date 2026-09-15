@@ -120,9 +120,14 @@ vanishes silently — the single most common bug here):
 | Concrete | `concrete` — the portal appears once the first photo lands |
 
 **Bespoke section on `/`** — FOUR portals: Sculpture, Concepts, Projects,
-Commissions. **There is no Screens portal there.** Projects and Commissions show
+Reels. **There is no Screens portal there.** Projects and Concepts show
 "Under Construction" to the public and open only for James (`?preview=roj-open`)
-or in dev.
+or in dev. Sculpture and Reels are open to everyone.
+
+Reels is the same portal the Discover section shows — one list in
+`src/utils/reels.js` (`REELS_PORTAL` plus the `useReelsPortal` hook that merges
+in uploaded reels), rendered in both places. It replaced a Commissions portal
+that was removed in Sep 2026; `?open=commissions` is now `?open=reels`.
 
 **Page order (main site)** — `App.jsx` composes: Navbar → Hero → StudioBio →
 Gallery → About → CommissionsSection → Process → Services → Contact →

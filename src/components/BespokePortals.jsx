@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
+import { useReelsPortal } from "../utils/reels";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 import { netlifyImg } from "../utils/img";
@@ -11,7 +12,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const CDN_SC = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=%2Fimages%2Fcdn-gallery";
 
-const COMMISSIONS_GALLERY = [
+// The Commissions portal is gone — Reels stands in its place. These pictures
+// were only ever feeding the sliding strip behind the portals as well, so they
+// stay on under a name that says what they are still for.
+const BESPOKE_STRIP_EXTRA = [
   { src: "/images/villa-leaf/villa-leaf-trio-pool.jpg" },
   { src: "/images/hero/hero-cottesloe-patio.jpg" },
   { src: "/images/marakesh/marakesh-cassie.jpg" },
@@ -19,19 +23,6 @@ const COMMISSIONS_GALLERY = [
   { src: "/images/hero/hero-homebase-dusk.jpg" },
   { src: "/images/hero/hero-cottesloe-gate.jpg" },
 ];
-
-const COMMISSIONS_PORTAL = {
-  id: "commissions",
-  label: "Commissions",
-  sublabel: "Bespoke & Commercial",
-  slides: [],
-  videos: [
-    { src: "/videos/natives-collage-2.mp4", title: "CUSTOM Natives — Collage", detail: "A commission in our native botanicals series — hand-composed and laser cut to order.", poster: "/images/concept-4-natives.jpg" },
-    { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "", poster: "/images/reels/waroona-thumb.jpg" },
-  ],
-  commissionImages: COMMISSIONS_GALLERY,
-  popupType: "commissions-gallery",
-};
 
 const SIDE_PORTAL_LEFT = {
   id: "side-left",
@@ -111,7 +102,7 @@ const SIDE_PORTAL_CONCEPTS = {
 };
 
 // The sliding strip behind the Sculpture portal shows the pictures from every
-// Bespoke portal at once — Sculpture, Projects, Concepts, Commissions, and any
+// Bespoke portal at once — Sculpture, Projects, Concepts, Reels, and any
 // Concrete uploads, which are added at render time. Decorative only: the strip
 // is not clickable, exactly as the portals themselves still are.
 const slideSrc = (s) => (typeof s === "string" ? s : s?.src);
@@ -127,7 +118,7 @@ const BESPOKE_STRIP_IMAGES = [
   ...SIDE_PORTAL_RIGHT.slides,
   ...SIDE_PORTAL_PROJECTS.slides,
   ...SIDE_PORTAL_CONCEPTS.slides,
-  ...COMMISSIONS_GALLERY.map((i) => i.src),
+  ...BESPOKE_STRIP_EXTRA.map((i) => i.src),
 ].map(slideSrc).filter(Boolean);
 
 const shuffled = (arr) => {
@@ -140,7 +131,7 @@ const shuffled = (arr) => {
 };
 
 // Private owner preview. Sculpture is open to the public; the remaining
-// Bespoke portals (Projects, Commissions, Concepts) are locked ("Under
+// Bespoke portals (Projects, Concepts) are locked ("Under
 // Construction"). James unlocks those on the live site by visiting once with
 // ?preview=roj-open — that saves a flag in his browser so they stay open on
 // every later visit. ?preview=off re-locks. Nobody else ever sees them.
@@ -155,6 +146,8 @@ export function CommissionsSection() {
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
   const [concreteOpen, setConcreteOpen] = useState(false);
+  // The same Reels portal the Discover section shows, uploads already merged.
+  const reelsPortal = useReelsPortal();
   const [initialScreensCat, setInitialScreensCat] = useState(false);
   // Concrete has no hand-placed images — the portal appears on its own as soon
   // as the first photo is uploaded to it, and stays hidden until then. Its
@@ -258,7 +251,7 @@ export function CommissionsSection() {
 
   // Deep-link from other pages (e.g. the Melbourne page's gallery panels):
   // ?open=<cat> opens that gallery directly. Public: screens / sculpture.
-  // Owner-only: projects / commissions / concepts (still under construction),
+  // Owner-only: projects / concepts (still under construction),
   // matching the portal locks.
   useEffect(() => {
     const which = new URLSearchParams(window.location.search).get("open");
@@ -269,7 +262,7 @@ export function CommissionsSection() {
       sculpture:   () => setSculptureOpen(true),
       concepts:    () => { if (IS_DEV) setConceptsOpen(true); },
       projects:    () => { if (IS_DEV) window.location.assign("/projects"); },
-      commissions: () => { if (IS_DEV) setReelsOpen(true); },
+      reels:       () => setReelsOpen(true),
     }[which];
     if (!opener) return;
     const timer = setTimeout(() => {
@@ -294,7 +287,7 @@ export function CommissionsSection() {
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
-        <MiniPortal portal={COMMISSIONS_PORTAL}   size={180} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
+        <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : undefined} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
         {concreteImages.length > 0 && (
@@ -305,7 +298,7 @@ export function CommissionsSection() {
       {/* Desktop — laid out like the Collection section on the home page:
           Sculpture floats in the centre of a sliding strip at the same size and
           in the same place as Wall Art there, with Projects, Concepts and
-          Commissions in a row beneath at the size they have always been. */}
+          Reels in a row beneath at the size they have always been. */}
       <div className="bg-matt-black relative hidden md:flex flex-col items-center">
 
         {/* Faint rule above strip */}
@@ -353,7 +346,7 @@ export function CommissionsSection() {
           <div className="flex items-center justify-center gap-24">
             <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : undefined} />
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
-            <MiniPortal portal={COMMISSIONS_PORTAL}   size={170} hideLabel centerLabel="Commissions" hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setReelsOpen, "Commissions")   : undefined} />
+            <MiniPortal portal={reelsPortal}          size={170} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
             {concreteImages.length > 0 && (
               <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
             )}
@@ -367,7 +360,7 @@ export function CommissionsSection() {
       {screensOpen   && <ScreensGalleryModal   onClose={() => { setScreensOpen(false); setInitialScreensCat(false); }} initialShowCat={initialScreensCat} />}
       {projectsOpen  && <ProjectsGalleryModal  onClose={() => setProjectsOpen(false)} />}
       {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
-      {reelsOpen     && <CommissionsGalleryPopup videos={COMMISSIONS_PORTAL.videos} onClose={() => setReelsOpen(false)} />}
+      {reelsOpen     && <CommissionsGalleryPopup videos={reelsPortal.videos} title="Reels" onClose={() => setReelsOpen(false)} />}
       {concreteOpen  && <ConcreteGalleryModal  onClose={() => setConcreteOpen(false)} />}
     </section>
   );
