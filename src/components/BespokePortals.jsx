@@ -118,10 +118,17 @@ const slideSrc = (s) => (typeof s === "string" ? s : s?.src);
 // between the strip filling in at once and trickling in.
 const PORTAL_IMG = { w: 408, q: 78 };
 
+// Concepts carries 17 pictures for its own portal against Sculpture's 6 and
+// Projects' 5 — put them all in and the strip reads as a concepts strip. It
+// contributes every third one instead, six like the rest, spread across the
+// set rather than the first six in a row. The Concepts portal itself is
+// untouched and still turns through all 17.
+const STRIP_CONCEPTS = SIDE_PORTAL_CONCEPTS.slides.filter((_, i) => i % 3 === 0);
+
 const BESPOKE_STRIP_IMAGES = [
   ...SIDE_PORTAL_RIGHT.slides,
   ...SIDE_PORTAL_PROJECTS.slides,
-  ...SIDE_PORTAL_CONCEPTS.slides,
+  ...STRIP_CONCEPTS,
   ...BESPOKE_STRIP_EXTRA.map((i) => i.src),
 ].map(slideSrc).filter(Boolean);
 
