@@ -35,6 +35,10 @@ export const MEDIA_KEYS = {
   upClose: "up-close",        // read by every gallery's Up Close row
   concrete: "concrete",       // read by the Concrete gallery (BespokeCommissions)
   clientImages: "client-images", // read by the Client Images portal (DiscoverPortals)
+  // The sliding strip of photographs behind the Bespoke portals on the home
+  // page. It was built from a hand-written list with no way to add to it —
+  // an upload had nowhere to go, whatever the uploader appeared to offer.
+  bespokeStrip: "bespoke-strip", // read by the strip in BespokePortals
 };
 
 // Prefixes for the two galleries that are made of many named sections, so each

@@ -4,6 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 // show the same Reels portal, so a new reel is typed out once and appears in
 // both. Lives in its own file so neither component file ends up exporting
 // something that isn't a component.
+// Waroona was dropped: its still is 600x337 where every other reel carries a
+// 600x600 or 1200x1200. Cropped square into a circular portal it read as blur.
+// The film itself is untouched and still plays in the Projects gallery.
 export const REELS_PORTAL = {
   id: "reels",
   label: "Reels",
@@ -15,7 +18,6 @@ export const REELS_PORTAL = {
     { src: "/videos/reels/b-editions.mp4",  title: "B Editions",               detail: "B Editions — a curated collection reel.", poster: "/images/reels/b-editions-thumb.jpg" },
     { src: "/videos/reels/gren-free.mp4",   title: "GREN Free",                detail: "GREN Free — Branches design.", poster: "/images/reels/gren-free-thumb.jpg" },
     { src: "/videos/reels/rue.mp4",         title: "Rue",                      detail: "Rue — a ROGETjames reel.", poster: "/images/reels/rue-thumb.jpg" },
-    { src: "/videos/waroona.mp4",           title: "Waroona",                  detail: "Waroona — a ROGETjames reel.", poster: "/images/reels/waroona-thumb.jpg" },
     { src: "/videos/reels/obliationes.mp4", title: "Obliationes",              detail: "Obliationes — a ROGETjames reel.", poster: "/images/reels/obliationes-thumb.jpg" },
   ],
   popupType: "commissions-gallery",

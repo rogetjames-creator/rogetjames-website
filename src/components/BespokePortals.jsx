@@ -7,6 +7,8 @@ import ArtMarkPortal from "./ArtMarkPortal";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 import { netlifyImg } from "../utils/img";
+import { useUploadsByKey } from "../utils/mediaUploads";
+import { MEDIA_KEYS } from "../mediaDestinations";
 import { trackGalleryOpen } from "../utils/trackGallery";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -116,7 +118,10 @@ const slideSrc = (s) => (typeof s === "string" ? s : s?.src);
 // share one download instead of fetching two different sizes of the same
 // picture — on a page already carrying ~200 images that is the difference
 // between the strip filling in at once and trickling in.
-const PORTAL_IMG = { w: 408, q: 78 };
+// The strip tiles are 208px square; a retina screen wants twice that and
+// these are photographs, not flat graphics. 408 at q78 was barely 2x at a
+// low quality, which is what made the strip look soft.
+const PORTAL_IMG = { w: 560, q: 88 };
 
 // Concepts carries 17 pictures for its own portal against Sculpture's 6 and
 // Projects' 5 — put them all in and the strip reads as a concepts strip. It
@@ -165,6 +170,10 @@ export function CommissionsSection() {
   // as the first photo is uploaded to it, and stays hidden until then. Its
   // spinning slides are those same uploads.
   const concreteImages = useConcreteImages();
+  // Photographs sent straight to the strip from /media. Until now the strip was
+  // a hand-written list and an upload had nowhere to go.
+  const stripByKey = useUploadsByKey([MEDIA_KEYS.bespokeStrip], "Bespoke");
+  const stripUploads = stripByKey[MEDIA_KEYS.bespokeStrip] || [];
   // The portal keeps its lotus whatever is uploaded to the Concrete gallery.
   const concretePortal = SIDE_PORTAL_CONCRETE;
 
@@ -176,8 +185,11 @@ export function CommissionsSection() {
   const gateRightRef = useRef(null);
   const [stripSeed] = useState(() => shuffled(BESPOKE_STRIP_IMAGES));
   const stripImages = useMemo(
-    () => (concreteImages.length ? shuffled([...stripSeed, ...concreteImages.map((i) => i.img)]) : stripSeed),
-    [stripSeed, concreteImages]
+    () => {
+      const extra = [...concreteImages.map((i) => i.img), ...stripUploads.map((i) => i.img)];
+      return extra.length ? shuffled([...stripSeed, ...extra]) : stripSeed;
+    },
+    [stripSeed, concreteImages, stripUploads]
   );
   const halfway    = Math.ceil(stripImages.length / 2);
   const leftHalf   = stripImages.slice(0, halfway);

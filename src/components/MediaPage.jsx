@@ -73,6 +73,11 @@ const LIVE_DEST_GROUPS = [
     items: BESPOKE_LIVE_DESTINATIONS,
   },
   {
+    group: "Bespoke \u2014 sliding strip",
+    hint: "the band of photographs that slides behind the Bespoke portals on the home page",
+    items: [{ key: MEDIA_KEYS.bespokeStrip, label: "Sliding strip (home page)" }],
+  },
+  {
     group: "Concrete",
     hint: "the Concrete gallery in Bespoke — the portal is already there, this fills what opens behind it",
     items: [{ key: MEDIA_KEYS.concrete, label: "Concrete" }],
