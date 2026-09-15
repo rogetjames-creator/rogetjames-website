@@ -36,11 +36,15 @@ const PERTH = {
     { src: "/images/hero/hero-vasuki.jpg",              title: "VASUKI — Sculpture",       detail: "Placeholder — replace with real Perth project" },
   ],
   services: [
-    "Wall Art", "Sculpture", "Screens", "Gates & Fencing", "Privacy Panels", "Public Art",
+    "Wall Art", "Sculpture", "Screens", "Bespoke", "Art Projects", "Public Art",
   ],
+  // Perth suburbs first, then the WA towns James also delivers to — Geraldton,
+  // Margaret River and Esperance are regional, not Perth.
   suburbs: [
     "Cottesloe", "Dalkeith", "Nedlands", "Peppermint Grove", "City Beach", "Applecross",
     "Mount Lawley", "Subiaco", "Claremont", "Swanbourne", "Fremantle", "Mosman Park",
+    "North Beach", "Bicton", "Darlington",
+    "Geraldton", "Margaret River", "Esperance",
   ],
 };
 

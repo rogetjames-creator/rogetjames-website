@@ -60,7 +60,10 @@ const PANELS = [
 // /media destination key, so each city gets its own set of pictures.
 // A city can drop a panel it does not want — Melbourne shows Wall Art,
 // Sculpture, Screens and Bespoke Sculpture only.
-const HIDDEN_BY_CITY = { melbourne: ["Concrete", "Concepts", "Commissions", "Projects"] };
+const HIDDEN_BY_CITY = {
+  melbourne: ["Concrete", "Concepts", "Commissions", "Projects"],
+  perth:     ["Concrete"],
+};
 const panelsFor = (city) =>
   PANELS.filter((p) => !(HIDDEN_BY_CITY[city] || []).includes(p.name));
 
