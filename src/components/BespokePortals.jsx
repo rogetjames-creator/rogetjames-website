@@ -130,9 +130,10 @@ const shuffled = (arr) => {
   return a;
 };
 
-// Private owner preview. Sculpture is open to the public; the remaining
-// Bespoke portals (Projects, Concepts) are locked ("Under
-// Construction"). James unlocks those on the live site by visiting once with
+// Private owner preview. Sculpture and Reels are open to the public. Projects
+// and Concepts are not shown to the public at all — the public sees two
+// portals, not two more wearing an "Under Construction" sign. James sees all
+// four. He unlocks them on the live site by visiting once with
 // ?preview=roj-open — that saves a flag in his browser so they stay open on
 // every later visit. ?preview=off re-locks. Nobody else ever sees them.
 // Shared with the private city pages — see src/utils/ownerPreview.js.
@@ -288,8 +289,8 @@ export function CommissionsSection() {
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
-        <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : undefined} />
-        <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
+        {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={180} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
+        {IS_DEV && <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />}
         {concreteImages.length > 0 && (
           <MiniPortal portal={concretePortal} size={180} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
         )}
@@ -344,8 +345,8 @@ export function CommissionsSection() {
           <MiniPortal portal={SIDE_PORTAL_RIGHT} size={288} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
 
           <div className="flex items-center justify-center gap-24">
-            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : undefined} />
-            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts"    hoverLabel="Under Construction" locked={!IS_DEV} onOpen={IS_DEV ? openAndCount(setConceptsOpen, "Concepts")   : undefined} />
+            {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
+            {IS_DEV && <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />}
             <MiniPortal portal={reelsPortal}          size={170} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
             {concreteImages.length > 0 && (
               <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
