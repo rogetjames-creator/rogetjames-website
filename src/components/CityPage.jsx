@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Instagram, Mail } from "lucide-react";
 import { netlifyImg } from "../utils/img";
 import MelbourneGalleryPanels from "./MelbourneGalleryPanels";
+import ArtMeetsDesignMark from "./ArtMeetsDesignMark";
 import { cityHeroKey } from "../mediaDestinations";
 import { useUploadsByKey } from "../utils/mediaUploads";
 
@@ -51,7 +52,7 @@ function SectionTitle({ children }) {
 export default function CityPage({ city }) {
   const {
     name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch,
-    suburbs = [], services = [], ctaHeading = null,
+    suburbs = [], services = [], ctaHeading = null, closingMark = false,
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
   // own set of panel pictures. Falls back to the city name.
@@ -218,6 +219,12 @@ export default function CityPage({ city }) {
               <p key={i} className="font-body text-base text-cream/70 leading-relaxed">{para}</p>
             ))}
           </div>
+          {/* The spiel closes on the mark itself rather than the words typed. */}
+          {closingMark && (
+            <div className="mt-14 md:mt-16 flex justify-center">
+              <ArtMeetsDesignMark />
+            </div>
+          )}
         </div>
       </section>
 
