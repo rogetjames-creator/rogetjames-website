@@ -187,6 +187,12 @@ export function CommissionsSection() {
   // A marquee that keeps running while nobody is looking at it costs frames
   // everywhere else on the page. Stop it whenever the section is off screen.
   const [stripVisible, setStripVisible] = useState(false);
+  // A picture arriving while the strip is moving forces the browser to redraw
+  // the whole track — and each track is nearly 9000px wide. That redraw is what
+  // read as jitter. The pictures are asked for as the section comes near, the
+  // strip stays still until they are in, and then it moves without interruption.
+  const [stripReady, setStripReady] = useState(false);
+  const stripLoadedRef = useRef(0);
   useEffect(() => {
     const el = stripAreaRef.current;
     if (!el) return;
@@ -194,6 +200,19 @@ export function CommissionsSection() {
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
+
+  // Never leave it frozen: whatever has or hasn't arrived, start after 3s.
+  useEffect(() => {
+    if (!stripVisible || stripReady) return;
+    const t = setTimeout(() => setStripReady(true), 3000);
+    return () => clearTimeout(t);
+  }, [stripVisible, stripReady]);
+
+  const totalStripImgs = leftDup.length + rightDup.length;
+  const onStripImgSettled = () => {
+    stripLoadedRef.current += 1;
+    if (stripLoadedRef.current >= totalStripImgs) setStripReady(true);
+  };
 
   // Gate reveal — two black panels slide apart from the centre on scroll in,
   // the same 8s linear opening used on the Collection strip.
@@ -313,10 +332,10 @@ export function CommissionsSection() {
 
           {/* Left half of the strip */}
           <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: leftSecs, animationPlayState: stripVisible ? "running" : "paused" }}>
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: leftSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
               {leftDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                  <img src={netlifyImg(src, PORTAL_IMG)} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" decoding="async" fetchPriority="low" />
+                  <img src={stripVisible ? netlifyImg(src, PORTAL_IMG) : undefined} alt="" role="presentation" className="w-full h-full object-cover" decoding="async" fetchPriority="low" onLoad={onStripImgSettled} onError={onStripImgSettled} />
                 </div>
               ))}
             </div>
@@ -327,10 +346,10 @@ export function CommissionsSection() {
 
           {/* Right half of the strip — runs the same way, left to right */}
           <div className="flex-1 overflow-hidden" aria-hidden="true">
-            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: rightSecs, animationPlayState: stripVisible ? "running" : "paused" }}>
+            <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationDuration: rightSecs, animationPlayState: stripVisible && stripReady ? "running" : "paused" }}>
               {rightDup.map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                  <img src={netlifyImg(src, PORTAL_IMG)} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" decoding="async" fetchPriority="low" />
+                  <img src={stripVisible ? netlifyImg(src, PORTAL_IMG) : undefined} alt="" role="presentation" className="w-full h-full object-cover" decoding="async" fetchPriority="low" onLoad={onStripImgSettled} onError={onStripImgSettled} />
                 </div>
               ))}
             </div>
