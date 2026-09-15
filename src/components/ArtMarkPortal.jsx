@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { netlifyImg } from "../utils/img";
 import {
   ART_SYMBOL, WORD_FILL, SYMBOL_FILL, SYMBOL_FILTER,
   SEQUENCE, leftSlot, rightSlot, cellsFor, MEETS_CELLS, DESIGN_CELLS,
@@ -13,7 +14,17 @@ import {
 // hero's long entrance is gone — this one is already assembled and simply keeps
 // turning — and every element is reached through a ref rather than a DOM id, so
 // the two marks can never animate each other.
+// What sits behind the mark, and how slowly it changes. The fade is the slow
+// part — a long dissolve rather than a slideshow that snaps.
+const BACKDROPS = [
+  "/images/portals/art-mark-trip.jpg",
+  "/images/portals/art-mark-ochre-light-shadow.jpg",
+];
+const BACKDROP_FADE = 5;      // seconds of crossfade
+const BACKDROP_HOLD = 6000;   // ms each picture is held before the next fade
+
 export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Sculpture" }) {
+  const [backdrop, setBackdrop] = useState(0);
   const leftRef = useRef(null);
   const rightRef = useRef(null);
 
@@ -58,6 +69,12 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
     return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    if (BACKDROPS.length < 2) return;
+    const id = setInterval(() => setBackdrop(i => (i + 1) % BACKDROPS.length), BACKDROP_HOLD + BACKDROP_FADE * 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const opening = SEQUENCE[0];
   const lSlot = leftSlot(opening);
   const rSlot = rightSlot(opening);
@@ -81,13 +98,27 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
             className="relative overflow-hidden flex items-center justify-center"
             style={{ width: `${size}px`, height: `${size}px`, borderRadius: "50%", background: "#000" }}
           >
+            {/* Behind the mark: James's two pictures, dissolving slowly into
+                one another. Both are already circles filling their frame, so
+                they meet the portal's rim exactly. */}
+            {BACKDROPS.map((src, i) => (
+              <img
+                key={src}
+                src={netlifyImg(src, { w: Math.round(size * 2.4), q: 82 })}
+                alt=""
+                role="presentation"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ opacity: i === backdrop ? 1 : 0, transition: `opacity ${BACKDROP_FADE}s ease-in-out` }}
+              />
+            ))}
+
             {/* The mark, sized to sit clear of the circle's edge. */}
             <svg
               viewBox="18 150 1098 880"
               xmlns="http://www.w3.org/2000/svg"
               aria-label="ART meets design"
               role="img"
-              style={{ width: "82%", height: "auto", overflow: "visible" }}
+              style={{ width: "82%", height: "auto", overflow: "visible", position: "relative", zIndex: 2 }}
             >
               <path d={ART_SYMBOL} style={{ fill: SYMBOL_FILL, filter: SYMBOL_FILTER }} />
               <g ref={leftRef} style={{ fill: WORD_FILL }}>
