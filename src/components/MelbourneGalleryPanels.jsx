@@ -71,6 +71,7 @@ const IMG_BY_CITY = {
   perth: {
     "Wall Art": "/images/banksia/banksia-round-latest-1.jpg",
     Sculpture:  "/images/autumn-leaf/autumn-leaf-bali-2.jpg",
+    Screens:    "/images/screens/aslyiam-northbridge.jpg",
   },
 };
 const panelsFor = (city) =>
