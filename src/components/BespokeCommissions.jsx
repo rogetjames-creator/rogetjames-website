@@ -2845,18 +2845,22 @@ function ConceptsSlideshowModal({ onClose }) {
               ))}
             </div>
             <p className="font-heading font-semibold text-base text-cream/90 tracking-wide mt-3 flex-none">{current?.name}</p>
+
+            {/* The one control, centred under the picture. It sits in the
+                stage's column flow rather than floating, so the picture gives
+                up the height it needs instead of being covered by it. */}
+            <button
+              onClick={() => setPlaying(p => !p)}
+              className="flex-none mt-3 w-9 h-9 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors"
+              aria-label={playing ? "Pause slideshow" : "Play slideshow"}
+            >
+              {playing ? <Pause size={15} /> : <Play size={15} />}
+            </button>
           </div>
 
           {/* Thumbs — they light up, they don't take clicks */}
           <div className="flex-shrink-0 border-t border-white/10">
-            <div className="flex items-center gap-3 px-5 py-3">
-              <button
-                onClick={() => setPlaying(p => !p)}
-                className="flex-none w-9 h-9 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors"
-                aria-label={playing ? "Pause slideshow" : "Play slideshow"}
-              >
-                {playing ? <Pause size={15} /> : <Play size={15} />}
-              </button>
+            <div className="flex items-center px-5 py-3">
               <div ref={stripRef} className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
                 {slides.map((s, i) => {
                   const isActive = i === idx;
