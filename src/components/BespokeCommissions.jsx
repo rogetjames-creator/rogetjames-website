@@ -7,6 +7,7 @@ import CatPageViewer from "./CatPageViewer";
 import { MEDIA_KEYS, bespokeKey, projectKey } from "../mediaDestinations";
 import { SCREEN_DESIGNS } from "../data/screenDesigns";
 import { useUploadsByKey } from "../utils/mediaUploads";
+import { netlifyImg } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -2726,8 +2727,167 @@ export function ProjectsGalleryModal({ onClose }) {
   );
 }
 
+// ── Concepts — a slideshow you watch, not a gallery you click ─────────────
+// Concepts plays itself the way the hero does: the pictures advance on their
+// own and the thumb strip lights up to show where you are. Each picture is
+// contained rather than cropped, so a tall concept sketch is never cut off.
+// The only thing you can click is pause and play — clicking a picture or a
+// thumb does nothing, on purpose.
+//
+// The crossfade borrows the hero's trick of two layers with the incoming
+// picture decoded before the fade begins. A photo that arrives late holds the
+// previous frame instead of flashing an empty panel.
+const CONCEPTS_HOLD = 4200;  // ms each picture is held
+const CONCEPTS_FADE = 1.6;   // s crossfade, same as the hero
+
+function ConceptsSlideshowModal({ onClose }) {
+  const byKey = useUploadsByKey(CONCEPTS_MEDIA_KEYS, "Concepts");
+
+  // One entry per picture, hand-placed first and uploads after, duplicates out.
+  const slides = useMemo(() => {
+    const seen = new Set();
+    const out = [];
+    const add = (src, name) => { if (src && !seen.has(src)) { seen.add(src); out.push({ src, name }); } };
+    CONCEPTS_ITEMS.forEach(it => (it.slides || [it.img]).forEach(src => add(src, it.name)));
+    CONCEPTS_MEDIA_KEYS.forEach(k => (byKey[k] || []).forEach(u => add(u.img, u.name)));
+    return out;
+  }, [byKey]);
+
+  const count = slides.length;
+  const [idx, setIdx] = useState(0);
+  const [playing, setPlaying] = useState(true);
+  // Two layers that take it in turns; `active` says which one is showing.
+  const [active, setActive] = useState(0);
+  const [layerIdx, setLayerIdx] = useState([0, 0]);
+  const layerRefs = useRef([]);
+  const stripRef = useRef(null);
+  const activeThumbRef = useRef(null);
+
+  const big = (src) => netlifyImg(src, { w: 1600, q: 82 });
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === " " || e.code === "Space") { e.preventDefault(); setPlaying(p => !p); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  // Fetch the next picture while this one is showing, so decode() finds it
+  // already in cache and the crossfade doesn't stall.
+  useEffect(() => {
+    if (count < 2) return;
+    const img = new Image();
+    img.src = big(slides[(idx + 1) % count].src);
+  }, [idx, count, slides]);
+
+  // Advance: load the incoming layer, wait for it to decode, then fade.
+  useEffect(() => {
+    if (!playing || count < 2) return;
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const next = (idx + 1) % count;
+      const incoming = active === 0 ? 1 : 0;
+      setLayerIdx(prev => { const n = [...prev]; n[incoming] = next; return n; });
+      const el = layerRefs.current[incoming];
+      if (el) { try { await el.decode(); } catch { /* show it anyway */ } }
+      if (cancelled) return;
+      setIdx(next);
+      setActive(incoming);
+    }, CONCEPTS_HOLD);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [idx, active, playing, count]);
+
+  // Keep the lit thumb in view as the slideshow walks along the strip.
+  useEffect(() => {
+    activeThumbRef.current?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [idx]);
+
+  const current = slides[idx];
+
+  return (
+    <div className="fixed inset-0 z-[10000] bg-jet flex flex-col">
+      {/* Top bar — leaving is the only other thing you can do */}
+      <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
+        <button onClick={() => { onClose(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-heading font-bold text-sm tracking-widest text-cream flex-none">
+          ROGET<span className="font-light italic">james</span>
+          <span className="font-detail text-[9px] font-normal not-italic uppercase tracking-[0.2em] text-cream/50 ml-2">· Concepts</span>
+        </button>
+        <div className="flex-1" />
+        <button onClick={onClose} className="flex-none text-cream/40 hover:text-cream transition-colors" aria-label="Close"><X size={15} /></button>
+      </div>
+
+      {count === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="font-detail text-[11px] text-cream/30 uppercase tracking-widest">Nothing here yet</p>
+        </div>
+      ) : (
+        <>
+          {/* Stage */}
+          <div className="flex-1 relative min-h-0 flex flex-col items-center justify-center" style={{ padding: "16px 48px" }}>
+            <div className="relative w-full flex-1 min-h-0">
+              {[0, 1].map(layer => (
+                <img
+                  key={layer}
+                  ref={el => { layerRefs.current[layer] = el; }}
+                  src={big(slides[layerIdx[layer]]?.src ?? slides[0].src)}
+                  alt={slides[layerIdx[layer]]?.name ?? ""}
+                  style={{
+                    position: "absolute", inset: 0, margin: "auto",
+                    maxWidth: "100%", maxHeight: "100%",
+                    objectFit: "contain", borderRadius: 12,
+                    opacity: active === layer ? 1 : 0,
+                    transition: `opacity ${CONCEPTS_FADE}s linear`,
+                    willChange: "opacity", transform: "translateZ(0)", backfaceVisibility: "hidden",
+                  }}
+                />
+              ))}
+            </div>
+            <p className="font-heading font-semibold text-base text-cream/90 tracking-wide mt-3 flex-none">{current?.name}</p>
+          </div>
+
+          {/* Thumbs — they light up, they don't take clicks */}
+          <div className="flex-shrink-0 border-t border-white/10">
+            <div className="flex items-center gap-3 px-5 py-3">
+              <button
+                onClick={() => setPlaying(p => !p)}
+                className="flex-none w-9 h-9 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors"
+                aria-label={playing ? "Pause slideshow" : "Play slideshow"}
+              >
+                {playing ? <Pause size={15} /> : <Play size={15} />}
+              </button>
+              <div ref={stripRef} className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                {slides.map((s, i) => {
+                  const isActive = i === idx;
+                  return (
+                    <div
+                      key={s.src}
+                      ref={isActive ? activeThumbRef : null}
+                      aria-hidden="true"
+                      className="flex-shrink-0 rounded-lg overflow-hidden"
+                      style={{
+                        width: 52, height: 52, pointerEvents: "none",
+                        border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`,
+                        opacity: isActive ? 1 : 0.45,
+                        transition: "opacity 0.4s ease, border-color 0.4s ease",
+                      }}
+                    >
+                      <img src={netlifyImg(s.src, { w: 120, q: 70 })} alt="" role="presentation" loading="lazy" className="w-full h-full object-cover" />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ConceptsGalleryModal({ onClose }) {
-  return <SculptureGalleryModal onClose={onClose} items={CONCEPTS_ITEMS} label="Concepts" mediaKey={CONCEPTS_MEDIA_KEYS} />;
+  return <ConceptsSlideshowModal onClose={onClose} />;
 }
 
 // Concrete — the gallery is made entirely of James's uploads, so it starts
