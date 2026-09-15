@@ -468,7 +468,12 @@ a.dpill{display:inline-block;text-decoration:none}
   function addPill(text,targetEl,cls){
     if(!pillWrap) return null;
     const b=document.createElement('button'); b.type='button'; b.className='rpill'+(cls?(' '+cls):''); b.textContent=text;
-    b.addEventListener('click',()=>{ targetEl.scrollIntoView({behavior:'smooth',block:'start'}); });
+    b.addEventListener('click',()=>{
+      // Moving to a category or an application leaves no design selected — the
+      // design pill used to stay lit, so the page read as stuck on it.
+      if(window.__clearDesignPill) window.__clearDesignPill();
+      targetEl.scrollIntoView({behavior:'smooth',block:'start'});
+    });
     pillWrap.appendChild(b); return b;
   }
   rangeHandles.forEach(h=>{ if(!h.r._app) addPill(h.r.label,h.sec); });
@@ -505,6 +510,11 @@ a.dpill{display:inline-block;text-decoration:none}
           // A plain click NEVER leaves the gallery — the link is there for
           // Google and for opening the page deliberately in a new tab.
           e.preventDefault();
+          // Choosing an application means no single design is selected any
+          // more; the design pill used to stay lit and the page read as stuck.
+          if(window.__clearDesignPill) window.__clearDesignPill();
+          pills.querySelectorAll('.appx.active').forEach(x=>x.classList.remove('active'));
+          b.classList.add('active');
           const target=findTarget();
           if(target) landOn(target.sec);
         });
@@ -557,13 +567,23 @@ a.dpill{display:inline-block;text-decoration:none}
       // One pill per design, A–Z. A design that sits in several sections was
       // getting a pill for each — VIASI three times, WATTLE three times — and
       // in whatever order the sections happened to fall.
+      // Anything that moves you away from a single design calls this.
+      window.__clearDesignPill=()=>dpWrap.querySelectorAll('.dpill.active').forEach(x=>x.classList.remove('active'));
       const byName=new Map();
       rangeHandles.forEach((handle)=>{
         handle.r.designs.forEach((des,di)=>{
           if(des._upclose) return;
           if(!des.n) return;   // untitled pieces (Displays) get no pill
           const key=String(des.n).trim().toLowerCase();
-          if(!byName.has(key)) byName.set(key,{name:String(des.n).trim(),handle,di,des});
+          // A design in several sections had its pill bound to whichever section
+          // happened to come first. AUDA sits in The Indies with two photographs
+          // and under Dividers with one, so the pill could open the single-photo
+          // copy and look like the other had vanished. Bind to the copy that
+          // carries the most.
+          const prev=byName.get(key);
+          if(!prev || (des.imgs?des.imgs.length:0) > (prev.des.imgs?prev.des.imgs.length:0)){
+            byName.set(key,{name:String(des.n).trim(),handle,di,des});
+          }
         });
       });
       [...byName.values()]
