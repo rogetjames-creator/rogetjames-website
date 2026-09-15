@@ -14,9 +14,10 @@ const PERTH = {
   heroStretch: 1.12,   // slight horizontal stretch
   displayLine: "",
   intro: [
-    "Original laser-cut wall art, sculpture & architectural features — designed and made in Perth for Architects, Designers and discerning clients across Western Australia.",
-    "The studio is based in Perth, so every Corten steel and powdercoated aluminium piece is drawn, cut and finished here — made to suit WA's coastal light, limestone walls and contemporary builds, from Cottesloe courtyards to Swan Valley facades.",
-    "We work face-to-face with Perth homeowners, builders and designers from first concept through to installation, and deliver Australia-wide from the workshop.",
+    "Laser cut metal wall art, sculpture and bespoke commissions — designed and made in Perth, Western Australia for architects, builders and developers.",
+    "The studio works from Perth. Every piece is drawn, cut and finished here in Corten steel that weathers to a deep rust and holds it, or aluminium powdercoated to any colour — both chosen for what WA's coastal air and hard light do to a surface.",
+    "Work stands at Homebase Design Centre, at Frasers in Kings Park and at the Cottesloe Beach Hotel, with public sculpture at Fiona Stanley Hospital Sculpture Park and at Centennial Park.",
+    "Most of it is commissioned. An architect, a builder or a developer brings a wall, a void, a facade or an entry, and the piece is drawn to it — made for that place rather than chosen from a catalogue. We work to drawings and to program, from concept through to fixing on site, and deliver Australia-wide.",
   ],
   hero: "/images/hero/hero-marakesh-wide.jpg",
   // Hero pictures — they cross-fade, first to last and back round. Slide 1 is
@@ -36,8 +37,11 @@ const PERTH = {
     { src: "/images/hero/hero-vasuki.jpg",              title: "VASUKI — Sculpture",       detail: "Placeholder — replace with real Perth project" },
   ],
   services: [
-    "Wall Art", "Sculpture", "Screens", "Bespoke", "Art Projects", "Public Art",
+    "Metal Wall Art", "Sculpture", "Bespoke Commissions",
+    "Architectural Screens", "Public Art", "Facade & Entry Statements",
   ],
+  // The page talks to people who specify work, not to homeowners.
+  ctaHeading: "Specifying a piece for a Perth project?",
   // Perth suburbs first, then the WA towns James also delivers to — Geraldton,
   // Margaret River and Esperance are regional, not Perth.
   suburbs: [

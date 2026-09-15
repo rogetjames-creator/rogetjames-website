@@ -51,7 +51,7 @@ function SectionTitle({ children }) {
 export default function CityPage({ city }) {
   const {
     name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch,
-    suburbs = [], services = [],
+    suburbs = [], services = [], ctaHeading = null,
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
   // own set of panel pictures. Falls back to the city name.
@@ -254,7 +254,7 @@ export default function CityPage({ city }) {
       <section className="border-t border-cream/[0.07]">
         <div className="city-reveal max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 text-center">
           <h2 className="font-syne font-bold text-xl md:text-3xl text-cream/60 tracking-tight max-w-2xl mx-auto" style={HEADING_SHADOW}>
-            Planning a piece for a {name} home or project?
+            {ctaHeading || `Planning a piece for a ${name} home or project?`}
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
             <a

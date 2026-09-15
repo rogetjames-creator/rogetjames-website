@@ -52,7 +52,7 @@ const PANELS = [
   { name: "Sculpture",         img: "/images/autumn-leaf/autumn-leafs-wg.jpg",                                href: "https://rogetjames.com/sculpture" },
   { name: "Screens",           img: "/images/cdn-gallery/f940abcb-61e1-4097-8525-2be2df42c732_rw_1200.jpg",  href: "https://rogetjames.com/?open=screens" },
   { name: "Bespoke Sculpture", img: "/images/uploads/1785745463839_tie649.jpg",                              href: "https://rogetjames.com/?open=sculpture" },
-  { name: "Projects",          img: "/images/eros/eros-3.jpg",                                              href: "https://rogetjames.com/?open=projects" },
+  { name: "Projects",          img: "/images/eros/eros-3.jpg",                                              href: "https://rogetjames.com/#bespoke" },
   { name: "Concepts",          img: "/images/cdn-gallery/cdd20f14-69b8-4224-ab94-80bc4a4b42bf_rw_1200.jpg",  href: "https://rogetjames.com/?open=concepts" },
   { name: "Concrete",          img: null,                                                                     href: "https://rogetjames.com/#bespoke" },
 ];
