@@ -5,7 +5,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 import { useUploadsByKey } from "../utils/mediaUploads";
 import { MEDIA_KEYS } from "../mediaDestinations";
-import { REELS_PORTAL, useReelsPortal } from "../utils/reels";
 import { netlifyImg } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -74,7 +73,6 @@ const PORTALS = [
     slideScale: 0.92,
     popupType: "links",
   },
-  REELS_PORTAL,
 ];
 
 export function CommissionsGalleryPopup({ videos, onClose, title }) {
@@ -640,9 +638,6 @@ export default function DiscoverPortals() {
     return null;
   };
 
-  // Reels with any uploaded reels already merged in (shared with Bespoke).
-  const reelsPortal = useReelsPortal();
-
   return (
     <section id="discover-portals" className="bg-graphite overflow-x-hidden">
       <div ref={headerRef} className="px-8 pt-20 pb-10 text-center">
@@ -653,11 +648,10 @@ export default function DiscoverPortals() {
       <div className={`bg-matt-black py-[55px] ${isMobile ? "px-2" : "px-8"}`}>
         <div className={`flex justify-center ${isMobile ? "items-start gap-3" : "items-end gap-10 md:gap-20"}`}>
           {portals.map(portal => {
-            const p = portal.id === "reels" ? reelsPortal : portal;
             return (
               <MiniPortal
                 key={portal.id}
-                portal={p}
+                portal={portal}
                 size={isMobile ? Math.round((portal.size ?? 166) * 0.37) : (portal.size ?? 166)}
                 onOpen={getOnOpen(portal)}
                 hoverLabel="View"
