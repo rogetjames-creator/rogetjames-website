@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import {
   ART_SYMBOL, WORD_FILL, SYMBOL_FILL, SYMBOL_FILTER,
@@ -14,7 +14,6 @@ import {
 // turning — and every element is reached through a ref rather than a DOM id, so
 // the two marks can never animate each other.
 export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Sculpture" }) {
-  const [glowing, setGlowing] = useState(false);
   const leftRef = useRef(null);
   const rightRef = useRef(null);
 
@@ -68,17 +67,13 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
       <div style={{ position: "relative", display: "inline-block" }}>
         <button
           onClick={onOpen || undefined}
-          onMouseEnter={() => setGlowing(true)}
-          onMouseLeave={() => setGlowing(false)}
           className={`group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-clay focus-visible:ring-offset-2 focus-visible:ring-offset-black ${onOpen ? "cursor-pointer" : "cursor-default"}`}
           style={{
             borderRadius: "50%",
             padding: "9px",
             background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
-            boxShadow: glowing
-              ? "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)"
-              : "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(255,255,255,0.22)",
-            transition: "box-shadow 0.6s ease",
+            // The gold ring is not a hover state here — it stays lit.
+            boxShadow: "inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 4px #111, 0 0 0 6px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)",
           }}
           aria-label={label}
         >
@@ -121,13 +116,6 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
               </g>
             </svg>
 
-            {onOpen && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100 bg-black/60">
-                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: "11px" }}>
-                  {label}
-                </span>
-              </div>
-            )}
           </div>
         </button>
       </div>
