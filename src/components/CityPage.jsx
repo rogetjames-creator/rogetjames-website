@@ -138,7 +138,7 @@ export default function CityPage({ city }) {
           {slides.map((src, i) => (
             <img
               key={`${src}-${i}`}
-              src={netlifyImg(src, { w: 1600, q: 82 })}
+              src={netlifyImg(src, { w: 2200, q: 92 })}
               alt={`ROGETjames laser cut work in ${name}`}
               className="city-hero-slide absolute inset-0 w-full h-full object-contain"
               style={{ opacity: i === 0 ? 1 : 0 }}
@@ -147,7 +147,6 @@ export default function CityPage({ city }) {
             />
           ))}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-matt-black pointer-events-none" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-16 md:pb-24">
           <div className="max-w-4xl">
