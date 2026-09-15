@@ -395,7 +395,7 @@ function LinksPopup({ onClose }) {
   );
 }
 
-export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "11px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false, noDarkHover = false, goldHover = false, centerLabel = null }) {
+export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = null, hoverLabel = "View", hoverLabelSize = "13px", alwaysLabel = false, arcLabel = null, noGlow = false, ringOnly = false, locked = false, noDarkHover = false, centerLabel = null }) {
   const [cur, setCur] = useState(0);
   const [glowing, setGlowing] = useState(false);
   const [popOpen, setPopOpen] = useState(false);
@@ -492,12 +492,15 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               borderRadius: "50%",
               padding: `${framePad}px`,
               background: "linear-gradient(180deg, #6a6a6a 0%, #3a3a3a 28%, #1c1c1c 60%, #222222 100%)",
+              // Hover: the gold band is the standard for every portal. A
+              // portal still under construction gets the soft outer glow
+              // instead — lit, but without the gold that says "open me".
               boxShadow: (glowing && !noGlow)
-                ? goldHover
-                  ? `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)`
+                ? locked
+                  ? `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)`
                   : ringOnly
                     ? `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.55)`
-                    : `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.28), 0 0 45px 12px rgba(255,255,255,0.12), 0 0 80px 24px rgba(255,255,255,0.05)`
+                    : `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(158,113,52,0.85), 0 0 40px 10px rgba(158,113,52,0.22)`
                 : `inset 0 -4px 8px rgba(0,0,0,0.65), 0 6px 20px rgba(0,0,0,0.95), 0 0 0 ${ringInner}px #111, 0 0 0 ${ringOuter}px rgba(255,255,255,0.22)`,
               transition: "box-shadow 0.6s ease",
             }}
@@ -531,9 +534,9 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               {!hideLabel && (
                 <div className="absolute bottom-0 left-0 right-0 z-[15] pointer-events-none flex flex-col items-center"
                   style={{ paddingBottom: "10%", paddingTop: "22%", background: "linear-gradient(to top, rgba(0,0,0,0.68) 0%, transparent 100%)" }}>
-                  {portal.sublabel && <p className="font-detail text-cream/55 uppercase tracking-[0.18em]" style={{ fontSize: `${Math.max(6, size * 0.042)}px` }}>{portal.sublabel}</p>}
-                  <p className="font-heading font-bold text-cream/90" style={{ fontSize: `${Math.max(8, size * 0.065)}px` }}>{portal.label}</p>
-                  {locked && <p className="font-detail text-cream/50 uppercase tracking-[0.15em]" style={{ fontSize: `${Math.max(5.5, size * 0.038)}px`, marginTop: "2px" }}>Under Construction</p>}
+                  {portal.sublabel && <p className="font-detail text-cream/55 uppercase tracking-[0.18em]" style={{ fontSize: `${Math.max(7, size * 0.048)}px` }}>{portal.sublabel}</p>}
+                  <p className="font-heading font-bold text-cream/90" style={{ fontSize: `${Math.max(9, size * 0.074)}px` }}>{portal.label}</p>
+                  {locked && <p className="font-detail text-cream/50 uppercase tracking-[0.15em]" style={{ fontSize: `${Math.max(6.5, size * 0.044)}px`, marginTop: "2px" }}>Under Construction</p>}
                 </div>
               )}
               <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100${noDarkHover ? "" : " bg-black/60"}`}
@@ -549,7 +552,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
             const cx = size / 2;
             const cy = size / 2;
             const r = size / 2 - 10; // arc sits just inside the frame inner edge
-            const fs = Math.max(6.5, Math.min(9, size * 0.048));
+            const fs = Math.max(7.5, Math.min(10.5, size * 0.056));
             const ls = Math.max(1.8, size * 0.024);
             return (
               <svg

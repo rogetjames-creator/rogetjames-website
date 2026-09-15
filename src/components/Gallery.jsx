@@ -3335,8 +3335,8 @@ export default function Gallery() {
           <div className="flex flex-col items-center gap-10 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
             <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
             <Suspense fallback={null}>
-              <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
-              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => { window.location.assign("/screens"); }} />
+              <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" onOpen={() => { window.location.assign("/sculpture"); }} />
+              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" onOpen={() => { window.location.assign("/screens"); }} />
             </Suspense>
           </div>
 
@@ -3364,8 +3364,8 @@ export default function Gallery() {
           <div className="flex flex-col items-center gap-10 py-8">
             <ReelsPortal onOpen={() => { window.location.assign("/wall-art"); }} />
             <Suspense fallback={null}>
-              <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" goldHover onOpen={() => { window.location.assign("/sculpture"); }} />
-              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" goldHover onOpen={() => { window.location.assign("/screens"); }} />
+              <MiniPortal portal={SCULPTURE_PORTAL} size={186} arcLabel="Sculpture" hideLabel hoverLabel="Sculpture" onOpen={() => { window.location.assign("/sculpture"); }} />
+              <MiniPortal portal={SCREENS_PORTAL} size={186} arcLabel="Screens" hideLabel hoverLabel="Screens" onOpen={() => { window.location.assign("/screens"); }} />
             </Suspense>
           </div>
 
