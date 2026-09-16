@@ -125,8 +125,10 @@ export default function CityPage({ city }) {
       <header className="fixed top-0 inset-x-0 z-40">
         <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
           <Wordmark className="text-lg md:text-xl" />
-          <nav className="flex items-center gap-6 md:gap-9 font-detail text-[11px] uppercase tracking-[0.22em] text-cream/70">
-            <a href="https://rogetjames.com/#collection" className="hover:text-cream transition-colors hidden sm:inline">Collection</a>
+          {/* Every one of these leaves for the main site — this page is a way
+              in, so the way back has to be in reach on a phone too. */}
+          <nav className="flex items-center gap-4 sm:gap-6 md:gap-9 font-detail text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] text-cream/70">
+            <a href="https://rogetjames.com/#collection" className="hover:text-cream transition-colors">Collection</a>
             <a href="https://rogetjames.com/#bespoke" className="hover:text-cream transition-colors hidden sm:inline">Bespoke</a>
             <a href="https://rogetjames.com/#contact" className="hover:text-clay transition-colors">Contact</a>
           </nav>
