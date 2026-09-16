@@ -52,7 +52,7 @@ function SectionTitle({ children }) {
 export default function CityPage({ city }) {
   const {
     name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch,
-    suburbs = [], services = [], ctaHeading = null, closingMark = false,
+    suburbs = [], services = [], ctaHeading = null, closingMark = false, craftedIn = null,
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
   // own set of panel pictures. Falls back to the city name.
@@ -286,7 +286,9 @@ export default function CityPage({ city }) {
           <div className="flex flex-col items-center text-center mb-14">
             <Wordmark className="text-2xl" />
             <p className="text-cream/60 text-sm mt-4 max-w-md leading-relaxed">
-              Original bespoke laser-cut wall art, sculpture & architectural features, crafted in Perth, Western Australia.
+              {/* Work is built in the city the page is for — each city says its
+                  own name here, and can spell it out in full via craftedIn. */}
+              Original bespoke laser-cut wall art, sculpture &amp; architectural features, crafted in {craftedIn || name}.
             </p>
             <p className="font-detail text-xs text-cream/55 uppercase tracking-[0.15em] mt-6">
               <a href="tel:+61488878073" className="hover:text-clay transition-colors">+61 488 878 073</a>

@@ -44,6 +44,7 @@ const PERTH = {
   ctaHeading: "Specifying a piece for a Perth project?",
   // The spiel ends on the ART meets design mark, not the words.
   closingMark: true,
+  craftedIn: "Perth, Western Australia",
   // Perth suburbs first, then the WA towns James also delivers to — Geraldton,
   // Margaret River and Esperance are regional, not Perth.
   suburbs: [
