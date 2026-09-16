@@ -483,7 +483,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
         <p class="aqhint" id="aqhint">Choose a finish and a size to add to your quote.</p>
         <a class="toquote" id="toQuote" href="/#contact" hidden>Go to your quote &rarr;</a>
       </div>`}
-      <p class="gate">Pricing opens once you enter your postcode</p>
+      ${noPrice ? "" : `<p class="gate">Pricing opens once you enter your postcode</p>`}
     </div>
   </div>
 </div>
