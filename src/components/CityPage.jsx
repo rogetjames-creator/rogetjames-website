@@ -286,7 +286,11 @@ export default function CityPage({ city }) {
           <div className="flex flex-col items-center text-center mb-14">
             <Wordmark className="text-2xl" />
             <p className="text-cream/60 text-sm mt-4 max-w-md leading-relaxed">
-              Original bespoke laser-cut wall art, sculpture & architectural features, crafted in Australia and delivered to {name} & Australia-wide.
+              {/* The studio is in Perth, so on the Perth page the line simply
+                  says where the work is made; elsewhere it also names the city
+                  the work travels to. */}
+              Original bespoke laser-cut wall art, sculpture & architectural features, crafted in Perth, Western Australia
+              {name === "Perth" ? "." : ` and delivered to ${name} & Australia-wide.`}
             </p>
             <p className="font-detail text-xs text-cream/55 uppercase tracking-[0.15em] mt-6">
               <a href="tel:+61488878073" className="hover:text-clay transition-colors">+61 488 878 073</a>
