@@ -435,7 +435,7 @@ export default function Hero() {
             </g>
           </svg>
 
-          <p className="hero-sub font-body text-white text-base md:text-lg max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 2px rgba(0,0,0,0.7)" }}>
+          <p className="hero-sub font-body text-white text-[15px] md:text-[17px] max-w-lg mt-6 md:mt-8 leading-relaxed" style={{ opacity: 0, textShadow: "0 2px 2px rgba(0,0,0,0.7)" }}>
             Original laser-cut wall art, sculpture &amp; architectural features — curated catalogues and bespoke works. Crafted in Australia for residential, commercial, architectural and landscape spaces.
           </p>
         </div>
