@@ -547,4 +547,22 @@
       <image:title>HUE — bespoke laser cut Corten steel sculpture by ROGETjames</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://rogetjames.com/perth</loc>
+    <lastmod>2026-09-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/uploads/1787361851709_0oczui.jpg</image:loc>
+      <image:title>ROGETjames Corten steel sculpture at the Home Base entrance, Perth</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/banksia/banksia-round-latest-1.jpg</image:loc>
+      <image:title>BANKSIA (Round) — laser cut metal wall art, Perth</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/autumn-leaf/autumn-leaf-bali-2.jpg</image:loc>
+      <image:title>AUTUMN LEAF — Corten steel sculpture, Perth</image:title>
+    </image:image>
+  </url>
 </urlset>

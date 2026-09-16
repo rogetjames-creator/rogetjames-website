@@ -22,6 +22,7 @@ const PAGES = [
   { url: "/sculpture.html", file: "sculpture.html" },
   { url: "/screens.html", file: "screens.html" },
   { url: "/bespoke-sculpture.html", file: "bespoke-sculpture.html" },
+  { url: "/perth.html", file: "perth.html" },
 ];
 
 const MIME_TYPES = {

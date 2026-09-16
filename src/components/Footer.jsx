@@ -35,6 +35,7 @@ const NAV_COLS = [
       { label: "Process & Ordering", href: "#process" },
       { label: "Contact", href: "#contact" },
       { label: "Links", href: "#discover-portals", event: "open-discover-portal-links" },
+      { label: "Perth", href: "/perth" },
     ],
   },
 ];

@@ -52,7 +52,7 @@ function SectionTitle({ children }) {
 export default function CityPage({ city }) {
   const {
     name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch,
-    suburbs = [], services = [], ctaHeading = null, closingMark = false, craftedIn = null,
+    suburbs = [], services = [], ctaHeading = null, closingMark = false, craftedIn = null, headingText = null,
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
   // own set of panel pictures. Falls back to the city name.
@@ -155,6 +155,7 @@ export default function CityPage({ city }) {
               {name}, {region} · Australia-wide studio
             </p>
             <h1 className="flex flex-col">
+              {headingText && <span className="sr-only">{headingText}</span>}
               {heroMark ? (
                 <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
                   {heroMark}

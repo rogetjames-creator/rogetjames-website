@@ -1,10 +1,9 @@
 import { createRoot } from "react-dom/client";
-import CityPreview from "./components/CityPreview";
+import CityPage from "./components/CityPage";
 import "./index.css";
 
 // ── Perth page data ───────────────────────────────────────────
-// PLACEHOLDER copy + images — a working template. Replace with real
-// Perth detail. Perth is the home studio, so the copy leans "based here".
+// Live since 16 September 2026. Copy is James's own.
 const PERTH = {
   name: "Perth",
   region: "WA",
@@ -42,6 +41,7 @@ const PERTH = {
   ],
   // The page talks to people who specify work, not to homeowners.
   ctaHeading: "Specifying a piece for a Perth project?",
+  headingText: "Laser cut metal wall art and sculpture in Perth, Western Australia",
   // The spiel ends on the ART meets design mark, not the words.
   closingMark: true,
   craftedIn: "Perth, Western Australia",
@@ -55,6 +55,4 @@ const PERTH = {
   ],
 };
 
-createRoot(document.getElementById("perth-root")).render(
-  <CityPreview city={PERTH} label="Perth Page — Private Preview" slug="/perth" />
-);
+createRoot(document.getElementById("perth-root")).render(<CityPage city={PERTH} />);
