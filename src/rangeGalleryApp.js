@@ -89,7 +89,7 @@ a.dpill{display:inline-block;text-decoration:none}
 .about-wrap,.app-wrap{display:flex;justify-content:center;margin:0 0 12px}
 .about-wrap:empty,.app-wrap:empty{display:none}
 .about-panel{max-width:660px;margin:0 auto 16px;padding:0 18px;font-family:var(--font-detail,inherit);font-size:14.5px;line-height:1.8;color:rgba(237,232,223,.78);text-align:center}
-.about-panel.collapsed{display:none}
+.about-panel .about-title{font-family:var(--font-heading,inherit);font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#9e7134;margin:0 0 10px}
 .apppills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:720px;margin:-2px auto 14px;padding:0 12px}
 .apppills.collapsed{display:none}
 .appx{cursor:default}
