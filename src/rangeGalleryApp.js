@@ -167,11 +167,11 @@ a.dpill{display:inline-block;text-decoration:none}
   </div>
   <div class="intro-bot">
     <div class="about-wrap" id="aboutWrap"></div>
-    <div class="about-panel collapsed" id="aboutPanel"></div>
+    <div class="about-panel" id="aboutPanel"></div>
     <div class="story-wrap" id="storyWrap"></div>
     <div class="rangepills" id="rangePills"></div>
     <div class="app-wrap" id="appWrap"></div>
-    <div class="apppills collapsed" id="appPills"></div>
+    <div class="apppills" id="appPills"></div>
     <div class="dtoggle-wrap" id="dtoggleWrap"></div>
     <div class="designpills collapsed" id="designPills"></div>
     <p class="rangecount">${TOTAL} ranges${!pricing ? ` &middot; ${DESIGN_TOTAL} designs` : ""} &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
@@ -478,16 +478,10 @@ a.dpill{display:inline-block;text-decoration:none}
   }
   rangeHandles.forEach(h=>{ if(!h.r._app) addPill(h.r.label,h.sec); });
 
-  // Screens: "About" panel above the categories — a toggle pill that opens a spiel.
+  // Screens: the About spiel sits open above the categories — no button.
   if(aboutHtml){
-    const panel=document.getElementById('aboutPanel'), wrap=document.getElementById('aboutWrap');
-    if(panel&&wrap){
-      panel.innerHTML=aboutHtml;
-      const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';
-      const sync=()=>{ t.textContent='About '+(panel.classList.contains('collapsed')?'▾':'▴'); };
-      sync(); t.addEventListener('click',()=>{ panel.classList.toggle('collapsed'); sync(); });
-      wrap.appendChild(t);
-    }
+    const panel=document.getElementById('aboutPanel');
+    if(panel) panel.innerHTML=aboutHtml;
   }
   // Screens: "Applications" pill row below the categories — opens the ways a design is used.
   if(applications && applications.length){
@@ -521,10 +515,6 @@ a.dpill{display:inline-block;text-decoration:none}
         if(!href && !findTarget()){ b.classList.add('empty'); b.disabled=true; }
         pills.appendChild(b);
       });
-      const t=document.createElement('button'); t.type='button'; t.className='rpill dtoggle';
-      const sync=()=>{ t.textContent='Applications '+(pills.classList.contains('collapsed')?'▾':'▴'); };
-      sync(); t.addEventListener('click',()=>{ pills.classList.toggle('collapsed'); sync(); });
-      wrap.appendChild(t);
     }
   }
   // Screens: "The Art of Shadows & Light" story — a pill that lives inside the About
