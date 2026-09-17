@@ -510,7 +510,7 @@ export function CommissionsSection() {
             }}
           >
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
-            {IS_DEV && <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" onOpen={openProjectsPage} />}
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
             {/* Sculpture holds the middle of the row and stands a size above the
                 rest, so the eye lands on it first. */}
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={200} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />

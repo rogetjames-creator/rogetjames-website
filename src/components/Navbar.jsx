@@ -12,8 +12,8 @@ const ClientPreview = lazy(() => import("./ClientPreview"));
 
 // The Bespoke menu mirrors the portals in the Bespoke section exactly.
 // Screens, Sculpture, Concepts, Reels and Concrete are open to everyone.
-// Projects is not ready, and like its portal it is not shown to the public at
-// all rather than shown wearing a padlock — James sees it via ?preview=roj-open.
+// Projects is not ready: the public sees it, dimmed with a padlock, and it
+// opens nothing. James opens it via ?preview=roj-open.
 const OWNER_ONLY_BESPOKE = ["projects"];
 const bespokeOwnerOnlyOK = import.meta.env.DEV || ownerPreviewUnlocked();
 const BESPOKE_MENU = [
@@ -252,7 +252,8 @@ export default function Navbar({ quoteCount = 0 }) {
               {bespokeOpen && (
                 <div className="absolute top-full left-0 pt-2 min-w-[150px]">
                   <div className="py-1.5 rounded-xl overflow-hidden" style={DROPDOWN_PANEL}>
-                  {BESPOKE_MENU.filter(({ cat }) => bespokeOwnerOnlyOK || !OWNER_ONLY_BESPOKE.includes(cat)).map(({ label, cat, href }) => {
+                  {BESPOKE_MENU.map(({ label, cat, href }) => {
+                    const locked = !bespokeOwnerOnlyOK && OWNER_ONLY_BESPOKE.includes(cat);
                     if (href) {
                       return (
                         <a key={cat} href={href}
@@ -262,9 +263,11 @@ export default function Navbar({ quoteCount = 0 }) {
                       );
                     }
                     return (
-                      <button key={cat} onClick={() => openBespokeCat(cat)}
-                        className="w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 flex items-center gap-1.5 text-cream hover:text-white">
+                      <button key={cat} onClick={() => { if (!locked) openBespokeCat(cat); }}
+                        title={locked ? "Under Construction" : undefined}
+                        className={`w-full text-left px-4 py-1.5 text-sm font-medium transition-colors duration-200 flex items-center gap-1.5 ${locked ? "text-cream/40 cursor-default" : "text-cream hover:text-white"}`}>
                         {label}
+                        {locked && <Lock size={9} className="text-cream/35" />}
                       </button>
                     );
                   })}
@@ -368,7 +371,8 @@ export default function Navbar({ quoteCount = 0 }) {
           <div className="mobile-link flex flex-col items-center gap-2">
             <span className="text-cream/40 text-xs uppercase tracking-[0.2em] font-detail">Bespoke</span>
             <div className="flex flex-wrap justify-center gap-5">
-              {BESPOKE_MENU.filter(({ cat }) => bespokeOwnerOnlyOK || !OWNER_ONLY_BESPOKE.includes(cat)).map(({ label, cat, href }) => {
+              {BESPOKE_MENU.map(({ label, cat, href }) => {
+                    const locked = !bespokeOwnerOnlyOK && OWNER_ONLY_BESPOKE.includes(cat);
                 if (href) {
                   return (
                     <a key={cat} href={href} className="text-lg font-heading font-medium lift-hover flex items-center gap-1.5 text-cream">
@@ -377,9 +381,10 @@ export default function Navbar({ quoteCount = 0 }) {
                   );
                 }
                 return (
-                  <button key={cat} onClick={() => { closeMenu(); window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
-                    className="text-lg font-heading font-medium lift-hover flex items-center gap-1.5 text-cream">
+                  <button key={cat} onClick={() => { closeMenu(); if (!locked) window.dispatchEvent(new CustomEvent("open-bespoke-category", { detail: cat })); setTimeout(() => { const el = document.querySelector("#bespoke"); if (el) lenis ? lenis.scrollTo(el, { duration: 2, easing: t => 1 - Math.pow(1 - t, 4) }) : el.scrollIntoView({ behavior: "smooth" }); }, 50); }}
+                    className={`text-lg font-heading font-medium lift-hover flex items-center gap-1.5 ${locked ? "text-cream/40" : "text-cream"}`}>
                     {label}
+                    {locked && <Lock size={11} className="text-cream/35" />}
                   </button>
                 );
               })}
