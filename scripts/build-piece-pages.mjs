@@ -25,6 +25,7 @@ import { RANGE_DATA } from "../src/data/rangeData.js";
 import { SCULPTURE_DATA } from "../src/data/sculptureData.js";
 import { PIECE_SIZES, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES, BOTH_FINISH_RANGES } from "../src/data/pricing.js";
 import { PIECE_SEO, RANGE_SUBJECT, HIDDEN_PIECES, BRAND_SPIEL, WALL_ART_SPIEL, SUBJECT_SPIEL, MATERIAL_COPY, INSTALL_TIPS, BOTANY, TITLE_FONT, FULL_TITLE_IN_FACE, FONT_KIT, RANGE_SPIEL, RANGE_BOTANY, RANGE_TITLE, TITLE_OVERRIDE, RANGE_FACE, PIECE_FACE, DEFAULT_FACE } from "../src/data/pieceSeo.js";
+import { PRICING_ON } from "../src/utils/pricingMode.js";
 import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { pieceSlug } from "../src/utils/pieceSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
@@ -139,6 +140,9 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const sizes = sizesFor(name);
   // Ranges the galleries price, and the finishes each gallery offers.
   const noPrice = NO_PRICE_RANGES.includes(range.label) || !!design.noPrice || !sizes.length;
+  // Prices are switched off site-wide for now (src/utils/pricingMode.js). The
+  // quote box stays; only the prices, the postcode and their wording go.
+  const priced = !noPrice && PRICING_ON;
   const cortenOnly = base === "/sculpture" && !BOTH_FINISH_RANGES.includes(range.label);
   const ratio = imageRatio(photos[0]) || 1;
   const biggest = sizes.length ? sizes[sizes.length - 1].dims : "";
@@ -463,27 +467,27 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
       </div>` : `<div class="block sizes-block"><h2>Sizes</h2><table><tr><td>Customised</td><td>On request</td><td></td></tr></table></div>`}
 
       <div class="cta cta-price">
-        ${noPrice ? "" : `<button class="btn solid" id="seePricing" type="button">See pricing</button>`}
+        ${priced ? `<button class="btn solid" id="seePricing" type="button">See pricing</button>` : ""}
       </div>
       ${noPrice ? "" : `
-      <div class="pricing" id="pricing" hidden>
-        <p class="plab">Pricing</p>
-        <p class="phint" id="phint">Choose a finish, then enter your postcode to see pricing for your area.</p>
+      <div class="pricing" id="pricing"${priced ? " hidden" : ""}>
+        <p class="plab">${priced ? "Pricing" : "Your quote"}</p>
+        <p class="phint" id="phint">${priced ? "Choose a finish, then enter your postcode to see pricing for your area." : "Choose a finish and a size."}</p>
         <div class="finishes" id="finishes">
           ${cortenOnly ? "" : `<button class="chip" type="button" data-fin="Aluminium — Powder Coated">Aluminium — Powder Coated</button>`}
           <button class="chip" type="button" data-fin="Natural Corten Steel">Natural Corten Steel</button>
         </div>
-        <form id="pcForm" autocomplete="off">
+        ${priced ? `<form id="pcForm" autocomplete="off">
           <input id="pcIn" inputmode="numeric" maxlength="4" placeholder="Postcode" aria-label="Postcode" />
           <button class="go" type="submit">Show pricing</button>
-        </form>
+        </form>` : ""}
         <p class="perr" id="perr"></p>
         <p class="pnote" id="pnote" hidden>Prices are shown against each size above. Fixings &amp; freight to be confirmed.</p>
         <button class="addq" id="addQ" type="button" disabled>Add to quote</button>
         <p class="aqhint" id="aqhint">Choose a finish and a size to add to your quote.</p>
         <a class="toquote" id="toQuote" href="/#contact" hidden>Go to your quote &rarr;</a>
       </div>`}
-      ${noPrice ? "" : `<p class="gate">Pricing opens once you enter your postcode</p>`}
+      ${priced ? `<p class="gate">Pricing opens once you enter your postcode</p>` : ""}
     </div>
   </div>
 </div>
@@ -529,7 +533,9 @@ ${noPrice ? "" : `<script>
   var region = function(){ return (info && (NAMES[info.state] || info.state)) || "Australia"; };
   var locked = function(){ return !!(info && info.postcode); };
 
+  var PRICED = ${priced ? "true" : "false"};
   function paint(){
+    if (!PRICED) { cells.forEach(function(c){ c.textContent = ""; }); note.hidden = true; return; }
     if (!locked() || !finish) { cells.forEach(function(c){ c.textContent = ""; }); note.hidden = true; return; }
     cells.forEach(function(c){
       var row = SIZES[+c.dataset.i] || {};
@@ -542,6 +548,7 @@ ${noPrice ? "" : `<script>
   function setHint(){
     var one = chips.length === 1;
     hint.hidden = false;
+    if (!PRICED) { hint.textContent = one ? "Choose a size." : "Choose a finish and a size."; return; }
     if (locked()) {
       // The postcode is already known — never announce a state back at anyone.
       // The work is made for the whole country.
@@ -572,7 +579,7 @@ ${noPrice ? "" : `<script>
       if (typeof addState === "function") addState();
     });
   });
-  form.addEventListener("submit", function(e){
+  if (form) form.addEventListener("submit", function(e){
     e.preventDefault();
     if (!finish) { errE.textContent = "Select a finish first."; return; }
     var v = (input.value || "").trim();
@@ -596,7 +603,7 @@ ${noPrice ? "" : `<script>
     tr.addEventListener("click", function(){
       size = +tr.dataset.i;
       rows.forEach(function(x){ x.classList.toggle("sel", x === tr); });
-      if (box.hidden) { box.hidden = false; setHint(); paint(); }
+      if (box && box.hidden) { box.hidden = false; setHint(); paint(); }
       addState();
     });
   });

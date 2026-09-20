@@ -4,6 +4,7 @@ import { WALL_ART_COVERS, DetailCard, pieceAlt } from "./Gallery";
 import { loadBasket, saveBasket } from "../utils/quoteBasket";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { PRICING_ON } from "../utils/pricingMode";
 
 // The live public Wall Art gallery at /wall-art. Linked from the
 // nav/footer/homepage Collection. Reads the same live Up Close / media data
@@ -732,7 +733,7 @@ function Gallery() {
 
       <div className="fw-bottomrow">
         <button className="fw-infopill" onClick={() => setExpanded(true)}>
-          Design · Info · Prices
+          {PRICING_ON ? "Design · Info · Prices" : "Design · Info"}
         </button>
         {pieces.length > 1 && (
           <div className="fw-subrail" ref={subrailRef} key={c.id}>
@@ -788,7 +789,7 @@ function Gallery() {
                   className="fw-expand-details"
                   onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
                 >
-                  Info · Prices
+                  {PRICING_ON ? "Info · Prices" : "Info"}
                 </button>
               )}
             </div>

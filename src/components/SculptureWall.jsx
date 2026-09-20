@@ -5,6 +5,7 @@ import { MEDIA_KEYS } from "../mediaDestinations";
 import { loadBasket, saveBasket } from "../utils/quoteBasket";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { PRICING_ON } from "../utils/pricingMode";
 
 // Sculpture catalogue page scans (mirrors Gallery.jsx SCULPTURE_CAT_PAGES) —
 // opened in-page by the "Sculpture Catalogue" pill so it never bounces to the
@@ -676,7 +677,7 @@ function Gallery() {
 
       <div className="fw-bottomrow">
         <button className="fw-infopill" onClick={() => setExpanded(true)}>
-          Design · Info · Prices
+          {PRICING_ON ? "Design · Info · Prices" : "Design · Info"}
         </button>
         {pieces.length > 1 && (
           <div className="fw-subrail" ref={subrailRef} key={c.id}>
@@ -731,7 +732,7 @@ function Gallery() {
                 className="fw-expand-details"
                 onClick={() => { setExpanded(false); setDetailItem(activePiece); }}
               >
-                Info · Prices
+                {PRICING_ON ? "Info · Prices" : "Info"}
               </button>
             )}
           </div>

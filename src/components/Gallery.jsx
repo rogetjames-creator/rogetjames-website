@@ -5,6 +5,7 @@ import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
 import { loadPostcode, savePostcode } from "../utils/postcode";
+import { PRICING_ON } from "../utils/pricingMode";
 import { altForSrc } from "../utils/imgAlt";
 import { checkWA, getState, STATE_NAMES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, PIECE_SIZES } from "../data/pricing";
 import { netlifyImg } from "../utils/img";
@@ -997,12 +998,14 @@ export function DetailCard({ item, seriesLabel, onClose, postcodeInfo, onSetPost
             </div>
           )}
 
-          <button
-            onClick={handleSeePricing}
-            className="mt-1 px-5 py-1.5 rounded-full bg-black/60 border border-white/20 text-cream/90 font-detail text-[10px] uppercase tracking-[0.2em] hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200"
-          >
-            Pricing
-          </button>
+          {PRICING_ON && (
+            <button
+              onClick={handleSeePricing}
+              className="mt-1 px-5 py-1.5 rounded-full bg-black/60 border border-white/20 text-cream/90 font-detail text-[10px] uppercase tracking-[0.2em] hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200"
+            >
+              Pricing
+            </button>
+          )}
         </div>
       </div>
 
@@ -1159,15 +1162,17 @@ function Lightbox({ items, index, onClose, onPrev, onNext, postcodeInfo, onSetPo
                 details
               </button>
             )}
-            <button
-              onClick={() => {
-                if (!pcKnown) setShowPostcodeModal(true);
-                else setShowPricingPopup(true);
-              }}
-              className="px-5 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/90 font-detail text-[10px] uppercase tracking-[0.2em] hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
-            >
-              Pricing
-            </button>
+            {PRICING_ON && (
+              <button
+                onClick={() => {
+                  if (!pcKnown) setShowPostcodeModal(true);
+                  else setShowPricingPopup(true);
+                }}
+                className="px-5 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-cream/90 font-detail text-[10px] uppercase tracking-[0.2em] hover:bg-clay hover:border-clay hover:text-cream transition-all duration-200 whitespace-nowrap"
+              >
+                Pricing
+              </button>
+            )}
           </div>
           {slides.length > 1 && (
             <div className="flex gap-2 mt-0.5">
@@ -2750,9 +2755,72 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                     <span className="font-detail text-sm" style={{ color: "rgba(242,240,233,0.85)" }}>Corten / Rusting Steel</span>
                   </div>
                 </div>
-                {/* Pricing */}
+                {/* Pricing — off while PRICING_ON is false; the quote stays. */}
                 <div className="border-t pt-4" style={{ borderColor: "rgba(242,240,233,0.12)" }}>
-                  {!showPricing ? (
+                  {!PRICING_ON ? (
+                    <div className="flex flex-col gap-2">
+                      {/* Finish */}
+                      <div className="flex gap-2">
+                        {["aluminium", "corten"].filter(m => !item.materials || item.materials.includes(m)).map(m => (
+                          <button key={m} onClick={() => setSelectedMat(m)}
+                            className="flex-1 py-1.5 rounded-lg font-detail text-[9px] uppercase tracking-wider transition-all"
+                            style={{ background: selectedMat === m ? "rgba(255,220,50,0.15)" : "transparent", border: `1px solid ${selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.15)"}`, color: selectedMat === m ? "#ffd700" : "rgba(242,240,233,0.75)" }}>
+                            {m === "aluminium" ? "Powder Coated" : "Corten"}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Size — no prices */}
+                      {sizes.map(t => {
+                        const isSelected = selectedSize?.id === t.id;
+                        return (
+                          <button key={t.id} onClick={() => setSelectedSize(t)}
+                            className="w-full flex justify-between items-center px-3 py-2 rounded-lg transition-all duration-150"
+                            style={{ background: isSelected ? "rgba(158,113,52,0.15)" : "transparent", border: `1px solid ${isSelected ? "#9e7134" : "rgba(242,240,233,0.1)"}`, cursor: "pointer" }}>
+                            <span className="font-detail text-xs text-left" style={{ color: isSelected ? "#f2f0e9" : "rgba(242,240,233,0.7)" }}>{t.label !== "Standard" ? t.label : t.dims}</span>
+                            <span className="font-detail text-[11px]" style={{ color: isSelected ? "rgba(242,240,233,0.7)" : "rgba(242,240,233,0.45)" }}>{t.label !== "Standard" ? t.dims : ""}</span>
+                          </button>
+                        );
+                      })}
+                      {!selectedSize && sizes.length > 0 && (
+                        <p className="font-detail text-xs" style={{ color: "rgba(242,240,233,0.4)" }}>Select a size above</p>
+                      )}
+                      {item && (() => {
+                        const canAdd = sizes.length === 0 || !!selectedSize;
+                        return (
+                          <button
+                            onClick={() => {
+                              if (!canAdd) return;
+                              window.dispatchEvent(new CustomEvent("quote-add", { detail: {
+                                name: item.name,
+                                img: displayImg,
+                                material: MATERIAL_OPTIONS.find(m => m.id === selectedMat),
+                                size: selectedSize,
+                                price: null,
+                              }}));
+                              if (!postcodeInfo?.isAdmin) {
+                                trackEvent({
+                                  type: "add_to_quote",
+                                  item: item.name,
+                                  series: series?.label,
+                                  material: selectedMat,
+                                  size: selectedSize?.label !== "Standard" ? selectedSize?.label : selectedSize?.dims,
+                                  price: null,
+                                });
+                              }
+                            }}
+                            className="w-full py-2.5 rounded-xl font-detail text-[10px] uppercase tracking-[0.2em] transition-all duration-200 mt-1"
+                            style={{
+                              background: canAdd ? "rgba(158,113,52,0.15)" : "rgba(242,240,233,0.04)",
+                              border: `1px solid ${canAdd ? "rgba(158,113,52,0.4)" : "rgba(242,240,233,0.1)"}`,
+                              color: canAdd ? "#9e7134" : "rgba(242,240,233,0.25)",
+                              cursor: canAdd ? "pointer" : "default",
+                            }}>
+                            Add to Quote
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  ) : !showPricing ? (
                     <button onClick={() => {
                       setShowPricing(true);
                       if (!postcodeInfo?.isAdmin) trackEvent({ type: "view_pricing", item: item.name, series: series?.label });

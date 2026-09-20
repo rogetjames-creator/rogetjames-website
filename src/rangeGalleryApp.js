@@ -10,6 +10,7 @@ import { RANGE_CSS } from "./components/rangeGalleryStyles";
 import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState, STATE_NAMES } from "./data/pricing";
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
+import { PRICING_ON } from "./utils/pricingMode";
 import { rangeSlug } from "./utils/rangeSlug";
 import { altForPiece, altForSrc } from "./utils/imgAlt";
 
@@ -174,7 +175,7 @@ a.dpill{display:inline-block;text-decoration:none}
     <div class="apppills" id="appPills"></div>
     <div class="dtoggle-wrap" id="dtoggleWrap"></div>
     <div class="designpills collapsed" id="designPills"></div>
-    <p class="rangecount">${TOTAL} ranges${!pricing ? ` &middot; ${DESIGN_TOTAL} designs` : ""} &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? "for details &amp; prices" : "to view"}</p>
+    <p class="rangecount">${TOTAL} ranges${!pricing ? ` &middot; ${DESIGN_TOTAL} designs` : ""} &middot; scroll to browse &middot; hover to preview &middot; tap ${pricing ? (PRICING_ON ? "for details &amp; prices" : "for details") : "to view"}</p>
     <div class="chev">&#8964;</div>
   </div>
 </section>
@@ -203,13 +204,13 @@ a.dpill{display:inline-block;text-decoration:none}
         <div class="sh-sizes" id="ovSizes"></div>
       </div>
       <div class="gate">
-        <p class="glab">Pricing</p>
-        <p class="ghint" id="ghint">Choose a finish and enter your postcode to see pricing for your location.</p>
+        <p class="glab">${PRICING_ON ? 'Pricing' : 'Finish'}</p>
+        <p class="ghint" id="ghint">${PRICING_ON ? 'Choose a finish and enter your postcode to see pricing for your location.' : 'Choose a finish for your quote.'}</p>
         <div class="sh-opts gfin" id="ovFinish">
           ${cortenOnly ? '' : '<button class="sh-chip" data-fin="Aluminium — Powder Coated">Aluminium — Powder Coated</button>'}
           <button class="sh-chip" data-fin="Natural Corten Steel">Natural Corten Steel</button>
         </div>
-        <form id="gateForm">
+        ${!PRICING_ON ? '' : `<form id="gateForm">
           <input id="pc" inputmode="numeric" maxlength="4" placeholder="Postcode" aria-label="Postcode" autocomplete="off">
           <button class="go" type="submit">Show pricing</button>
         </form>
@@ -218,7 +219,7 @@ a.dpill{display:inline-block;text-decoration:none}
           <p class="pregion" id="pregion"></p>
           <div id="prows"></div>
           <p class="pnote">Prices for your area. Fixings &amp; freight to be confirmed.</p>
-        </div>
+        </div>`}
       </div>
       <div class="sh-block sh-actions">
         <button class="addq" id="addQ" disabled>Add to quote</button>
@@ -323,7 +324,7 @@ a.dpill{display:inline-block;text-decoration:none}
       ${descriptions && descriptions[r.label] ? `<p class="p-desc">${descriptions[r.label]}</p>` : ''}
       <div class="stage"><img alt=""></div>
       <div class="capline"><span class="dname"></span>${basePath
-        ? `<a class="detail-btn" href="${basePath}">${(pricing && !isNoPriceRange(r.label)) ? "Details &amp; prices" : (viewLabel || "View")} &rarr;</a>`
+        ? `<a class="detail-btn" href="${basePath}">${(pricing && !isNoPriceRange(r.label)) ? (PRICING_ON ? "Details &amp; prices" : "Details") : (viewLabel || "View")} &rarr;</a>`
         : `<button class="detail-btn" type="button">${viewLabel || "View"} &rarr;</button>`}</div>
       <div class="thumbs-wrap"><div class="thumbs"></div></div>`;
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
@@ -368,7 +369,7 @@ a.dpill{display:inline-block;text-decoration:none}
         // No page written for this one — there is nothing to show but a
         // conversation, so say so rather than "View".
         const noPage=basePath && des.n && PAGES && !hasPage(r.label,des.n);
-        detailBtn.innerHTML=(noPage?'Enquire':(pricing?(viewOnly?(viewLabel||'View'):'Details &amp; prices'):(viewLabel||'View')))+' &rarr;';
+        detailBtn.innerHTML=(noPage?'Enquire':(pricing?(viewOnly?(viewLabel||'View'):(PRICING_ON?'Details &amp; prices':'Details')):(viewLabel||'View')))+' &rarr;';
         // A real address, not a click handler — a search engine follows links,
         // it cannot press buttons. Every design page was invisible to Google
         // because this was a <button>.
@@ -667,6 +668,7 @@ a.dpill{display:inline-block;text-decoration:none}
     row.querySelectorAll('.sh-chip').forEach(el=>el.classList.toggle('sel',on.has(el.dataset.app)));
   }
   function renderPrices(){
+    if(!PRICING_ON || !pout) return;
     if(!pcLocked() || !selFinish){ pout.style.display='none'; return; }
     const isWA=postcodeInfo.isWA, mid=matId();
     pregion.textContent = regionOf(postcodeInfo) + ' — ' + selFinish;
@@ -685,7 +687,7 @@ a.dpill{display:inline-block;text-decoration:none}
   ovFinish.querySelectorAll('.sh-chip').forEach(c=>c.addEventListener('click',()=>{
     selFinish=c.dataset.fin;
     ovFinish.querySelectorAll('.sh-chip').forEach(x=>x.classList.toggle('sel',x===c));
-    gerr.textContent=''; updateAddState();
+    if(gerr) gerr.textContent=''; updateAddState();
     renderPrices();
   }));
   ovSizes.addEventListener('click',(e)=>{
@@ -695,6 +697,7 @@ a.dpill{display:inline-block;text-decoration:none}
     updateAddState();
   });
   function gateSetup(){
+    if(!PRICING_ON || !pout) return;
     pout.style.display='none'; gerr.textContent='';
     if(pcLocked()){
       gateForm.style.display='none';
@@ -784,7 +787,7 @@ a.dpill{display:inline-block;text-decoration:none}
   document.getElementById('ovClose').addEventListener('click',closeDetail);
   ov.addEventListener('click',e=>{ if(e.target===ov) closeDetail(); });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeDetail(); closeQuote(); closeCat(); menu.classList.remove('open'); menuBtn.classList.remove('open'); } });
-  gateForm.addEventListener('submit',e=>{
+  if(gateForm) gateForm.addEventListener('submit',e=>{
     e.preventDefault();
     if(!selFinish){ gerr.textContent='Select a finish first.'; return; }
     const v=(pc.value||'').trim();
