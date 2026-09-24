@@ -63,17 +63,17 @@ const SEARCH_INDEX = [
   { name: "REEDS of UNGARO",     category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/b03ec13b-fba3-432f-9723-3f646b508054_rw_1920.jpg` },
   { name: "EQUISETTI",           category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/453b1942-6be0-4365-b111-0affe46a048e_rw_1920.jpg` },
   { name: "URCHIN",              category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/4abdd8f3-44a5-4a24-b6cb-ccdb233b297e_rw_1920.jpeg` },
-  { name: "HOMEBASE Fire Pit",   category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
+  { name: "Fire pit — Homebase Design Centre, Subiaco, Perth WA",   category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
   { name: "YAZAD Fire",          category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/a9ffceab-afdf-47d9-8ba1-53687b469ec4_rw_1200.jpg` },
   { name: "TOTEMS",              category: "Fire & Light", section: "#collection", tab: "wall-art", img: `${CDN}/181230d9-006a-4785-b75b-2a7b4da421fe_rw_1920.jpeg` },
 
   { name: "Sculpture",           category: "Wall Art", section: "#collection", tab: "wall-art", img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
   { name: "ORIAN Totem",         category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
   { name: "DANDELIONS Totems",   category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
-  { name: "HOMEBASE",            category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg` },
+  { name: "Homebase Design Centre, Subiaco, Perth WA",            category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg` },
   { name: "HUE",                 category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/7975db43-6e77-4a2d-8b33-6cdf7218ad48_rw_1920.jpg` },
-  { name: "Centennial Park",     category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
-  { name: "Fiona Stanley",       category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg` },
+  { name: "UNITY IN DIVERSITY — Centennial Park WA", category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/b32ea229-d756-4e86-9f8e-ddd64ab25e66_rw_1200.jpg` },
+  { name: "BALGA MIA MIA — Fiona Stanley Hospital Sculpture Park", category: "Sculpture", section: "#collection", tab: "wall-art", img: `${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg` },
 
   // ── Other categories ─────────────────────────────────────────────────
   { name: "Sculpture Gallery",   category: "Collection", section: "#collection", tab: "sculpture", img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },

@@ -18,7 +18,7 @@ const CDN = import.meta.env.DEV ? "/images/cdn-gallery" : "/.netlify/images?url=
 export const PROJECTS = [
   {
     slug: "homebase",
-    name: "HOMEBASE",
+    name: "Homebase Design Centre, Subiaco, Perth WA",
     // The key /media uploads are tagged with, so photos James adds to this
     // project appear in its gallery without a code change.
     projectCategory: "homebase",
@@ -47,12 +47,12 @@ export const PROJECTS = [
       ["Location", "Subiaco, Western Australia"],
     ],
     images: [
-      { name: "HOMEBASE Entrance", img: "/images/hero/hero-homebase-entrance.jpg" },
-      { name: "HOMEBASE", img: `${CDN}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg` },
-      { name: "Homebase Motif", img: "/images/homebase/homebase-motif-closeup.jpg" },
-      { name: "Homebase Landscape Design", img: "/images/hero/hero-homebase-dusk.jpg" },
-      { name: "HOMEBASE Totems", img: "/images/hero/hero-homebase-totems.jpg" },
-      { name: "HOMEBASE Fire Pit", img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
+      { name: "Entrance — Homebase Design Centre, Subiaco, Perth WA", img: "/images/hero/hero-homebase-entrance.jpg" },
+      { name: "Homebase Design Centre, Subiaco, Perth WA", img: `${CDN}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg` },
+      { name: "Motif — Homebase Design Centre, Subiaco, Perth WA", img: "/images/homebase/homebase-motif-closeup.jpg" },
+      { name: "Landscape design — Homebase Design Centre, Subiaco, Perth WA", img: "/images/hero/hero-homebase-dusk.jpg" },
+      { name: "Totems — Homebase Design Centre, Subiaco, Perth WA", img: "/images/hero/hero-homebase-totems.jpg" },
+      { name: "Fire pit — Homebase Design Centre, Subiaco, Perth WA", img: `${CDN}/b4fe3827-e371-4bd2-9bb5-1c0b3def3095_rw_1920.jpg` },
       { name: "EVO Planters", img: `${CDN}/181378db-3310-4b32-8704-00836f3e0cc8_rw_1200.jpg` },
       { name: "EVO Planters", img: `${CDN}/3826640c-6476-446d-b49c-ba7d1e312544_rw_1200.jpg` },
     ],
