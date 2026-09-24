@@ -23,6 +23,7 @@ const PAGES = [
   { url: "/screens.html", file: "screens.html" },
   { url: "/bespoke-sculpture.html", file: "bespoke-sculpture.html" },
   { url: "/perth.html", file: "perth.html" },
+  { url: "/melbourne.html", file: "melbourne.html" },
 ];
 
 const MIME_TYPES = {

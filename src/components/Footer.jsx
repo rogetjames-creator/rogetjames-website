@@ -36,6 +36,7 @@ const NAV_COLS = [
       { label: "Contact", href: "#contact" },
       { label: "Links", href: "#discover-portals", event: "open-discover-portal-links" },
       { label: "Perth", href: "/perth" },
+      { label: "Melbourne", href: "/melbourne" },
     ],
   },
 ];

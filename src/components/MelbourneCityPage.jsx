@@ -43,7 +43,7 @@ function SectionTitle({ children }) {
 
 export default function MelbourneCityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero, heroMark, madeLabel,
+    name, region, displayLine, intro, hero, heroMark, madeLabel, headingText,
     suburbs = [], services = [],
   } = city;
   const citySlug = city.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -124,6 +124,7 @@ export default function MelbourneCityPage({ city }) {
               {name}, {region} · Australia-wide studio
             </p>
             <h1 className="flex flex-col">
+              {headingText && <span className="sr-only">{headingText}</span>}
               {heroMark ? (
                 <span className="city-h-1 block text-cream/90 w-[260px] md:w-[440px] lg:w-[540px]" style={{ opacity: 0, filter: "drop-shadow(0 3px 10px rgba(0,0,0,0.45))" }}>
                   {heroMark}

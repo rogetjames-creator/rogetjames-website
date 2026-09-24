@@ -565,4 +565,14 @@
       <image:title>AUTUMN LEAF — Corten steel sculpture, Perth</image:title>
     </image:image>
   </url>
+  <url>
+    <loc>https://rogetjames.com/melbourne</loc>
+    <lastmod>2026-09-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://rogetjames.com/images/hero/hero-marakesh-wide.jpg</image:loc>
+      <image:title>ROGETjames laser cut metal wall art, Melbourne</image:title>
+    </image:image>
+  </url>
 </urlset>

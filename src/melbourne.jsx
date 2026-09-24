@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
-import MelbournePreview from "./components/MelbournePreview";
+import MelbourneCityPage from "./components/MelbourneCityPage";
+import { MELBOURNE } from "./data/melbourneCity";
 import "./index.css";
 
-createRoot(document.getElementById("melbourne-root")).render(<MelbournePreview />);
+createRoot(document.getElementById("melbourne-root")).render(<MelbourneCityPage city={MELBOURNE} />);
