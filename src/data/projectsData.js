@@ -22,7 +22,7 @@ export const PROJECTS = [
     // The key /media uploads are tagged with, so photos James adds to this
     // project appear in its gallery without a code change.
     projectCategory: "homebase",
-    location: "Subiaco, Western Australia",
+    location: "55 Salvado Rd, Subiaco WA 6008",
     sector: "Mixed-use precinct",
     material: "Corten steel & aluminium",
     scope: "Landscape design, art features, project management",
@@ -44,7 +44,8 @@ export const PROJECTS = [
       ["Elements", "Entrance signage · totems · feature sculptures · fire pit · planters · landscape art"],
       ["Materials", "Corten steel, powdercoated aluminium"],
       ["Fabrication", "Laser cut, folded and welded in Western Australia"],
-      ["Location", "Subiaco, Western Australia"],
+      ["Address", "55 Salvado Rd, Subiaco WA 6008"],
+      ["Location", "Subiaco, Perth, Western Australia"],
     ],
     images: [
       { name: "Entrance — Homebase Design Centre, Subiaco, Perth WA", img: "/images/hero/hero-homebase-entrance.jpg" },
