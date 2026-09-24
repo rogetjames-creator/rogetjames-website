@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Instagram, Mail } from "lucide-react";
 import { netlifyImg } from "../utils/img";
 import MelbourneGalleryPanels from "./MelbourneGalleryPanels";
+import ArtMeetsDesignMark from "./ArtMeetsDesignMark";
 import { cityHeroKey } from "../mediaDestinations";
 import { useUploadsByKey } from "../utils/mediaUploads";
 
@@ -181,6 +182,10 @@ export default function MelbourneCityPage({ city }) {
             {intro.slice(1).map((para, i) => (
               <p key={i} className="font-body text-base text-cream/70 leading-relaxed">{para}</p>
             ))}
+          </div>
+          {/* The spiel closes on the mark itself rather than the words. */}
+          <div className="mt-14 md:mt-16 flex justify-center">
+            <ArtMeetsDesignMark />
           </div>
         </div>
       </section>
