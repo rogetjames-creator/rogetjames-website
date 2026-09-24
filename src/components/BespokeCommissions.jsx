@@ -130,8 +130,8 @@ const COMMISSIONS = {
         { name: "Homebase Feature",               img: `${CDN}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg` },
         { name: "Homebase Feature",               img: `${CDN}/68de0a24-fad7-4ca7-815c-c69bc555e26b_rw_1200.jpg` },
         { name: "Fiona Stanley",                  img: `${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg` },
-        { name: "FIONA STANLEY TOTEMS",           img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
-        { name: "FIONA STANLEY TOTEMS",           img: `${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg` },
+        { name: "BALGA MIA MIA — Fiona Stanley Hospital Sculpture Park", img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
+        { name: "BALGA MIA MIA — Fiona Stanley Hospital Sculpture Park", img: `${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg` },
         { name: "ORIAN Totem",                    img: `${CDN}/79a0816f-0847-4bb5-aa06-a9077f7db746_rw_1200.jpg` },
         { name: "REVO Planter",                   img: `${CDN}/65b28727-1582-4a73-9cef-d8da2edcf885_rw_1200.jpg` },
         { name: "EVO Planters",                   img: `${CDN}/181378db-3310-4b32-8704-00836f3e0cc8_rw_1200.jpg` },
@@ -161,7 +161,7 @@ const COMMISSIONS = {
       items: [
         { name: "ERGO",              img: `${CDN}/407aaa0c-2e00-4727-8033-fb2d4c493345_rw_1920.jpg`, pos: "left center" },
         { name: "GRAIL",             img: `${CDN}/bfb2cefd-e38d-4cbf-86cb-eb955a34f2f9_rw_3840.jpg` },
-        { name: "DANDELIONS Totems", img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
+        { name: "BALGA MIA MIA — Fiona Stanley Hospital Sculpture Park", img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg` },
         { name: "ASLYIAM",           img: `${CDN}/50c8fb4e-fa4f-459c-89a0-01fb69b9a875_rw_1920.jpg` },
         { name: "XAVIER",            img: `${CDN}/f3dc2b7b-8496-45da-9ff9-8bc4ba20e8f7_rw_1920.jpg` },
       ],
@@ -375,7 +375,7 @@ const _manualCodes = {
   ["/images/zarathstra/helvetica-bar.jpg"]: { tabs: "C", cats: "S", aspects: "R6·I5 — ZARATHSTRA · Helvetica Bar · Divider" },
   [`${CDN}/35a4cd54-797e-43c5-9e58-40f7c00f5964_rw_1200.jpg`]: { tabs: "C P R", cats: "PL LF", aspects: "R6·I2 — EVO · HOMEBASE · landscape design and features" },
   [`${CDN}/4abdd8f3-44a5-4a24-b6cb-ccdb233b297e_rw_1920.jpeg`]: { tabs: "C P", cats: "LF", aspects: "R15 — URCHIN · Light Feature · HOMEBASE · landscape design and features" },
-  [`${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg`]: { tabs: "P", cats: "SCU LF", aspects: "R10·I1 — Fiona Stanley · indigenous motif Totems" },
+  [`${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg`]: { tabs: "P", cats: "SCU LF", aspects: "R10·I1 — BALGA MIA MIA · Fiona Stanley Hospital Sculpture Park" },
   [`${CDN}/4605043d-cb34-4ade-9339-8d8bd07645a4_rw_1200.jpg`]: { tabs: "C P", cats: "SCU LF", aspects: "R10·I2 — HOMEBASE Signage Totems" },
   [`${CDN}/181378db-3310-4b32-8704-00836f3e0cc8_rw_1200.jpg`]: { tabs: "C P", cats: "PL", aspects: "EVO Planters · HOMEBASE" },
   [`${CDN}/3826640c-6476-446d-b49c-ba7d1e312544_rw_1200.jpg`]: { tabs: "C P", cats: "PL", aspects: "EVO Planters · HOMEBASE" },
@@ -672,11 +672,11 @@ const BESPOKE_SEARCH_ALIASES = {
   // Non-screen categories
   "hospitality":     ["HOMEBASE", "LUMIER", "XAVIER", "Divider", "GRAIL", "Cottesloe Patio", "Cottesloe Gate", "Helvetica", "HEXO"],
   "corporate":       ["BENIN Inspired", "RAVI Inspired", "Unity in Diversity", "VUELTA", "ASLYIAM"],
-  "outdoor":         ["FERLIE", "DANDELIONS Totems", "ORIAN Totem", "TOTEMS"],
+  "outdoor":         ["FERLIE", "BALGA MIA MIA", "ORIAN Totem", "TOTEMS"],
   "memorial":        ["ORIAN Totem", "HUE"],
-  "sculptures":      ["DANDELIONS Totems", "TOTEMS", "HUE", "Fiona Stanley", "Centennial Park", "MARAKESH TRIO"],
+  "sculptures":      ["BALGA MIA MIA", "TOTEMS", "HUE", "Fiona Stanley", "Centennial Park", "MARAKESH TRIO"],
   "fire pits":       ["HOMEBASE Fire Pit", "REEDS of UNGARO", "YAZAD Fire", "URCHIN", "EQUISETTI"],
-  "totems":          ["DANDELIONS Totems", "TOTEMS", "ORIAN Totem"],
+  "totems":          ["BALGA MIA MIA", "TOTEMS", "ORIAN Totem"],
 };
 
 const PROJECT_CATEGORIES = [
