@@ -406,6 +406,92 @@
 # Security headers — applied to every route. The CSP allows only the sources
 # the site actually uses (self, Google Fonts, the myportfolio image CDN); there
 # are no iframes, workers or eval in the site, so this does not break anything.
+
+# Bare range names. /australian-natives and the rest returned "Page not
+# found" while /wall-art/australian-natives worked. Nothing on the site
+# links the short form, but anyone writing a link by hand reaches for it,
+# and a name that leads nowhere is a visitor lost.
+[[redirects]]
+  from = "/australian-natives"
+  to = "/wall-art/australian-natives"
+  status = 301
+
+[[redirects]]
+  from = "/b-editions"
+  to = "/wall-art/b-editions"
+  status = 301
+
+[[redirects]]
+  from = "/birds"
+  to = "/wall-art/birds"
+  status = 301
+
+[[redirects]]
+  from = "/branches"
+  to = "/wall-art/branches"
+  status = 301
+
+[[redirects]]
+  from = "/creeping-figs"
+  to = "/wall-art/creeping-figs"
+  status = 301
+
+[[redirects]]
+  from = "/custom"
+  to = "/wall-art/custom"
+  status = 301
+
+[[redirects]]
+  from = "/flowers-and-blooms"
+  to = "/wall-art/flowers-and-blooms"
+  status = 301
+
+[[redirects]]
+  from = "/ikona"
+  to = "/wall-art/ikona"
+  status = 301
+
+[[redirects]]
+  from = "/jungle"
+  to = "/wall-art/jungle"
+  status = 301
+
+[[redirects]]
+  from = "/neazar"
+  to = "/wall-art/neazar"
+  status = 301
+
+[[redirects]]
+  from = "/obliationes"
+  to = "/wall-art/obliationes"
+  status = 301
+
+[[redirects]]
+  from = "/pendants"
+  to = "/wall-art/pendants"
+  status = 301
+
+[[redirects]]
+  from = "/plumes"
+  to = "/wall-art/plumes"
+  status = 301
+
+[[redirects]]
+  from = "/retro"
+  to = "/wall-art/retro"
+  status = 301
+
+[[redirects]]
+  from = "/therus"
+  to = "/wall-art/therus"
+  status = 301
+
+[[redirects]]
+  from = "/vitae"
+  to = "/wall-art/vitae"
+  status = 301
+
+
 [[headers]]
   for = "/*"
   [headers.values]
