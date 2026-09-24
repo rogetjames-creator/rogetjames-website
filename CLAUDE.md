@@ -241,6 +241,43 @@ A personalised, locked page sent to each client by email. Entry point `/vault`.
 | PDFs | Attachments | Downloadable documents |
 | Invite Sent | Checkbox | Auto-set when invite is sent |
 
+## SEO — mandatory rules
+
+Every one of these came from a real fault found on this site. Check them
+before saying any page is "live" or any SEO work is "done".
+
+**No URL may ever 404.** If a page is renamed, moved or removed, a 301 to the
+closest living page goes in `netlify.toml` in the same change. A dead address
+throws away whatever ranking it earned. Fifteen addresses Google was ranking
+were returning "Page not found" in Sep 2026; the bare range names
+(`/australian-natives` and fifteen more) were doing the same.
+
+**A new page is not live until all six are true.** Missing any one of them and
+Google cannot rank it, no matter how good the words are:
+1. Added to `PAGES` in `scripts/prerender.mjs` — otherwise a crawler gets an
+   empty shell. This is the one that is always forgotten.
+2. Added to `public/sitemap.xml`.
+3. Linked from at least one page already on the site (the footer counts).
+4. `<meta name="robots" content="index, follow, …">` — never left on noindex.
+5. An `og:image`, or a shared link shows a blank card.
+6. An `<h1>` a crawler can read. A logo or wordmark alone is not a heading —
+   add the words in a `sr-only` span if the design has no room for them.
+
+**Never leave a page password-gated once James says it is live.** Perth and
+Melbourne were both gated for months while being described as published;
+Google was served the login box.
+
+**Titles lead with the phrase people actually search**, taken from Search
+Console, not from what the page is called internally. "Laser cut metal wall
+art" earns impressions; "Wall Art" does not.
+
+**Never publish thin or near-identical pages.** Prerendering the range pages
+once produced nineteen almost identical 606-word pages — worse than the short
+originals. Distinct, true copy per page or nothing.
+
+**Check claims against Search Console before stating them.** Titles, sitemaps
+and structured data looking correct is not evidence that anything ranks.
+
 ## SEO / redirects
 
 `netlify.toml` 301s the auto-generated `rogetjames-new.netlify.app` host and every stale old-site path (`/about`, `/sculpture`, `/landscape-design`, etc.) to the matching section on the single-page site, so Google drops dead links. It also sets strict security headers, a tight Content-Security-Policy (self + Google Fonts + `cdn.myportfolio.com` images), and long-lived caching for hashed assets/images/videos/fonts. `robots.txt` and `sitemap.xml` are in `public/`.
