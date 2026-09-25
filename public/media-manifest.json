@@ -1105,5 +1105,15 @@
     "note": "place 3rd",
     "createdTime": "2026-09-21T00:20:08.606Z",
     "path": "images/uploads/1789950008605_uh6g64.jpg"
+  },
+  {
+    "id": "1790329576720_9q8xxx",
+    "name": "ZANADA",
+    "destinations": [
+      "screens"
+    ],
+    "note": "Mention with title the location - Duxton Hotel",
+    "createdTime": "2026-09-25T09:46:16.731Z",
+    "path": "images/uploads/1790329576720_9q8xxx.jpg"
   }
 ]
