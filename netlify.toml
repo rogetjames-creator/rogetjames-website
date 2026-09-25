@@ -67,7 +67,7 @@
 
 [[redirects]]
   from = "/ergo"
-  to = "/#collection"
+  to = "/screens/gates"
   status = 301
 
 [[redirects]]
@@ -296,7 +296,7 @@
 
 [[redirects]]
   from = "/lumier"
-  to = "/#collection"
+  to = "/screens/dividers"
   status = 301
 
 [[redirects]]

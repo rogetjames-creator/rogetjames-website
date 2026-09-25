@@ -10,6 +10,12 @@ import { altForSrc } from "../utils/imgAlt";
 import { checkWA, getState, STATE_NAMES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, PIECE_SIZES } from "../data/pricing";
 import { netlifyImg } from "../utils/img";
 
+// The Collection strip tiles are 208px square on a desktop and 112px on a
+// phone. These photographs were going out at full size — 400 to 580KB each,
+// twenty-one of them — because they never went through the resizer. One
+// request at 560 covers both strips, so the phone and the desktop share it.
+const STRIP_IMG = { w: 560, q: 88 };
+
 // Lazy — these three are only used inside the homepage's #collection portal
 // cluster (never by FeatureWall.jsx, which imports WALL_ART_COVERS/DetailCard
 // from this file directly). Static imports here would pull BespokeCommissions
@@ -3374,7 +3380,7 @@ export default function Gallery() {
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" />
+                    <img src={netlifyImg(src, STRIP_IMG)} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   </div>
                 ))}
               </div>
@@ -3388,7 +3394,7 @@ export default function Gallery() {
               <div className="marquee-track-right flex gap-3 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running", animationDuration: "78s" }}>
                 {rightDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden cursor-pointer" onClick={() => { window.location.assign("/wall-art"); }}>
-                    <img src={src} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" />
+                    <img src={netlifyImg(src, STRIP_IMG)} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   </div>
                 ))}
               </div>
@@ -3420,7 +3426,7 @@ export default function Gallery() {
             <div className="marquee-track flex gap-2 h-full" style={{ width: "max-content", animationPlayState: stripPaused ? "paused" : "running" }}>
               {[...stripImages, ...stripImages].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden" onClick={() => { window.location.assign("/wall-art"); }}>
-                  <img src={src} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" />
+                  <img src={netlifyImg(src, STRIP_IMG)} alt={altForSrc(src)} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 </div>
               ))}
             </div>
