@@ -1115,5 +1115,15 @@
     "note": "Mention with title the location - Duxton Hotel",
     "createdTime": "2026-09-25T09:46:16.731Z",
     "path": "images/uploads/1790329576720_9q8xxx.jpg"
+  },
+  {
+    "id": "1790331578744_wz8pl2",
+    "name": "AYYAD",
+    "destinations": [
+      "screens"
+    ],
+    "note": "This is also a pergola  and in the architectural range",
+    "createdTime": "2026-09-25T10:19:38.744Z",
+    "path": "images/uploads/1790331578744_wz8pl2.jpg"
   }
 ]
