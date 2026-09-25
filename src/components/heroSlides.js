@@ -16,6 +16,7 @@ export const HERO_SLIDES = [
   { key: "marakesh",         src: "/images/marakesh/marakesh-promo.jpg",         label: "Marakesh" },
   { key: "autumn-leafs",     src: "/images/hero/hero-autumn-leafs.jpg",          label: "Autumn Leafs" },
   { key: "banksia-round",    src: "/images/hero/hero-banksia-round.jpg",         label: "Banksia Round" },
+  { key: "marakesh-trio",    src: "/images/uploads/1785896793237_u56z65.jpg",    label: "Marakesh Trio — custom" },
   { key: "fig-grande",       src: "/images/hero/hero-creeping-fig-grande.jpg",   label: "Creeping Fig Grande" },
   { key: "gren-free",        src: "/images/hero/hero-gren-free.jpg",             label: "GREN Free" },
   { key: "obliationes",      src: "/images/hero/hero-obliationes.jpg",           label: "Obliationes" },

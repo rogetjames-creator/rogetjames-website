@@ -639,6 +639,22 @@ export default function MediaPage() {
       // design-name field; every other category uses the general Name field.
       const screensSel = selectedDests.includes("screens");
       const nm = (screensSel ? screenName : pieceName).trim();
+      // A blank Name silently becomes whatever the phone called the file, and
+      // that filename is what the gallery prints under the picture AND what
+      // Google and a screen reader are told it is. Thirty photographs ended up
+      // captioned "19" and "D5B93AAA-B19E-44FD-A40B-3BB8804B3A33" that way.
+      // If the name is blank and the files are camera junk, stop and ask.
+      const cameraJunk = (fn) => {
+        const base = String(fn || "").replace(/\.(jpe?g|png|webp|heic|heif)$/i, "");
+        return /^\s*\d+\s*$/.test(base)
+          || /^(IMG|DSC|PXL|Screenshot)[_ -]/i.test(base)
+          || /^[0-9A-F]{8}-[0-9A-F]{4}/i.test(base);
+      };
+      if (!nm && staged.some((s) => cameraJunk(s.name))) {
+        setNote("Give these a name first — without one the caption becomes the filename off your phone, and that is what a visitor and Google are shown.");
+        setPhase("compose");
+        return;
+      }
       const outImages = nm
         ? staged.map((s) => ({ ...s, name: nm }))
         : staged;

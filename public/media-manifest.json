@@ -23,7 +23,7 @@
   },
   {
     "id": "1784883338512_ggq8l0",
-    "name": "HUE",
+    "name": "HUE — Corten bespoke sculpture",
     "destinations": [
       "bespoke-sculpture"
     ],
@@ -113,7 +113,8 @@
     "id": "1785475106831_bdhita",
     "name": "NEA",
     "destinations": [
-      "other"
+      "other",
+      "client-images"
     ],
     "note": "Discover portal - client images ",
     "createdTime": "2026-07-31T05:18:26.831Z",
@@ -173,7 +174,7 @@
   },
   {
     "id": "1785745326687_0pxdcn",
-    "name": "UNITY in DIVESITY copy.jpg",
+    "name": "UNITY IN DIVERSITY",
     "destinations": [
       "bespoke-sculpture"
     ],
@@ -183,7 +184,7 @@
   },
   {
     "id": "1785745463839_tie649",
-    "name": "UNITY in DIVESITY copy.jpg",
+    "name": "UNITY IN DIVERSITY — Centennial Park",
     "destinations": [
       "other"
     ],
@@ -193,7 +194,7 @@
   },
   {
     "id": "1785745726945_2sycit",
-    "name": "BANKSIA - Free range Custom  copy.jpg",
+    "name": "BANKSIA Free Range — custom",
     "destinations": [],
     "note": "Superseded — the mural already replaced banksia-free-2.jpg in place. Untagged so it does not duplicate in Australian Natives.",
     "createdTime": "2026-08-03T08:28:46.945Z",
@@ -201,7 +202,7 @@
   },
   {
     "id": "1785747993158_txpa7z",
-    "name": "CREEPING FIG - GRANDE WG copy.jpg",
+    "name": "CREEPING FIG Grande — courtesy WG",
     "destinations": [
       "client-images"
     ],
@@ -211,7 +212,7 @@
   },
   {
     "id": "1785748724574_on3rpp",
-    "name": "CREEPING FIG - CUSTOM copy.jpg",
+    "name": "CREEPING FIG — custom",
     "destinations": [
       "client-images"
     ],
@@ -400,7 +401,7 @@
   },
   {
     "id": "1786889530619_e0kcd0",
-    "name": "MOTH EATER",
+    "name": "MOTH EATER — Leaf Sculptures",
     "destinations": [
       "leafs"
     ],
@@ -410,7 +411,7 @@
   },
   {
     "id": "1786928692993_qdptlc",
-    "name": "ESFERA",
+    "name": "ESFERA Fire Sculpture",
     "destinations": [
       "fire"
     ],
@@ -420,7 +421,7 @@
   },
   {
     "id": "1786928692995_lreqcs",
-    "name": "ESFERA",
+    "name": "ESFERA Fire Sculpture",
     "destinations": [
       "fire"
     ],
@@ -452,7 +453,7 @@
   },
   {
     "id": "1787066778762_pilt6i",
-    "name": "YOKAI & MARAKESH.jpg",
+    "name": "YOKAI & MARAKESH",
     "destinations": [
       "classics"
     ],
@@ -471,7 +472,7 @@
   },
   {
     "id": "1787113926284_fipf2g",
-    "name": "FIRE TABLE",
+    "name": "Fire Table",
     "destinations": [
       "fire"
     ],
@@ -481,7 +482,7 @@
   },
   {
     "id": "1787114713443_qvzfns",
-    "name": "POD.jpg",
+    "name": "POD",
     "destinations": [
       "fire"
     ],
@@ -491,7 +492,7 @@
   },
   {
     "id": "1787115315857_6h7vri",
-    "name": "YAZAD.jpg",
+    "name": "YAZAD",
     "destinations": [
       "fire"
     ],
@@ -826,7 +827,7 @@
   },
   {
     "id": "1787642282760_20qr3u",
-    "name": "OBLIATIONES Small 1200px.jpg",
+    "name": "OBLIATIONES",
     "destinations": [
       "city-melbourne-commissions"
     ],
@@ -914,7 +915,9 @@
     "id": "1789180639705_c8gjp9",
     "name": "ASLYIAM",
     "destinations": [
-      "screens"
+      "screens",
+      "application-dividers",
+      "application-privacy"
     ],
     "note": "place as a divider and privacy screen also",
     "createdTime": "2026-09-12T02:37:19.705Z",
@@ -997,7 +1000,7 @@
   },
   {
     "id": "1789442982297_4gmwj0",
-    "name": "UNITY IN DIVERSITY .jpg",
+    "name": "UNITY IN DIVERSITY",
     "destinations": [
       "hero"
     ],
@@ -1075,7 +1078,8 @@
     "id": "1789459721178_zhnuq7",
     "name": "Fire pit & Illuminated fencing - 1200px.jpg",
     "destinations": [
-      "project-homebase"
+      "project-homebase",
+      "bespoke-strip"
     ],
     "note": "put this in the bespoke horizontal slide show also",
     "createdTime": "2026-09-15T08:08:41.179Z",
