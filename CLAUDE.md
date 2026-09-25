@@ -205,6 +205,28 @@ AIRTABLE_TABLE_NAME    — optional, defaults to "Clients"
 
 ## Media upload workflow (`/media`)
 
+**Instructions in the uploader are orders — mandatory.** James types what he
+wants into the note box when he uploads: "this is also a pergola", "mention the
+location", "replace this image", "also in catalogued sculpture". For months
+nothing read those notes. He assumed they had been carried out and found out
+weeks later that they had not. Forty-four were outstanding on 25 Sep 2026.
+
+`scripts/check-media-notes.mjs` runs at the front of **every build** and prints
+every note that has not been marked done. Do not scroll past it.
+
+- Carry the instruction out, then add the upload's id to
+  `public/media-notes-done.json` with one line saying what was done.
+- Never mark one done without doing it.
+- If an instruction cannot be carried out, say so to James in one sentence —
+  never leave it silently sitting in the list.
+
+**A photo's caption is its filename.** The uploader stores a `note` and the site
+never reads it; galleries caption a photo with `name`, which is whatever the
+phone called the file. That is how thirty pictures came to be captioned "19" and
+"D5B93AAA-B19E-44FD-A40B-3BB8804B3A33_1_201_a" — and the caption is also the alt
+text, so that is what Google and a screen reader were given.
+
+
 James adds photos from his phone at `/media` (password-gated). `MediaPage.jsx` downscales/compresses each image in-browser, then posts to `media-upload.js`, which **commits the files into `public/images/` in the repo** (single batch commit → single Netlify rebuild) and records their exact destination keys. The gallery reads `/api/media-list` and places each image by key — no text guessing. New category uploads land as gallery pieces at the END of that category (see Key conventions).
 
 ## Client Vault System (merged to `main`)
