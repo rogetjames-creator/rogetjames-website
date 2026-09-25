@@ -55,6 +55,9 @@ export const SCREEN_DESIGNS = [
   { name: "ELLE", sectionStart: "THE ARCHITECTURAL", tabs: ["architectural"], items: [
     { name: "ELLE — Corten Screen", img: "/images/screens/elle-corten.jpg", tags: ["screens", "residential"] },
   ] },
+  { name: "AYYAD", tags: ["pergolas", "screens"], items: [
+    { name: "AYYAD — entry screen & pergola", img: "/images/uploads/1790331578744_wz8pl2.jpg", tags: ["pergolas", "screens", "privacy", "residential"] },
+  ] },
   { name: "CHIOLA", items: [
     { name: "CHIOLA",                       img: `${CDN}/a7051a98-18b5-4a76-bf4f-f9569636a04b_rw_1200.jpg`, tags: ["gates", "residential"] },
     { name: "CHIOLA — Display Home",        img: "/images/chiola/chiola-display-home.jpg", description: "CHIOLA as room divider and window feature in a display home", tags: ["dividers", "residential", "display homes"] },
@@ -263,6 +266,7 @@ export const SCREEN_DESIGNS = [
     items: [
       { name: "ZANADA 16mm Aluminium", img: `${CDN}/815b0730-4c38-4163-b3c7-f5c3ac7592ee_rw_1200.jpg`, tags: ["gates", "residential"] },
       { name: "ZANADA Auto",           img: `${CDN}/c9d58bb5-01c5-41be-8bfb-a0f78df67f0c_rw_1200.jpg` },
+      { name: "ZANADA — Duxton Hotel",  img: "/images/uploads/1790329576720_9q8xxx.jpg", tags: ["screens", "commercial"] },
     ],
   },
 

@@ -563,7 +563,8 @@
     "id": "1787118567612_u7f35l",
     "name": "OMARE",
     "destinations": [
-      "displays"
+      "displays",
+      "classics"
     ],
     "note": "these do not have any prices",
     "createdTime": "2026-08-19T05:49:27.612Z",
@@ -589,7 +590,8 @@
     "id": "1787118567625_6lj23p",
     "name": "MARAKESH",
     "destinations": [
-      "displays"
+      "displays",
+      "classics"
     ],
     "note": "these do not have any prices",
     "createdTime": "2026-08-19T05:49:27.625Z",
@@ -599,7 +601,8 @@
     "id": "1787118567625_gv4rhv",
     "name": "DANDELIONS",
     "destinations": [
-      "displays"
+      "displays",
+      "screens"
     ],
     "note": "these do not have any prices",
     "createdTime": "2026-08-19T05:49:27.625Z",
@@ -725,7 +728,9 @@
     "id": "1787350963228_3i2szy",
     "name": "WATTLE",
     "destinations": [
-      "city-sydney-screens"
+      "city-sydney-screens",
+      "screens",
+      "application-fencing"
     ],
     "note": "",
     "createdTime": "2026-08-21T22:22:43.228Z",
