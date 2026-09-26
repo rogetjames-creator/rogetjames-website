@@ -394,9 +394,12 @@ export function CommissionsSection() {
             made for a place. "Bespoke" alone is read by Google as tailoring,
             framing and jewellery, so it sits above as the eyebrow instead. */}
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3 leading-tight">
-          <span className="inline-block text-cream" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Architectural </span>
+          <span className="inline-block text-cream" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Architectural Metal </span>
           <span className="inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Art</span>
         </h2>
+        <p className="font-detail text-xs md:text-sm text-cream/55 uppercase tracking-[0.2em] mt-4">
+          Sculpture &amp; Bespoke Architectural Features
+        </p>
       </div>
       <div className="w-full h-px bg-white/10" />
 
