@@ -319,6 +319,9 @@ export function CommissionsSection() {
   // Projects now has its own pages — the portal goes to the summary page at
   // /projects instead of opening the old popup. Owner-only while it is built.
   const openProjectsPage = () => { trackGalleryOpen("Projects"); window.location.assign("/projects"); };
+  // Screens lives in both places, James's call: the Collection and here. Both
+  // portals wear the same slides and lead to the same /screens gallery.
+  const openScreensPage = () => { trackGalleryOpen("Bespoke Screens"); window.location.assign("/screens"); };
 
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
   useEffect(() => {
@@ -405,9 +408,10 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
-        {/* Phone order, James's: Sculpture, Reels, Concepts, Concrete, Projects.
+        {/* Phone order, James's: Sculpture, Screens, Reels, Concepts, Concrete, Projects.
             No mark portal here — it leads the desktop layout only. */}
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={210} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={SIDE_PORTAL_LEFT}     size={180} hideLabel centerLabel="Screens"     onOpen={openScreensPage} />
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
         <MiniPortal portal={concretePortal}       size={180} hideLabel centerLabel="Concrete"    onOpen={openAndCount(setConcreteOpen, "Concrete")} />
@@ -470,7 +474,7 @@ export function CommissionsSection() {
 
         {/* Negative margin lifts Sculpture up to float in the strip centre —
             the same -274px the Wall Art portal uses in the Collection. */}
-        {/* The row of five sits well clear of the sliding strip the mark
+        {/* The row of six sits well clear of the sliding strip the mark
             floats in, rather than tucking up under it. */}
         <div className="flex flex-col items-center gap-12 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
           <ArtMarkPortal size={288} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
@@ -500,14 +504,14 @@ export function CommissionsSection() {
             <GalleryDot />
           </div>
 
-          {/* Five portals at 170px need ~1200px to sit on one line. On a
-              narrower desktop they wrap to a second line rather than running
-              off the edge. */}
+          {/* Six portals — five at 150px and Sculpture at 180px — sit on one
+              line from ~1260px wide. On a narrower desktop they
+              wrap to a second line rather than running off the edge. */}
           {/* Always here, so the black holds its full height and nothing below
               the section moves when the galleries are shown or hidden. Closed,
               it is simply not visible and cannot be reached. */}
           <div
-            className="flex flex-wrap items-center justify-center gap-x-12 gap-y-10 px-6 max-w-[1280px]"
+            className="flex flex-wrap items-center justify-center gap-x-6 gap-y-10 px-6 max-w-[1280px]"
             aria-hidden={!galleriesOpen}
             style={{
               visibility: galleriesOpen ? "visible" : "hidden",
@@ -516,13 +520,14 @@ export function CommissionsSection() {
               transition: "opacity 2.4s cubic-bezier(0.33, 0, 0.2, 1) 0.9s",
             }}
           >
-            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={170} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
-            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={170} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
-            {/* Sculpture holds the middle of the row and stands a size above the
-                rest, so the eye lands on it first. */}
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={200} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
-            <MiniPortal portal={reelsPortal}          size={170} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
-            <MiniPortal portal={concretePortal} size={170} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={150} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={150} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
+            {/* Sculpture and Screens hold the middle of the row; Sculpture
+                stands a size above the rest, so the eye lands on it first. */}
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={180} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+            <MiniPortal portal={SIDE_PORTAL_LEFT}  size={150} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
+            <MiniPortal portal={reelsPortal}          size={150} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
+            <MiniPortal portal={concretePortal} size={150} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
           </div>
         </div>
       </div>

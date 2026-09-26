@@ -119,10 +119,11 @@ vanishes silently — the single most common bug here):
 | Projects popup | `project-<project>` |
 | Concrete | `concrete` — the portal appears once the first photo lands |
 
-**Bespoke section on `/`** — FOUR portals: Sculpture, Concepts, Projects,
-Reels. **There is no Screens portal there.** Projects and Concepts show
-"Under Construction" to the public and open only for James (`?preview=roj-open`)
-or in dev. Sculpture and Reels are open to everyone.
+**Bespoke section on `/`** — portals: Sculpture, Screens, Concepts, Projects,
+Reels, Concrete. Screens was added back in Sep 2026 at James's request so it is
+found in both places — the Collection and Bespoke; both portals open `/screens`.
+Projects shows "Under Construction" to the public and opens only for James
+(`?preview=roj-open`) or in dev. The rest are open to everyone.
 
 Reels is the same portal the Discover section shows — one list in
 `src/utils/reels.js` (`REELS_PORTAL` plus the `useReelsPortal` hook that merges
