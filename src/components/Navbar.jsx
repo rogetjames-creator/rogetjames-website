@@ -11,14 +11,14 @@ const CatPageViewer = lazy(() => import("./CatPageViewer"));
 const ClientPreview = lazy(() => import("./ClientPreview"));
 
 // The Bespoke menu mirrors the portals in the Bespoke section exactly.
-// Screens, Sculpture, Concepts, Reels and Concrete are open to everyone.
+// Sculpture, Screens, Concepts, Reels and Concrete are open to everyone.
 // Projects is not ready: the public sees it, dimmed with a padlock, and it
 // opens nothing. James opens it via ?preview=roj-open.
 const OWNER_ONLY_BESPOKE = ["projects"];
 const bespokeOwnerOnlyOK = import.meta.env.DEV || ownerPreviewUnlocked();
 const BESPOKE_MENU = [
-  { label: "Screens",   cat: "screens",   href: "/screens" },
   { label: "Sculpture", cat: "sculpture", href: "/bespoke-sculpture" },
+  { label: "Screens",   cat: "screens",   href: "/screens" },
   { label: "Concepts",  cat: "concepts" },
   { label: "Reels",     cat: "reels" },
   { label: "Concrete",  cat: "concrete" },
