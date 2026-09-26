@@ -954,8 +954,8 @@ a.dpill{display:inline-block;text-decoration:none}
           fetch(`/media-manifest.json?v=${Date.now()}`,{cache:'no-store'}).then(r=>r.ok?r.json():[]).catch(()=>[]),
           fetch('/api/media-list').then(r=>r.json()).catch(()=>({images:[]})),
         ]);
-        const fromManifest=Array.isArray(manifest)?manifest.map(e=>({src:`/${e.path}`,name:e.name||'',destinations:e.destinations||[],createdTime:e.createdTime||''})):[];
-        const fromLegacy=(legacy&&Array.isArray(legacy.images))?legacy.images.map(i=>({src:i.src,name:i.name||'',destinations:i.destinations||[],createdTime:i.createdTime||''})):[];
+        const fromManifest=Array.isArray(manifest)?manifest.map(e=>({src:`/${e.path}`,name:e.name||'',note:e.note||'',destinations:e.destinations||[],createdTime:e.createdTime||''})):[];
+        const fromLegacy=(legacy&&Array.isArray(legacy.images))?legacy.images.map(i=>({src:i.src,name:i.name||'',note:i.note||'',destinations:i.destinations||[],createdTime:i.createdTime||''})):[];
         // Uploads James has taken off the site — hidden here as well, or the
         // range galleries would still show what the other galleries drop.
         const dropped=(src)=>MEDIA_SUPPRESS.some(id=>String(src||'').includes(id));
@@ -984,6 +984,18 @@ a.dpill{display:inline-block;text-decoration:none}
       // carries the series tag WITHOUT 'up-close' — those are gallery pieces,
       // not detail shots, and had no way of appearing here before.
       const tidyName=(n)=>(n||'').replace(/\.(jpe?g|png|webp|heic|heif)$/i,'').replace(/\s*\d+\s*px\b/i,'').trim();
+      // "place 3rd", "place in 8th position", "put this 2nd" — the position
+      // James asks for in the uploader note. Counting from one; null if he
+      // did not ask, in which case the piece goes last as before.
+      const ORDINALS={first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8,ninth:9,tenth:10};
+      const askedPosition=(note)=>{
+        const t=String(note||'').toLowerCase();
+        if(!/\b(place|put|position|make it|goes?)\b/.test(t)) return null;
+        const m=t.match(/\b(\d{1,2})\s*(?:st|nd|rd|th)\b/) || t.match(/\bposition\s*(\d{1,2})\b/);
+        if(m) return Math.max(1, parseInt(m[1],10));
+        for(const w in ORDINALS){ if(new RegExp('\\b'+w+'\\b').test(t)) return ORDINALS[w]; }
+        return null;
+      };
       const basePaths=new Set(data.imgs);
       const uploadsForSeries=(id)=>{
         const seen=new Set();
@@ -1016,10 +1028,22 @@ a.dpill{display:inline-block;text-decoration:none}
             if(sibs.length&&el) h.tw.insertBefore(el,sibs[sibs.length-1].nextSibling);
             continue;
           }
+          // A new piece goes last unless James asked for a place. "place 3rd",
+          // "place in 8th position", "2nd" in the uploader note all mean the
+          // same thing: sit it there in the range, counting from one.
           const di=h.r.designs.length;
           h.r.designs.push({ n: nm||h.r.label, imgs:[gi] });
-          h.r.flat.push([di,0]);
+          const want=askedPosition(u.note);
+          if(want && want-1 < h.r.flat.length){
+            h.r.flat.splice(want-1, 0, [di,0]);
+          } else {
+            h.r.flat.push([di,0]);
+          }
           h.addThumb(di,0);
+          if(want && want-1 < h.tw.children.length){
+            const el=h.tw.lastElementChild;
+            if(el) h.tw.insertBefore(el, h.tw.children[want-1]);
+          }
         }
         h.r.count=h.r.designs.length;
         h.fit();
