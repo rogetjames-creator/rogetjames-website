@@ -397,7 +397,7 @@ export function CommissionsSection() {
             made for a place. "Bespoke" alone is read by Google as tailoring,
             framing and jewellery, so it sits above as the eyebrow instead. */}
         <h2 className="font-syne font-bold text-2xl md:text-4xl lg:text-5xl tracking-tight mt-3 leading-tight">
-          <span className="inline-block text-cream" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Architectural </span>
+          <span className="inline-block text-cream" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Architectural&nbsp;</span>
           <span className="inline-block text-cream/60" style={{ textShadow: "0 4px 14px rgba(0,0,0,0.55)" }}>Metal Art</span>
         </h2>
         <p className="font-detail text-xs md:text-sm text-cream/55 uppercase tracking-[0.2em] mt-4">
@@ -410,7 +410,7 @@ export function CommissionsSection() {
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
         {/* Phone order, James's: Sculpture, Screens, Reels, Concepts, Concrete, Projects.
             No mark portal here — it leads the desktop layout only. */}
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={210} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
         <MiniPortal portal={SIDE_PORTAL_LEFT}     size={180} hideLabel centerLabel="Screens"     onOpen={openScreensPage} />
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
@@ -524,7 +524,7 @@ export function CommissionsSection() {
             <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={150} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
             {/* Sculpture and Screens hold the middle of the row; Sculpture
                 stands a size above the rest, so the eye lands on it first. */}
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={180} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={150} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
             <MiniPortal portal={SIDE_PORTAL_LEFT}  size={150} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
             <MiniPortal portal={reelsPortal}          size={150} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
             <MiniPortal portal={concretePortal} size={150} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
