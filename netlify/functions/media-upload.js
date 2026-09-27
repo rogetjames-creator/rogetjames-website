@@ -130,6 +130,19 @@ async function gh(path, opts = {}) {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    // An expired or revoked token comes back as 401 Bad credentials, and 403
+    // once the token has lost the repo scope. Left raw, James saw a wall of
+    // GitHub API text and had no idea his photos were not being saved. Say
+    // what is wrong and what fixes it, in his words.
+    if (res.status === 401 || res.status === 403) {
+      throw new Error(
+        "Your GitHub token has expired or been revoked, so photos cannot be saved. " +
+        "Nothing else on the site is affected. To fix it: make a new token at " +
+        "github.com/settings/tokens with repo access, then paste it into Netlify " +
+        "under Project configuration → Environment variables → GITHUB_TOKEN, and " +
+        "trigger a deploy."
+      );
+    }
     throw new Error(`GitHub API ${path} → ${res.status}: ${text.slice(0, 300)}`);
   }
   return res.json();
