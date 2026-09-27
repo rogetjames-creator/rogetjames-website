@@ -527,7 +527,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               <div className="absolute inset-0 pointer-events-none z-10"
                 style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
               {centerLabel && (
-                <div className="absolute inset-0 z-[14] flex items-center justify-center pointer-events-none transition-opacity duration-150 opacity-100 group-hover:opacity-0">
+                <div className="absolute inset-0 z-[25] flex items-center justify-center pointer-events-none">
                   <span className="font-detail font-bold text-white uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize, textShadow: "0 1px 12px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.35)" }}>{centerLabel}</span>
                 </div>
               )}
@@ -541,9 +541,14 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
               )}
               <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-150 opacity-0 group-hover:opacity-100${noDarkHover ? "" : " bg-black/60"}`}
                 style={alwaysLabel || tapped ? { opacity: 1 } : {}}>
-                <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
-                  {locked ? "Under Construction" : hoverLabel}
-                </span>
+                {/* A portal that already shows its name keeps it — the dark
+                    simply comes up behind. Only a portal without one needs a
+                    word putting there on hover. */}
+                {(!centerLabel || locked) && (
+                  <span className="font-detail font-bold text-cream uppercase tracking-[0.25em]" style={{ fontSize: hoverLabelSize }}>
+                    {locked ? "Under Construction" : hoverLabel}
+                  </span>
+                )}
               </div>
             </div>
           {arcLabel && (() => {
