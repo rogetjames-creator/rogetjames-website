@@ -893,7 +893,11 @@ export default function MediaPage() {
             {/* Replace an existing image in place — paste its URL, add the new photo below. */}
             <div className="mb-4 rounded-xl border border-clay/30 bg-clay/5 p-3">
               <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.16em] mb-1.5">Or — replace an existing image</p>
+              {/* No autofill. The browser was free to drop a remembered value in
+                  here, which silently switches the whole upload into a one-photo
+                  replacement with no sign but the send button's wording. */}
               <input type="text" value={replaceUrl} onChange={e => setReplaceUrl(e.target.value)}
+                autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} name="roj-replace-url"
                 placeholder="Paste the image's URL (right-click the image → Copy image address)"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
               {/* Anything in this box silently turns the whole upload into a
