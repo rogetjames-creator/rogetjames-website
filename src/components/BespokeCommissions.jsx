@@ -863,6 +863,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const lenis = useLenis();
 
   useEffect(() => {
@@ -901,8 +902,8 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
   const item = items[index];
   return (
     <div ref={overlayRef} className="fixed inset-0 z-[200] bg-charcoal/95 flex items-center justify-center" onClick={handleClose}
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50) (dx < 0 ? onNext() : onPrev()); }}
+      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) (dx < 0 ? onNext() : onPrev()); }}
     >
       <button onClick={(e) => { e.stopPropagation(); onPrev(); }} className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
         <ChevronLeft size={24} />
@@ -1854,6 +1855,7 @@ function PortalLightbox({ items, index, onClose, onPrev, onNext }) {
   const contentRef = useRef(null);
   const imgRef = useRef(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const lenis = useLenis();
   const [slideIdx, setSlideIdx] = useState(0);
 
@@ -1908,8 +1910,8 @@ function PortalLightbox({ items, index, onClose, onPrev, onNext }) {
 
   return (
     <div ref={overlayRef} className="lightbox-overlay" onClick={handleClose}
-      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50) (dx < 0 ? handleRight() : handleLeft()); }}
+      onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={(e) => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) (dx < 0 ? handleRight() : handleLeft()); }}
     >
       <button onClick={(e) => { e.stopPropagation(); handleLeft(); }}
         className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 active:bg-white/30 transition-colors z-20"
@@ -1976,6 +1978,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   const thumbStripRef = useRef(null);
   const activeThumbRef = useRef(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const pillStripRef = useRef(null);
   const [_pillAtEnd, setPillAtEnd] = useState(false);
   const [screenUploads, setScreenUploads] = useState([]);
@@ -2182,8 +2185,8 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
   return (
     <div
       className="fixed inset-0 z-[10000] bg-jet flex flex-col"
-      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50 && flatIdx !== null && !searchQuery) navigateFlat(dx < 0 ? 1 : -1); }}
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && flatIdx !== null && !searchQuery) navigateFlat(dx < 0 ? 1 : -1); }}
     >
       {/* Top bar */}
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
@@ -2539,6 +2542,7 @@ export function ProjectsGalleryModal({ onClose }) {
   const [infoProject, setInfoProject] = useState(null);
   const [displaysItems, setDisplaysItems] = useState([]);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   // The shared "Displays" set — /media uploads tagged "displays". The same
   // photos also show under DISPLAYS in the Screens and Sculpture galleries.
@@ -2607,8 +2611,8 @@ export function ProjectsGalleryModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-jet flex flex-col"
-      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50 && itemIdx !== null) navigate(dx < 0 ? 1 : -1); }}
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && itemIdx !== null) navigate(dx < 0 ? 1 : -1); }}
     >
       {/* Top bar */}
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3">
@@ -2933,6 +2937,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
   const [searchFocused, setSearchFocused] = useState(false);
   const searchInputRef = useRef(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   const item = itemIdx !== null ? items[itemIdx] : null;
 
@@ -2968,8 +2973,8 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
   return (
     <div
       className="fixed inset-0 z-[10000] bg-jet flex flex-col"
-      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50 && itemIdx !== null) navigate(dx < 0 ? 1 : -1); }}
+      onTouchStart={e => { touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY; }}
+      onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; const dy = e.changedTouches[0].clientY - touchStartY.current; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && itemIdx !== null) navigate(dx < 0 ? 1 : -1); }}
     >
       {/* Top bar */}
       <div className="flex items-center px-5 py-3 border-b border-white/10 flex-shrink-0 gap-3 relative">
