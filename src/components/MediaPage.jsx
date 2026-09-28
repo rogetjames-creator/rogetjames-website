@@ -896,11 +896,26 @@ export default function MediaPage() {
               <input type="text" value={replaceUrl} onChange={e => setReplaceUrl(e.target.value)}
                 placeholder="Paste the image's URL (right-click the image → Copy image address)"
                 className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors" />
-              <p className="font-detail text-[11px] text-cream/50 mt-2">
-                {replaceUrl.trim()
-                  ? "Replace mode — the photo you add below overwrites that image everywhere it appears. No destination needed."
-                  : "Overwrites that image in place (keeps its spot everywhere). Leave blank for a normal upload."}
-              </p>
+              {/* Anything in this box silently turns the whole upload into a
+                  one-photo replacement, which looked like the uploader refusing
+                  to take more than one. Say so loudly, and give a way out. */}
+              {replaceUrl.trim() ? (
+                <div className="mt-2 rounded-lg bg-amber-500/15 border border-amber-400/40 p-2.5">
+                  <p className="font-detail text-[11.5px] text-amber-200 leading-relaxed">
+                    <b>Replace mode is on.</b> Only <b>one</b> photo can be sent while this box has something in it —
+                    it overwrites that image everywhere it appears, and no destination is used.
+                    {staged.length > 1 && <> You have {staged.length} photos ready, so {staged.length - 1} would be left behind.</>}
+                  </p>
+                  <button type="button" onClick={() => setReplaceUrl("")}
+                    className="mt-2 font-detail text-[11px] uppercase tracking-[0.16em] text-amber-200 underline underline-offset-2 hover:text-amber-100">
+                    Clear this and send them all normally
+                  </button>
+                </div>
+              ) : (
+                <p className="font-detail text-[11px] text-cream/50 mt-2">
+                  Overwrites that image in place (keeps its spot everywhere). Leave blank for a normal upload.
+                </p>
+              )}
             </div>
             {selectedDests.includes("other") && (
               <input type="text" value={otherNote} onChange={e => setOtherNote(e.target.value)}
