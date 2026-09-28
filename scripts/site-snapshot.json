@@ -1,0 +1,194 @@
+{
+  "pages": {
+    "adelaide.html": {
+      "words": 10,
+      "title": "Laser Cut Wall Art & Sculpture in Adelaide | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "admin.html": {
+      "words": 3,
+      "title": "ROGETjames — Admin",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "bespoke-sculpture.html": {
+      "words": 179,
+      "title": "Bespoke Metal Sculpture Commissions, Australia | ROGETjames",
+      "robots": "index, follow",
+      "hasOgImage": true,
+      "hasH1": true
+    },
+    "catalogues.html": {
+      "words": 50,
+      "title": "Catalogues | ROGETjames",
+      "robots": "index, follow",
+      "hasOgImage": false,
+      "hasH1": true
+    },
+    "feature-screens.html": {
+      "words": 4,
+      "title": "ROGETjames — Feature Screens",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "fonts.html": {
+      "words": 541,
+      "title": "Title faces — preview | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": true
+    },
+    "gold-coast.html": {
+      "words": 12,
+      "title": "Laser Cut Wall Art & Sculpture on the Gold Coast | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "hero.html": {
+      "words": 4,
+      "title": "ROGETjames — Hero Preview",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "index.html": {
+      "words": 926,
+      "title": "Laser Cut Metal Wall Art &amp; Sculpture, Australia | ROGETjames",
+      "robots": "index, follow",
+      "hasOgImage": true,
+      "hasH1": true
+    },
+    "media.html": {
+      "words": 3,
+      "title": "ROGETjames — Media",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "melbourne.html": {
+      "words": 240,
+      "title": "Laser Cut Metal Wall Art &amp; Sculpture, Melbourne VIC | ROGETjames",
+      "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+      "hasOgImage": true,
+      "hasH1": true
+    },
+    "perth.html": {
+      "words": 304,
+      "title": "Laser Cut Metal Wall Art &amp; Sculpture, Perth WA | ROGETjames",
+      "robots": "index, follow, max-image-preview:large, max-snippet:-1",
+      "hasOgImage": true,
+      "hasH1": true
+    },
+    "pieces.html": {
+      "words": 828,
+      "title": "Every piece page — preview | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": true
+    },
+    "projects.html": {
+      "words": 3,
+      "title": "Projects | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "screens-range.html": {
+      "words": 7,
+      "title": "Screens — The Range (preview) | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "screens.html": {
+      "words": 804,
+      "title": "Laser Cut Privacy Screens &amp; Metal Garden Screens | ROGETjames",
+      "robots": "index, follow",
+      "hasOgImage": true,
+      "hasH1": true
+    },
+    "sculpture.html": {
+      "words": 306,
+      "title": "Laser Cut Metal Garden Sculpture, Australia | ROGETjames",
+      "robots": "index, follow",
+      "hasOgImage": true,
+      "hasH1": true
+    },
+    "stats.html": {
+      "words": 3,
+      "title": "ROGETjames — Stats",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "sydney.html": {
+      "words": 10,
+      "title": "Laser Cut Wall Art & Sculpture in Sydney | ROGETjames",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "vault.html": {
+      "words": 4,
+      "title": "ROGETjames — Client Vault",
+      "robots": "noindex, nofollow",
+      "hasOgImage": false,
+      "hasH1": false
+    },
+    "wall-art.html": {
+      "words": 563,
+      "title": "Laser Cut Metal Wall Art, Corten &amp; Aluminium | ROGETjames",
+      "robots": "index, follow",
+      "hasOgImage": true,
+      "hasH1": true
+    }
+  },
+  "motion": {
+    "marqueeClasses": [
+      ".marquee-loop-right",
+      ".marquee-track",
+      ".marquee-track-fast",
+      ".marquee-track-right"
+    ],
+    "animationNoneRules": [],
+    "reducedMotionBlocks": 0
+  },
+  "portals": {
+    "names": [
+      "Concepts",
+      "Concrete",
+      "Projects",
+      "Reels",
+      "Screens",
+      "Sculpture"
+    ],
+    "sizes": [
+      "Concepts:150",
+      "Concepts:180",
+      "Concrete:150",
+      "Concrete:180",
+      "Projects:150",
+      "Projects:180",
+      "Reels:150",
+      "Reels:180",
+      "Screens:150",
+      "Screens:180",
+      "Sculpture:150",
+      "Sculpture:180"
+    ]
+  },
+  "sitemap": {
+    "count": 109
+  },
+  "captions": {
+    "filenameCaptions": 0
+  },
+  "weight": {
+    "homepageRawKB": 87
+  }
+}
