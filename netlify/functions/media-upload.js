@@ -143,6 +143,19 @@ async function gh(path, opts = {}) {
         "trigger a deploy."
       );
     }
+    // A write that comes back 404 on a repository that plainly exists means the
+    // token is valid but not allowed to write to it — GitHub hides the
+    // difference between "forbidden" and "missing". Almost always the "repo"
+    // box was not ticked when the token was made, or the token belongs to a
+    // different GitHub account.
+    if (res.status === 404 && opts.method && opts.method !== "GET") {
+      throw new Error(
+        "The GitHub token is valid but is not allowed to save into the repository. " +
+        "Check two things at github.com/settings/tokens: the token must list \"repo\" " +
+        "under its name, and you must be signed in as rogetjames-creator. Make the " +
+        "token again with the repo box ticked, then update GITHUB_TOKEN in Netlify."
+      );
+    }
     throw new Error(`GitHub API ${path} → ${res.status}: ${text.slice(0, 300)}`);
   }
   return res.json();
