@@ -650,14 +650,18 @@ export default function MediaPage() {
           || /^(IMG|DSC|PXL|Screenshot)[_ -]/i.test(base)
           || /^[0-9A-F]{8}-[0-9A-F]{4}/i.test(base);
       };
-      if (!nm && staged.some((s) => cameraJunk(s.name))) {
+      if (staged.some((s) => !(s.ownName || "").trim() && !nm && cameraJunk(s.name))) {
         setNote("Give these a name first — without one the caption becomes the filename off your phone, and that is what a visitor and Google are shown.");
         setPhase("compose");
         return;
       }
-      const outImages = nm
-        ? staged.map((s) => ({ ...s, name: nm }))
-        : staged;
+      // A photo named in its own box keeps that name. The batch name above is
+      // only the fallback for the ones left blank.
+      const outImages = staged.map((s) => {
+        const own = (s.ownName || "").trim();
+        if (own) return { ...s, name: own, ownName: undefined };
+        return nm ? { ...s, name: nm, ownName: undefined } : { ...s, ownName: undefined };
+      });
       // Screens: every chosen category rides along as a destination tag so the
       // photo appears in each one (a design can live in several categories).
       const outDests = screensSel
@@ -938,12 +942,22 @@ export default function MediaPage() {
             {staged.length > 0 && (
               <>
                 <p className="font-detail text-[10px] text-cream/50 mt-4 mb-2">{staged.length} photo{staged.length === 1 ? "" : "s"} ready to send:</p>
-                <div className="grid grid-cols-4 gap-2 mb-2">
+                {staged.length > 1 && (
+                  <p className="font-detail text-[11px] text-cream/50 mb-2">
+                    Name each one to send several different pieces to the same category. Leave a box empty and it takes the name above.
+                  </p>
+                )}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-2">
                   {staged.map((s, i) => (
-                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-white/10">
-                      <img src={s.dataUrl} alt={s.name} className="w-full h-full object-cover" />
-                      <button onClick={() => removeStaged(i)} aria-label="Remove"
-                        className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 text-cream/80 flex items-center justify-center text-xs hover:bg-red-600 hover:text-white">×</button>
+                    <div key={i}>
+                      <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10">
+                        <img src={s.dataUrl} alt={s.ownName || s.name} className="w-full h-full object-cover" />
+                        <button onClick={() => removeStaged(i)} aria-label="Remove"
+                          className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 text-cream/80 flex items-center justify-center text-xs hover:bg-red-600 hover:text-white">×</button>
+                      </div>
+                      <input type="text" value={s.ownName || ""} placeholder="Name this one"
+                        onChange={(e) => { const v = e.target.value; setStaged((cur) => cur.map((x, k) => (k === i ? { ...x, ownName: v } : x))); }}
+                        className="w-full mt-1.5 bg-cream/5 border border-cream/15 focus:border-clay/65 rounded-lg px-2.5 py-1.5 font-detail text-[12px] text-cream placeholder:text-cream/25 outline-none transition-colors" />
                     </div>
                   ))}
                 </div>

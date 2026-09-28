@@ -678,6 +678,7 @@ const contents = `<!doctype html>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Every piece page — preview | ROGETjames</title>
 <meta name="robots" content="noindex, nofollow" />
+<meta property="og:image" content="${SITE}/images/hero/hero-banksia-oldmanis.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Jost:wght@300;400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
 <style>
@@ -749,13 +750,21 @@ if (!PREVIEW) {
 // Same list the nav bar and the galleries use (src/catalogues.js) — the pages
 // here just give each one a web address so it can be linked to.
 const catSlug = (label) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-const catShell = (title, description, body, url) => `<!doctype html>
+const catShell = (title, description, body, url, share = "/images/hero/hero-banksia-oldmanis.jpg") => `<!doctype html>
 <html lang="en" style="background:#020202"><head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}" />
 <meta name="robots" content="${PREVIEW ? "noindex, nofollow" : "index, follow"}" />
 <link rel="canonical" href="${url}" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="${esc(title)}" />
+<meta property="og:description" content="${esc(description)}" />
+<meta property="og:url" content="${url}" />
+<meta property="og:site_name" content="ROGETjames" />
+<meta property="og:image" content="${SITE}${share}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="${SITE}${share}" />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Jost:wght@300;400&family=DM+Sans:wght@300;400&family=Plus+Jakarta+Sans:wght@400;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -812,6 +821,11 @@ const catIndexBody = `<div class="wrap">
   <div class="crumbs"><a href="/">Home</a> › <span>Catalogues</span></div>
   <h1>Catalogues</h1>
   <p class="lede">The design catalogues and the powder coat colour charts, page by page.</p>
+  <div class="body" style="color:var(--dim);max-width:64ch;line-height:1.75;padding-bottom:6px">
+    <p>Every ROGETjames design, laid out as it appears in the printed catalogue — wall art, sculpture and architectural screens, with the pattern shown at a size you can read. The catalogues are the quickest way to find a design by eye rather than by name.</p>
+    <p style="margin-top:14px">Alongside them sit the Dulux and Interpon powder coat charts. Any design can be finished in any colour on those charts, or left in Corten steel to weather to its own rust. If a colour matters to a project, these are the two ranges to choose from.</p>
+    <p style="margin-top:14px">Sizes, finishes and lead times are on each design&rsquo;s own page. Bespoke sizes and one-off commissions are drawn to the place they are going, so nothing here is a limit.</p>
+  </div>
   <div class="cards">${CATALOGUES.map((c) =>
     `<a class="card" href="/catalogues/${catSlug(c.label)}"><img src="${img(c.pages[0], 800)}" alt="${esc(c.label)}" loading="lazy" /><b>${esc(c.label)}</b><span>${c.pages.length} pages</span></a>`).join("")}</div>
 </div>`;

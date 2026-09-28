@@ -53,6 +53,7 @@ const html = `<!doctype html>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Title faces — preview | ROGETjames</title>
 <meta name="robots" content="noindex, nofollow" />
+<meta property="og:image" content="https://rogetjames.com/images/hero/hero-banksia-oldmanis.jpg" />
 <link rel="preconnect" href="https://use.typekit.net" crossorigin />
 <link rel="stylesheet" href="https://use.typekit.net/${KIT}.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
