@@ -656,8 +656,18 @@ export default function MediaPage() {
           || /^(IMG|DSC|PXL|Screenshot)[_ -]/i.test(base)
           || /^[0-9A-F]{8}-[0-9A-F]{4}/i.test(base);
       };
-      if (staged.some((s) => !(s.ownName || "").trim() && !nm && cameraJunk(s.name))) {
-        setNote("Give these a name first — without one the caption becomes the filename off your phone, and that is what a visitor and Google are shown.");
+      // Name the ones that need naming. Refusing the whole batch without
+      // saying which photo is at fault reads as "it will not accept them".
+      const unnamed = staged
+        .map((s, i) => ({ s, i }))
+        .filter(({ s }) => !(s.ownName || "").trim() && !nm && cameraJunk(s.name));
+      if (unnamed.length) {
+        const which = unnamed.map(({ i }) => i + 1).join(", ");
+        setNote(
+          unnamed.length === staged.length
+            ? `Name each photo in the box under it first — otherwise the caption becomes the filename off your camera, which is what a visitor and Google are shown.`
+            : `Photo${unnamed.length === 1 ? "" : "s"} ${which} still need${unnamed.length === 1 ? "s" : ""} a name in the box underneath. The rest are fine.`
+        );
         setPhase("compose");
         return;
       }
