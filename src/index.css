@@ -514,10 +514,6 @@ h1, h2, h3 {
   animation: marquee-loop-right var(--loop-secs, 60s) linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .marquee-loop-right { animation: none; }
-}
-
 .marquee-track-fast {
   will-change: transform;
   animation: marquee-scroll 24s linear infinite;
