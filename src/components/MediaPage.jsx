@@ -671,11 +671,39 @@ export default function MediaPage() {
       // existing image in place (keeps its URL, so every reference updates).
       const repNote = rep ? `replace this image - ${rep}` : "";
       const combinedNote = [repNote, otherNote.trim(), instructions.trim()].filter(Boolean).join(" — ");
-      const res = await call({ adminSecret: secret, images: outImages, destinations: outDests, note: combinedNote });
-      let json;
-      try { json = await res.json(); }
-      catch { json = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
-      if (!res.ok || json.error) { setNote(json.error || `Upload failed (status ${res.status}).`); setPhase("compose"); return; }
+      // A 2000px photo is roughly 700KB once encoded, and the server will not
+      // take much beyond four megabytes in one request. A dozen photos in one
+      // go therefore failed outright. Send them in loads that stay under the
+      // limit, and keep going until they are all up.
+      const BUDGET = 3.6 * 1024 * 1024;
+      const loads = [];
+      let load = [], size = 0;
+      for (const im of outImages) {
+        const bytes = (im.dataUrl || "").length;
+        if (load.length && size + bytes > BUDGET) { loads.push(load); load = []; size = 0; }
+        load.push(im); size += bytes;
+      }
+      if (load.length) loads.push(load);
+
+      let json = { ok: true, saved: 0 };
+      let res = { ok: true, status: 200 };
+      for (let i = 0; i < loads.length; i++) {
+        if (loads.length > 1) setNote(`Sending ${i + 1} of ${loads.length}…`);
+        res = await call({ adminSecret: secret, images: loads[i], destinations: outDests, note: combinedNote });
+        let part;
+        try { part = await res.json(); }
+        catch { part = { error: `Server error (status ${res.status}) — the request may have timed out.` }; }
+        if (!res.ok || part.error) {
+          const got = json.saved;
+          setNote(got
+            ? `${part.error || `Upload failed (status ${res.status}).`} ${got} photo${got === 1 ? "" : "s"} did go up — send the rest again.`
+            : (part.error || `Upload failed (status ${res.status}).`));
+          setPhase("compose");
+          return;
+        }
+        json = { ...part, saved: json.saved + (part.saved || 0) };
+      }
+      setNote("");
       setDoneInfo({
         count: json.saved,
         dests: [...selectedDests],
@@ -936,7 +964,11 @@ export default function MediaPage() {
               onDrop={onDrop}
               className={`block w-full text-center py-6 rounded-2xl border-2 border-dashed font-detail text-sm cursor-pointer transition-all ${dragOver ? "border-clay bg-clay/10 text-cream" : "border-white/20 text-cream/80 hover:border-clay/60 hover:text-cream"} ${phase === "sending" ? "opacity-40 pointer-events-none" : ""}`}>
               + Choose photos, or drag them here from Photos / Finder
-              <input type="file" accept="image/*,.heic,.heif" multiple onChange={onPick} className="hidden" />
+              {/* accept must be "image/*" alone. Adding the .heic/.heif extensions
+                  beside it makes iOS fall back to picking ONE photo at a time —
+                  which is why a batch into Concrete only ever arrived as one.
+                  HEIC files still show: iOS reports them as image/heic. */}
+              <input type="file" accept="image/*" multiple onChange={onPick} className="hidden" />
             </label>
 
             {staged.length > 0 && (
