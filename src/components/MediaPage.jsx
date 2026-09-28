@@ -604,17 +604,23 @@ export default function MediaPage() {
     const files = Array.from(fileList || []).filter(
       (f) => f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp|gif|tiff?)$/i.test(f.name)
     );
-    if (!files.length) return;
-    setNote("Preparing photos…");
+    if (!files.length) { setNote("Nothing came through — if these are in iCloud, download them to the Mac first (right-click → Download Now), then try again."); return; }
+    setNote(`Preparing ${files.length} photo${files.length === 1 ? "" : "s"}…`);
     try {
-      const results = await Promise.all(files.map(compressToDataUrl));
-      const ok = results.filter(r => !r.failed);
-      const failed = results.filter(r => r.failed);
+      // One at a time, not all at once. Decoding several large photographs
+      // simultaneously exhausts the browser's image memory and they fail
+      // silently — which looked exactly like "it only accepts one".
+      const ok = [], failed = [];
+      for (let i = 0; i < files.length; i++) {
+        setNote(`Preparing ${i + 1} of ${files.length}…`);
+        const r = await compressToDataUrl(files[i]);
+        (r.failed ? failed : ok).push(r);
+      }
       setStaged(prev => [...prev, ...ok]);
       setNote(
         failed.length
-          ? `Couldn't read ${failed.length} photo${failed.length === 1 ? "" : "s"} (${failed.map(f => f.name).join(", ")}) — likely an iPhone HEIC. Open ${failed.length === 1 ? "it" : "them"} and share/save as JPEG, then add again. The rest are ready.`
-          : ""
+          ? `Added ${ok.length}. Couldn't read ${failed.length} (${failed.map(f => f.name).join(", ")}) — likely an iPhone HEIC, or still in iCloud rather than on the Mac.`
+          : `${ok.length} photo${ok.length === 1 ? "" : "s"} ready.`
       );
     } catch {
       setNote("Couldn't read those photos — try again.");
