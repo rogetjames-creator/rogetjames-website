@@ -54,17 +54,21 @@ export default function CatPageViewer({ pages, label, onClose, onCloseAll }) {
     const rect = strip.getBoundingClientRect();
     const ratio = (e.clientX - rect.left) / rect.width; // 0..1
     const EDGE = 0.3;      // outer 30% each side is the active zone
-    const MAX_SPEED = 8;   // px per frame at the very edge
+    const MAX_SPEED = 4;   // px per frame at the very edge
     let vel = 0;
-    if (ratio < EDGE)          vel = -MAX_SPEED * (EDGE - ratio) / EDGE;
-    else if (ratio > 1 - EDGE) vel =  MAX_SPEED * (ratio - (1 - EDGE)) / EDGE;
+    if (ratio < EDGE)          vel = -MAX_SPEED * ((EDGE - ratio) / EDGE) ** 2;
+    else if (ratio > 1 - EDGE) vel =  MAX_SPEED * ((ratio - (1 - EDGE)) / EDGE) ** 2;
     hoverVelRef.current = vel;
     if (vel && !rafRef.current) {
-      const tick = () => {
+      let last = 0, pos = thumbsRef.current.scrollLeft;
+      const tick = (now) => {
         const s = thumbsRef.current;
         if (!s || !hoverVelRef.current) { rafRef.current = null; return; }
+        const f = last ? Math.min((now - last) / 16.67, 3) : 1; last = now;   // same pace on 60Hz and 120Hz screens
+        if (Math.abs(s.scrollLeft - pos) > 2) pos = s.scrollLeft;
         const m = s.scrollWidth - s.clientWidth;
-        s.scrollLeft = Math.max(0, Math.min(m, s.scrollLeft + hoverVelRef.current));
+        pos = Math.max(0, Math.min(m, pos + hoverVelRef.current * f));
+        s.scrollLeft = pos;
         rafRef.current = requestAnimationFrame(tick);
       };
       rafRef.current = requestAnimationFrame(tick);

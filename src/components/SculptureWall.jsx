@@ -437,24 +437,27 @@ function Gallery() {
     const el = subrailRef.current;
     if (!el) return;
     const ZONE = 70;
-    const MAX_SPEED = 7;
+    const MAX_SPEED = 4;   // px per frame at the very edge — calm, eased in
 
     const onMove = (e) => {
       const rect = el.getBoundingClientRect();
       const x = e.clientX - rect.left;
-      if (x < ZONE) hoverDirRef.current = -((ZONE - x) / ZONE);
-      else if (x > rect.width - ZONE) hoverDirRef.current = (x - (rect.width - ZONE)) / ZONE;
+      if (x < ZONE) hoverDirRef.current = -(((ZONE - x) / ZONE) ** 2);
+      else if (x > rect.width - ZONE) hoverDirRef.current = ((x - (rect.width - ZONE)) / ZONE) ** 2;
       else hoverDirRef.current = 0;
     };
     const onLeave = () => { hoverDirRef.current = 0; };
     el.addEventListener("mousemove", onMove);
     el.addEventListener("mouseleave", onLeave);
 
-    let raf;
-    const tick = () => {
+    let raf, last = 0, pos = 0;
+    const tick = (now) => {
+      const f = last ? Math.min((now - last) / 16.67, 3) : 1; last = now;   // same pace on 60Hz and 120Hz screens
       const node = subrailRef.current;
       if (node && hoverDirRef.current !== 0) {
-        node.scrollLeft = Math.max(0, Math.min(node.scrollWidth - node.clientWidth, node.scrollLeft + hoverDirRef.current * MAX_SPEED));
+        if (Math.abs(node.scrollLeft - pos) > 2) pos = node.scrollLeft;
+        pos = Math.max(0, Math.min(node.scrollWidth - node.clientWidth, pos + hoverDirRef.current * MAX_SPEED * f));
+        node.scrollLeft = pos;
       }
       raf = requestAnimationFrame(tick);
     };

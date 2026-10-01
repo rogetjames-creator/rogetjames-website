@@ -417,13 +417,20 @@ a.dpill{display:inline-block;text-decoration:none}
     // faster the closer to the edge — no need to fight the wheel near the ends.
     if(!pricing){
       let raf=null, dir=0;
-      // A wider reach and a much longer stride: at the very edge the strip
-      // travels about three times as fast as before, easing off as the pointer
-      // comes back in. The strip's own smooth-scroll is turned off while it
-      // glides — that was animating every single frame and holding it back.
-      const EDGE=150, MAX=44;
-      const speed=(t)=>Math.ceil(2 + t*t*MAX);        // t: 0 at the inner limit, 1 at the edge
-      const loop=()=>{ if(dir){ tw.scrollLeft += dir; raf=requestAnimationFrame(loop); } else { raf=null; } };
+      // Calm glide: barely moves as the pointer enters the edge zone and
+      // builds gently to ~5px a frame at the very edge. Timed by the clock,
+      // not the screen refresh, so 120Hz displays don't run double speed.
+      // The strip's own smooth-scroll is turned off while it glides.
+      const EDGE=150, MAX=5;
+      const speed=(t)=>0.4 + t*t*MAX;                  // t: 0 at the inner limit, 1 at the edge
+      let pos=0, last=0;
+      const loop=(now)=>{
+        if(!dir){ raf=null; last=0; return; }
+        const f = last ? Math.min((now-last)/16.67, 3) : 1; last=now;
+        if(Math.abs(tw.scrollLeft-pos) > 2) pos=tw.scrollLeft;   // picked up after a wheel/drag
+        pos=Math.max(0, Math.min(tw.scrollWidth-tw.clientWidth, pos + dir*f));
+        tw.scrollLeft=pos; raf=requestAnimationFrame(loop);
+      };
       tw.addEventListener('mousemove', e => {
         if(!tw.classList.contains('of')){ dir=0; return; }
         const r2=tw.getBoundingClientRect(), x=e.clientX-r2.left;
@@ -432,7 +439,7 @@ a.dpill{display:inline-block;text-decoration:none}
         else                       dir = 0;
         if(dir){ tw.style.scrollBehavior='auto'; if(!raf) raf=requestAnimationFrame(loop); }
       });
-      tw.addEventListener('mouseleave', ()=>{ dir=0; tw.style.scrollBehavior=''; });
+      tw.addEventListener('mouseleave', ()=>{ dir=0; pos=0; tw.style.scrollBehavior=''; });
     }
     function step(dir){
       const i=r.flat.findIndex(([d,v])=>d===curP.d&&v===curP.v);

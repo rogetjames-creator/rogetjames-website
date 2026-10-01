@@ -1184,11 +1184,11 @@ function GalleryModal({ onClose, initialCategory = null }) {
   useEffect(() => {
     const row = searchRowRef.current;
     if (!row) return;
-    let targetSpeed = 0, scrollSpeed = 0, rafId = null;
-    const tick = () => { scrollSpeed += (targetSpeed - scrollSpeed) * 0.1; if (Math.abs(scrollSpeed) > 0.05) row.scrollLeft += scrollSpeed; rafId = requestAnimationFrame(tick); };
-    const onMouseMove = (e) => { const rect = row.getBoundingClientRect(); const x = e.clientX - rect.left; const w = rect.width; const zone = w * 0.22; if (x > w - zone) targetSpeed = ((x - (w - zone)) / zone) * 14; else if (x < zone) targetSpeed = -((zone - x) / zone) * 14; else targetSpeed = 0; };
+    let targetSpeed = 0, scrollSpeed = 0, rafId = null, last = 0;
+    const tick = (now) => { const f = last ? Math.min((now - last) / 16.67, 3) : 1; last = now; scrollSpeed += (targetSpeed - scrollSpeed) * 0.06 * f; if (Math.abs(scrollSpeed) > 0.05) row.scrollLeft += scrollSpeed * f; rafId = requestAnimationFrame(tick); };
+    const onMouseMove = (e) => { const rect = row.getBoundingClientRect(); const x = e.clientX - rect.left; const w = rect.width; const zone = w * 0.22; if (x > w - zone) targetSpeed = Math.pow((x - (w - zone)) / zone, 2) * 4; else if (x < zone) targetSpeed = -Math.pow((zone - x) / zone, 2) * 4; else targetSpeed = 0; };
     const onEnter = () => { rafId = requestAnimationFrame(tick); };
-    const onLeave = () => { targetSpeed = 0; if (rafId) { cancelAnimationFrame(rafId); rafId = null; scrollSpeed = 0; } };
+    const onLeave = () => { targetSpeed = 0; if (rafId) { cancelAnimationFrame(rafId); rafId = null; scrollSpeed = 0; last = 0; } };
     row.addEventListener("mouseenter", onEnter);
     row.addEventListener("mouseleave", onLeave);
     row.addEventListener("mousemove", onMouseMove);
