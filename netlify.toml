@@ -393,16 +393,6 @@
   to = "/catalogues"
   status = 301
 
-# Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
-# and isn't matched by a rule above 301s to the homepage instead of hitting
-# Netlify's default 404. Real files (assets, images, the .html pages) are
-# served first, so this only ever fires for paths that would otherwise 404.
-[[redirects]]
-  from = "/*"
-  to = "/"
-  status = 301
-  force = false
-
 # Security headers — applied to every route. The CSP allows only the sources
 # the site actually uses (self, Google Fonts, the myportfolio image CDN); there
 # are no iframes, workers or eval in the site, so this does not break anything.
@@ -492,6 +482,16 @@
   status = 301
 
 
+# Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
+# and isn't matched by a rule above 301s to the homepage instead of hitting
+# Netlify's default 404. Real files (assets, images, the .html pages) are
+# served first, so this only ever fires for paths that would otherwise 404.
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 301
+  force = false
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -546,3 +546,4 @@
 # same-origin (so the strict CSP allows them) and lets us cap their resolution.
 [images]
   remote_images = ["https://[^/]*\\.airtableusercontent\\.com/.*", "https://dl\\.airtable\\.com/.*"]
+
