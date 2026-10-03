@@ -257,6 +257,43 @@ export default function App() {
     };
   }, []);
 
+  // Arriving from another page at /#contact (the gallery pages' "Request
+  // quote"): the sections above load in after the page opens and push Contact
+  // down, so the browser's jump lands short — on Services. Keep re-aiming at
+  // the section for a few seconds until it stays put, unless the visitor
+  // starts scrolling themselves.
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!SECTIONS.includes(hash) || hash === "#") return;
+    let stopped = false;
+    const stop = () => { stopped = true; };
+    const opts = { passive: true, once: true };
+    window.addEventListener("touchstart", stop, opts);
+    window.addEventListener("wheel", stop, opts);
+    window.addEventListener("keydown", stop, opts);
+    let steady = 0;
+    const timer = setInterval(() => {
+      const el = document.querySelector(hash);
+      const lenis = lenisRef.current?.lenis;
+      if (stopped || steady >= 6) return clearInterval(timer);
+      if (!el || !lenis) return;
+      if (Math.abs(el.getBoundingClientRect().top) > 4) {
+        steady = 0;
+        lenis.scrollTo(el, { immediate: true, force: true });
+      } else {
+        steady++;
+      }
+    }, 250);
+    const giveUp = setTimeout(stop, 10000);
+    return () => {
+      clearInterval(timer);
+      clearTimeout(giveUp);
+      window.removeEventListener("touchstart", stop);
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("keydown", stop);
+    };
+  }, []);
+
   return (
     <ReactLenis
       root
