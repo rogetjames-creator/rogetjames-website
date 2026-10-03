@@ -131,7 +131,17 @@ export default function Navbar({ quoteCount = 0 }) {
     if (!target) return;
     if (closeMobileMenu) { setMobileOpen(false); lenis?.start(); }
     if (lenis) {
-      lenis.scrollTo(target, { duration: 2.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
+      // Sections above (Collection, Bespoke) load in while the page is
+      // scrolling and push everything below them down, so the first scroll
+      // can stop short — on Services instead of Contact. Re-aim until it lands.
+      let tries = 0;
+      const land = () => {
+        const off = target.getBoundingClientRect().top;
+        if (Math.abs(off) > 4 && tries++ < 4) {
+          lenis.scrollTo(target, { duration: 0.6, easing: (t) => 1 - Math.pow(1 - t, 4), onComplete: land });
+        }
+      };
+      lenis.scrollTo(target, { duration: 2.8, easing: (t) => 1 - Math.pow(1 - t, 4), onComplete: land });
     } else {
       target.scrollIntoView({ behavior: "smooth" });
     }
@@ -315,12 +325,12 @@ export default function Navbar({ quoteCount = 0 }) {
             </button>
             <div className="relative ml-1">
               {quoteCount > 0 ? (
-                <a href="#contact" className="btn-quote nav-quote-pending px-5 py-2 text-cream text-sm font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
+                <a href="#contact" onClick={scrollTo("#contact")} className="btn-quote nav-quote-pending px-5 py-2 text-cream text-sm font-semibold whitespace-nowrap select-none inline-flex items-center gap-2">
                   Pending Quotes
                   <span className="min-w-[18px] h-[18px] rounded-full bg-black/35 text-cream text-[10px] font-bold flex items-center justify-center px-1.5 leading-none tabular-nums">{quoteCount}</span>
                 </a>
               ) : (
-                <a href="#contact" className="btn-quote px-5 py-2 text-cream/80 text-sm font-semibold whitespace-nowrap select-none">
+                <a href="#contact" onClick={scrollTo("#contact")} className="btn-quote px-5 py-2 text-cream/80 text-sm font-semibold whitespace-nowrap select-none">
                   Request a Quote
                 </a>
               )}
