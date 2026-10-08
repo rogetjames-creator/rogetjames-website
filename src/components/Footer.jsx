@@ -70,7 +70,8 @@ function handleLink(link) {
 
 export default function Footer() {
   return (
-    <footer className="bg-charcoal rounded-t-[3rem] md:rounded-t-[4rem] pt-16 md:pt-24 pb-8">
+    <footer className="bg-charcoal rounded-t-[3rem] md:rounded-t-[4rem] pt-16 md:pt-24 pb-8"
+      style={{ backgroundImage: "linear-gradient(to bottom, #5a4c3f 0%, #4f4239 10%, #463b31 20%, #3c332c 30%, #322b25 40%, #26211d 50%, #1c1616 60%, #0f0d0d 70%, #0a0a0a 80%, #0a0a0a 100%)" }}>
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="flex flex-col items-center text-center mb-16">
           {/* Brand */}
