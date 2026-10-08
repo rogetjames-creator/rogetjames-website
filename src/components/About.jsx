@@ -43,8 +43,8 @@ export default function About() {
   }, []);
 
   return (
-    <section id="about" ref={sectionRef} className="relative bg-jet py-24 md:py-32 overflow-hidden">
-      <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url(/images/section-glow.webp)", transform: "scaleX(-1)" }} />
+    <section id="about" ref={sectionRef} className="relative bg-jet py-[136px] md:py-[192px] overflow-hidden">
+      <div aria-hidden="true" className="absolute inset-x-0 top-10 bottom-10 md:top-16 md:bottom-16 bg-cover bg-center" style={{ backgroundImage: "url(/images/section-glow.webp)", transform: "scaleX(-1)" }} />
       <div className="relative flex flex-col items-center px-8 text-center">
 
         {/* Logo + flanking lines */}
