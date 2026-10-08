@@ -23,7 +23,7 @@ export const MELBOURNE = {
   // James's own words, matching the Perth page.
   intro: [
     "Original laser-cut metal wall art, sculpture & architectural features \u2014 curated catalogues and bespoke works, crafted in Melbourne, Victoria for residential, commercial, architectural and landscape spaces.",
-    "Since 2007 ROGETjames has designed and created original laser-cut metal wall art and sculpture, developing an ever-evolving curated catalogue of unique designs. Highly detailed and meticulously designed creations are features that set these artworks on their own path.",
+    "Since 2008 ROGETjames has designed and created original laser-cut metal wall art and sculpture, developing an ever-evolving curated catalogue of unique designs. Highly detailed and meticulously designed creations are features that set these artworks on their own path.",
     "Sculptural works, free-form wall art, screens and bespoke commissions stretch across Melbourne and the wider Victorian region.",
     "Made to last, with durable materials and quality finishes. These works are statement features tailored for architecture, landscapes and interior styling, where \u2026",
   ],
