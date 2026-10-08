@@ -70,14 +70,14 @@ const WORDS = {
     "A gate is the first thing a visitor meets, and the one piece of a house that has to be beautiful and do a job. These are cut from solid Corten steel or powder-coated aluminium, sized to the opening and built to swing or slide, manually or on an automated track. Any pattern in the range can be cut into one, and the density can be opened up for airflow or closed down for privacy.",
   ],
   fencing: [
-    "Laser Cut Metal Fence Panels & Infills",
-    "Fence infills and panels that turn a boundary into part of the design.",
-    "A boundary does not have to be the dullest thing on a property. These infills drop into an existing frame or form a fence of their own, in Corten steel or powder-coated aluminium, carrying the same patterns as the wall art and the screens. Pool fencing, front boundaries and side returns are all made to measure, and the panel's open area can be tuned to the privacy and the airflow the site needs.",
+    "Fences & Infills",
+    "The Line Between",
+    "A fence is the first line drawn on a piece of land. Before the house, before the garden, it says: here is where one world ends and another begins.\n\nIt serves quietly. It holds the wind off, keeps the street at a distance, and gives the people behind it the ease of not being watched.\n\nBut every fence also reveals. It lets through what it chooses: a slant of morning light, the green of a garden, the outline of someone coming home. What a fence shows, and what it withholds, tells the street who lives there.\n\nThis is where design does its work. Cut a pattern into steel and the boundary starts to breathe. The solid becomes a veil. Sun passes through and lays the pattern across the ground, shifting by the hour, so the fence is never the same at noon as it was at dawn. At night, lit from within, it reverses: the house glows outward and the pattern is drawn in light.\n\nA plain fence only divides. A designed one frames, filters and welcomes, and turns the edge of a property into the first thing worth looking at.",
   ],
   dividers: [
-    "Laser Cut Metal Room & Garden Dividers",
-    "Room dividers and garden dividers — separation without a wall.",
-    "A divider marks a change of space without closing it off. Indoors that might be an entry separated from a living area; outdoors, a courtyard set apart from a garden. Cut from Corten steel or powder-coated aluminium and freestanding or fixed, each one keeps sightlines and daylight moving through while still drawing a line. The pattern decides how much passes and how much is held.",
+    "Dividers",
+    "The Space Between",
+    "A divider is a pause, not a wall. It marks where one space ends and another begins, and leaves the door open between them.\n\nIndoors, it sets an entry apart from a living room. Outdoors, a courtyard from a garden. The room stays whole, but now it has places within it.\n\nLight still travels. So do sightlines, voices, the movement of someone passing on the other side. Nothing is shut out, only softened.\n\nFreestanding or fixed, each one draws its line lightly. The pattern decides how much passes and how much is held.",
   ],
   privacy: [
     "Laser Cut Metal Privacy Screens, Australia",
@@ -85,9 +85,9 @@ const WORDS = {
     "Privacy is usually solved with something solid and ugly. A laser cut screen does it with a pattern: dense enough at eye level to stop a sightline, open enough that light and breeze still come through. Made in Corten steel or powder-coated aluminium, sized to the opening, and fixed to a wall, a frame or its own posts. Overlooked balconies, boundaries and outdoor showers are the usual homes for them.",
   ],
   pergolas: [
-    "Laser Cut Pergola Screens & Shade Panels",
-    "Overhead and side panels for pergolas — shade that draws a pattern as the sun moves.",
-    "Overhead, a laser cut panel does something a solid roof cannot: it casts the pattern onto the floor beneath and moves it through the day. Cut from Corten steel or powder-coated aluminium and made to the frame's spans, these work as a whole roof, as an infill between beams, or as a side panel where afternoon sun comes in low. Shade and drawing at once.",
+    "Pergola Screens & Shade Panels",
+    "Light casting patterned shadows across the space below.",
+    "Each design brings its own signature and style to the place it inhabits.",
   ],
 };
 
@@ -223,7 +223,7 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
     <h1>${esc(heading)}</h1>
     <p class="lede">${esc(blurb)}</p>
     <p class="count">${designs.length} photograph${designs.length === 1 ? "" : "s"} &middot; ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs</p>
-    ${body ? `<p class="body">${esc(body)}</p>` : ""}
+    ${body ? body.split("\n\n").map((paragraph) => `<p class="body">${esc(paragraph)}</p>`).join("\n    ") : ""}
   </div>
   <div class="grid">
     ${(() => { const seen = new Set(); return designs.map((d) => {
