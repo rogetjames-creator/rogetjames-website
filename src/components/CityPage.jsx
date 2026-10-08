@@ -7,6 +7,7 @@ import MelbourneGalleryPanels from "./MelbourneGalleryPanels";
 import ArtMeetsDesignMark from "./ArtMeetsDesignMark";
 import { cityHeroKey } from "../mediaDestinations";
 import { useUploadsByKey } from "../utils/mediaUploads";
+import PinterestIcon, { PINTEREST_URL } from "./PinterestIcon";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -302,6 +303,10 @@ export default function CityPage({ city }) {
               <a href="https://instagram.com/rogetjames/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
                  className="w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors">
                 <Instagram size={14} className="text-cream/50" />
+              </a>
+              <a href={PINTEREST_URL} target="_blank" rel="noopener noreferrer" aria-label="Pinterest"
+                 className="w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors">
+                <PinterestIcon size={14} className="text-cream/50" />
               </a>
               <a href="mailto:james@rogetjames.com" aria-label="Email"
                  className="w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors">

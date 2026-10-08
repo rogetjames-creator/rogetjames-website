@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Mail, Phone, MapPin, Instagram, Youtube, Upload, X } from "lucide-react";
+import PinterestIcon, { PINTEREST_URL } from "./PinterestIcon";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -491,8 +492,8 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
           </div>
         </div>
 
-        {/* Instagram — centered at the bottom of the section */}
-        <div className="contact-reveal flex justify-center mt-16">
+        {/* Instagram + Pinterest — centered at the bottom of the section */}
+        <div className="contact-reveal flex justify-center gap-4 mt-16">
           <a
             href="https://instagram.com/rogetjames/"
             target="_blank"
@@ -501,6 +502,15 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
             aria-label="Instagram"
           >
             <Instagram size={22} className="text-clay" />
+          </a>
+          <a
+            href={PINTEREST_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="lift-hover w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/15 transition-colors"
+            aria-label="Pinterest"
+          >
+            <PinterestIcon size={22} className="text-clay" />
           </a>
         </div>
       </div>

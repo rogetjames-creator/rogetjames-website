@@ -7,6 +7,7 @@ import SearchModal from "./SearchModal";
 // Catalogues — single source of truth in src/catalogues.js (shared with the
 // gallery pages and the client vault so every catalogue UI stays identical).
 import { CAT1, CAT2, DULUX_PAGES, INTERPON_PAGES, CATALOGUES } from "../catalogues";
+import PinterestIcon, { PINTEREST_URL } from "./PinterestIcon";
 const CatPageViewer = lazy(() => import("./CatPageViewer"));
 const ClientPreview = lazy(() => import("./ClientPreview"));
 
@@ -177,7 +178,7 @@ export default function Navbar({ quoteCount = 0 }) {
         style={{ background: "linear-gradient(to bottom, rgba(6,5,4,0.6) 0%, rgba(6,5,4,0.28) 45%, transparent 100%)" }}
       />
 
-      {/* ── Always-visible strip: wordmark + instagram ── */}
+      {/* ── Always-visible strip: wordmark + instagram + pinterest ── */}
       <div className="fixed top-0 left-0 z-[101] flex items-center gap-3 px-5 py-3 pointer-events-none">
         {/* Wordmark */}
         <button
@@ -196,6 +197,16 @@ export default function Navbar({ quoteCount = 0 }) {
           style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.5))" }}
         >
           <InstagramIcon />
+        </a>
+        <a
+          href={PINTEREST_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Pinterest"
+          className="pointer-events-auto text-cream/70 hover:text-cream transition-colors duration-300"
+          style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.5))" }}
+        >
+          <PinterestIcon size={16} />
         </a>
       </div>
 

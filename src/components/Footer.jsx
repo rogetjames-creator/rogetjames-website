@@ -1,4 +1,5 @@
 import { Instagram, Youtube, Mail } from "lucide-react";
+import PinterestIcon, { PINTEREST_URL } from "./PinterestIcon";
 
 const NAV_COLS = [
   {
@@ -116,6 +117,15 @@ export default function Footer() {
               aria-label="Instagram"
             >
               <Instagram size={14} className="text-cream/50" />
+            </a>
+            <a
+              href={PINTEREST_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lift-hover w-9 h-9 rounded-lg bg-cream/5 flex items-center justify-center hover:bg-cream/10 transition-colors"
+              aria-label="Pinterest"
+            >
+              <PinterestIcon size={14} className="text-cream/50" />
             </a>
             <a
               href="mailto:james@rogetjames.com"
