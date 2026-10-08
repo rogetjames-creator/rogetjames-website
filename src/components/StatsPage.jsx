@@ -222,6 +222,8 @@ export default function StatsPage() {
 
         <UpCloseUploader secret={secret} />
 
+        <CountTable title="Pinterest visitors — page they landed on" data={summary.byPinPage} last={summary.lastByPinPage} />
+        <CountTable title="Saved to Pinterest from the site" data={summary.byPinSaved} last={summary.lastByPinSaved} />
         <CountTable title="Galleries opened" data={summary.byGallery} last={summary.lastByGallery} />
         <CountTable title="Activity" data={summary.byType} last={summary.lastByType} />
         <CountTable title="WA vs Interstate" data={summary.byRegion} last={summary.lastByRegion} />
@@ -241,7 +243,7 @@ export default function StatsPage() {
                   <span className="font-detail text-[10px] text-cream/35">{new Date(r.createdTime).toLocaleString()}</span>
                 </div>
                 <p className="font-detail text-sm text-cream/80">
-                  {[r.Gallery, r.Item, r.Series, r.Material, r.Size].filter(Boolean).join(" · ")}
+                  {[r.Gallery, r.Item, r.Series, r.Material, r.Size, r.Type === "Pinterest Visit" ? r.Page : null].filter(Boolean).join(" · ")}
                   {typeof r.Price === "number" && ` — $${r.Price.toLocaleString()}`}
                 </p>
                 {(r.Postcode || r.Region) && (

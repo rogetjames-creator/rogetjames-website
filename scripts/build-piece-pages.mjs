@@ -158,7 +158,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   // "Save to Pinterest" — a plain link to Pinterest's own pin form, filled in
   // with this piece's photo, words and address. Never carries a price.
   const pinHref = hero
-    ? "https://www.pinterest.com/pin/create/button/?url=" + encodeURIComponent(url) +
+    ? "https://www.pinterest.com/pin/create/button/?url=" + encodeURIComponent(url + "?utm_source=pinterest") +
       "&media=" + encodeURIComponent(`${SITE}${hero}`) +
       "&description=" + encodeURIComponent(`${name} — ${summary.replace(/^.*? by James Roget\. /, `${subject} by James Roget, ROGETjames. `)}`)
     : "";
@@ -369,6 +369,7 @@ footer .back{display:inline-block;font-family:var(--jost);font-size:13px;letter-
 color:var(--cream);border-bottom:1px solid rgba(212,167,92,.5);padding-bottom:4px;transition:color .3s ease,border-color .3s ease}
 footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
 </style>
+<script src="/pin-track.js" defer></script>
 </head>
 <body>
 <header><div class="wrap hdr">
@@ -467,7 +468,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
 
       <div class="cta cta-enquire">
         <a class="btn" href="/#contact">Enquire</a>
-        ${pinHref ? `<a class="btn btn-pin" href="${pinHref}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${PIN_PATH}"/></svg>Save to Pinterest</a>` : ""}
+        ${pinHref ? `<a class="btn btn-pin" data-item="${esc(name)}" href="${pinHref}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${PIN_PATH}"/></svg>Save to Pinterest</a>` : ""}
       </div>
 
       ${sizes.length ? `<div class="block sizes-block">
@@ -805,7 +806,7 @@ p.lede{color:var(--dim);max-width:60ch;margin-top:14px;padding-bottom:30px;borde
 .card b{display:block;font-family:"Syne",sans-serif;font-size:17px;padding:14px 16px 2px}
 .card span{display:block;font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding:0 16px 16px}
 footer{border-top:1px solid var(--rule);padding:30px 0 60px;font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
-</style></head><body>
+</style><script src="/pin-track.js" defer></script></head><body>
 <header><div class="wrap hdr"><a class="mark" href="/">ROGET<i>james</i></a>
 <nav><a href="/wall-art">Wall Art</a><a href="/sculpture">Sculpture</a><a href="/screens">Screens</a><a href="/catalogues">Catalogues</a></nav></div></header>
 ${body}

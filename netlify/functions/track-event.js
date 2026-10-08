@@ -1,4 +1,4 @@
-// Logs pricing & postcode interest to Netlify Blobs — storage built into the
+// Logs pricing & postcode interest, and Pinterest visits/saves, to Netlify Blobs — storage built into the
 // Netlify platform, so it needs no external account or API keys. The /stats
 // dashboard and the weekly digest both read from this same store. We also
 // email James directly the moment someone enters a postcode to price a design.
@@ -17,7 +17,7 @@ export default async function handler(req, context) {
   let body;
   try { body = await req.json(); } catch { return json({ ok: true }, 200); }
 
-  const { type, item, series, postcode, state, isWA, material, size, price, gallery } = body;
+  const { type, item, series, postcode, state, isWA, material, size, price, gallery, page } = body;
   if (!type) return json({ ok: true }, 200);
 
   // Email James the moment a visitor enters a postcode to price a design — the
@@ -34,8 +34,9 @@ export default async function handler(req, context) {
   try {
     const record = {
       createdTime: new Date().toISOString(),
-      Type: type === "postcode" ? "Postcode Entered" : type === "add_to_quote" ? "Added to Quote" : type === "gallery" ? "Gallery Opened" : "Viewed Pricing",
+      Type: type === "postcode" ? "Postcode Entered" : type === "add_to_quote" ? "Added to Quote" : type === "gallery" ? "Gallery Opened" : type === "pinterest" ? "Pinterest Visit" : type === "pin_saved" ? "Saved to Pinterest" : "Viewed Pricing",
       ...(gallery && { Gallery: gallery }),
+      ...(typeof page === "string" && page && { Page: page.slice(0, 200) }),
       ...(item && { Item: item }),
       ...(series && { Series: series }),
       ...(postcode && { Postcode: postcode }),

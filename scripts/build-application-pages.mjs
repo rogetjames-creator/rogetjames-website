@@ -211,7 +211,7 @@ h1{font-family:var(--heading);font-weight:800;font-size:clamp(28px,4vw,44px);let
 font-family:var(--jost);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
 .btn:hover{background:rgba(158,113,52,.22)}
 footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
-</style></head><body>
+</style><script src="/pin-track.js" defer></script></head><body>
 <header><div class="wrap hdr">
   <a class="mark" href="/">ROGET<i>james</i></a>
   <nav><a href="/wall-art">Wall Art</a><a href="/sculpture">Sculpture</a><a href="/screens">Screens</a><a href="/#contact">Contact</a></nav>
