@@ -17,6 +17,49 @@
   status = 301
   force = true
 
+# Legacy addresses reported by Search Console, with matching current destinations.
+[[redirects]]
+  from = "/vuelta"
+  to = "/screens/pergolas#vuelta"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/xavier"
+  to = "/screens/wall-decor#xavier"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/concrete-1"
+  to = "/?open=concrete"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sculpture-23"
+  to = "/sculpture"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/reels"
+  to = "/?open=reels"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bespoke"
+  to = "/#bespoke"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home-i"
+  to = "/"
+  status = 301
+  force = true
+
 # Old site's pages (pre-rebuild) are still indexed by Google and were 404ing.
 # 301 each to the matching section on the current single-page site so Google
 # drops the stale results instead of showing dead links.
