@@ -5,6 +5,7 @@ import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Search } from "lucide-react";
 import CatPageViewer from "./CatPageViewer";
 import { MEDIA_KEYS, bespokeKey, projectKey } from "../mediaDestinations";
+import { confirmedPhotoDescription, isScreenPhotoAllowed } from "../data/confirmedPhotoDescriptions";
 import { SCREEN_DESIGNS } from "../data/screenDesigns";
 import { useUploadsByKey } from "../utils/mediaUploads";
 import { netlifyImg } from "../utils/img";
@@ -846,7 +847,7 @@ function CommissionDetail({ item, onClose }) {
           <X size={13} />
         </button>
         <div className="aspect-[4/3] overflow-hidden relative bg-charcoal">
-          <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+          <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover" />
         </div>
         <div className="p-6">
           <p className="font-heading font-semibold text-cream text-base leading-snug">{item.client || item.name}</p>
@@ -909,7 +910,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
         <ChevronLeft size={24} />
       </button>
       <div ref={contentRef} className="flex flex-col items-center gap-4 px-20" onClick={(e) => e.stopPropagation()}>
-        <img src={item.img} alt={item.name} className="max-w-[80vw] max-h-[78vh] object-contain rounded-2xl" />
+        <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="max-w-[80vw] max-h-[78vh] object-contain rounded-2xl" />
         <div className="flex items-center gap-6">
           <p className="text-cream/80 font-heading font-medium text-sm tracking-wide">{item.name}</p>
           {item.videoUrl && (
@@ -943,7 +944,7 @@ function SlidingThumb({ slides, alt, active, pos }) {
   return (
     <div className="w-full h-full relative">
       {slides.map((src, i) => (
-        <img key={src} src={src} alt={alt}
+        <img key={src} src={src} alt={confirmedPhotoDescription(src) || alt}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={{ opacity: i === cur ? 1 : 0, transition: 'opacity 0.8s ease', objectPosition: pos || 'center center' }}
         />
@@ -1007,7 +1008,7 @@ function ScreenDesignRow({ design, onOpenLightbox, onDetail, getDebug }) {
               >
                 {item.slides
                   ? <SlidingThumb slides={item.slides} alt={item.name} active={rowActive} pos={item.pos} />
-                  : <img src={item.img} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={item.pos ? { objectPosition: item.pos } : undefined} />
+                  : <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={item.pos ? { objectPosition: item.pos } : undefined} />
                 }
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
@@ -1066,7 +1067,7 @@ function GalleryCard({ item, onClick, onDetail }) {
     >
       {item.slides
         ? <SlidingThumb slides={item.slides} alt={item.name} active={hovered} pos={item.pos} />
-        : <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" style={item.pos ? { objectPosition: item.pos } : undefined} />
+        : <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" style={item.pos ? { objectPosition: item.pos } : undefined} />
       }
       <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
@@ -1376,7 +1377,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                         style={{ width: "calc(20% - 9.6px)", minWidth: "160px" }}
                         onClick={() => openLightboxScoped(item)}
                       >
-                        <img src={item.img} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                           <p className="text-cream font-heading font-semibold text-xs">{item.name}</p>
@@ -1587,8 +1588,8 @@ function GalleryModal({ onClose, initialCategory = null }) {
                             className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                             style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((idx * 0.618) % 1) * 1.5).toFixed(2)}s` }}>
                             {item.slides
-                              ? <img src={item.slides[0]} alt={item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
-                              : <img src={item.img} alt={item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
+                              ? <img src={item.slides[0]} alt={confirmedPhotoDescription(item.slides[0]) || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
+                              : <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
                             }
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                               <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{item.name}</p>
@@ -1738,6 +1739,7 @@ export const SCREEN_DESIGNS_SECTIONED = (() => {
 // ALL). Deduped by image src so the same file never appears twice.
 const _normScreen = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 export function mergeScreenUploads(base, uploads) {
+  uploads = (uploads || []).filter((u) => isScreenPhotoAllowed(u.src));
   if (!uploads || !uploads.length) return base;
   const used = new Set();
   const result = base.map((d) => {
@@ -1922,7 +1924,7 @@ function PortalLightbox({ items, index, onClose, onPrev, onNext }) {
         style={{ height: "calc(100vh - 72px)", marginTop: "52px" }}
         onClick={(e) => e.stopPropagation()}>
         <div className="w-full flex items-center justify-center relative flex-none">
-          <img ref={imgRef} src={slides[slideIdx]} alt={item.name}
+          <img ref={imgRef} src={slides[slideIdx]} alt={confirmedPhotoDescription(slides[slideIdx]) || item.name}
             className="max-w-full object-contain rounded-2xl" style={{ maxHeight: "74vh" }} />
         </div>
         <div className="flex-shrink-0 flex flex-col items-center gap-1 pt-0 pb-4 w-full max-w-lg">
@@ -2344,7 +2346,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                   }}
                     className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                    <img src={it.img} alt={it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       style={it.pos ? { objectPosition: it.pos } : undefined} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                       <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
@@ -2406,7 +2408,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                   }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy"
+                  <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2430,7 +2432,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                 style={{ fontSize: 20 }}>‹</button>
 
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={displayImg} alt={curFlat.name}
+                <img src={displayImg} alt={confirmedPhotoDescription(displayImg) || curFlat.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{curFlat.name}</p>
               </div>
@@ -2454,7 +2456,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                     onClick={() => { setFlatIdx(fi); setSlideIdx(0); setJumpByDesign(true); }}
                     className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                     style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : isSameDesign ? 0.75 : 0.35, transition: "all 0.2s" }}>
-                    <img src={it.img} alt={it.name} className="w-full h-full object-cover" />
+                    <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} className="w-full h-full object-cover" />
                   </div>
                 );
               })}
@@ -2515,7 +2517,7 @@ function ProjectInfoPopup({ project, onClose }) {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
                   {project.behindTheScenes.map((it, i) => (
                     <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(242,240,233,0.08)" }}>
-                      <img src={it.img} alt={it.name} loading="lazy"
+                      <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: it.pos || "center" }} />
                       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)", opacity: 0, transition: "opacity 0.2s" }}
                         onMouseEnter={e => e.currentTarget.style.opacity = 1}
@@ -2674,7 +2676,7 @@ export function ProjectsGalleryModal({ onClose }) {
                 <div key={i} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy"
+                  <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2696,7 +2698,7 @@ export function ProjectsGalleryModal({ onClose }) {
                 className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/8 hover:bg-white/16 flex items-center justify-center text-cream transition-colors"
                 style={{ fontSize: 20 }}>‹</button>
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={slides[slideIdx] ?? item.img} alt={item.name}
+                <img src={slides[slideIdx] ?? item.img} alt={confirmedPhotoDescription(slides[slideIdx] ?? item.img) || item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{item.name}</p>
               </div>
@@ -2715,7 +2717,7 @@ export function ProjectsGalleryModal({ onClose }) {
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                       style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                      <img src={src} alt={it.name} className="w-full h-full object-cover" />
+                      <img src={src} alt={confirmedPhotoDescription(src) || it.name} className="w-full h-full object-cover" />
                     </div>
                   );
                 });
@@ -3034,7 +3036,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                 <div key={it.origIdx} onClick={() => { setItemIdx(it.origIdx); setSlideIdx(0); setSearchQuery(""); setSearchOpen(false); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={it.name} loading="lazy"
+                  <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -3063,7 +3065,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
               <div key={i} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
                 className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                 style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                <img src={it.img} alt={it.name} loading="lazy"
+                <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   style={it.pos ? { objectPosition: it.pos } : undefined} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -3085,7 +3087,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                 style={{ fontSize: 20 }}>‹</button>
 
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={slides[slideIdx] ?? item.img} alt={item.name}
+                <img src={slides[slideIdx] ?? item.img} alt={confirmedPhotoDescription(slides[slideIdx] ?? item.img) || item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{item.name}</p>
               </div>
@@ -3107,7 +3109,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                       style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                      <img src={src} alt={it.name} className="w-full h-full object-cover" />
+                      <img src={src} alt={confirmedPhotoDescription(src) || it.name} className="w-full h-full object-cover" />
                     </div>
                   );
                 });
@@ -3588,3 +3590,4 @@ export default function BespokeCommissions() {
     </>
   );
 }
+
