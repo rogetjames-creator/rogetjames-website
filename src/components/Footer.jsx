@@ -23,7 +23,6 @@ const NAV_COLS = [
     links: [
       { label: "Catalogue Designs", href: "#services" },
       { label: "Bespoke Design", href: "#bespoke" },
-      { label: "Rendering Service", href: "#process" },
       { label: "Commercial", href: "#services" },
       { label: "Public Art", href: "#services" },
     ],
