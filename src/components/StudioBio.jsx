@@ -1,6 +1,7 @@
 export default function StudioBio() {
   return (
     <section className="relative bg-ink py-12 md:py-20 overflow-hidden">
+      <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url(/images/section-glow.webp)" }} />
 
       <div className="relative z-10 max-w-2xl mx-auto px-6 md:px-12 text-center">
         <div className="studio-bio-inner flex flex-col items-center gap-0">
