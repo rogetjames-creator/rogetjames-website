@@ -35,7 +35,7 @@ export const SCREEN_DESIGNS = [
     items: [
       { name: "ROANDER", img: "/images/roander/roander-1.jpg", pos: "20% center", tags: ["wall decor"] },
       { name: "ROANDER", img: `${CDN}/b6751fc7-b7c7-4f41-b84d-bb501d184e62_rw_1920.jpg`, tags: ["gates", "fencing"] },
-      { name: "ROANDER", img: `${CDN}/f5e2a05d-f862-4427-983a-bfd5b700a9e2_rw_1200.jpg`, slides: [`${CDN}/f5e2a05d-f862-4427-983a-bfd5b700a9e2_rw_1200.jpg`, `${CDN}/8f61889e-8e26-41b7-9f63-af05771238f7_rw_1200.jpg`] },
+      { name: "ROANDER", img: `${CDN}/8f61889e-8e26-41b7-9f63-af05771238f7_rw_1200.jpg`, slides: [`${CDN}/8f61889e-8e26-41b7-9f63-af05771238f7_rw_1200.jpg`] },
     ],
   },
   {
@@ -53,7 +53,7 @@ export const SCREEN_DESIGNS = [
 
   // ── THE ARCHITECTURAL (A–Z) ───────────────────────────────────────────────
   { name: "ELLE", sectionStart: "THE ARCHITECTURAL", tabs: ["architectural"], items: [
-    { name: "ELLE — Corten Screen", img: "/images/screens/elle-corten.jpg", tags: ["screens", "residential"] },
+    { name: "ELLE — powder-coated aluminium wall decor", img: "/images/screens/elle-corten.jpg", tags: ["screens", "residential"] },
   ] },
   { name: "AYYAD", tags: ["pergolas", "screens"], items: [
     { name: "AYYAD — entry screen & pergola", img: "/images/uploads/1790331578744_wz8pl2.jpg", tags: ["pergolas", "screens", "privacy", "residential"] },
@@ -110,7 +110,7 @@ export const SCREEN_DESIGNS = [
   {
     name: "HEXO",
     items: [
-      { name: "HEXO", img: "/images/hex/lalarook-1.jpg", slides: ["/images/hex/lalarook-1.jpg", "/images/hex/lalarook-2.jpg", "/images/hex/lalarook-copper.jpg"], description: "HEXO — Lalla Rookh Restaurant, Perth. Commercial installation." },
+      { name: "HEXO", img: "/images/hex/lalarook-2.jpg", slides: [ "/images/hex/lalarook-2.jpg", "/images/hex/lalarook-copper.jpg"], description: "HEXO — Lalla Rookh Restaurant, Perth. Commercial installation." },
       { name: "HEXO", img: "/images/hex/hex-restaurant.jpg" },
     ],
   },
