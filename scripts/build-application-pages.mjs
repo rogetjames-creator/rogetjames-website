@@ -60,9 +60,9 @@ const norm = (t) => String(t || "").toLowerCase().trim();
 // near-empty.
 const WORDS = {
   "wall-decor": [
-    "Laser Cut Metal Wall Panels, Corten & Aluminium",
-    "Laser cut metal panels for walls, indoors and out — pattern, shadow and light on a bare surface.",
-    "A wall panel is the simplest way to bring one of the studio's patterns indoors or onto a facade. Cut from Corten steel, which weathers to a deep rust and holds it, or from aluminium powder-coated to any colour, each panel is made to the opening it fills. Mounted a little off the wall, the pattern throws a second drawing in shadow that moves through the day.",
+    "Wall Decor",
+    "The cure for blandness.",
+    "A bare wall waits for something to give it a reason to be looked at.\n\nA panel answers with pattern. Set just off the wall, casting shadows that move with the sun and change through the day.\n\nIndoors, it gives a room a centre. Outdoors, it gives a facade a face.",
   ],
   gates: [
     "Laser Cut Metal Gates, Corten & Aluminium",
