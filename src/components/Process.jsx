@@ -81,7 +81,7 @@ export default function Process() {
   }, []);
 
   return (
-    <section id="process" ref={sectionRef} className="relative pt-40 pb-8 md:pt-52 md:pb-14 bg-graphite overflow-hidden">
+    <section id="process" ref={sectionRef} className="relative pt-40 pb-8 md:pt-52 md:pb-14 bg-studio-grey overflow-hidden">
 
       {/* Limewash — tonal wash patches */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{

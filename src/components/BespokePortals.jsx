@@ -388,7 +388,7 @@ export function CommissionsSection() {
   }, []);
 
   return (
-    <section id="bespoke" ref={sectionRef} className="bg-graphite">
+    <section id="bespoke" ref={sectionRef} className="bg-studio-grey">
       {/* Extra bottom space on desktop only — the Sculpture portal is lifted up
           into the strip and would otherwise sit right on the Bespoke title. */}
       <div className="px-8 pt-12 pb-10 md:pb-20 text-center">

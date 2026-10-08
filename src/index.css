@@ -36,6 +36,7 @@
   --color-jet:      #0B0B0B;   /* matt black         */
   --color-graphite: #111111;   /* matt black         */
   --color-pewter:   #181818;   /* lighter matt black */
+  --color-studio-grey: #1F1F1F; /* solid charcoal grey for non-black sections */
 
   /* ── Fonts ───────────────────────────────── */
   --font-heading: "Plus Jakarta Sans", "Outfit", sans-serif;

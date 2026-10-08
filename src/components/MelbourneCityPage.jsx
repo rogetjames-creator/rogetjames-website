@@ -196,7 +196,7 @@ export default function MelbourneCityPage({ city }) {
 
       {/* ── Services ─────────────────────────────────────── */}
       {services.length > 0 && (
-        <section className="bg-pewter py-20 md:py-32">
+        <section className="bg-studio-grey py-20 md:py-32">
           <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
             <Eyebrow>Made in {name} & Australia-wide</Eyebrow>
             <SectionTitle>What we make</SectionTitle>

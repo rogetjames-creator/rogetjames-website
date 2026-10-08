@@ -91,7 +91,7 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="services" ref={sectionRef} className="relative py-20 md:py-32 bg-pewter overflow-hidden">
+    <section id="services" ref={sectionRef} className="relative py-20 md:py-32 bg-studio-grey overflow-hidden">
 
       {/* Limewash — uneven tonal wash patches */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{
