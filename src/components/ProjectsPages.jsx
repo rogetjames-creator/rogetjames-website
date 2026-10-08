@@ -68,9 +68,6 @@ function Footer() {
       <div className="max-w-3xl mx-auto px-6">
         <Eyebrow>Commission</Eyebrow>
         <SectionTitle>Start a project</SectionTitle>
-        <p className="font-body text-cream/60 leading-relaxed mt-5 max-w-lg mx-auto">
-          Architectural art features, sculpture and screens designed, made and installed as one commission.
-        </p>
         <a
           href="/#contact"
           className="inline-block mt-8 border border-clay/70 text-clay-light rounded-full px-8 py-3.5 font-detail text-[11px] uppercase tracking-[0.24em] hover:bg-clay/10 transition-colors"
