@@ -80,9 +80,9 @@ const WORDS = {
     "A divider is a pause, not a wall. It marks where one space ends and another begins, and leaves the door open between them.\n\nIndoors, it sets an entry apart from a living room. Outdoors, a courtyard from a garden. The room stays whole, but now it has places within it.\n\nLight still travels. So do sightlines, voices, the movement of someone passing on the other side. Nothing is shut out, only softened.\n\nFreestanding or fixed, each one draws its line lightly. The pattern decides how much passes and how much is held.",
   ],
   privacy: [
-    "Laser Cut Metal Privacy Screens, Australia",
-    "Screens that hold privacy while keeping light and air moving through.",
-    "Privacy is usually solved with something solid and ugly. A laser cut screen does it with a pattern: dense enough at eye level to stop a sightline, open enough that light and breeze still come through. Made in Corten steel or powder-coated aluminium, sized to the opening, and fixed to a wall, a frame or its own posts. Overlooked balconies, boundaries and outdoor showers are the usual homes for them.",
+    "Privacy",
+    "The Quiet Side",
+    "Privacy is the ease of being unobserved. Most often it is bought with something solid, and the light is lost along with the view.\n\nA screen does it differently. The pattern gathers at eye level, dense enough to stop a sightline, then opens to let the day through. Light still falls. Air still moves. Only the gaze is turned away.\n\nFrom outside, it reads as pattern. From inside, as shelter: a balcony no longer overlooked, a boundary that keeps its distance, a shower open to the sky.",
   ],
   pergolas: [
     "Pergola Screens & Shade Panels",
