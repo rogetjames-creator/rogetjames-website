@@ -12,6 +12,7 @@
 //   PLUME DECO — laser cut metal wall art in powder-coated black, Plumes range, by ROGETjames
 //   MARAKESH — laser cut Corten steel garden sculpture, The Classics range, by ROGETjames
 
+import { confirmedPhotoDescription } from "../data/confirmedPhotoDescriptions";
 import { RANGE_DATA } from "../data/rangeData";
 import { SCULPTURE_DATA } from "../data/sculptureData";
 
@@ -68,6 +69,8 @@ function tidyRange(label = "") {
 
 /** The description for one piece. `kind` is "wall" (default) or "sculpture". */
 export function altForPiece(name, rangeLabel, kind = "wall", src = "") {
+  const confirmed = confirmedPhotoDescription(src);
+  if (confirmed) return confirmed;
   if (!name) return "ROGETjames";
   const material = RANGE_MATERIAL[rangeLabel] || materialFromFile(src);
   const generic = kind === "sculpture" ? SCULPTURE : WALL_ART;
@@ -108,6 +111,8 @@ let INDEX = null;
  * ROGETjames line rather than leaving a photo blank.
  */
 export function altForSrc(src, fallback = `Original ${WALL_ART} by ROGETjames`) {
+  const confirmed = confirmedPhotoDescription(src);
+  if (confirmed) return confirmed;
   if (!src) return fallback;
   if (!INDEX) INDEX = buildIndex();
   // Strip any Netlify image-resizing wrapper before looking the path up.
