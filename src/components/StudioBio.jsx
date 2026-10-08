@@ -1,7 +1,7 @@
 export default function StudioBio() {
   return (
     <section className="relative bg-ink py-[88px] md:py-[144px] overflow-hidden">
-      <div aria-hidden="true" className="absolute inset-x-0 top-10 bottom-10 md:top-16 md:bottom-16 bg-cover bg-center" style={{ backgroundImage: "url(/images/section-glow.webp)" }} />
+      <div aria-hidden="true" className="absolute inset-x-0 top-10 bottom-10 md:top-16 md:bottom-16 bg-cover bg-center" style={{ backgroundImage: "radial-gradient(ellipse 60% 100% at 0% 45%, rgba(119,96,77,0.45), rgba(119,96,77,0) 70%), linear-gradient(to bottom right, #77604d 0%, #6e5b48 10%, #655243 20%, #56483b 30%, #4c4035 40%, #40362e 50%, #342d29 60%, #2a2421 70%, #201c1a 80%, #181516 90%, #0f0f0f 100%)" }} />
 
       <div className="relative z-10 max-w-2xl mx-auto px-6 md:px-12 text-center">
         <div className="studio-bio-inner flex flex-col items-center gap-0">

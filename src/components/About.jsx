@@ -44,7 +44,7 @@ export default function About() {
 
   return (
     <section id="about" ref={sectionRef} className="relative bg-jet py-[136px] md:py-[192px] overflow-hidden">
-      <div aria-hidden="true" className="absolute inset-x-0 top-10 bottom-10 md:top-16 md:bottom-16 bg-cover bg-center" style={{ backgroundImage: "url(/images/section-glow.webp)", transform: "scaleX(-1)" }} />
+      <div aria-hidden="true" className="absolute inset-x-0 top-10 bottom-10 md:top-16 md:bottom-16 bg-cover bg-center" style={{ backgroundImage: "radial-gradient(ellipse 60% 100% at 0% 45%, rgba(119,96,77,0.45), rgba(119,96,77,0) 70%), linear-gradient(to bottom right, #77604d 0%, #6e5b48 10%, #655243 20%, #56483b 30%, #4c4035 40%, #40362e 50%, #342d29 60%, #2a2421 70%, #201c1a 80%, #181516 90%, #0f0f0f 100%)", transform: "scaleX(-1)" }} />
       <div className="relative flex flex-col items-center px-8 text-center">
 
         {/* Logo + flanking lines */}
