@@ -17,6 +17,21 @@
   status = 301
   force = true
 
+# The old site's domain. Once rogetjames.co is pointed at this Netlify site
+# (added as a domain alias), every old .co address lands on the same path here,
+# where the legacy-path redirects below take over.
+[[redirects]]
+  from = "https://rogetjames.co/*"
+  to = "https://rogetjames.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.rogetjames.co/*"
+  to = "https://rogetjames.com/:splat"
+  status = 301
+  force = true
+
 # Legacy addresses reported by Search Console, with matching current destinations.
 [[redirects]]
   from = "/vuelta"
