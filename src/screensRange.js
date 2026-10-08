@@ -1,6 +1,7 @@
 // Shared config for the Screens "range" gallery — the single source of truth used
 // by both the live /screens page (src/screens.jsx) and the /screens-range preview
 // (src/screens-range.jsx). Call mountScreensRange(rootId) with the page's root id.
+import { isScreenPhotoAllowed } from "./data/confirmedPhotoDescriptions";
 import { mountRangeGallery } from "./rangeGalleryApp";
 import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
 import { SCREEN_APPLICATIONS, applicationKey } from "./mediaDestinations";
@@ -21,7 +22,7 @@ function injectUploads(covers, uploads) {
   }));
   const byId = {}; out.forEach((c) => { byId[c.id] = c; });
   const addTo = (range, name, src) => {
-    if (!range || !src) return;
+    if (!range || !isScreenPhotoAllowed(src)) return;
     if (range.pieces.some((p) => p.slides.includes(src))) return; // dedupe by src within a range
     const existing = range.pieces.find((p) => norm(p.name) === norm(name));
     if (existing) existing.slides.push(src);
@@ -62,7 +63,7 @@ function buildScreenRangeData(covers) {
   };
   const ranges = covers.map((sec) => {
     const designs = sec.pieces.map((p) => {
-      const srcs = (p.slides && p.slides.length ? p.slides : [p.img]).filter(Boolean);
+      const srcs = (p.slides && p.slides.length ? p.slides : [p.img]).filter(isScreenPhotoAllowed);
       return { n: p.name, imgs: srcs.map(idxOf) };
     }).filter((d) => d.imgs.length > 0);
     // Random group order — each design stays grouped (its own photos together),
@@ -131,7 +132,7 @@ async function fetchScreenUploads() {
     };
     const rows = (Array.isArray(manifest) ? manifest : [])
       .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" }))
-      .filter((u) => isScreenUpload(u.dests));
+      .filter((u) => isScreenUpload(u.dests) && isScreenPhotoAllowed(u.src));
     const seen = new Set();
     return rows
       .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))
