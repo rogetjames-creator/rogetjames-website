@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
+import { confirmedPhotoDescription, isScreenPhotoAllowed } from "../src/data/confirmedPhotoDescriptions.js";
 import { SCREEN_DESIGNS } from "../src/data/screenDesigns.js";
 import { SCREEN_APPLICATIONS, applicationKey } from "../src/mediaDestinations.js";
 
@@ -107,7 +108,7 @@ function designsFor(app) {
     if (hits.length) {
       for (const i of hits) {
         for (const src of (i.slides && i.slides.length ? i.slides : [i.img])) {
-          if (src) out.push({ name: d.name, img: src });
+          if (isScreenPhotoAllowed(src)) out.push({ name: d.name, img: src });
         }
       }
       continue;
@@ -119,7 +120,7 @@ function designsFor(app) {
   }
   const key = applicationKey(app.id);
   for (const u of uploads) {
-    if (!(u.destinations || []).includes(key)) continue;
+    if (!(u.destinations || []).includes(key) || !isScreenPhotoAllowed("/" + u.path)) continue;
     const name = (u.name || "").replace(/\.(jpe?g|png|webp|gif)$/i, "").trim();
     out.push({ name: name || "", img: "/" + u.path });
   }
@@ -231,7 +232,7 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
       // /screens/pergolas#vuelta lands on Vuelta rather than the top of the page.
       const id = slug && !seen.has(slug) ? (seen.add(slug), ` id="${slug}"`) : "";
       return `<a class="card"${id} href="${slug ? `/screens#${slug}` : "/screens"}">
-      <div class="im"><img src="${img(d.img, 700)}" alt="${esc(d.name || app.label)} — laser cut metal ${esc(String(app.label).toLowerCase())} by ROGETjames" loading="lazy" /></div>
+      <div class="im"><img src="${img(d.img, 700)}" alt="${esc(confirmedPhotoDescription(d.img) || `${d.name || app.label} — laser cut metal ${String(app.label).toLowerCase()} by ROGETjames`)}" loading="lazy" /></div>
       ${d.name ? `<b>${esc(d.name)}</b>` : ""}<span>${esc(app.label)}</span></a>`; }).join(""); })()}
   </div>
   ${others.length ? `<div class="also">
