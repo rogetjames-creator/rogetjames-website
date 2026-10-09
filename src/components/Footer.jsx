@@ -1,5 +1,10 @@
 import { Instagram, Youtube, Mail } from "lucide-react";
 import PinterestIcon, { PINTEREST_URL } from "./PinterestIcon";
+import { ownerPreviewUnlocked } from "../utils/ownerPreview";
+
+// Projects is still Under Construction to the public — its footer link shows
+// only for James (?preview=roj-open) or in dev, the same rule as the portal.
+const PROJECTS_OPEN = import.meta.env.DEV || ownerPreviewUnlocked();
 
 const NAV_COLS = [
   {
@@ -13,10 +18,13 @@ const NAV_COLS = [
   {
     title: "Bespoke",
     links: [
+      // Each link opens its own gallery — none of them just drops the
+      // visitor at the top of the Bespoke section.
       { label: "Sculpture", href: "/bespoke-sculpture" },
-      { label: "Commissions", href: "#bespoke" },
-      { label: "Projects", href: "#bespoke", event: "open-bespoke-category", detail: "projects" },
+      { label: "Screens", href: "/screens" },
       { label: "Concepts", href: "#bespoke", event: "open-bespoke-category", detail: "concepts" },
+      { label: "Reels", href: "#bespoke", event: "open-bespoke-category", detail: "reels" },
+      ...(PROJECTS_OPEN ? [{ label: "Projects", href: "/projects" }] : []),
     ],
   },
   {
@@ -47,11 +55,6 @@ function scrollTo(href) {
   target.scrollIntoView({ behavior: "smooth" });
 }
 
-// Bespoke categories locked as "under construction" in production — their
-// footer links only scroll to the section, never open a locked gallery.
-// Sculpture is public.
-const LOCKED_BESPOKE_CATS = import.meta.env.PROD ? ["projects", "commissions", "concepts"] : [];
-
 function handleLink(link) {
   // Real path (e.g. the Wall Art / Sculpture galleries at /wall-art) —
   // navigate to it rather than treating href as an in-page scroll anchor.
@@ -59,8 +62,7 @@ function handleLink(link) {
     window.location.href = link.href;
     return;
   }
-  const isLockedBespoke = link.event === "open-bespoke-category" && LOCKED_BESPOKE_CATS.includes(link.detail);
-  if (link.event && !isLockedBespoke) {
+  if (link.event) {
     window.dispatchEvent(new CustomEvent(link.event, { detail: link.detail }));
     setTimeout(() => scrollTo(link.href), 50);
   } else {
