@@ -265,14 +265,6 @@
   to = "/wall-art.html"
   status = 200
 
-# Up Close is built in the browser, so it has no page of its own — but the
-# gallery puts /wall-art/up-close in the address bar when you scroll to it.
-# Serve the Wall Art page there; it lands on Up Close by itself.
-[[redirects]]
-  from = "/wall-art/up-close"
-  to = "/wall-art.html"
-  status = 200
-
 [[redirects]]
   from = "/sculpture"
   to = "/sculpture.html"

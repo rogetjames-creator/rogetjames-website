@@ -905,8 +905,9 @@ a.dpill{display:inline-block;text-decoration:none}
     setTimeout(()=>openDetail(found.h.ri,found.di,0),400);
   })();
 
-  const landOnAddress=(target)=>{
-    {
+  if(wantedSlug){
+    const target=rangeHandles.find(h=>rangeSlug(h.r.label)===wantedSlug);
+    if(target){
       if(target.sec._initStage){ target.sec._initStage(); target.sec._initStage=null; }
       landing=true;
       // The page scrolls smoothly by default, which would turn this into a
@@ -943,20 +944,6 @@ a.dpill{display:inline-block;text-decoration:none}
       if(!document.hidden) armFinish();
       // The visitor's own scroll always wins.
       ['wheel','touchstart','keydown'].forEach(e=>window.addEventListener(e,done,{passive:true}));
-    }
-  };
-  // Up Close is added after the page loads (its photos are fetched), so a
-  // visitor arriving on /wall-art/up-close is landed on it once it appears.
-  const UP_CLOSE_SLUG=rangeSlug('UP CLOSE');
-  let awaitingUpClose=false;
-  if(wantedSlug){
-    const target=rangeHandles.find(h=>rangeSlug(h.r.label)===wantedSlug);
-    if(target) landOnAddress(target);
-    else if(upClose && wantedSlug===UP_CLOSE_SLUG){
-      // Hold the address on /wall-art/up-close until it arrives; give up after
-      // a few seconds so a failed fetch never freezes the address bar.
-      awaitingUpClose=true; landing=true;
-      setTimeout(()=>{ if(awaitingUpClose){ awaitingUpClose=false; landing=false; } },8000);
     }
   }
 
@@ -1099,7 +1086,6 @@ a.dpill{display:inline-block;text-decoration:none}
         rangeHandles.push(h); io.observe(h.sec);
         if(h.sec._initStage) preloadIO.observe(h.sec);
         addPill('UP CLOSE',h.sec,'upclose');
-        if(awaitingUpClose){ awaitingUpClose=false; landing=false; landOnAddress(h); }
       }
     }catch{/* Up Close is additive — never break the gallery */}
   })();}
