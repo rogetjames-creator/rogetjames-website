@@ -124,11 +124,9 @@ Bespoke Commission Categories:
 
 Notable past commissions include: Cottesloe Hotel, Fiona Stanley Hospital, Centennial Park, Unity in Diversity, BENIN Inspired corporate feature, RAVI Inspired corporate feature, GRAIL architectural screen, ERGO screen, ORIAN Totem, DANDELIONS Totems, MARAKESH TRIO, HOMEBASE Fire Pit.
 
-Delivery & Agents:
+Delivery:
 - Australia-wide delivery to your door
 - Installation available in WA via Hederablu commercial fitouts
-- Selected works available through agent:
-  · WG Outdoor Life — Western Australia (team@wgoutdoorlife.com.au)
 - Also works internationally
 
 Materials:
@@ -338,7 +336,7 @@ Process (4 steps):
 1. Enquire — choose from the catalogue or request a bespoke piece; provide design preferences, dimensions, material and postcode; response within 48 hours
 2. Design — for in-situ rendering (seeing the design in your actual space) or original bespoke concept and fabrication, contact us with details; fees may apply
 3. Fabricate — precision laser-cut in WA, VIC or QLD workshops; production lead time 3–6 weeks
-4. Deliver — Australia-wide delivery to your door; installation available in WA via Hederablu commercial fitouts; selected works available through agent WG Outdoor Life (Western Australia)
+4. Deliver — Australia-wide delivery to your door; installation available in WA via Hederablu commercial fitouts
 
 Services:
 1. Catalogue Designs (Ready to Specify) — standard sizes or custom sized; Corten steel or powdercoated aluminium; custom colour selection
