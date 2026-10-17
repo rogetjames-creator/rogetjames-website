@@ -82,6 +82,18 @@ const GALLERIES = [
   { base: "/sculpture", parent: "Sculpture", data: SCULPTURE_DATA, kind: "sculpture" },
 ];
 
+// A design shown in two ranges gets a page in each, but only its first
+// address is the real one. The second points Google back to the first, and
+// stays out of the sitemap, so the two never compete for the same search.
+const HOME = {};
+for (const { base, data } of GALLERIES) {
+  for (const range of data.ranges) {
+    for (const d of range.designs || []) {
+      if (d.n && !HOME[d.n]) HOME[d.n] = `${SITE}${base}/${rangeSlug(range.label)}/${pieceSlug(d.n)}`;
+    }
+  }
+}
+
 const FINISHES = {
   aluminium: {
     label: "Powder-coated aluminium",
@@ -199,11 +211,11 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(summary)}" />
 <meta name="robots" content="${PREVIEW ? "noindex, nofollow" : "index, follow"}" />
-<link rel="canonical" href="${url}" />
+<link rel="canonical" href="${HOME[name] || url}" />
 <meta property="og:type" content="product" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(summary)}" />
-<meta property="og:url" content="${url}" />
+<meta property="og:url" content="${HOME[name] || url}" />
 ${hero ? `<meta property="og:image" content="${SITE}${hero}" />` : ""}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -752,6 +764,7 @@ if (!PREVIEW) {
     const today = new Date().toISOString().slice(0, 10);
     const xml = readFileSync(sitemapPath, "utf-8");
     const additions = index
+      .filter((i) => HOME[i.name] === `${SITE}${i.url}`)
       .map((i) => `  <url>\n    <loc>${SITE}${i.url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`)
       .join("\n");
     writeFileSync(sitemapPath, xml.replace("</urlset>", `${additions}\n</urlset>`), "utf-8");
