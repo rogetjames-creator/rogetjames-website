@@ -2733,12 +2733,12 @@ export function ProjectsGalleryModal({ onClose }) {
   );
 }
 
-// ── Concepts — a slideshow you watch, not a gallery you click ─────────────
-// Concepts plays itself the way the hero does: the pictures advance on their
-// own and the thumb strip lights up to show where you are. Each picture is
-// contained rather than cropped, so a tall concept sketch is never cut off.
-// The only thing you can click is pause and play — clicking a picture or a
-// thumb does nothing, on purpose.
+// ── Concepts — click the thumbs to view, or press play for a slideshow ────
+// Concepts opens on the first picture, still. Clicking a thumb crossfades to
+// that picture; the arrow keys step through. Play turns it into a slideshow
+// that advances on its own, and clicking a thumb while it plays pauses it on
+// the picture you chose. Each picture is contained rather than cropped, so a
+// tall concept sketch is never cut off.
 //
 // The crossfade borrows the hero's trick of two layers with the incoming
 // picture decoded before the fade begins. A photo that arrives late holds the
@@ -2761,7 +2761,7 @@ function ConceptsSlideshowModal({ onClose }) {
 
   const count = slides.length;
   const [idx, setIdx] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   // Two layers that take it in turns; `active` says which one is showing.
   const [active, setActive] = useState(0);
   const [layerIdx, setLayerIdx] = useState([0, 0]);
@@ -2771,15 +2771,6 @@ function ConceptsSlideshowModal({ onClose }) {
 
   const big = (src) => netlifyImg(src, { w: 1600, q: 82 });
 
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === " " || e.code === "Space") { e.preventDefault(); setPlaying(p => !p); }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
   // Fetch the next picture while this one is showing, so decode() finds it
   // already in cache and the crossfade doesn't stall.
   useEffect(() => {
@@ -2788,22 +2779,40 @@ function ConceptsSlideshowModal({ onClose }) {
     img.src = big(slides[(idx + 1) % count].src);
   }, [idx, count, slides]);
 
-  // Advance: load the incoming layer, wait for it to decode, then fade.
+  // Load a picture into the hidden layer, wait for it to decode, then fade.
+  // `gen` counts each request, so a fast run of clicks only shows the last.
+  const gen = useRef(0);
+  const goTo = async (next) => {
+    if (next === idx) return;
+    const mine = ++gen.current;
+    const incoming = active === 0 ? 1 : 0;
+    const img = new Image();
+    img.src = big(slides[next].src);
+    try { await img.decode(); } catch { /* show it anyway */ }
+    if (mine !== gen.current) return;
+    setLayerIdx(prev => { const n = [...prev]; n[incoming] = next; return n; });
+    setIdx(next);
+    setActive(incoming);
+  };
+  const step = (d) => { if (count > 1) { setPlaying(false); goTo((idx + d + count) % count); } };
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === " " || e.code === "Space") { e.preventDefault(); setPlaying(p => !p); }
+      if (e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowLeft") step(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  // Slideshow: when playing, move on after each hold.
   useEffect(() => {
     if (!playing || count < 2) return;
-    let cancelled = false;
-    const t = setTimeout(async () => {
-      const next = (idx + 1) % count;
-      const incoming = active === 0 ? 1 : 0;
-      setLayerIdx(prev => { const n = [...prev]; n[incoming] = next; return n; });
-      const el = layerRefs.current[incoming];
-      if (el) { try { await el.decode(); } catch { /* show it anyway */ } }
-      if (cancelled) return;
-      setIdx(next);
-      setActive(incoming);
-    }, CONCEPTS_HOLD);
-    return () => { cancelled = true; clearTimeout(t); };
-  }, [idx, active, playing, count]);
+    const t = setTimeout(() => goTo((idx + 1) % count), CONCEPTS_HOLD);
+    return () => clearTimeout(t);
+  }, [idx, active, playing, count]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep the lit thumb in view as the slideshow walks along the strip.
   useEffect(() => {
@@ -2864,27 +2873,29 @@ function ConceptsSlideshowModal({ onClose }) {
             </button>
           </div>
 
-          {/* Thumbs — they light up, they don't take clicks */}
+          {/* Thumbs — click one to view it; the lit one is where you are */}
           <div className="flex-shrink-0 border-t border-white/10">
             <div className="flex items-center px-5 py-3">
               <div ref={stripRef} className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
                 {slides.map((s, i) => {
                   const isActive = i === idx;
                   return (
-                    <div
+                    <button
                       key={s.src}
                       ref={isActive ? activeThumbRef : null}
-                      aria-hidden="true"
-                      className="flex-shrink-0 rounded-lg overflow-hidden"
+                      onClick={() => { setPlaying(false); goTo(i); }}
+                      aria-label={`View ${s.name || `picture ${i + 1}`}`}
+                      aria-current={isActive ? "true" : undefined}
+                      className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer hover:!opacity-90"
                       style={{
-                        width: 52, height: 52, pointerEvents: "none",
+                        width: 52, height: 52,
                         border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`,
                         opacity: isActive ? 1 : 0.45,
                         transition: "opacity 0.4s ease, border-color 0.4s ease",
                       }}
                     >
                       <img src={netlifyImg(s.src, { w: 120, q: 70 })} alt="" role="presentation" loading="lazy" className="w-full h-full object-cover" />
-                    </div>
+                    </button>
                   );
                 })}
               </div>
