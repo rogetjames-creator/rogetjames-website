@@ -191,7 +191,6 @@ const COMMISSIONS = {
         { name: "Home Base Landscape",         img: `${CDN}/8aabcc1e-b8c3-45e3-aa3d-c56d5911ea03_rw_1920.jpg` },
         { name: "Home Base Landscape",         img: `${CDN}/3ef7ea8e-eec1-4856-b37a-f2d23978aca3_rw_1920.jpg` },
         { name: "UNITY IN DIVERSITY — Centennial Park WA", img: `${CDN}/437cf607-c821-4331-8874-d47ecda32ca3_rw_1920.jpg` },
-        { name: "UNITY IN DIVERSITY — concepts, Centennial Park WA", img: `${CDN}/8b43f372-e1ca-4882-b630-bc0d985db4a7_rw_1200.jpg` },
         { name: "Cottesloe Residence",         img: `${CDN}/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg` },
       ],
     },
@@ -788,7 +787,6 @@ const CONCEPTS_ROWS = [
     id: "concepts-centennial",
     name: "CENTENNIAL PARK",
     items: [
-      { name: "UNITY IN DIVERSITY — concepts, Centennial Park WA", img: `${CDN}/8b43f372-e1ca-4882-b630-bc0d985db4a7_rw_1200.jpg` },
     ],
   },
   {
