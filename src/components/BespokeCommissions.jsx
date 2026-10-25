@@ -190,7 +190,6 @@ const COMMISSIONS = {
         { name: "Home Base",                   img: `${CDN}/ba29da64-778e-4e6c-a942-02acff420a19_rw_1200.jpg` },
         { name: "Home Base Landscape",         img: `${CDN}/8aabcc1e-b8c3-45e3-aa3d-c56d5911ea03_rw_1920.jpg` },
         { name: "Home Base Landscape",         img: `${CDN}/3ef7ea8e-eec1-4856-b37a-f2d23978aca3_rw_1920.jpg` },
-        { name: "Home Base Landscape",         img: `${CDN}/04ac8236-413f-4590-a522-dfca01a94fe8_rw_1200.jpg` },
         { name: "UNITY IN DIVERSITY — Centennial Park WA", img: `${CDN}/437cf607-c821-4331-8874-d47ecda32ca3_rw_1920.jpg` },
         { name: "UNITY IN DIVERSITY — concepts, Centennial Park WA", img: `${CDN}/8b43f372-e1ca-4882-b630-bc0d985db4a7_rw_1200.jpg` },
         { name: "Cottesloe Residence",         img: `${CDN}/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg` },
@@ -783,7 +782,6 @@ const CONCEPTS_ROWS = [
       { name: "Home Base Landscape", img: `${CDN}/4fe97b52-7eca-4995-a9b0-e9caa6d72967_rw_1920.jpg` },
       { name: "Home Base Landscape", img: `${CDN}/3ef7ea8e-eec1-4856-b37a-f2d23978aca3_rw_1920.jpg` },
       { name: "Home Base Landscape", img: `${CDN}/66a80833-aa96-4e7a-a62e-6ce882831573_rw_1200.jpg` },
-      { name: "Home Base Landscape", img: `${CDN}/04ac8236-413f-4590-a522-dfca01a94fe8_rw_1200.jpg` },
     ],
   },
   {
@@ -2748,13 +2746,21 @@ const CONCEPTS_FADE = 1.6;   // s crossfade, same as the hero
 function ConceptsSlideshowModal({ onClose }) {
   const byKey = useUploadsByKey(CONCEPTS_MEDIA_KEYS, "Concepts");
 
-  // One entry per picture, hand-placed first and uploads after, duplicates out.
+  // One entry per picture, duplicates out. James's uploads lead the line,
+  // newest first, so a fresh concept is the first thing seen; the
+  // hand-placed pictures follow. An upload already hand-placed in
+  // CONCEPTS_ITEMS keeps its hand-placed spot.
   const slides = useMemo(() => {
+    const handPlaced = new Set(CONCEPTS_ITEMS.flatMap(it => it.slides || [it.img]));
     const seen = new Set();
     const out = [];
     const add = (src, name) => { if (src && !seen.has(src)) { seen.add(src); out.push({ src, name }); } };
+    CONCEPTS_MEDIA_KEYS
+      .flatMap(k => byKey[k] || [])
+      .filter(u => !handPlaced.has(u.img))
+      .reverse()
+      .forEach(u => add(u.img, u.name));
     CONCEPTS_ITEMS.forEach(it => (it.slides || [it.img]).forEach(src => add(src, it.name)));
-    CONCEPTS_MEDIA_KEYS.forEach(k => (byKey[k] || []).forEach(u => add(u.img, u.name)));
     return out;
   }, [byKey]);
 
