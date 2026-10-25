@@ -180,8 +180,9 @@ const COMMISSIONS = {
       id: "public-7",
       label: "CONCEPTS",
       items: [
+        { name: "Outback information bay i",   img: `${CDN}/882272cb-30b0-4cef-8f0e-dee3241578e3_rw_1920.jpg` },
+        { name: "Outback information bay ii",  img: `/images/uploads/1792885789472_lseue9.jpg` },
         { name: "Percent for Art", img: `${CDN}/a017e095-21a4-41a4-bdd7-630bb270b4f3_rw_1200.jpg`, slides: [`${CDN}/a017e095-21a4-41a4-bdd7-630bb270b4f3_rw_1200.jpg`, `${CDN}/713bf242-7075-4082-90cd-c885aa129107_rw_1920.jpg`] },
-        { name: "Outback Info Bays",           img: `${CDN}/882272cb-30b0-4cef-8f0e-dee3241578e3_rw_1920.jpg` },
         { name: "Shire of Peel", img: `${CDN}/8157a7f2-763b-469d-bca4-dee47707d7da_rw_1920.jpg`, slides: [`${CDN}/8157a7f2-763b-469d-bca4-dee47707d7da_rw_1920.jpg`, `${CDN}/39f2b9a7-cf77-4a54-a88e-a92948a82ebe_rw_1920.jpg`], videoUrl: "/videos/waroona.mp4" },
         { name: "Landscape design, final — Homebase Design Centre, Subiaco, Perth WA", img: `/images/homebase-concept-final.jpg` },
         { name: "Landscape design, first draft — Homebase Design Centre, Subiaco, Perth WA", img: `${CDN}/4fe97b52-7eca-4995-a9b0-e9caa6d72967_rw_1920.jpg` },
