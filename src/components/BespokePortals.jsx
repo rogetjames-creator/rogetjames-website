@@ -209,6 +209,25 @@ export function CommissionsSection() {
     [displaysKey]
   );
 
+  // Desktop row: every portal on ONE line, James's rule. Full size is 150px;
+  // on a narrower window the circles shrink together until they fit, rather
+  // than wrapping onto a second line. The row is at most 1400px wide less
+  // 24px padding each side, with 24px between portals, and each circle
+  // carries a frame of up to 9px a side.
+  const rowCount = 6 + (displaysPortal.slides.length > 0 ? 1 : 0);
+  const fitRowSize = () => {
+    if (typeof window === "undefined") return 150;
+    const room = Math.min(1400, window.innerWidth) - 48 - 24 * (rowCount - 1);
+    return Math.max(60, Math.min(150, Math.floor(room / rowCount) - 18));
+  };
+  const [rowSize, setRowSize] = useState(fitRowSize);
+  useEffect(() => {
+    const onResize = () => setRowSize(fitRowSize());
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [rowCount]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Sliding strip — same shape as the Collection strip on the home page, but
   // both halves run the one way, left to right. Shuffled once per visit.
   const sectionRef   = useRef(null);
@@ -514,14 +533,14 @@ export function CommissionsSection() {
             <GalleryDot />
           </div>
 
-          {/* Six portals — five at 150px and Sculpture at 180px — sit on one
-              line from ~1260px wide. On a narrower desktop they
-              wrap to a second line rather than running off the edge. */}
+          {/* Seven portals on one line, always. At full width they are 150px;
+              on a narrower desktop they shrink together (rowSize) instead of
+              wrapping onto a second line. */}
           {/* Always here, so the black holds its full height and nothing below
               the section moves when the galleries are shown or hidden. Closed,
               it is simply not visible and cannot be reached. */}
           <div
-            className="flex flex-wrap items-center justify-center gap-x-6 gap-y-10 px-6 max-w-[1280px]"
+            className="flex flex-nowrap items-center justify-center gap-x-6 px-6 max-w-[1400px]"
             aria-hidden={!galleriesOpen}
             style={{
               visibility: galleriesOpen ? "visible" : "hidden",
@@ -530,17 +549,17 @@ export function CommissionsSection() {
               transition: "opacity 2.4s cubic-bezier(0.33, 0, 0.2, 1) 0.9s",
             }}
           >
-            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={150} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
-            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={150} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
+            <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={rowSize} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
+            <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={rowSize} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
             {/* Sculpture and Screens hold the middle of the row; Sculpture
                 stands a size above the rest, so the eye lands on it first. */}
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={150} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
-            <MiniPortal portal={SIDE_PORTAL_LEFT}  size={150} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={rowSize} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+            <MiniPortal portal={SIDE_PORTAL_LEFT}  size={rowSize} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
             {displaysPortal.slides.length > 0 && (
-              <MiniPortal portal={displaysPortal}  size={150} hideLabel centerLabel="Displays"  onOpen={openAndCount(setDisplaysOpen, "Displays")} />
+              <MiniPortal portal={displaysPortal}  size={rowSize} hideLabel centerLabel="Displays"  onOpen={openAndCount(setDisplaysOpen, "Displays")} />
             )}
-            <MiniPortal portal={reelsPortal}          size={150} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
-            <MiniPortal portal={concretePortal} size={150} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
+            <MiniPortal portal={reelsPortal}          size={rowSize} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
+            <MiniPortal portal={concretePortal} size={rowSize} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
           </div>
         </div>
       </div>
