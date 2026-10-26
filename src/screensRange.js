@@ -68,12 +68,9 @@ function buildScreenRangeData(covers) {
     }).filter((d) => d.imgs.length > 0);
     // Random group order — each design stays grouped (its own photos together),
     // but the groups are shuffled so the strip isn't sequential/alphabetical.
-    // DISPLAYS keeps its owner-pinned order (see DISPLAYS_ORDER) — never shuffled.
-    if (sec.id !== "displays") {
-      for (let i = designs.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [designs[i], designs[j]] = [designs[j], designs[i]];
-      }
+    for (let i = designs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [designs[i], designs[j]] = [designs[j], designs[i]];
     }
     // James's chosen opening display image per range — pinned to first position.
     const OPENERS = {
@@ -117,7 +114,7 @@ async function fetchScreenUploads() {
     // Any screen-related tag counts: the generic "screens" OR a specific screen
     // category (icons / architectural / … / light-features / mirrors).
     const screenKeys = new Set([
-      ...SCREEN_COVERS.map((c) => c.id), "screens", "displays",
+      ...SCREEN_COVERS.map((c) => c.id), "screens",
       ...SCREEN_APPLICATIONS.map((a) => applicationKey(a.id)),
     ]);
     // "classics" is ALSO a Sculpture category, so a bare "classics" tag is a
@@ -140,28 +137,8 @@ async function fetchScreenUploads() {
   } catch { return []; }
 }
 
-// The shared "Displays" set → its own range at the end of the Screens gallery.
-// The same photos also appear under DISPLAYS in the Sculpture and Projects
-// galleries (one /media upload, three homes).
-// Owner-pinned opening order for the Screens · DISPLAYS tiles. Anything listed
-// here comes first, in this order; the rest follow by upload time.
-const DISPLAYS_ORDER = [
-  "/images/uploads/1787118567607_tc0re5.jpg",
-  "/images/uploads/1787118567609_mynq6x.jpg",
-];
-function buildDisplaysCover(uploads) {
-  // Displays carry NO title — one photo per tile, no name shown.
-  const seen = new Set();
-  const pieces = [];
-  for (const u of uploads) {
-    if (!u.src || seen.has(u.src)) continue;
-    seen.add(u.src);
-    pieces.push({ name: "", img: u.src, slides: [u.src] });
-  }
-  const rank = (src) => { const i = DISPLAYS_ORDER.indexOf(src); return i < 0 ? Infinity : i; };
-  pieces.sort((a, b) => rank(a.img) - rank(b.img)); // stable: unpinned keep upload order
-  return { id: "displays", label: "Displays", img: pieces.length ? pieces[0].img : "", pieces };
-}
+// Displays used to be a range here. Since Oct 2026 they have their own portal
+// and gallery in the Bespoke section (DisplaysGalleryModal) and nowhere else.
 
 // An application James has put photos against → its own range at the end of the
 // gallery, named exactly as its pill so the pill can find it. An application
@@ -254,12 +231,9 @@ export function mountScreensRange(rootId) {
   const fallback = setTimeout(() => mountWith(SCREEN_COVERS, []), 700);
   fetchScreenUploads().then((uploads) => {
     clearTimeout(fallback);
-    const displays = uploads.filter((u) => (u.dests || []).includes("displays"));
     // An application photo is NOT taken out of the ranges — it belongs in both:
     // under its design's pill and on its application page.
-    const rest = uploads.filter((u) => !(u.dests || []).includes("displays"));
-    let covers = rest.length ? injectUploads(SCREEN_COVERS, rest) : SCREEN_COVERS;
-    if (displays.length) covers = [...covers, buildDisplaysCover(displays)];
+    let covers = uploads.length ? injectUploads(SCREEN_COVERS, uploads) : SCREEN_COVERS;
     covers = [...covers, ...buildApplicationCovers(uploads)];
     mountWith(covers, uploads);
   }).catch(() => { clearTimeout(fallback); mountWith(SCREEN_COVERS, []); });

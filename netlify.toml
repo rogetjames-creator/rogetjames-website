@@ -265,6 +265,13 @@
   to = "/wall-art.html"
   status = 200
 
+# Displays left the Sculpture page for its own Bespoke portal (Oct 2026).
+[[redirects]]
+  from = "/sculpture/displays"
+  to = "/?open=displays"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/sculpture"
   to = "/sculpture.html"

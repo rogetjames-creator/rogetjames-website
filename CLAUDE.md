@@ -118,9 +118,10 @@ vanishes silently — the single most common bug here):
 | Bespoke Sculpture / Concepts popups | `sculpture` / `concepts` |
 | Projects popup | `project-<project>` |
 | Concrete | `concrete` — the portal appears once the first photo lands |
+| Displays popup | `displays` — its own Bespoke portal only (no longer in Screens, Sculpture or Projects) |
 
-**Bespoke section on `/`** — portals: Sculpture, Screens, Concepts, Projects,
-Reels, Concrete. Screens was added back in Sep 2026 at James's request so it is
+**Bespoke section on `/`** — portals: Sculpture, Screens, Displays, Concepts,
+Projects, Reels, Concrete. Displays (Oct 2026) sits between Screens and Reels. Screens was added back in Sep 2026 at James's request so it is
 found in both places — the Collection and Bespoke; both portals open `/screens`.
 Projects shows "Under Construction" to the public and opens only for James
 (`?preview=roj-open`) or in dev. The rest are open to everyone.

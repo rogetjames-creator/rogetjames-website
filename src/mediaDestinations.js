@@ -34,6 +34,7 @@ export const MEDIA_KEYS = {
   heroReplacePrefix: "hero-replace-", // Hero.jsx: hero-replace-<slide key>
   upClose: "up-close",        // read by every gallery's Up Close row
   concrete: "concrete",       // read by the Concrete gallery (BespokeCommissions)
+  displays: "displays",       // read by the Displays gallery (BespokeCommissions) — its own Bespoke portal
   clientImages: "client-images", // read by the Client Images portal (DiscoverPortals)
   // The sliding strip of photographs behind the Bespoke portals on the home
   // page. It was built from a hand-written list with no way to add to it —

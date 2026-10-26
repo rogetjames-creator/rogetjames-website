@@ -334,6 +334,7 @@ export const CONCEPTS_ITEMS  = itemsFromSections(CONCEPTS_SECTION_IDS);
 export const SCULPTURE_MEDIA_KEYS = [MEDIA_KEYS.bespokeSculpture, MEDIA_KEYS.sculpture];
 export const CONCEPTS_MEDIA_KEYS  = [MEDIA_KEYS.concepts];
 export const CONCRETE_MEDIA_KEYS  = [MEDIA_KEYS.concrete];
+export const DISPLAYS_MEDIA_KEYS  = [MEDIA_KEYS.displays];
 
 // What /media offers for the Bespoke popups — one spot each, matching what the
 // galleries actually show.
@@ -2536,33 +2537,8 @@ export function ProjectsGalleryModal({ onClose }) {
   const [slideIdx, setSlideIdx] = useState(0);
   const [animDir, setAnimDir] = useState(null);
   const [infoProject, setInfoProject] = useState(null);
-  const [displaysItems, setDisplaysItems] = useState([]);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
-
-  // The shared "Displays" set — /media uploads tagged "displays". The same
-  // photos also show under DISPLAYS in the Screens and Sculpture galleries.
-  useEffect(() => {
-    let alive = true;
-    fetch(`/media-manifest.json?v=${Date.now()}`, { cache: "no-store" })
-      .then(r => (r.ok ? r.json() : [])).catch(() => [])
-      .then(m => {
-        if (!alive || !Array.isArray(m)) return;
-        const rows = m.filter(e => (e.destinations || []).includes("displays"))
-          .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0));
-        // Displays carry NO title — one photo per tile, no name shown.
-        const out = [];
-        const seen = new Set();
-        for (const e of rows) {
-          const src = `/${e.path}`;
-          if (seen.has(src)) continue;
-          seen.add(src);
-          out.push({ name: "", img: src, slides: [src] });
-        }
-        setDisplaysItems(out);
-      });
-    return () => { alive = false; };
-  }, []);
 
   // /media uploads placed against a project, appended to the END of that
   // project's own row so the newest photo lands last.
@@ -2572,9 +2548,7 @@ export function ProjectsGalleryModal({ onClose }) {
     return extra?.length ? { ...r, items: [...r.items, ...extra] } : r;
   }), [projectUploads]);
 
-  const items = activeProjectCat === "displays"
-    ? displaysItems
-    : activeProjectCat === "all"
+  const items = activeProjectCat === "all"
       ? rows.flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })))
       : rows.filter(r => r.projectCategory === activeProjectCat).flatMap(r => r.items.map(it => ({ ...it, _cat: r.projectCategory, _rowId: r.id })));
 
@@ -2623,7 +2597,7 @@ export function ProjectsGalleryModal({ onClose }) {
       {/* Category pills */}
       <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/8 flex-shrink-0">
         <div className="flex gap-2 overflow-x-auto flex-1" style={{ scrollbarWidth: "none" }}>
-        {[{ id: "all", label: "All" }, ...PROJECT_CATEGORIES, { id: "displays", label: "Displays" }].map(cat => {
+        {[{ id: "all", label: "All" }, ...PROJECT_CATEGORIES].map(cat => {
           const isActive = activeProjectCat === cat.id;
           const isPosition = !isActive && cat.id !== "all" && currentItemCat === cat.id && itemIdx !== null;
           return (
@@ -2923,6 +2897,31 @@ export function useConcreteImages() {
 
 export function ConcreteGalleryModal({ onClose }) {
   return <SculptureGalleryModal onClose={onClose} items={[]} label="Concrete" mediaKey={CONCRETE_MEDIA_KEYS} />;
+}
+
+// Displays — every photo uploaded to "displays", and nowhere else. Until Oct
+// 2026 the same set sat as a DISPLAYS section inside Screens, Sculpture and
+// Projects; James gave it its own portal instead. Displays carry NO title —
+// one photo per tile, no name shown. DISPLAYS_ORDER pins the opening photos,
+// in this order; the rest follow by upload time.
+const DISPLAYS_ORDER = [
+  "/images/uploads/1787118567607_tc0re5.jpg",
+  "/images/uploads/1787118567609_mynq6x.jpg",
+];
+export function useDisplaysImages() {
+  const byKey = useUploadsByKey(DISPLAYS_MEDIA_KEYS);
+  const list = byKey[MEDIA_KEYS.displays];
+  return useMemo(() => {
+    const rank = (src) => { const i = DISPLAYS_ORDER.indexOf(src); return i < 0 ? Infinity : i; };
+    return (list || [])
+      .map(u => ({ name: "", img: u.img }))
+      .sort((a, b) => rank(a.img) - rank(b.img)); // stable: unpinned keep upload order
+  }, [list]);
+}
+
+export function DisplaysGalleryModal({ onClose }) {
+  const items = useDisplaysImages();
+  return <SculptureGalleryModal onClose={onClose} items={items} label="Displays" mediaKey={[]} />;
 }
 
 // `mediaKey` defaults to the Sculpture gallery's own keys, so the Bespoke

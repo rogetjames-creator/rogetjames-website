@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MiniPortal, CommissionsGalleryPopup } from "./DiscoverPortals";
 import { useReelsPortal } from "../utils/reels";
 import ArtMarkPortal from "./ArtMarkPortal";
-import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages } from "./BespokeCommissions";
+import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal, ConcreteGalleryModal, useConcreteImages, DisplaysGalleryModal, useDisplaysImages } from "./BespokeCommissions";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
 import { netlifyImg } from "../utils/img";
 import { useUploadsByKey } from "../utils/mediaUploads";
@@ -182,6 +182,7 @@ export function CommissionsSection() {
   const [conceptsOpen, setConceptsOpen] = useState(false);
   const [reelsOpen, setReelsOpen] = useState(false);
   const [concreteOpen, setConcreteOpen] = useState(false);
+  const [displaysOpen, setDisplaysOpen] = useState(false);
   // The section had the mark turning, five portals turning and the strip
   // sliding, all at once. The portals stay out of sight until asked for, so
   // what is moving when you arrive is the mark and the strip alone.
@@ -199,6 +200,14 @@ export function CommissionsSection() {
   const stripUploads = stripByKey[MEDIA_KEYS.bespokeStrip] || [];
   // The portal keeps its lotus whatever is uploaded to the Concrete gallery.
   const concretePortal = SIDE_PORTAL_CONCRETE;
+  // Displays has no hand-placed pictures: its portal turns through the same
+  // photos its gallery shows, and stays away until there is at least one.
+  const displaysImages = useDisplaysImages();
+  const displaysKey = displaysImages.map((i) => i.img).join("|");
+  const displaysPortal = useMemo(
+    () => ({ id: "side-displays", label: "Displays", sublabel: "", slides: displaysKey ? displaysKey.split("|") : [] }),
+    [displaysKey]
+  );
 
   // Sliding strip — same shape as the Collection strip on the home page, but
   // both halves run the one way, left to right. Shuffled once per visit.
@@ -319,7 +328,7 @@ export function CommissionsSection() {
   // portals wear the same slides and lead to the same /screens gallery.
   const openScreensPage = () => { trackGalleryOpen("Bespoke Screens"); window.location.assign("/screens"); };
 
-  const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen;
+  const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen || concreteOpen || displaysOpen;
   useEffect(() => {
     window.dispatchEvent(new CustomEvent(anyOpen ? "gallery-modal-open" : "gallery-modal-close"));
   }, [anyOpen]);
@@ -334,6 +343,7 @@ export function CommissionsSection() {
       if (cat === "concepts")  setConceptsOpen(true);
       if (cat === "reels")     setReelsOpen(true);
       if (cat === "concrete")  setConcreteOpen(true);
+      if (cat === "displays")  setDisplaysOpen(true);
       if (cat === "projects")  { if (IS_DEV) window.location.assign("/projects"); }
     };
     window.addEventListener("open-bespoke-category", handler);
@@ -373,6 +383,7 @@ export function CommissionsSection() {
       concepts:    () => setConceptsOpen(true),
       reels:       () => setReelsOpen(true),
       concrete:    () => setConcreteOpen(true),
+      displays:    () => setDisplaysOpen(true),
       projects:    () => { if (IS_DEV) window.location.assign("/projects"); },
     }[which];
     if (!opener) return;
@@ -404,10 +415,13 @@ export function CommissionsSection() {
 
       {/* Mobile vertical layout */}
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
-        {/* Phone order, James's: Sculpture, Screens, Reels, Concepts, Concrete, Projects.
+        {/* Phone order, James's: Sculpture, Screens, Displays, Reels, Concepts, Concrete, Projects.
             No mark portal here — it leads the desktop layout only. */}
         <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
         <MiniPortal portal={SIDE_PORTAL_LEFT}     size={180} hideLabel centerLabel="Screens"     onOpen={openScreensPage} />
+        {displaysPortal.slides.length > 0 && (
+          <MiniPortal portal={displaysPortal}     size={180} hideLabel centerLabel="Displays"    onOpen={openAndCount(setDisplaysOpen, "Displays")} />
+        )}
         <MiniPortal portal={reelsPortal}          size={180} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
         <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={180} hideLabel centerLabel="Concepts"    onOpen={openAndCount(setConceptsOpen, "Concepts")} />
         <MiniPortal portal={concretePortal}       size={180} hideLabel centerLabel="Concrete"    onOpen={openAndCount(setConcreteOpen, "Concrete")} />
@@ -522,6 +536,9 @@ export function CommissionsSection() {
                 stands a size above the rest, so the eye lands on it first. */}
             <MiniPortal portal={SIDE_PORTAL_RIGHT} size={150} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
             <MiniPortal portal={SIDE_PORTAL_LEFT}  size={150} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
+            {displaysPortal.slides.length > 0 && (
+              <MiniPortal portal={displaysPortal}  size={150} hideLabel centerLabel="Displays"  onOpen={openAndCount(setDisplaysOpen, "Displays")} />
+            )}
             <MiniPortal portal={reelsPortal}          size={150} hideLabel centerLabel="Reels"       onOpen={openAndCount(setReelsOpen, "Reels")} />
             <MiniPortal portal={concretePortal} size={150} hideLabel centerLabel="Concrete" onOpen={openAndCount(setConcreteOpen, "Concrete")} />
           </div>
@@ -536,6 +553,7 @@ export function CommissionsSection() {
       {conceptsOpen  && <ConceptsGalleryModal  onClose={() => setConceptsOpen(false)} />}
       {reelsOpen     && <CommissionsGalleryPopup videos={reelsPortal.videos} title="Reels" onClose={() => setReelsOpen(false)} />}
       {concreteOpen  && <ConcreteGalleryModal  onClose={() => setConcreteOpen(false)} />}
+      {displaysOpen  && <DisplaysGalleryModal  onClose={() => setDisplaysOpen(false)} />}
     </section>
   );
 }

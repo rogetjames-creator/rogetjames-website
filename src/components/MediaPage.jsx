@@ -117,8 +117,8 @@ const LIVE_DEST_GROUPS = [
   },
   {
     group: "Displays",
-    hint: "one upload → shows under a DISPLAYS pill in Screens, Sculpture AND Projects",
-    items: [{ key: "displays", label: "Displays (Screens + Sculpture + Projects)" }],
+    hint: "shows in the Displays portal in the Bespoke section",
+    items: [{ key: MEDIA_KEYS.displays, label: "Displays" }],
   },
   {
     group: "Hero slideshow",
