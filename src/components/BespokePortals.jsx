@@ -551,10 +551,10 @@ export function CommissionsSection() {
           >
             <MiniPortal portal={SIDE_PORTAL_CONCEPTS} size={rowSize} hideLabel centerLabel="Concepts" onOpen={openAndCount(setConceptsOpen, "Concepts")} />
             <MiniPortal portal={SIDE_PORTAL_PROJECTS} size={rowSize} hideLabel centerLabel="Projects" locked={!IS_DEV} onOpen={IS_DEV ? openProjectsPage : null} />
-            {/* Sculpture and Screens hold the middle of the row; Sculpture
-                stands a size above the rest, so the eye lands on it first. */}
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={rowSize} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+            {/* Screens and Sculpture hold the middle of the row, Sculpture
+                dead centre — James's call, Oct 2026. */}
             <MiniPortal portal={SIDE_PORTAL_LEFT}  size={rowSize} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={rowSize} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
             {displaysPortal.slides.length > 0 && (
               <MiniPortal portal={displaysPortal}  size={rowSize} hideLabel centerLabel="Displays"  onOpen={openAndCount(setDisplaysOpen, "Displays")} />
             )}
