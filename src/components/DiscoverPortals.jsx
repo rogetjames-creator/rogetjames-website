@@ -21,6 +21,14 @@ const ASSOCIATES = [
     email: "info@hederablu.com.au",
     instagram: "@hederablu.contracting",
   },
+  {
+    id: "vanessa-roget",
+    name: "Vanessa Roget",
+    role: "Artist",
+    logo: "/images/associates/vanessa-roget.jpg",
+    description: "Art to Inspire.",
+    web: "https://vanessaroget.com/",
+  },
 ];
 
 const PAINTINGS = [
@@ -69,6 +77,7 @@ const PORTALS = [
     sublabel: "Associations",
     slides: [
       "/images/associates/hederablu-portal.png",
+      "/images/associates/vanessa-roget.jpg",
     ],
     slideScale: 0.92,
     popupType: "links",
