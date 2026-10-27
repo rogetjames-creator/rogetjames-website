@@ -21,7 +21,7 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null, bandTitle = null }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   // A piece with no details to show: untitled (Displays), marked noBtn, or in
@@ -170,7 +170,7 @@ a.dpill{display:inline-block;text-decoration:none}
     <div class="rule" aria-hidden="true"></div>
     <div class="win" aria-hidden="true"><div class="strip" id="introStrip"></div></div>
     <div class="rule" aria-hidden="true"></div>
-    <div class="band-title"><h1>The <span class="w2">${rangeWord}</span></h1></div>
+    <div class="band-title"><h1>${bandTitle || `The <span class="w2">${rangeWord}</span>`}</h1></div>
   </div>
   <div class="intro-bot">
     <div class="about-wrap" id="aboutWrap"></div>

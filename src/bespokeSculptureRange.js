@@ -74,5 +74,7 @@ export function mountBespokeSculptureRange(rootId) {
     pricing: false,
     designPills: true,
     viewLabel: "View design",
+    // Over the slideshow strip: "Bespoke Sculpture", not "The Range".
+    bandTitle: "Bespoke Sculpture",
   });
 }
