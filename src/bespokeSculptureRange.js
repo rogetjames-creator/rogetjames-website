@@ -75,6 +75,6 @@ export function mountBespokeSculptureRange(rootId) {
     designPills: true,
     viewLabel: "View design",
     // Over the slideshow strip: "Bespoke Sculpture", not "The Range".
-    bandTitle: `Bespoke <span class="w2">Sculpture</span>`,
+    bandTitle: `<span class="w2">Bespoke</span> Sculpture`,
   });
 }
