@@ -6,6 +6,7 @@ import { mountRangeGallery } from "./rangeGalleryApp";
 import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
 import { SCREEN_APPLICATIONS, applicationKey } from "./mediaDestinations";
 import { SCREEN_DESIGNS } from "./data/screenDesigns";
+import { MEDIA_SUPPRESS } from "./utils/mediaUploads";
 
 // Place each /media upload into EVERY place it belongs — one photograph can be
 // cross-referenced many times over: every category (destination) it was tagged
@@ -129,7 +130,8 @@ async function fetchScreenUploads() {
     };
     const rows = (Array.isArray(manifest) ? manifest : [])
       .map((e) => ({ src: `/${e.path}`, name: e.name || "", dests: e.destinations || [], createdTime: e.createdTime || "" }))
-      .filter((u) => isScreenUpload(u.dests) && isScreenPhotoAllowed(u.src));
+      .filter((u) => isScreenUpload(u.dests) && isScreenPhotoAllowed(u.src))
+      .filter((u) => !MEDIA_SUPPRESS.some((id) => u.src.includes(id)));
     const seen = new Set();
     return rows
       .sort((a, b) => new Date(a.createdTime || 0) - new Date(b.createdTime || 0))
