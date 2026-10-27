@@ -1,14 +1,16 @@
-import { createRoot } from "react-dom/client";
-import { SculptureGalleryModal } from "./components/BespokeCommissions";
-import { trackGalleryOpen } from "./utils/trackGallery";
+// Public Bespoke Sculpture gallery at /bespoke-sculpture — the "range" gallery,
+// same layout as /screens, with James's four galleries (Public Art, Commercial,
+// Planters, Residential). Config lives in src/bespokeSculptureRange.js.
+//
+// ROLLBACK to the old flat gallery: replace the lines below with —
+//   import { createRoot } from "react-dom/client";
+//   import { SculptureGalleryModal } from "./components/BespokeCommissions";
+//   createRoot(document.getElementById("bespoke-sculpture-root")).render(
+//     <SculptureGalleryModal onClose={() => window.location.assign("/")} mediaKey="bespoke-sculpture" />
+//   );
 import "./index.css";
+import { mountBespokeSculptureRange } from "./bespokeSculptureRange";
+import { trackGalleryOpen } from "./utils/trackGallery";
 
-// Public Bespoke Sculpture gallery at /bespoke-sculpture. Same component the
-// homepage opens as an overlay — it is already a full-screen view, so the
-// layout is identical. Standing alone, "close" returns to the homepage
-// instead of dismissing a layer.
 trackGalleryOpen("Bespoke Sculpture");
-
-createRoot(document.getElementById("bespoke-sculpture-root")).render(
-  <SculptureGalleryModal onClose={() => window.location.assign("/")} mediaKey="bespoke-sculpture" />
-);
+mountBespokeSculptureRange("bespoke-sculpture-root");

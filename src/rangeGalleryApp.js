@@ -861,7 +861,7 @@ a.dpill{display:inline-block;text-decoration:none}
   function closeCat(){ if(catReactRoot){ catReactRoot.unmount(); catReactRoot=null; } document.body.classList.remove('locked'); }
   // "View catalogue" pill opens this page's catalogue — the isolated one when supplied
   // (Screens has its own), otherwise this gallery's shared primary catalogue.
-  document.getElementById('catBtn').addEventListener('click',()=> catalogue ? openCatObj(catalogue) : openCat(section==='sculpture'?1:0));
+  document.getElementById('catBtn').addEventListener('click',()=> catalogue ? openCatObj(catalogue) : openCat((section==='sculpture'||section==='bespoke-sculpture')?1:0));
   // Screens: replace the shared catalogue list in the menu with just its own catalogue.
   if(catalogue){
     const menuEl=document.getElementById('menu');

@@ -346,6 +346,8 @@ export function CommissionsSection() {
   // Screens lives in both places, James's call: the Collection and here. Both
   // portals wear the same slides and lead to the same /screens gallery.
   const openScreensPage = () => { trackGalleryOpen("Bespoke Screens"); window.location.assign("/screens"); };
+  // Bespoke Sculpture is its own page now (same layout as Screens), not a popup.
+  const openSculpturePage = () => { trackGalleryOpen("Bespoke Sculpture"); window.location.assign("/bespoke-sculpture"); };
 
   const anyOpen = sculptureOpen || screensOpen || projectsOpen || conceptsOpen || reelsOpen || concreteOpen || displaysOpen;
   useEffect(() => {
@@ -358,7 +360,7 @@ export function CommissionsSection() {
       // One case per portal in this section, and the same rules: everything
       // open to the public except Projects, which only James can reach.
       if (cat === "screens")   { window.location.assign("/screens"); return; }
-      if (cat === "sculpture") setSculptureOpen(true);
+      if (cat === "sculpture") { window.location.assign("/bespoke-sculpture"); return; }
       if (cat === "concepts")  setConceptsOpen(true);
       if (cat === "reels")     setReelsOpen(true);
       if (cat === "concrete")  setConcreteOpen(true);
@@ -398,7 +400,7 @@ export function CommissionsSection() {
     window.history.replaceState(null, "", window.location.pathname + window.location.hash);
     const opener = {
       screens:     () => { window.location.assign("/screens"); },
-      sculpture:   () => setSculptureOpen(true),
+      sculpture:   () => { window.location.assign("/bespoke-sculpture"); },
       concepts:    () => setConceptsOpen(true),
       reels:       () => setReelsOpen(true),
       concrete:    () => setConcreteOpen(true),
@@ -436,7 +438,7 @@ export function CommissionsSection() {
       <div className="bg-matt-black py-8 flex flex-col items-center gap-8 md:hidden w-full">
         {/* Phone order, James's: Sculpture, Screens, Displays, Reels, Concepts, Concrete, Projects.
             No mark portal here — it leads the desktop layout only. */}
-        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+        <MiniPortal portal={SIDE_PORTAL_RIGHT}    size={180} hideLabel centerLabel="Sculpture"   onOpen={openSculpturePage} />
         <MiniPortal portal={SIDE_PORTAL_LEFT}     size={180} hideLabel centerLabel="Screens"     onOpen={openScreensPage} />
         {displaysPortal.slides.length > 0 && (
           <MiniPortal portal={displaysPortal}     size={180} hideLabel centerLabel="Displays"    onOpen={openAndCount(setDisplaysOpen, "Displays")} />
@@ -506,7 +508,7 @@ export function CommissionsSection() {
         {/* The row of six sits well clear of the sliding strip the mark
             floats in, rather than tucking up under it. */}
         <div className="flex flex-col items-center gap-12 pb-16 relative z-30" style={{ marginTop: "-274px" }}>
-          <ArtMarkPortal size={288} label="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+          <ArtMarkPortal size={288} label="Sculpture" onOpen={openSculpturePage} />
 
           {/* The way in to the portals. Closed, nothing below the mark moves.
               Built to match the Collection's Sculpture / Wall Art / Screens
@@ -554,7 +556,7 @@ export function CommissionsSection() {
             {/* Screens and Sculpture hold the middle of the row, Sculpture
                 dead centre — James's call, Oct 2026. */}
             <MiniPortal portal={SIDE_PORTAL_LEFT}  size={rowSize} hideLabel centerLabel="Screens"   onOpen={openScreensPage} />
-            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={rowSize} hideLabel centerLabel="Sculpture" onOpen={openAndCount(setSculptureOpen, "Bespoke Sculpture")} />
+            <MiniPortal portal={SIDE_PORTAL_RIGHT} size={rowSize} hideLabel centerLabel="Sculpture" onOpen={openSculpturePage} />
             {displaysPortal.slides.length > 0 && (
               <MiniPortal portal={displaysPortal}  size={rowSize} hideLabel centerLabel="Displays"  onOpen={openAndCount(setDisplaysOpen, "Displays")} />
             )}
