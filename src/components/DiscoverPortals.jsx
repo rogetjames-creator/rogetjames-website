@@ -28,6 +28,10 @@ const ASSOCIATES = [
     logo: "/images/associates/vanessa-roget.jpg",
     description: "Art to Inspire.",
     web: "https://vanessaroget.com/",
+    phone: "0466 073 383",
+    email: "hello@vanessaroget.com",
+    instagram: "@vanessaroget",
+    instagramUrl: "https://www.instagram.com/vanessaroget/",
   },
 ];
 
@@ -397,7 +401,9 @@ function LinksPopup({ onClose }) {
                 {a.web       && <a href={a.web} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-detail text-[11px] text-clay hover:text-cream transition-colors"><ExternalLink size={12} />Website</a>}
                 {a.phone     && <a href={`tel:${a.phone}`}    className="flex items-center gap-2 font-detail text-[11px] text-clay hover:text-cream transition-colors"><Phone size={12} />{a.phone}</a>}
                 {a.email     && <a href={`mailto:${a.email}`} className="flex items-center gap-2 font-detail text-[11px] text-clay hover:text-cream transition-colors"><Mail size={12} />{a.email}</a>}
-                {a.instagram && <span className="flex items-center gap-2 font-detail text-[11px] text-clay"><Instagram size={12} />{a.instagram}</span>}
+                {a.instagram && (a.instagramUrl
+                  ? <a href={a.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-detail text-[11px] text-clay hover:text-cream transition-colors"><Instagram size={12} />{a.instagram}</a>
+                  : <span className="flex items-center gap-2 font-detail text-[11px] text-clay"><Instagram size={12} />{a.instagram}</span>)}
                 {!a.web && !a.phone && !a.email && !a.instagram && <span className="font-detail text-[10px] text-warm-gray/40 uppercase tracking-wider">Details coming</span>}
               </div>
             </div>
