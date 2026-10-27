@@ -21,9 +21,12 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, cortenOnly = false, basePath = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
+  // A piece with no details to show: untitled (Displays), marked noBtn, or in
+  // a range listed in noButtonRanges (Custom Creations, uploads included).
+  const noButton = (des, r) => !des.n || !!des.noBtn || !!(noButtonRanges && r && noButtonRanges.includes(r.label));
   const IMGS   = data.imgs.map((p) => netlifyImg(p, { w: 1200, q: 74 }));
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
@@ -47,7 +50,9 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
     // A price-free gallery hides sizes, pricing and the quote — but NOT the
     // "Used for" pills: they are the whole point of a screen's detail sheet.
     sNoPrice.textContent = ".no-price #qpill,.no-price .sh-sub,.no-price .sh-block,.no-price .gate,.no-price .sh-actions{display:none!important}"
-      + ".no-price .sh-block.sh-apps{display:block!important}"
+      // …and only when there are uses to show. Wall Art has none, and the
+      // empty "Used for" heading was showing on its price-free pieces.
+      + ".no-price .sh-block.sh-apps:has(.sh-chip){display:block!important}"
       + ".sh-apps .sh-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}"
       + ".sh-apps a.sh-chip{text-decoration:none}"
       + ".sh-apps a.sh-chip.sel{color:#f0d9b6;border-color:rgba(212,167,92,.85);background:rgba(158,113,52,.16)}"
@@ -331,9 +336,11 @@ a.dpill{display:inline-block;text-decoration:none}
     const stImg=sec.querySelector('.stage img'), dn=sec.querySelector('.dname'), tw=sec.querySelector('.thumbs');
     const capline=sec.querySelector('.capline');
     const detailBtn=sec.querySelector('.detail-btn');
-    // Displays have no button — the photograph itself opens larger.
+    // Displays have no button — the photograph itself opens larger. So does a
+    // piece marked noBtn (Custom Creations): titled, but no details to show.
     stImg.addEventListener('click',()=>{
-      if(r.designs[curP.d] && !r.designs[curP.d].n) openDetail(ri,curP.d,curP.v);
+      const d=r.designs[curP.d];
+      if(d && noButton(d,r)) openDetail(ri,curP.d,curP.v);
     });
     function alignCap(){ const w=stImg.getBoundingClientRect().width; if(w>4) capline.style.width=Math.round(w)+'px'; }
     capAligners.push(alignCap);
@@ -364,8 +371,8 @@ a.dpill{display:inline-block;text-decoration:none}
       if(detailBtn){
         // Displays are photographs with no title, no size and no price — no
         // button, the photograph itself opens larger.
-        detailBtn.style.display = des.n ? '' : 'none';
-        stImg.style.cursor = des.n ? '' : 'zoom-in';
+        detailBtn.style.display = noButton(des,r) ? 'none' : '';
+        stImg.style.cursor = noButton(des,r) ? 'zoom-in' : '';
         const viewOnly=isNoPriceRange(r.label)||des.noPrice;
         // No page written for this one — there is nothing to show but a
         // conversation, so say so rather than "View".
@@ -1053,6 +1060,9 @@ a.dpill{display:inline-block;text-decoration:none}
           }
         }
         h.r.count=h.r.designs.length;
+        // The heading's "N designs" was written before the uploads arrived.
+        const pc=h.sec.querySelector('.p-count');
+        if(pc) pc.textContent=`${h.r.count} design${h.r.count!==1?'s':''}`;
         h.fit();
       });
 

@@ -56,10 +56,11 @@ export const RANGE_SEO = {
     summary:
       "Laser cut retro wall art in Corten steel and powder-coated aluminium — mid-century geometric forms and repeat patterns. Made to order in Australia.",
   },
-  CUSTOM: {
-    title: "Custom Laser Cut Metal Wall Art, Made to Size | ROGETjames",
+  // Took over from the old CUSTOM range in Oct 2026 (/wall-art/custom 301s here).
+  "CUSTOM CREATIONS": {
+    title: "Custom Laser Cut Metal Wall Art — Custom Creations | ROGETjames",
     summary:
-      "Custom laser cut wall art made to your size and finish — an existing design adapted, or new work developed with you. Corten steel and aluminium, made in Australia.",
+      "Custom laser cut wall art made for one wall and one client — Banksia, Wattle, Libratum, Benin, Creeping Fig and more, reworked for the space they hang in. Made in Australia.",
   },
 
   // ── Wall Art — named ranges ───────────────────────────────────────────────

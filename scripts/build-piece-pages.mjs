@@ -35,7 +35,7 @@ const PREVIEW = false;
 
 // The ranges the galleries show no price for — kept in step with
 // src/wall-art.jsx (NO_PRICE_RANGES) and src/sculptureRange.js (NO_PRICE_LABELS).
-const NO_PRICE_RANGES = ["CUSTOM", "Fire Sculptures", "DISPLAYS"];
+const NO_PRICE_RANGES = ["CUSTOM CREATIONS", "Fire Sculptures", "DISPLAYS"];
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -89,7 +89,7 @@ const HOME = {};
 for (const { base, data } of GALLERIES) {
   for (const range of data.ranges) {
     for (const d of range.designs || []) {
-      if (d.n && !HOME[d.n]) HOME[d.n] = `${SITE}${base}/${rangeSlug(range.label)}/${pieceSlug(d.n)}`;
+      if (d.n && !d.noBtn && !HOME[d.n]) HOME[d.n] = `${SITE}${base}/${rangeSlug(range.label)}/${pieceSlug(d.n)}`;
     }
   }
 }
@@ -662,7 +662,8 @@ const index = [];
 for (const gallery of GALLERIES) {
   const { data, base } = gallery;
   for (const range of data.ranges) {
-    const designs = (range.designs || []).filter((d) => d.n && d.imgs?.length && !HIDDEN_PIECES.includes(d.n));
+    // noBtn pieces (Custom Creations) are photographs with a title only — no page.
+    const designs = (range.designs || []).filter((d) => d.n && !d.noBtn && d.imgs?.length && !HIDDEN_PIECES.includes(d.n));
     for (const design of designs) {
       // Every other piece in the range, not just the first four — the tail of
       // a big range was left with nothing pointing at it, so neither a visitor

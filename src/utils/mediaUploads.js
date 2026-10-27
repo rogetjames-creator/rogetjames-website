@@ -18,6 +18,7 @@ export const MEDIA_SUPPRESS = [
   "1785745326687_0pxdcn", // UNITY — byte-identical twin of the tie649 upload
   "1782964617551_p3qy1g", // Australian Natives close-up — James asked for it off the site
   "1785475106831_bdhita", // NEA — same photo as the hand-placed NEA — Cottesloe in Client Images
+  "1792807110346_enfg6v", // Benin inspired — same photo as the hand-placed one in Custom Creations
 ];
 
 // Strip the file extension and James's "1200px" style reference tail so a tile

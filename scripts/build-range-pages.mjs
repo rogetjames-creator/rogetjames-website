@@ -55,7 +55,8 @@ const setMeta = (html, attr, name, value) => {
 // the gallery loads — the pieces of this range, by name.
 function rangeBody({ base, parent }, range, seo, imgs) {
   const rSlug = rangeSlug(range.label);
-  const designs = (range.designs || []).filter((d) => d.n);
+  // noBtn pieces have no page of their own, so nothing to link to.
+  const designs = (range.designs || []).filter((d) => d.n && !d.noBtn);
   const items = designs.map((d) => {
     const subject = PIECE_SEO[d.n]?.s || `${d.n} metal ${parent.toLowerCase()}`;
     const img = d.imgs?.[0] != null ? imgs[d.imgs[0]] : null;
