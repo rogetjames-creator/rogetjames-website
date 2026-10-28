@@ -37,7 +37,7 @@ const ASSOCIATES = [
     id: "atelier-spn",
     name: "Atelier SPN",
     role: "Shelley Piang-Nee",
-    logo: "/images/associates/atelier-spn.jpg",
+    logo: "/images/associates/atelier-spn-logo.jpg",
     description: "",
     web: "",
     phone: "0405 570 274",
@@ -94,6 +94,7 @@ const PORTALS = [
     slides: [
       "/images/associates/hederablu-portal.png",
       "/images/associates/vanessa-roget.jpg",
+      "/images/associates/atelier-spn-logo.jpg",
     ],
     slideScale: 0.92,
     popupType: "links",
