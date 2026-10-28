@@ -41,7 +41,7 @@ const ASSOCIATES = [
     description: "",
     web: "",
     phone: "0405 570 274",
-    email: "spiagnee@gmail.com",
+    email: "spiangnee@gmail.com",
     instagram: "@atelierspn",
     instagramUrl: "https://www.instagram.com/atelierspn/",
   },
