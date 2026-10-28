@@ -33,6 +33,18 @@ const ASSOCIATES = [
     instagram: "@vanessaroget",
     instagramUrl: "https://www.instagram.com/vanessaroget/",
   },
+  {
+    id: "atelier-spn",
+    name: "Atelier SPN",
+    role: "Shelley Piang-Nee",
+    logo: "/images/associates/atelier-spn.jpg",
+    description: "",
+    web: "",
+    phone: "0405 570 274",
+    email: "spiagnee@gmail.com",
+    instagram: "@atelierspn",
+    instagramUrl: "https://www.instagram.com/atelierspn/",
+  },
 ];
 
 const PAINTINGS = [
