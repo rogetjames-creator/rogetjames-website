@@ -303,9 +303,11 @@ export function ProjectCasePage({ slug }) {
             <div className="max-w-7xl mx-auto px-6 md:px-12">
               <Eyebrow>01 — The Brief</Eyebrow>
               <SectionTitle>The Brief</SectionTitle>
-              <p className="font-body text-base md:text-lg leading-[1.75] text-cream/75 max-w-3xl mt-7">
-                {project.description}
-              </p>
+              {project.description.split("\n\n").map((para, i) => (
+                <p key={i} className={`font-body text-base md:text-lg leading-[1.75] text-cream/75 max-w-3xl ${i === 0 ? "mt-7" : "mt-5"}`}>
+                  {para}
+                </p>
+              ))}
             </div>
           </section>
           <div className="w-full h-px bg-white/10" />

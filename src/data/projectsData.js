@@ -24,12 +24,11 @@ export const PROJECTS = [
     projectCategory: "homebase",
     location: "55 Salvado Rd, Subiaco WA 6008",
     sector: "Mixed-use precinct",
-    material: "Corten steel & aluminium",
     scope: "Landscape design, art features, project management",
     completed: "",
     hero: "/images/hero/hero-homebase-dusk.jpg",
     description:
-      "A landmark mixed-use development in Subiaco, Western Australia. ROGETjames was engaged across the full scope of the project — designing the landscape, creating and fabricating a suite of architectural art features, and project managing the commission from concept through to installation. The works include totems, entrance signage, feature sculptures, fire pit elements and landscape art, each conceived to activate the public spaces of the precinct and work in dialogue with the surrounding architecture.",
+      "A landmark mixed-use development in Subiaco, Western Australia, and Perth’s hub for building and design products. ROGETjames designed the complete landscape, public realm and lighting, and project managed the commission from concept through to installation.\n\nHere the walk from carpark to venue becomes an arrival. Brick, terrazzo, concrete and paving are laid down with intent, every paver placed, every curve considered, every edge drawn in light, so the ground itself carries the story of its making. Conceived as a sponsored landscape, it lets these materials speak for what they can become.\n\nRising from this ground are a pavilion, totems, sculptures and signage, warmed by fire and composed in light and colour. Every element is lit with intent: light grazes texture, traces form and lifts each piece from the dark, so that at night the landscape is not lost but remade. Designed as one body of work, by day and by night, they turn a point of passage into a showcase, and give Perth’s design hub an entrance worthy of what lies inside.",
     approachIntro:
       "One studio carried the precinct from first sketch to the last bolt — the landscape, the artworks and the installation were drawn together rather than handed between trades, so every element shares a language.",
     approach: [
