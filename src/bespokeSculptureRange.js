@@ -10,10 +10,10 @@ const CDN = "/images/cdn-gallery";
 const GALLERIES = [
   { label: "PUBLIC ART", designs: [
     { n: "UNITY IN DIVERSITY", imgs: [
+      "/images/uploads/1785745463839_tie649.jpg",
       `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`,
       `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`,
       `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`,
-      "/images/uploads/1785745463839_tie649.jpg",
     ] },
     { n: "Fiona Stanley", imgs: [`${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg`] },
     { n: "BALGA MIA MIA — Fiona Stanley Hospital Sculpture Park", imgs: [
