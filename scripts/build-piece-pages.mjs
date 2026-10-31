@@ -190,12 +190,18 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
         ],
       },
       {
-        "@type": "Product",
+        // VisualArtwork, not Product: Google requires a Product to carry a
+        // price (offers), and prices are never published outside the
+        // postcode gate. A Product without one is flagged as an error in
+        // Search Console. VisualArtwork has no such requirement.
+        "@type": "VisualArtwork",
         name: `${name} — ${subject}`,
         description: spiel || summary,
         url,
         image: photos.map((p) => `${SITE}${p}`),
-        brand: { "@type": "Brand", name: "ROGETjames" },
+        creator: { "@type": "Person", name: "James Roget", url: `${SITE}/` },
+        artform: kind === "sculpture" ? "Sculpture" : "Wall art",
+        artMedium: MATERIAL_OPTIONS.map((m) => m.label).join(", "),
         material: MATERIAL_OPTIONS.map((m) => m.label).join(", "),
         countryOfOrigin: "AU",
         ...(sizes.length ? { size: sizes.map((s) => `${s.label} — ${s.dims}`).join("; ") } : {}),
