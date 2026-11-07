@@ -11,6 +11,7 @@ import { PIECE_SIZES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, checkWA, getState,
 import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
 import { PRICING_ON } from "./utils/pricingMode";
+import { trackGalleryAction } from "./utils/trackGallery";
 import { MEDIA_SUPPRESS } from "./utils/mediaUploads";
 import { rangeSlug } from "./utils/rangeSlug";
 import { altForPiece, altForSrc } from "./utils/imgAlt";
@@ -797,6 +798,7 @@ a.dpill{display:inline-block;text-decoration:none}
     // Price-free range: hide the sizes/gate/quote in the detail sheet — just image + name.
     ov.classList.toggle('no-price', isNoPriceRange(RANGES[ri].label) || !!des.noPrice);
     ov.classList.add('open'); document.body.classList.add('locked');
+    if(pricing && PRICING_ON && !ov.classList.contains('no-price')) trackGalleryAction({ type:'view_pricing', gallery:label, item:des.n, series:curRange });
   }
   function closeDetail(){ ov.classList.remove('open'); document.body.classList.remove('locked'); }
   document.getElementById('ovClose').addEventListener('click',closeDetail);
@@ -809,6 +811,7 @@ a.dpill{display:inline-block;text-decoration:none}
     if(!/^\d{4}$/.test(v)){ gerr.textContent='Enter a 4-digit Australian postcode.'; return; }
     postcodeInfo = { postcode:v, isWA:checkWA(v), state:getState(v), isAdmin:false };
     savePostcode(postcodeInfo);
+    trackGalleryAction({ type:'postcode', gallery:label, postcode:v, state:postcodeInfo.state, isWA:postcodeInfo.isWA, item:curDes?.n, series:curRange });
     gerr.textContent=''; gateForm.style.display='none';
     ghint.textContent = `Prices for ${regionOf(postcodeInfo)}. Choose a finish.`;
     renderPrices();
@@ -823,6 +826,7 @@ a.dpill{display:inline-block;text-decoration:none}
     if(!dup){
       quote.push({ id:`${curDes.n}-${Date.now()}`, name:curDes.n, series:curRange, size:t, material, img:curImg });
       saveBasket(quote); updateQpill();
+      trackGalleryAction({ type:'add_to_quote', gallery:label, item:curDes.n, series:curRange, material:material?.label||material?.id, size:t?.label });
     }
     addQ.classList.add('added'); addQ.textContent='Added to quote ✓';
     setTimeout(closeDetail,900);

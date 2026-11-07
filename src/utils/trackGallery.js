@@ -32,3 +32,17 @@ export function trackGalleryOpen(gallery) {
     }).catch(() => {});
   } catch { /* counting must never get in a visitor's way */ }
 }
+
+// Counts what a visitor does inside a gallery: opening a design's details,
+// entering a postcode, adding to quote. Same rules as above: James's own taps
+// never count. A postcode entry also emails James, as it does on the home page.
+export function trackGalleryAction(payload) {
+  if (!payload || isOwnerVisit()) return;
+  try {
+    fetch("/api/track-event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch(() => {});
+  } catch { /* counting must never get in a visitor's way */ }
+}
