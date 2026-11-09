@@ -32,3 +32,27 @@ export function trackGalleryOpen(gallery) {
     }).catch(() => {});
   } catch { /* counting must never get in a visitor's way */ }
 }
+
+// Counts one visit per browser tab session, for the weekly stats email and
+// the /stats page. Records the page the visitor landed on and the site they
+// came from (e.g. google.com, pinterest.com). James's own visits never count.
+export function trackVisit() {
+  if (isOwnerVisit()) return;
+  try {
+    if (sessionStorage.getItem("roj_visit_counted")) return;
+    sessionStorage.setItem("roj_visit_counted", "1");
+  } catch { /* no session storage: still count this one load */ }
+  let from = "";
+  try {
+    const r = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, "") : "";
+    if (r && r !== location.hostname.replace(/^www\./, "")) from = r;
+  } catch { /* ignore a malformed referrer */ }
+  try {
+    fetch("/api/track-event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "visit", page: location.pathname, from }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch { /* counting must never get in a visitor's way */ }
+}

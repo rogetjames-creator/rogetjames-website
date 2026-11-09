@@ -11,6 +11,7 @@
 //   );
 // (ScreensGalleryModal is left intact — still used by the Screens portal popup.)
 import "./index.css";
+import "./utils/countVisit";
 import { mountScreensRange } from "./screensRange";
 import { trackGalleryOpen } from "./utils/trackGallery";
 

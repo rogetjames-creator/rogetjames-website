@@ -3,6 +3,7 @@
 // sculpture category appear as pieces in that category). ROLLBACK: revert this
 // file to `createRoot(...).render(<SculptureWall />)` (SculptureWall.jsx is untouched).
 import "./index.css";
+import "./utils/countVisit";
 import { mountSculptureRange } from "./sculptureRange";
 import { trackGalleryOpen } from "./utils/trackGallery";
 

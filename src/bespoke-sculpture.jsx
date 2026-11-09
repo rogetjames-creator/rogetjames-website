@@ -9,6 +9,7 @@
 //     <SculptureGalleryModal onClose={() => window.location.assign("/")} mediaKey="bespoke-sculpture" />
 //   );
 import "./index.css";
+import "./utils/countVisit";
 import { mountBespokeSculptureRange } from "./bespokeSculptureRange";
 import { trackGalleryOpen } from "./utils/trackGallery";
 

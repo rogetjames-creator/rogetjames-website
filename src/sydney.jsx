@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import CityPreview from "./components/CityPreview";
 import "./index.css";
+import "./utils/countVisit";
 
 // ── Sydney page data ──────────────────────────────────────────
 // PLACEHOLDER copy + images — a working template. Replace with real

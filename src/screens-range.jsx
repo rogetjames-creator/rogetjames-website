@@ -2,6 +2,7 @@
 // kept as a working preview URL. Shares its config with src/screens.jsx via
 // src/screensRange.js (single source of truth).
 import "./index.css";
+import "./utils/countVisit";
 import { mountScreensRange } from "./screensRange";
 
 mountScreensRange("screens-range-root");

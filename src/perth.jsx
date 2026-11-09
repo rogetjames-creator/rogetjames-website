@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import CityPage from "./components/CityPage";
 import "./index.css";
+import "./utils/countVisit";
 
 // ── Perth page data ───────────────────────────────────────────
 // Live since 16 September 2026. Copy is James's own.

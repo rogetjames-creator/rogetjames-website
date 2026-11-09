@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import { ProjectsIndex, ProjectCasePage } from "./components/ProjectsPages";
 import { ownerPreviewUnlocked } from "./utils/ownerPreview";
 import "./index.css";
+import "./utils/countVisit";
 
 // ── /projects ─────────────────────────────────────────────────
 // The Projects section as real pages: a summary page, and one case-study
