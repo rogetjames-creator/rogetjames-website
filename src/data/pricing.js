@@ -218,9 +218,11 @@ export const PIECE_SIZES = {
     { id: "s", label: "Small", dims: "1100 × 1200 mm", fixings: 4, price: 1200, priceCorten: 1200, pricePC: 1350, priceCortenPC: 1200 },
     { id: "l", label: "Large", dims: "1495 × 1631 mm", fixings: 4, price: 1750, priceCorten: 1750, pricePC: 1850, priceCortenPC: 1750 },
   ],
+  // Rec Landscape's confirmed sizes stood upright. Prices from the 17 May 2026
+  // site (rogetjames-full) — they had been overwritten with BANKSIA Round's.
   "BANKSIA Rec Portrait": [
-    { id: "s", label: "Small", dims: "1100 × 1200 mm",  fixings: 4, price: 1200, pricePC: 1200 },
-    { id: "l", label: "Large", dims: "1495 × 1631 mm",  fixings: 4, price: 1750, pricePC: 1750 },
+    { id: "s", label: "Small", dims: "1142 × 1495 mm", fixings: 4, price: 1210, pricePC: 1995 },
+    { id: "l", label: "Large", dims: "1495 × 1956 mm", fixings: 4, price: 1580, pricePC: 2325 },
   ],
   // Sizes confirmed by James 9 Nov 2026. Prices from the 17 May 2026 site
   // (rogetjames-full) — they had been overwritten with BANKSIA Round's.
