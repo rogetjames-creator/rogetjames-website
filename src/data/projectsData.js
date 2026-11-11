@@ -30,7 +30,7 @@ export const PROJECTS = [
     description:
       "A landmark mixed-use development in Subiaco, Western Australia, and Perth’s hub for building and design products. ROGETjames designed the complete landscape, public realm and lighting, and project managed the commission from concept through to installation.\n\nHere the walk from carpark to venue becomes an arrival. Brick, terrazzo, concrete and paving are laid down with intent, every paver placed, every curve considered, every edge drawn in light, so the ground itself carries the story of its making. Conceived as a sponsored landscape, it lets these materials speak for what they can become.\n\nRising from this ground are a pavilion, totems, sculptures and signage, warmed by fire and composed in light and colour. Every element is lit with intent: light grazes texture, traces form and lifts each piece from the dark, so that at night the landscape is not lost but remade. Designed as one body of work, by day and by night, they turn a point of passage into a showcase, and give Perth’s design hub an entrance worthy of what lies inside.",
     approachIntro:
-      "One studio carried the precinct from first sketch to the last bolt — the landscape, the artworks and the installation were drawn together rather than handed between trades, so every element shares a language.",
+      "ROGETjames carried the precinct from first sketch to the last bolt — the landscape, the artworks and the installation were drawn together rather than handed between trades, so every element shares a language.",
     approach: [
       { title: "Site & landscape design", text: "The public spaces were designed first, so the artwork had somewhere to belong instead of being placed after the fact." },
       { title: "Motif development", text: "A single cut motif was drawn for the precinct and carried across totems, signage and screens at different scales." },
@@ -40,8 +40,8 @@ export const PROJECTS = [
     specs: [
       ["Client", "Homebase, Subiaco"],
       ["Scope", "Landscape design · architectural art features · fabrication · project management"],
-      ["Elements", "Entrance signage · totems · feature sculptures · fire pit · planters · landscape art"],
-      ["Materials", "Corten steel, powdercoated aluminium"],
+      ["Elements", "Motif Sculpture · totems · fire pit · planters · light features · lighting design"],
+      ["Materials", "Corten steel, powder coated aluminium, concrete"],
       ["Fabrication", "Laser cut, folded and welded in Western Australia"],
       ["Address", "55 Salvado Rd, Subiaco WA 6008"],
       ["Location", "Subiaco, Perth, Western Australia"],
