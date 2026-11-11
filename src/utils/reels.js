@@ -20,6 +20,7 @@ export const REELS_PORTAL = {
     { src: "/videos/reels/rue.mp4",         title: "Rue",                      detail: "Rue — a ROGETjames reel.", poster: "/images/reels/rue-thumb.jpg" },
     { src: "/videos/reels/obliationes.mp4", title: "Obliationes",              detail: "Obliationes — a ROGETjames reel.", poster: "/images/reels/obliationes-thumb.jpg" },
     { src: "/videos/reels/the-cure-to-blandness.mp4", title: "The Cure to Blandness", detail: "The Cure to Blandness — a ROGETjames reel.", poster: "/images/reels/the-cure-to-blandness-thumb.jpg" },
+    { src: "/videos/reels/kissho.mp4",      title: "Kissho",                   detail: "Kissho — a ROGETjames reel.", poster: "/images/reels/kissho-thumb.jpg" },
   ],
   popupType: "commissions-gallery",
 };
