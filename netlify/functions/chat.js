@@ -79,7 +79,9 @@ When someone asks about a specific design, series, or category — confirm what'
 Always use a link — never just name a section without linking to it.
 
 About ROGETjames:
-- Founded in 2008 by James Roget, with over 18 years in laser-cut design
+- ROGETjames is the creative practice of Australian multidisciplinary artist and designer James Roget
+- More than three decades of experience creating original laser-cut metal sculpture, public art, architectural features and bespoke installations
+- Portfolio includes public art commissions at Centennial Park and Fiona Stanley Hospital, Perth's Homebase Design Centre, commercial and hospitality venues, display homes and private residences
 - James previously led Q DESIGN Architectural Features, one of Australia's top laser art companies (2008–2015)
 - Operating across Perth, Gold Coast, and Melbourne
 - Australia-wide delivery; also works internationally
