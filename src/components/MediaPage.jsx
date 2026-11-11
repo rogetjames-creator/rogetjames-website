@@ -627,7 +627,10 @@ export default function MediaPage() {
     }
   };
 
-  const onPick = (e) => { const fl = e.target.files; e.target.value = ""; processFiles(fl); };
+  // Copy the files out BEFORE clearing the picker. The browser's file list is
+  // live: clearing the picker empties it, so the photos vanished before they
+  // were read and the page said "Nothing came through".
+  const onPick = (e) => { const fl = Array.from(e.target.files || []); e.target.value = ""; processFiles(fl); };
   const onDrop = (e) => { e.preventDefault(); setDragOver(false); processFiles(e.dataTransfer?.files); };
 
   const removeStaged = (i) => setStaged(prev => prev.filter((_, idx) => idx !== i));
