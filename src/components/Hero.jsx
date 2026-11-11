@@ -443,7 +443,7 @@ export default function Hero() {
         <div className="mt-12 md:mt-16 flex flex-col gap-1.5">
           {[
             ["hero-loc-1", "Perth"],
-            ["hero-loc-2", "Gold Coast"],
+            ["hero-loc-2", "Brisbane"],
             ["hero-loc-3", "Melbourne"],
             ["hero-loc-4", "Delivery · Australia · Wide"],
           ].map(([cls, label]) => (

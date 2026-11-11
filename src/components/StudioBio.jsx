@@ -25,7 +25,7 @@ export default function StudioBio() {
           </p>
 
           <p className="text-cream/70 text-base leading-relaxed mt-5">
-            Collaborating with architects, landscape architects, interior designers, developers and private clients, ROGETjames creates distinctive, original works conceived specifically for their architectural and environmental settings.
+            Collaborating with architects, landscape architects, interior designers, developers and private clients, ROGETjames creates distinctive, original works conceived specifically for their architectural and environmental settings. Based in Perth, Brisbane and Melbourne, it delivers throughout Australia and internationally.
           </p>
 
           <div className="mt-10 pt-6 border-t border-cream/10 w-full space-y-1.5">

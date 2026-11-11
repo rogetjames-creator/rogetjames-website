@@ -244,7 +244,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
                 </div>
                 <div>
                   <p className="font-medium text-sm text-clay">
-                    Perth · Gold Coast · Melbourne
+                    Perth · Brisbane · Melbourne
                   </p>
                   <p className="text-warm-gray text-xs">
                     Australia-wide delivery

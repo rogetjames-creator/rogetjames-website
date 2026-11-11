@@ -137,7 +137,7 @@ function buildEmail(firstName, projectTitle, vaultUrl) {
         <tr>
           <td style="padding:22px 48px 28px;border-top:1px solid rgba(255,255,255,0.07);text-align:center;">
             <p style="margin:0 0 5px;font-size:10px;color:rgba(237,232,223,0.28);font-family:Helvetica,sans-serif;letter-spacing:0.1em;">
-              ROGETjames · Perth · Gold Coast · Melbourne
+              ROGETjames · Perth · Brisbane · Melbourne
             </p>
             <p style="margin:0;font-size:10px;font-family:Helvetica,sans-serif;">
               <a href="https://rogetjames.com" style="color:rgba(237,232,223,0.32);text-decoration:none;">rogetjames.com</a>

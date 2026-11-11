@@ -83,7 +83,7 @@ About ROGETjames:
 - More than three decades of experience creating original laser-cut metal sculpture, public art, architectural features and bespoke installations
 - Portfolio includes public art commissions at Centennial Park and Fiona Stanley Hospital, Perth's Homebase Design Centre, commercial and hospitality venues, display homes and private residences
 - James previously led Q DESIGN Architectural Features, one of Australia's top laser art companies (2008–2015)
-- Operating across Perth, Gold Coast, and Melbourne
+- Operating across Perth, Brisbane, and Melbourne
 - Australia-wide delivery; also works internationally
 - Clients include architects, interior designers, developers, and private collectors
 - Studio philosophy: "Our work lives in two worlds — a growing catalogue of signature designs, and fully bespoke commissions crafted for the spaces they will define. Drawing from nature, the study of cultural forms and patterns, sculptural sensibilities and an active imagination."
@@ -166,7 +166,7 @@ Corten maintenance:
 - Avoid anything that keeps the surface permanently wet or prevents natural wet/dry cycles
 - The rust depth and colour will continue to develop and enrich over many years — this is normal and desirable
 
-ROGETjames works with Corten steel across residential, commercial, and landscape projects throughout Perth, Melbourne, and the Gold Coast, shipping Australia-wide.
+ROGETjames works with Corten steel across residential, commercial, and landscape projects throughout Perth, Brisbane, and Melbourne, shipping Australia-wide.
 
 MATERIAL: ALUMINIUM
 
