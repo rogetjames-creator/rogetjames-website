@@ -66,7 +66,7 @@ const CITY_PANEL_PAGES = [
   { slug: "melbourne",  label: "Melbourne" },
   { slug: "perth",      label: "Perth" },
   { slug: "sydney",     label: "Sydney" },
-  { slug: "gold-coast", label: "Gold Coast" },
+  { slug: "gold-coast", label: "Brisbane" },   // key kept from the old Gold Coast page so existing photos carry over
   { slug: "adelaide",   label: "Adelaide" },
 ];
 const CITY_PANEL_GROUPS = CITY_PANEL_PAGES.map((c) => ({

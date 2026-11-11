@@ -251,9 +251,19 @@
   status = 200
 
 [[redirects]]
-  from = "/gold-coast"
-  to = "/gold-coast.html"
+  from = "/brisbane"
+  to = "/brisbane.html"
   status = 200
+
+[[redirects]]
+  from = "/gold-coast"
+  to = "/brisbane"
+  status = 301
+
+[[redirects]]
+  from = "/gold-coast.html"
+  to = "/brisbane"
+  status = 301
 
 [[redirects]]
   from = "/sydney"

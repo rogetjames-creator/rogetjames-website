@@ -92,7 +92,7 @@ function absolutes(now) {
   const bad = [];
   for (const [f, p] of Object.entries(now.pages)) {
     // Pages that exist for James, not for Google. Their noindex is deliberate.
-    const isPrivate = /^(admin|media|stats|vault|hero|feature-screens|screens-range|projects|sydney|gold-coast|adelaide|fonts|pieces)\./.test(f);
+    const isPrivate = /^(admin|media|stats|vault|hero|feature-screens|screens-range|projects|sydney|brisbane|gold-coast|adelaide|fonts|pieces)\./.test(f);
     if (isPrivate) continue;
     if (p.words < 60) bad.push(`${f} — only ${p.words} words for a crawler; is it prerendered?`);
     if (!p.hasH1) bad.push(`${f} — no h1 a crawler can read`);

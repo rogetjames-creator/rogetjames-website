@@ -85,7 +85,7 @@ mount function plus generated data. They are NOT React modals:
 |---|---|---|
 | `/` | `src/main.jsx` | `App.jsx` |
 | `/media` `/stats` `/admin` `/vault` | matching `src/*.jsx` | `MediaPage` `StatsPage` `AdminPage` `VaultPage` |
-| `/melbourne` `/perth` `/sydney` `/gold-coast` | matching `src/*.jsx` | `MelbournePreview` / `CityPreview` |
+| `/melbourne` `/perth` `/sydney` `/brisbane` | matching `src/*.jsx` | `MelbournePreview` / `CityPreview` |
 | `/hero` `/feature-screens` | matching `src/*.jsx` | `HeroPreview` `FeatureScreens` |
 
 `/feature-wall` and `/feature-sculpture` are now 301 redirects to `/wall-art`
