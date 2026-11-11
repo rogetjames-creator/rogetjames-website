@@ -13,11 +13,19 @@ export default function StudioBio() {
           </h2>
 
           <p className="text-cream/70 text-base leading-relaxed mt-8">
-            With over 18 years designing and creating art features, James established and led Q Design Architectural Features — one of Australia's top-tier laser art companies — from 2008 to 2015, before establishing an independent studio, to bring to focus a more evolving artistic approach to the medium.
+            ROGETjames is the creative practice of Australian multidisciplinary artist and designer James Roget.
           </p>
 
           <p className="text-cream/70 text-base leading-relaxed mt-5">
-            Today, ROGETjames operates from Perth, the Gold Coast and Melbourne, delivering original designs, a ready-to-specify product line, and bespoke design services for Architects, Designers and discerning clients,<br />throughout Australia and internationally.
+            With more than three decades of experience creating original laser-cut metal sculpture, public art, architectural features and bespoke installations, Roget’s practice brings together artistic expression, architectural integration and an innovative approach to materials and form.
+          </p>
+
+          <p className="text-cream/70 text-base leading-relaxed mt-5">
+            Through Q DESIGN Architectural Features and subsequently ROGETjames, his portfolio spans public art commissions at Centennial Park and Fiona Stanley Hospital, Perth’s Homebase Design Centre, prominent commercial and hospitality venues, display homes and significant private residences.
+          </p>
+
+          <p className="text-cream/70 text-base leading-relaxed mt-5">
+            Collaborating with architects, landscape architects, interior designers, developers and private clients, ROGETjames creates distinctive, original works conceived specifically for their architectural and environmental settings.
           </p>
 
           <div className="mt-10 pt-6 border-t border-cream/10 w-full space-y-1.5">
