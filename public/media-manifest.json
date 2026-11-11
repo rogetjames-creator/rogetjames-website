@@ -1312,5 +1312,15 @@
     "note": "",
     "createdTime": "2026-11-11T07:07:48.694Z",
     "path": "images/uploads/1794380868693_f7ld2u.jpg"
+  },
+  {
+    "id": "1794385793031_5jc3rj",
+    "name": "Image 11-11-2026 at 11.40 am.JPG",
+    "destinations": [
+      "hero"
+    ],
+    "note": "Make it the second image",
+    "createdTime": "2026-11-11T08:29:53.032Z",
+    "path": "images/uploads/1794385793031_5jc3rj.jpg"
   }
 ]
