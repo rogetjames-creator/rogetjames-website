@@ -4,6 +4,7 @@ import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Galler
 import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
 import { CITY_PANEL_NAMES_FOR } from "./MelbourneGalleryPanels";
 import { HERO_SLIDES } from "./heroSlides";
+import { askedPosition } from "../utils/uploadPosition";
 import { MEDIA_KEYS, HOLDING_DESTINATIONS, cityPanelKey, cityHeroKey, SCREEN_APPLICATIONS, applicationKey } from "../mediaDestinations";
 
 // Every screen design name, self-maintaining from the live screen covers — add
@@ -27,14 +28,16 @@ const SECTION_LABELS = Object.fromEntries(SCREEN_SECTIONS.map((s) => [s.id, `Scr
 
 const API = "/api/media-upload";
 
-// The ONLY instruction the server acts on is a replace: an intent word
-// (replace / remove / swap / change) together with a rogetjames.com image
-// address. Anything else typed in the Instructions box is stored against the
-// upload and never read by anything — so say so rather than let it look done.
-// Mirrors replaceTargetFromNote() in netlify/functions/media-upload.js.
-function instructionWillBeActedOn(text) {
-  const t = (text || "").trim();
-  if (!t) return true;                               // nothing typed, nothing lost
+// Two kinds of instruction are carried out; anything else typed in the
+// Instructions box is stored against the upload and never read by anything —
+// so say so rather than let it look done.
+//   1. A replace: an intent word (replace / remove / swap / change) together
+//      with a rogetjames.com image address. Mirrors replaceTargetFromNote() in
+//      netlify/functions/media-upload.js.
+//   2. A place: "make it the second image", "place 3rd", "position 2". Read by
+//      the hero slideshow and the Wall Art ranges (askedPosition) — so only
+//      when every ticked destination is one of those.
+function isReplaceInstruction(t) {
   if (!/\b(replace|remove|swap|change)\b/i.test(t)) return false;
   return (t.match(/https?:\/\/\S+/gi) || []).some((raw) => {
     try {
@@ -46,6 +49,19 @@ function instructionWillBeActedOn(text) {
       return /^\/images\/.+\.(jpe?g|png|webp)$/i.test(path);
     } catch { return false; }
   });
+}
+const POSITION_DESTS = new Set([MEDIA_KEYS.hero, ...WALL_ART_COVERS.map((c) => c.id)]);
+function placeWillBeActedOn(t, dests) {
+  if (!askedPosition(t)) return false;
+  if (!dests.length || dests.includes(MEDIA_KEYS.upClose)) return false;
+  return dests.every((d) => POSITION_DESTS.has(d));
+}
+const ORDINAL_WORDS = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
+const ordinalWord = (n) => ORDINAL_WORDS[n - 1] || `in position ${n}`;
+function instructionWillBeActedOn(text, dests = []) {
+  const t = (text || "").trim();
+  if (!t) return true;                               // nothing typed, nothing lost
+  return isReplaceInstruction(t) || placeWillBeActedOn(t, dests);
 }
 
 
@@ -730,7 +746,8 @@ export default function MediaPage() {
         dests: [...selectedDests],
         // Told plainly rather than left looking done: the note is stored either
         // way, but nothing on the site reads it.
-        ignoredInstruction: instructions.trim() && !json.replaced ? instructions.trim() : "",
+        ignoredInstruction: instructions.trim() && !json.replaced && !placeWillBeActedOn(instructions.trim(), selectedDests) ? instructions.trim() : "",
+        placedAt: !json.replaced && placeWillBeActedOn(instructions.trim(), selectedDests) ? askedPosition(instructions.trim()) : null,
       });
       setPhase("done");
       await refresh();
@@ -868,14 +885,19 @@ export default function MediaPage() {
               {doneInfo.count} photo{doneInfo.count === 1 ? "" : "s"} sent and now live in:
             </p>
             <p className="font-detail text-sm text-green-300 mb-5">{doneInfo.dests.map(labelForKey).join(" + ")}</p>
+            {doneInfo.placedAt && (
+              <p className="font-detail text-sm text-cream/80 mb-5">Placed {ordinalWord(doneInfo.placedAt)}, as you asked.</p>
+            )}
             {doneInfo.ignoredInstruction && (
               <div className="text-left bg-amber-500/12 border border-amber-400/40 rounded-xl px-4 py-3 mb-5">
                 <p className="font-detail text-[11px] text-amber-300 uppercase tracking-[0.18em] mb-1.5">Your instruction was not acted on</p>
                 <p className="font-detail text-[12.5px] text-cream/75 leading-relaxed mb-2">&ldquo;{doneInfo.ignoredInstruction}&rdquo;</p>
                 <p className="font-detail text-[12px] text-cream/60 leading-relaxed">
-                  The photo is saved and placed where you ticked. The only instruction that does
-                  anything here is a swap — <b>replace</b> plus the address of an image on this
-                  site. Anything else is kept as a note and nothing on the site reads it.
+                  The photo is saved and placed where you ticked. The instructions that do
+                  anything here are a swap — <b>replace</b> plus the address of an image on this
+                  site — or a place, such as &ldquo;make it the second image&rdquo;, for the hero
+                  slideshow or a Wall Art range. Anything else is kept as a note and nothing on
+                  the site reads it.
                 </p>
               </div>
             )}
@@ -984,17 +1006,20 @@ export default function MediaPage() {
               Instructions <span className="text-cream/40 normal-case tracking-normal font-detail">(optional)</span>
             </p>
             <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
-              placeholder="To auto-swap an image on Send: replace this image - https://rogetjames.com/images/…/name.jpg"
+              placeholder="e.g. make it the second image — or: replace this image - https://rogetjames.com/images/…/name.jpg"
               className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-4 py-2.5 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none transition-colors resize-y" />
-            {!instructionWillBeActedOn(instructions) && (
+            {!instructionWillBeActedOn(instructions, selectedDests) && (
               <p className="font-detail text-[11.5px] text-amber-300/90 mt-2 mb-6 leading-relaxed">
-                This won&rsquo;t be acted on. The only instruction that does anything is a swap —
-                the word <b>replace</b> (or remove / swap / change) together with the address of an
-                image on this site. Everything else is kept as a note against the photo, and nothing
-                on the site reads it. To place this photo, tick a destination below.
+                {askedPosition(instructions) && selectedDests.length === 0
+                  ? <>Tick a destination below. A place such as &ldquo;make it the second image&rdquo; works for the hero slideshow and the Wall Art ranges.</>
+                  : <>This won&rsquo;t be acted on. Two instructions do something: a swap — the word
+                    {" "}<b>replace</b> (or remove / swap / change) with the address of an image on this
+                    site — or a place, such as &ldquo;make it the second image&rdquo;, for the hero
+                    slideshow or a Wall Art range. Everything else is kept as a note against the photo,
+                    and nothing on the site reads it.</>}
               </p>
             )}
-            {instructionWillBeActedOn(instructions) && <div className="mb-6" />}
+            {instructionWillBeActedOn(instructions, selectedDests) && <div className="mb-6" />}
 
             <p className="font-detail text-[11px] text-clay/90 uppercase tracking-[0.2em] mb-3">Step 2 — Choose photos</p>
             <label

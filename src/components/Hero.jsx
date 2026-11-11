@@ -11,6 +11,7 @@ import {
 } from "./heroMark";
 import { HERO_SLIDES } from "./heroSlides";
 import { MEDIA_KEYS } from "../mediaDestinations";
+import { askedPosition, applyPositions } from "../utils/uploadPosition";
 
 // Homepage hero. James's "ART meets design" vector mark: the glass ART symbol
 // fades in, MEETS flies in, then DESIGN, all on the original 1133.86 artboard so
@@ -133,7 +134,7 @@ export default function Hero() {
     ]).then(([manifest, legacy]) => {
       if (!alive) return;
       const uploads = [
-        ...(Array.isArray(manifest) ? manifest.map((e) => ({ dest: e.destinations || [], src: `/${e.path}`, t: e.createdTime || "" })) : []),
+        ...(Array.isArray(manifest) ? manifest.map((e) => ({ dest: e.destinations || [], src: `/${e.path}`, t: e.createdTime || "", note: e.note || "" })) : []),
         ...(Array.isArray(legacy.images) ? legacy.images.map((i) => ({ dest: i.destinations || [], src: i.src, t: i.createdTime || "" })) : []),
       ];
       const HERO = MEDIA_KEYS.hero, HREP = MEDIA_KEYS.heroReplacePrefix;
@@ -148,12 +149,16 @@ export default function Hero() {
       }));
       const resolved = HERO_SLIDES.map((s) => (byKey[s.key] ? byKey[s.key].src : s.src));
       const seen = new Set(resolved);
-      const added = uploads
+      const addedUploads = uploads
         .filter((u) => u.dest.includes(HERO))
         .sort((a, b) => (a.t < b.t ? -1 : 1))
-        .map((u) => u.src)
-        .filter((src) => (seen.has(src) ? false : (seen.add(src), true)));
-      setSlides([...resolved, ...added]);
+        .filter((u) => (seen.has(u.src) ? false : (seen.add(u.src), true)));
+      // A new slide goes last unless the uploader note asked for a place —
+      // "make it the second image" puts it second.
+      setSlides(applyPositions(
+        [...resolved, ...addedUploads.map((u) => u.src)],
+        addedUploads.map((u) => ({ value: u.src, position: askedPosition(u.note) })),
+      ));
     });
     return () => { alive = false; };
   }, []);

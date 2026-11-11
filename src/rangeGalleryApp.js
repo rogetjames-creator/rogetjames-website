@@ -12,6 +12,7 @@ import { loadBasket, saveBasket } from "./utils/quoteBasket";
 import { loadPostcode, savePostcode } from "./utils/postcode";
 import { PRICING_ON } from "./utils/pricingMode";
 import { MEDIA_SUPPRESS } from "./utils/mediaUploads";
+import { askedPosition } from "./utils/uploadPosition";
 import { rangeSlug } from "./utils/rangeSlug";
 import { altForPiece, altForSrc } from "./utils/imgAlt";
 
@@ -1001,15 +1002,6 @@ a.dpill{display:inline-block;text-decoration:none}
       // "place 3rd", "place in 8th position", "put this 2nd" — the position
       // James asks for in the uploader note. Counting from one; null if he
       // did not ask, in which case the piece goes last as before.
-      const ORDINALS={first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8,ninth:9,tenth:10};
-      const askedPosition=(note)=>{
-        const t=String(note||'').toLowerCase();
-        if(!/\b(place|put|position|make it|goes?)\b/.test(t)) return null;
-        const m=t.match(/\b(\d{1,2})\s*(?:st|nd|rd|th)\b/) || t.match(/\bposition\s*(\d{1,2})\b/);
-        if(m) return Math.max(1, parseInt(m[1],10));
-        for(const w in ORDINALS){ if(new RegExp('\\b'+w+'\\b').test(t)) return ORDINALS[w]; }
-        return null;
-      };
       const basePaths=new Set(data.imgs);
       const uploadsForSeries=(id)=>{
         const seen=new Set();
