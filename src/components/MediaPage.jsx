@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { netlifyImg } from "../utils/img";
 import { MEDIA_DESTINATIONS, WALL_ART_COVERS, SCULPTURE_SUBCATS } from "./Gallery";
 import { SCREEN_COVERS, PROJECT_DESTINATIONS, BESPOKE_LIVE_DESTINATIONS } from "./BespokeCommissions";
 import { CITY_PANEL_NAMES_FOR } from "./MelbourneGalleryPanels";
@@ -159,30 +160,31 @@ function compressToDataUrl(file) {
     // Never reject — resolve a { failed } marker instead, so one unreadable
     // photo (typically an iPhone HEIC the browser can't decode) doesn't take
     // the whole batch down with it. The caller reports which ones failed.
-    const fail = () => resolve({ name: file.name, failed: true });
-    const reader = new FileReader();
-    reader.onerror = fail;
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = fail;
-      img.onload = () => {
-        try {
-          const scale = Math.min(1, MAX_DIM / Math.max(img.width, img.height));
-          const w = Math.round(img.width * scale);
-          const h = Math.round(img.height * scale);
-          const canvas = document.createElement("canvas");
-          canvas.width = w; canvas.height = h;
-          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
-          // A blank/failed canvas yields a tiny string — treat as a failure so
-          // it is never staged as a blank gallery image.
-          if (dataUrl.length > 1000) resolve({ name: file.name, dataUrl });
-          else fail();
-        } catch { fail(); }
-      };
-      img.src = reader.result;
+    // Read the photo straight from the file (an object URL) rather than first
+    // copying the whole thing into a text string — a phone photo copied that way
+    // costs several times its size in memory, which iPhones run short of.
+    const url = URL.createObjectURL(file);
+    const done = (v) => { URL.revokeObjectURL(url); resolve(v); };
+    const fail = () => done({ name: file.name, failed: true });
+    const img = new Image();
+    img.onerror = fail;
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, MAX_DIM / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.round(img.naturalWidth * scale);
+        const h = Math.round(img.naturalHeight * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        canvas.width = canvas.height = 0; // free the canvas memory straight away
+        // A blank/failed canvas yields a tiny string — treat as a failure so
+        // it is never staged as a blank gallery image.
+        if (dataUrl.length > 1000) done({ name: file.name, dataUrl });
+        else fail();
+      } catch { fail(); }
     };
-    reader.readAsDataURL(file);
+    img.src = url;
   });
 }
 
@@ -1123,7 +1125,12 @@ export default function MediaPage() {
               {ims.map((im) => (
                 <div key={im.id} className="rounded-lg overflow-hidden border border-white/10">
                   <div className="relative aspect-square">
-                    <img src={im.src} alt={im.name} className="w-full h-full object-cover" />
+                    {/* Small thumbnail, loaded only when scrolled to. This list holds
+                        every upload (130+); at full size it filled the iPhone's memory,
+                        so Safari reloaded the page while the photo picker was open and
+                        the chosen photos were lost. */}
+                    <img src={im.src?.startsWith("/images/") ? netlifyImg(im.src, { w: 240, q: 70 }) : im.src}
+                      alt={im.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     <button onClick={() => remove(im.id)} aria-label="Remove"
                       className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/70 text-cream/80 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">×</button>
                   </div>
