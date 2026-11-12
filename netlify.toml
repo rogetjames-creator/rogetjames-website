@@ -570,6 +570,19 @@
   to = "/wall-art/vitae"
   status = 301
 
+# Last two old-site addresses still listed as "Not found" in Search Console
+# (Nov 2026). The catch-all below does not fire on Netlify — every old address
+# needs its own rule, like these.
+[[redirects]]
+  from = "/paintings"
+  to = "/wall-art"
+  status = 301
+
+[[redirects]]
+  from = "/j"
+  to = "/"
+  status = 301
+
 
 # Catch-all — MUST stay last. Any other old/stale URL that isn't a real file
 # and isn't matched by a rule above 301s to the homepage instead of hitting
