@@ -171,7 +171,7 @@ a.dpill{display:inline-block;text-decoration:none}
     <div class="rule" aria-hidden="true"></div>
     <div class="win" aria-hidden="true"><div class="strip" id="introStrip"></div></div>
     <div class="rule" aria-hidden="true"></div>
-    <div class="band-title"><h1>${bandTitle || `The <span class="w2">${rangeWord}</span>`}</h1></div>
+    <div class="band-title"><p class="band-h">${bandTitle || `The <span class="w2">${rangeWord}</span>`}</p><h1 class="vh">${String((typeof document !== "undefined" && document.title.split("|")[0].trim()) || label || "ROGETjames").replace(/&/g,"&amp;").replace(/</g,"&lt;")}</h1></div>
   </div>
   <div class="intro-bot">
     <div class="about-wrap" id="aboutWrap"></div>

@@ -39,8 +39,9 @@ a.logo i{font-family:Georgia,serif;font-style:italic;font-weight:500}
 .strip .tile img{width:100%;height:100%;object-fit:cover;display:block}
 @keyframes marquee-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .band-title{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);z-index:4;text-align:center;pointer-events:none}
-.band-title h1{font-family:'Syne','Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(38px,6.4vw,74px);line-height:1;letter-spacing:-.025em;margin:0;color:var(--cream);text-shadow:0 2px 18px rgba(0,0,0,.9),0 0 48px rgba(0,0,0,.65)}
-.band-title h1 .w2{color:var(--w2)}
+.band-title .band-h{font-family:'Syne','Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:clamp(38px,6.4vw,74px);line-height:1;letter-spacing:-.025em;margin:0;color:var(--cream);text-shadow:0 2px 18px rgba(0,0,0,.9),0 0 48px rgba(0,0,0,.65)}
+.band-title .band-h .w2{color:var(--w2)}
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .rangecount{font-size:13px;letter-spacing:.06em;color:var(--cream-dim);margin:0}
 .chev{margin-top:22px;color:var(--warm);animation:bob 2.2s ease-in-out infinite;font-size:22px}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
