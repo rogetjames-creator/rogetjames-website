@@ -408,7 +408,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
           ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
         </div>
         ${photos.length > 1 ? `<div class="thumbs">${photos.map((src, i) =>
-          `<button class="t t${i + 1}" type="button" aria-label="${esc(`${name}, view ${i + 1}`)}"><img src="${img(src, 400)}" alt="" loading="lazy" /></button>`).join("")}</div>` : ""}
+          `<button class="t t${i + 1}" type="button" aria-label="${esc(`${name}, view ${i + 1}`)}"><img src="${img(src, 400)}" alt="${esc(`${name}, view ${i + 1}`)}" loading="lazy" /></button>`).join("")}</div>` : ""}
       </div>` : ""}
     </div>
 
