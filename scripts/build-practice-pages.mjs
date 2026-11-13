@@ -1,8 +1,7 @@
 // Writes the pages for the practice, as opposed to the product.
 //
 //   dist/architectural-art.html
-//   dist/public-art.html
-//   dist/commercial-art.html
+//   dist/commercial-public-art.html
 //
 // The site carried 86 pages selling wall art and one page — 179 words — for
 // everything the practice does. Someone searching "architectural art
@@ -59,53 +58,33 @@ const PAGES = [
       { img: `${CDN}/0cb8128a-5efd-4474-851e-636aa772a9b4_rw_1920.jpg`, name: "LUMIER lobby dividers", where: "Mirvac, Melbourne" },
       { img: "/images/hero/hero-homebase-dusk.jpg", name: "Precinct landscape & art features", where: "Homebase Design Centre, Subiaco WA" },
     ],
-    also: [["Public art commissions", "/public-art"], ["Commercial & hospitality", "/commercial-art"], ["Screens", "/screens"]],
+    also: [["Commercial & public art", "/commercial-public-art"], ["Screens", "/screens"]],
   },
   {
-    slug: "public-art",
-    kicker: "Civic & community commissions",
-    heading: "Public Art",
-    title: "Public Art Commissions & Civic Sculpture, Australia | ROGETjames",
-    desc: "Public art and civic sculpture in Corten steel — Balga Mia Mia at Fiona Stanley Hospital Sculpture Park and Unity in Diversity at Centennial Park, Bull Creek WA.",
+    slug: "commercial-public-art",
+    kicker: "Civic, hospitality & commercial commissions",
+    heading: "Commercial & Public Art",
+    title: "Commercial & Public Art Commissions, Australia | ROGETjames",
+    desc: "Public art and commercial artwork in Corten steel and aluminium — Fiona Stanley Hospital, Centennial Park Bull Creek, Cottesloe Hotel, Mirvac Melbourne.",
     lede: "Sculpture made for public ground — lit, weathering, and built for years of open air and public contact.",
     body: [
-      "Public work asks different questions of a piece than a wall in a house does. It has to survive weather and handling, it has to read from a distance and up close, and it has to mean something to the people who pass it every day rather than to whoever commissioned it.",
       "Balga Mia Mia stands at Fiona Stanley Hospital Sculpture Park in Murdoch, Western Australia — Corten steel columns cut so that light carries the pattern outward after dark. Unity in Diversity was commissioned for Centennial Park, Bull Creek, in the City of Melville, Western Australia — donated by the Bull Creek Lions Club and dedicated on 1 December 2021 — and was developed through an extensive concept process before a single sheet was cut.",
-      "Commissions are taken from councils, hospitals, developers and public art consultants. Concept design, engineering, fabrication, footings and installation are carried by the one studio.",
+      "ROGETjames has made work for the Cottesloe Hotel and the Duxton Hotel, for Lalla Rookh, for a Mirvac lobby in Melbourne, for Frasers in Kings Park, and across the Homebase Design Centre precinct in Subiaco — where the landscape, the entrance signage, the totems, the feature sculptures and the fire pit were all drawn and built as one commission.",
+      "Materials are Corten steel and powdercoated aluminium. Concept design, engineering, fabrication, footings and installation are carried by ROGETjames.",
     ],
-    sectors: ["Councils", "Hospitals & health", "Public art consultants", "Developers", "Community groups", "Memorial commissions"],
+    sectors: ["Councils", "Hospitals & health", "Public art consultants", "Community groups", "Hotels", "Restaurants & bars", "Retail", "Property developments", "Corporate", "Display homes"],
     works: [
       { img: `${CDN}/0bb31cda-116a-4ec4-8c20-5f25f900287c_rw_1200.jpg`, name: "BALGA MIA MIA", where: "Fiona Stanley Hospital Sculpture Park, Murdoch WA" },
-      { img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg`, name: "BALGA MIA MIA, at dusk", where: "Fiona Stanley Hospital Sculpture Park, Murdoch WA" },
       { img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`, name: "UNITY IN DIVERSITY", where: "Centennial Park, Bull Creek WA" },
-      { img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`, name: "UNITY IN DIVERSITY", where: "Centennial Park, Bull Creek WA" },
-      { img: "/images/hero/hero-homebase-totems.jpg", name: "Totems", where: "Homebase Design Centre, Subiaco WA" },
-      { img: `${CDN}/13dddf44-cb0a-4ad6-a4ac-3b229792d04d_rw_1920.jpg`, name: "Sculpture", where: "Fiona Stanley Hospital, Murdoch WA" },
-    ],
-    also: [["Architectural art", "/architectural-art"], ["Sculpture", "/sculpture"], ["Commercial & hospitality", "/commercial-art"]],
-  },
-  {
-    slug: "commercial-art",
-    kicker: "Hotels, hospitality, retail & developments",
-    heading: "Commercial & Hospitality Artwork",
-    title: "Commercial & Hospitality Artwork, Australia | ROGETjames",
-    desc: "Artwork for hotels, hospitality, retail and property developments — laser cut Corten steel and powdercoated aluminium, made to the building. Australia-wide.",
-    lede: "Artwork that has to work as a room does — at the door, behind the bar, across a lobby, in front of a crowd.",
-    body: [
-      "Commercial work is judged twice: once by the people who commissioned it and every day afterwards by the people who use the room. It has to hold up to traffic, to cleaning and to being looked at a thousand times, and it has to still be doing its job in ten years.",
-      "The studio has made work for the Cottesloe Hotel and the Duxton Hotel, for Lalla Rookh, for a Mirvac lobby in Melbourne, for Frasers in Kings Park, and across the Homebase Design Centre precinct in Subiaco — where the landscape, the entrance signage, the totems, the feature sculptures and the fire pit were all drawn and built as one commission.",
-      "Materials are Corten steel and powdercoated aluminium. Work is made to the opening, to the drawings and to the program, and installed by the studio that built it.",
-    ],
-    sectors: ["Hotels", "Restaurants & bars", "Retail", "Property developments", "Corporate", "Display homes"],
-    works: [
-      { img: "/images/uploads/1789196612222_pzttgx.jpg", name: "LUMIER dividers", where: "Mirvac, Melbourne" },
       { img: "/images/hero/hero-cottesloe-gate.jpg", name: "ERGO gate", where: "Cottesloe Hotel, WA" },
-      { img: "/images/hero/hero-cottesloe-patio.jpg", name: "ERGO patio screens", where: "Cottesloe Hotel, WA" },
+      { img: "/images/uploads/1789196612222_pzttgx.jpg", name: "LUMIER dividers", where: "Mirvac, Melbourne" },
       { img: "/images/hero/hero-homebase-entrance.jpg", name: "Entrance feature", where: "Homebase Design Centre, Subiaco WA" },
-      { img: "/images/uploads/1787118567628_awv18c.jpg", name: "Screens, in situ", where: "Perth, WA" },
-      { img: "/images/hero/hero-homebase-dusk.jpg", name: "Precinct landscape & art", where: "Homebase Design Centre, Subiaco WA" },
+      { img: "/images/hero/hero-homebase-totems.jpg", name: "Totems", where: "Homebase Design Centre, Subiaco WA" },
+      { img: `${CDN}/14c73030-575d-46e2-ae9e-eb407eb06e16_rw_1200.jpg`, name: "BALGA MIA MIA, at dusk", where: "Fiona Stanley Hospital Sculpture Park, Murdoch WA" },
+      { img: `${CDN}/6745c491-3d3b-4501-b01c-76a351d2d9d1_rw_1920.jpeg`, name: "UNITY IN DIVERSITY", where: "Centennial Park, Bull Creek WA" },
+      { img: "/images/hero/hero-cottesloe-patio.jpg", name: "ERGO patio screens", where: "Cottesloe Hotel, WA" },
     ],
-    also: [["Architectural art", "/architectural-art"], ["Public art commissions", "/public-art"], ["Screens", "/screens"]],
+    also: [["Architectural art", "/architectural-art"], ["Sculpture", "/sculpture"], ["Screens", "/screens"]],
   },
 ];
 
@@ -201,7 +180,7 @@ ${PREVIEW ? '<div class="pv">Preview — hidden from Google until James says go<
   <a class="mark" href="/">ROGET<i>james</i></a>
   <nav>
     <a href="/wall-art">Wall Art</a><a href="/sculpture">Sculpture</a><a href="/screens">Screens</a>
-    <a href="/architectural-art">Architectural Art</a><a href="/public-art">Public Art</a>
+    <a href="/architectural-art">Architectural Art</a><a href="/commercial-public-art">Commercial &amp; Public Art</a>
     <a href="/#contact">Contact</a>
   </nav>
 </div></header>
