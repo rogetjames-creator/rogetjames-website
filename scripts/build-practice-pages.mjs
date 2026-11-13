@@ -69,7 +69,7 @@ const PAGES = [
     lede: "Sculpture made for public ground — lit, weathering, and built for years of open air and public contact.",
     body: [
       "Balga Mia Mia stands at Fiona Stanley Hospital Sculpture Park in Murdoch, Western Australia — Corten steel columns cut so that light carries the pattern outward after dark. Unity in Diversity was commissioned for Centennial Park, Bull Creek, in the City of Melville, Western Australia — donated by the Bull Creek Lions Club and dedicated on 1 December 2021 — and was developed through an extensive concept process before a single sheet was cut.",
-      "ROGETjames has made work for the Cottesloe Hotel and the Duxton Hotel, for Lalla Rookh, for a Mirvac lobby in Melbourne, for Frasers in Kings Park, and across the Homebase Design Centre precinct in Subiaco — where the landscape, the entrance signage, the totems, the feature sculptures and the fire pit were all drawn and built as one commission.",
+      "ROGETjames has made work for the Cottesloe Hotel and the Duxton Hotel, for Lalla Rookh, for a Mirvac lobby in Melbourne, for Frasers in Kings Park, and across the Homebase Design Centre precinct in Subiaco — where the landscape concept and design, the entrance signage, the totems, the feature sculptures and the fire pit were all drawn and built as one commission.",
       "Materials are Corten steel and powdercoated aluminium. Concept design, engineering, fabrication, footings and installation are carried by ROGETjames.",
     ],
     sectors: ["Councils", "Hospitals & health", "Public art consultants", "Community groups", "Hotels", "Restaurants & bars", "Retail", "Property developments", "Corporate", "Display homes"],
