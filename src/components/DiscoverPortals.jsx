@@ -554,7 +554,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 const pos = typeof slide === "object" && slide.pos ? slide.pos : "center center";
                 const scale = typeof slide === "object" && slide.scale ? slide.scale : (portal.slideScale || 1);
                 return (
-                  <img key={i} src={loaded.has(i) ? portalImg(src) : undefined} alt="" role="presentation" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover"
+                  <img key={i} src={loaded.has(i) ? portalImg(src) : undefined} alt={portal.alt || (portal.label ? `${portal.label} — ROGETjames` : "")} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover"
                     style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.4s ease", objectPosition: pos, transform: `scale(${scale})`, transformOrigin: pos }} />
                 );
               })}

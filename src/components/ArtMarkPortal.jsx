@@ -60,8 +60,7 @@ export default function ArtMarkPortal({ size = 288, onOpen = null, label = "Scul
               <img
                 key={src}
                 src={netlifyImg(src, { w: Math.round(size * 2.4), q: 82 })}
-                alt=""
-                role="presentation"
+                alt={label ? `${label} — ROGETjames` : ""}
                 className="absolute inset-0 w-full h-full object-cover"
                 // Each picture is cropped to its own circle before it gets here,
                 // then pushed a little past the portal's rim so no edge of it can

@@ -3165,7 +3165,7 @@ function ScreensPortal() {
       >
         <div className="relative overflow-hidden w-56 h-56 md:w-64 md:h-64" style={{ borderRadius: "50%" }}>
           {SCREENS_PORTAL_IMGS.map((img, i) => (
-            <img key={i} src={img} alt="" role="presentation"
+            <img key={i} src={img} alt="Screens — ROGETjames"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
           ))}

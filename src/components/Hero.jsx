@@ -378,7 +378,7 @@ export default function Hero() {
             ref={(el) => (layerRefs.current[layer] = el)}
             data-prerender-hero
             src={netlifyImg(slides[layerIdx[layer]] ?? BASE_SLIDES[0], { w: 1600, q: 82 })}
-            alt={layer === 0 ? "ROGETjames — Wall Art & Sculpture" : ""}
+            alt="ROGETjames — Wall Art & Sculpture"
             aria-hidden={layer !== 0}
             className="absolute inset-0 w-full h-full object-contain"
             style={{

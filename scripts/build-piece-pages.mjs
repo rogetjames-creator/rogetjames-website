@@ -166,6 +166,21 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
     `Powder-coated aluminium in any colour, or natural Corten steel that weathers to rust. ` +
     (biggest ? `To ${biggest}. ` : "") +
     `Made to order in Australia.`;
+  // Bing and Google cut a description off at about 160 characters. Keep the
+  // full wording when it fits; otherwise shorten it a step at a time using
+  // the same words — the finish line first, then the closing line, then size.
+  const lead = `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by James Roget. `;
+  const finishLong = `Powder-coated aluminium in any colour, or natural Corten steel that weathers to rust. `;
+  const finishShort = `Powder-coated aluminium in any colour, or Corten steel. `;
+  const sizeLine = biggest ? `To ${biggest}. ` : "";
+  const madeLine = `Made to order in Australia.`;
+  const metaDesc = [
+    lead + finishLong + sizeLine + madeLine,
+    lead + finishShort + sizeLine + madeLine,
+    lead + finishShort + sizeLine,
+    lead + finishShort,
+    lead,
+  ].map((d) => d.trim()).find((d) => d.length <= 160) || summary;
 
   // "Save to Pinterest" — a plain link to Pinterest's own pin form, filled in
   // with this piece's photo, words and address. Never carries a price.
@@ -215,12 +230,12 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(summary)}" />
+<meta name="description" content="${esc(metaDesc)}" />
 <meta name="robots" content="${PREVIEW ? "noindex, nofollow" : "index, follow"}" />
 <link rel="canonical" href="${HOME[name] || url}" />
 <meta property="og:type" content="product" />
 <meta property="og:title" content="${esc(title)}" />
-<meta property="og:description" content="${esc(summary)}" />
+<meta property="og:description" content="${esc(metaDesc)}" />
 <meta property="og:url" content="${HOME[name] || url}" />
 ${hero ? `<meta property="og:image" content="${SITE}${hero}" />` : ""}
 <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -45,6 +45,8 @@ const SIDE_PORTAL_LEFT = {
 const SIDE_PORTAL_RIGHT = {
   id: "side-right",
   label: "",
+  // No visible label, but search engines still need to know what the pictures are.
+  alt: "Sculpture and architectural features — ROGETjames",
   sublabel: "",
   slides: [
     `${CDN_SC}/cffc33df-3d81-460f-b4aa-9f8adc9d81d8_rw_1200.jpg`,
