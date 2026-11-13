@@ -24,7 +24,7 @@ export const RANGE_SEO = {
   "CREEPING FIGS": {
     title: "Creeping Fig Metal Wall Art, Laser Cut | ROGETjames",
     summary:
-      "Laser cut creeping fig wall art in Corten steel or powder-coated aluminium — trailing vine designs for walls, courtyards and entries. Made to order in Australia.",
+      "Laser cut creeping fig wall art in Corten steel or powder-coated aluminium — vine designs for walls, courtyards and entries. Made to order in Australia.",
   },
   BRANCHES: {
     title: "Branch & Tree Metal Wall Art, Laser Cut | ROGETjames",
@@ -49,7 +49,7 @@ export const RANGE_SEO = {
   BIRDS: {
     title: "Bird Metal Wall Art — Swallows, Wren | ROGETjames",
     summary:
-      "Laser cut bird wall art in Corten steel and aluminium — swallows in flight, wrens and flocking bird compositions. Made to order in Australia, delivered nationwide.",
+      "Laser cut bird wall art in Corten steel and aluminium — swallows in flight, wrens and flocking bird compositions. Made to order in Australia.",
   },
   RETRO: {
     title: "Retro & Mid-Century Metal Wall Art | ROGETjames",
@@ -60,7 +60,7 @@ export const RANGE_SEO = {
   "CUSTOM CREATIONS": {
     title: "Custom Laser Cut Metal Wall Art — Custom Creations | ROGETjames",
     summary:
-      "Custom laser cut wall art made for one wall and one client — Banksia, Wattle, Libratum, Benin, Creeping Fig and more, reworked for the space they hang in. Made in Australia.",
+      "Custom laser cut wall art made for one wall and one client — Banksia, Wattle, Creeping Fig and more, reworked for the space they hang in. Made in Australia.",
   },
 
   // ── Wall Art — named ranges ───────────────────────────────────────────────
@@ -85,7 +85,7 @@ export const RANGE_SEO = {
   NEAZAR: {
     title: "Knotwork & Pattern Metal Wall Art | ROGETjames",
     summary:
-      "Laser cut knotwork, city-line and shell pattern wall art in Corten steel or powder-coated aluminium — the Neazar series by James Roget. Made to order in Australia.",
+      "Laser cut knotwork, city-line and shell pattern wall art in Corten steel or powder-coated aluminium — the Neazar series. Made to order in Australia.",
   },
   PENDANTS: {
     title: "Circle & Orbit Metal Wall Art — Pendants | ROGETjames",
