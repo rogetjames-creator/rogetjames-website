@@ -164,7 +164,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const summary =
     `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by James Roget. ` +
     `Powder-coated aluminium in any colour, or natural Corten steel that weathers to rust. ` +
-    (biggest ? `To ${biggest}. ` : "") +
+    (/^[\dØ]/.test(biggest) ? `To ${biggest}. ` : "") +
     `Made to order in Australia.`;
   // Bing and Google cut a description off at about 160 characters. Keep the
   // full wording when it fits; otherwise shorten it a step at a time using
@@ -172,7 +172,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const lead = `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by James Roget. `;
   const finishLong = `Powder-coated aluminium in any colour, or natural Corten steel that weathers to rust. `;
   const finishShort = `Powder-coated aluminium in any colour, or Corten steel. `;
-  const sizeLine = biggest ? `To ${biggest}. ` : "";
+  const sizeLine = /^[\dØ]/.test(biggest) ? `To ${biggest}. ` : "";
   const madeLine = `Made to order in Australia.`;
   const metaDesc = [
     lead + finishLong + sizeLine + madeLine,
@@ -214,7 +214,8 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
         description: spiel || summary,
         url,
         image: photos.map((p) => `${SITE}${p}`),
-        creator: { "@type": "Person", name: "James Roget", url: `${SITE}/` },
+        creator: { "@type": "Person", name: "James Roget", url: `${SITE}/`, sameAs: "https://www.wikidata.org/wiki/Q142119243" },
+        publisher: { "@type": "Organization", name: "ROGETjames", url: `${SITE}/`, sameAs: "https://www.wikidata.org/wiki/Q142119246" },
         artform: kind === "sculpture" ? "Sculpture" : "Wall art",
         artMedium: MATERIAL_OPTIONS.map((m) => m.label).join(", "),
         material: MATERIAL_OPTIONS.map((m) => m.label).join(", "),
