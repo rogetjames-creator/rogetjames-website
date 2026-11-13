@@ -146,6 +146,7 @@ for (const app of SCREEN_APPLICATIONS) {
 <meta name="robots" content="${PREVIEW ? "noindex, nofollow" : "index, follow"}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content="ROGETjames" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(desc)}" />
 <meta property="og:url" content="${url}" />

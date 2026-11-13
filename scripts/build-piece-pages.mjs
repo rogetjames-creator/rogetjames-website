@@ -234,6 +234,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
 <meta name="robots" content="${PREVIEW ? "noindex, nofollow" : "index, follow"}" />
 <link rel="canonical" href="${HOME[name] || url}" />
 <meta property="og:type" content="product" />
+<meta property="og:site_name" content="ROGETjames" />
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(metaDesc)}" />
 <meta property="og:url" content="${HOME[name] || url}" />
@@ -420,7 +421,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
     <div class="shots">
       ${photos.length ? `<div class="gal" style="--shape:${ratio.toFixed(4)}">
         <div class="main">
-          ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
+          ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}" data-pin-description="${esc(`${name} — ${subject} by ROGETjames, James Roget. rogetjames.com`)}" data-pin-url="${esc(url)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
         </div>
         ${photos.length > 1 ? `<div class="thumbs">${photos.map((src, i) =>
           `<button class="t t${i + 1}" type="button" aria-label="${esc(`${name}, view ${i + 1}`)}"><img src="${img(src, 400)}" alt="${esc(`${name}, view ${i + 1}`)}" loading="lazy" /></button>`).join("")}</div>` : ""}
