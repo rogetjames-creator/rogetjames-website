@@ -9,7 +9,7 @@ const CDN = "/images/cdn-gallery";
 // Gallery → designs, in James's order. One design can hold several photos.
 const GALLERIES = [
   { label: "PUBLIC ART", designs: [
-    { n: "UNITY IN DIVERSITY", imgs: [
+    { n: "UNITY IN DIVERSITY — Centennial Park, Bull Creek WA", imgs: [
       "/images/uploads/1785745463839_tie649.jpg",
       `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`,
       `${CDN}/5504bc00-e901-49b2-b14b-337476409a29_rw_1200.jpg`,

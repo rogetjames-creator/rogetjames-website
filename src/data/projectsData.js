@@ -28,7 +28,7 @@ export const PROJECTS = [
     completed: "",
     hero: "/images/hero/hero-homebase-dusk.jpg",
     description:
-      "A landmark mixed-use development in Subiaco, Western Australia, and Perth’s hub for building and design products. ROGETjames designed the complete landscape, public realm and lighting, and project managed the commission from concept through to installation.\n\nHere the walk from carpark to venue becomes an arrival. Brick, terrazzo, concrete and paving are laid down with intent, every paver placed, every curve considered, every edge drawn in light, so the ground itself carries the story of its making. Conceived as a sponsored landscape, it lets these materials speak for what they can become.\n\nRising from this ground are a pavilion, totems, sculptures and signage, warmed by fire and composed in light and colour. Every element is lit with intent: light grazes texture, traces form and lifts each piece from the dark, so that at night the landscape is not lost but remade. Designed as one body of work, by day and by night, they turn a point of passage into a showcase, and give Perth’s design hub an entrance worthy of what lies inside.",
+      "Home Base Design & Build Centre is Australia’s largest building, renovating, decorating and landscaping destination. A landmark mixed-use development in Subiaco, Western Australia, and Perth’s hub for building and design products. ROGETjames designed the complete landscape, public realm and lighting, and project managed the commission from concept through to installation.\n\nHere the walk from carpark to venue becomes an arrival. Brick, terrazzo, concrete and paving are laid down with intent, every paver placed, every curve considered, every edge drawn in light, so the ground itself carries the story of its making. Conceived as a sponsored landscape, it lets these materials speak for what they can become.\n\nRising from this ground are a pavilion, totems, sculptures and signage, warmed by fire and composed in light and colour. Every element is lit with intent: light grazes texture, traces form and lifts each piece from the dark, so that at night the landscape is not lost but remade. Designed as one body of work, by day and by night, they turn a point of passage into a showcase, and give Perth’s design hub an entrance worthy of what lies inside.",
     approachIntro:
       "ROGETjames carried the precinct from first sketch to the last bolt — the landscape, the artworks and the installation were drawn together rather than handed between trades, so every element shares a language.",
     approach: [
@@ -62,18 +62,21 @@ export const PROJECTS = [
     slug: "unity-in-diversity",
     name: "UNITY IN DIVERSITY",
     projectCategory: "centennial",
-    location: "Centennial Park, Western Australia",
+    location: "Centennial Park, Bull Creek, City of Melville, WA",
     sector: "Public art",
     material: "Corten steel",
     scope: "Concept design, fabrication, installation",
-    completed: "",
+    completed: "2021",
     hero: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg`,
     description:
-      "A significant public art commission at Centennial Park, Western Australia. The selected design was developed through an extensive concept process, culminating in a site-specific installation that celebrates the identity and spirit of the precinct.",
+      "A significant public art commission at Centennial Park, Bull Creek, in the City of Melville, Western Australia — donated by the Bull Creek Lions Club and dedicated on 1 December 2021. The selected design was developed through an extensive concept process, culminating in a site-specific installation that celebrates the identity and spirit of the precinct.",
     approachIntro: "",
     approach: [],
     specs: [
-      ["Location", "Centennial Park, Western Australia"],
+      ["Location", "Centennial Park, Bull Creek, City of Melville, WA"],
+      ["Donated by", "Bull Creek Lions Club"],
+      ["Dedicated", "1 December 2021, by the City of Melville and the Bull Creek Lions Club"],
+      ["Material", "Corten steel"],
     ],
     images: [
       { name: "UNITY IN DIVERSITY", img: `${CDN}/ce906d3c-248e-42c2-a76c-e7547bae20e7_rw_1200.jpg` },
