@@ -32,7 +32,11 @@ export default async function handler() {
 function json(data) {
   return new Response(JSON.stringify(data), {
     status: 200,
-    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=30" },
+    headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=30",
+      // Let Netlify's nearby servers answer from a saved copy instead of
+      // running this in the US on every page load (~1s each from Australia).
+      // After 60s the copy is refreshed in the background.
+      "Netlify-CDN-Cache-Control": "public, durable, s-maxage=60, stale-while-revalidate=604800" },
   });
 }
 
