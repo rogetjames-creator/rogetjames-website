@@ -33,3 +33,11 @@ export function netlifyImg(src, { w = 1920, q = 80 } = {}) {
   if (dev) return src;
   return `/.netlify/images?url=${encodeURIComponent(src)}&w=${w}&fm=webp&q=${q}${ver(src)}`;
 }
+
+// Safety net for photos that were being sent at full size. Wraps only a raw
+// local photo path (/images/…) in the resizer; anything already sized, from
+// another site, a stored upload (/api/…) or a data: image is returned as-is.
+export function cdnIfRaw(src, opts) {
+  if (typeof src !== "string" || !src.startsWith("/images/")) return src;
+  return netlifyImg(src, opts);
+}

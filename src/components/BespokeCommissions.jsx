@@ -8,7 +8,7 @@ import { MEDIA_KEYS, bespokeKey, projectKey } from "../mediaDestinations";
 import { confirmedPhotoDescription, isScreenPhotoAllowed } from "../data/confirmedPhotoDescriptions";
 import { SCREEN_DESIGNS } from "../data/screenDesigns";
 import { useUploadsByKey } from "../utils/mediaUploads";
-import { netlifyImg } from "../utils/img";
+import { netlifyImg, cdnIfRaw } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -554,7 +554,7 @@ function ScreensFeatureSlideshow() {
       {SCREENS_SLIDESHOW_SLIDES.map((s, i) => (
         <img
           key={i}
-          src={s.img}
+          src={cdnIfRaw(s.img, { w: 1200, q: 80 })}
           alt={s.heading}
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
@@ -840,7 +840,7 @@ function CommissionDetail({ item, onClose }) {
           <X size={13} />
         </button>
         <div className="aspect-[4/3] overflow-hidden relative bg-charcoal">
-          <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover" />
+          <img src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover" />
         </div>
         <div className="p-6">
           <p className="font-heading font-semibold text-cream text-base leading-snug">{item.client || item.name}</p>
@@ -903,7 +903,7 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
         <ChevronLeft size={24} />
       </button>
       <div ref={contentRef} className="flex flex-col items-center gap-4 px-20" onClick={(e) => e.stopPropagation()}>
-        <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="max-w-[80vw] max-h-[78vh] object-contain rounded-2xl" />
+        <img src={cdnIfRaw(item.img, { w: 2400, q: 85 })} alt={confirmedPhotoDescription(item.img) || item.name} className="max-w-[80vw] max-h-[78vh] object-contain rounded-2xl" />
         <div className="flex items-center gap-6">
           <p className="text-cream/80 font-heading font-medium text-sm tracking-wide">{item.name}</p>
           {item.videoUrl && (
@@ -937,7 +937,7 @@ function SlidingThumb({ slides, alt, active, pos }) {
   return (
     <div className="w-full h-full relative">
       {slides.map((src, i) => (
-        <img key={src} src={src} alt={confirmedPhotoDescription(src) || alt}
+        <img key={src} src={cdnIfRaw(src, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(src) || alt}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           style={{ opacity: i === cur ? 1 : 0, transition: 'opacity 0.8s ease', objectPosition: pos || 'center center' }}
         />
@@ -1001,7 +1001,7 @@ function ScreenDesignRow({ design, onOpenLightbox, onDetail, getDebug }) {
               >
                 {item.slides
                   ? <SlidingThumb slides={item.slides} alt={item.name} active={rowActive} pos={item.pos} />
-                  : <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={item.pos ? { objectPosition: item.pos } : undefined} />
+                  : <img src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(item.img) || item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={item.pos ? { objectPosition: item.pos } : undefined} />
                 }
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
@@ -1060,7 +1060,7 @@ function GalleryCard({ item, onClick, onDetail }) {
     >
       {item.slides
         ? <SlidingThumb slides={item.slides} alt={item.name} active={hovered} pos={item.pos} />
-        : <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" style={item.pos ? { objectPosition: item.pos } : undefined} />
+        : <img src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" style={item.pos ? { objectPosition: item.pos } : undefined} />
       }
       <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
@@ -1370,7 +1370,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                         style={{ width: "calc(20% - 9.6px)", minWidth: "160px" }}
                         onClick={() => openLightboxScoped(item)}
                       >
-                        <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        <img src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(item.img) || item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
                           <p className="text-cream font-heading font-semibold text-xs">{item.name}</p>
@@ -1559,7 +1559,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                             <div className="w-full overflow-hidden my-2" style={{ height: "110px" }}>
                               <div className="flex gap-2 h-full" style={{ width: "max-content", animation: "marquee-scroll 40s linear infinite", willChange: "transform" }}>
                                 {[...SCREENS_MARQUEE_IMGS, ...SCREENS_MARQUEE_IMGS].map((src, i) => (
-                                  <img key={i} src={src} alt="" role="presentation" className="h-full w-auto object-cover rounded" style={{ aspectRatio: "4/3", flexShrink: 0 }} />
+                                  <img key={i} src={cdnIfRaw(src, { w: 1200, q: 80 })} alt="" role="presentation" className="h-full w-auto object-cover rounded" style={{ aspectRatio: "4/3", flexShrink: 0 }} />
                                 ))}
                               </div>
                             </div>
@@ -1582,7 +1582,7 @@ function GalleryModal({ onClose, initialCategory = null }) {
                             style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((idx * 0.618) % 1) * 1.5).toFixed(2)}s` }}>
                             {item.slides
                               ? <img src={item.slides[0]} alt={confirmedPhotoDescription(item.slides[0]) || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
-                              : <img src={item.img} alt={confirmedPhotoDescription(item.img) || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
+                              : <img src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(item.img) || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" style={item.pos ? { objectPosition: item.pos } : undefined} />
                             }
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                               <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{item.name}</p>
@@ -2339,7 +2339,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                   }}
                     className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                     style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                    <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       style={it.pos ? { objectPosition: it.pos } : undefined} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
                       <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{it.name}</p>
@@ -2401,7 +2401,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                   }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
+                  <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2425,7 +2425,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                 style={{ fontSize: 20 }}>‹</button>
 
               <div style={{ transition: "opacity 0.18s, transform 0.18s", opacity: animDir ? 0 : 1, transform: animDir ? `translateX(${animDir > 0 ? 28 : -28}px)` : "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "16px 64px", width: "100%" }}>
-                <img src={displayImg} alt={confirmedPhotoDescription(displayImg) || curFlat.name}
+                <img src={cdnIfRaw(displayImg, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(displayImg) || curFlat.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)" }} />
                 <p className="font-heading font-semibold text-base text-cream/90 tracking-wide">{curFlat.name}</p>
               </div>
@@ -2449,7 +2449,7 @@ export function ScreensGalleryModal({ onClose, initialShowCat = false }) {
                     onClick={() => { setFlatIdx(fi); setSlideIdx(0); setJumpByDesign(true); }}
                     className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                     style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : isSameDesign ? 0.75 : 0.35, transition: "all 0.2s" }}>
-                    <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} className="w-full h-full object-cover" />
+                    <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} className="w-full h-full object-cover" />
                   </div>
                 );
               })}
@@ -2510,7 +2510,7 @@ function ProjectInfoPopup({ project, onClose }) {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
                   {project.behindTheScenes.map((it, i) => (
                     <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(242,240,233,0.08)" }}>
-                      <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
+                      <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: it.pos || "center" }} />
                       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)", opacity: 0, transition: "opacity 0.2s" }}
                         onMouseEnter={e => e.currentTarget.style.opacity = 1}
@@ -2642,7 +2642,7 @@ export function ProjectsGalleryModal({ onClose }) {
                 <div key={i} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
+                  <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -2683,7 +2683,7 @@ export function ProjectsGalleryModal({ onClose }) {
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                       style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                      <img src={src} alt={confirmedPhotoDescription(src) || it.name} className="w-full h-full object-cover" />
+                      <img src={cdnIfRaw(src, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(src) || it.name} className="w-full h-full object-cover" />
                     </div>
                   );
                 });
@@ -3046,7 +3046,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                 <div key={it.origIdx} onClick={() => { setItemIdx(it.origIdx); setSlideIdx(0); setSearchQuery(""); setSearchOpen(false); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                  <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
+                  <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     style={it.pos ? { objectPosition: it.pos } : undefined} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -3075,7 +3075,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
               <div key={i} onClick={() => { setItemIdx(i); setSlideIdx(0); }}
                 className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 group-hover:border-clay/50 transition-all duration-200"
                 style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.6s ease forwards", animationDelay: `${(((i * 0.618) % 1) * 2.2).toFixed(2)}s` }}>
-                <img src={it.img} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
+                <img src={cdnIfRaw(it.img, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(it.img) || it.name} loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   style={it.pos ? { objectPosition: it.pos } : undefined} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
@@ -3119,7 +3119,7 @@ export function SculptureGalleryModal({ onClose, items: itemsProp = null, label:
                     <div key={`${iIdx}-${sIdx}`} onClick={() => { setItemIdx(iIdx); setSlideIdx(sIdx); }}
                       className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                       style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === itemIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                      <img src={src} alt={confirmedPhotoDescription(src) || it.name} className="w-full h-full object-cover" />
+                      <img src={cdnIfRaw(src, { w: 1200, q: 80 })} alt={confirmedPhotoDescription(src) || it.name} className="w-full h-full object-cover" />
                     </div>
                   );
                 });
@@ -3165,12 +3165,12 @@ function ScreensPortal() {
       >
         <div className="relative overflow-hidden w-56 h-56 md:w-64 md:h-64" style={{ borderRadius: "50%" }}>
           {SCREENS_PORTAL_IMGS.map((img, i) => (
-            <img key={i} src={img} alt="Screens — ROGETjames"
+            <img key={i} src={cdnIfRaw(img, { w: 1200, q: 80 })} alt="Screens — ROGETjames"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
           ))}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/90">
-            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="w-28 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
+            <img src={netlifyImg("/images/roj-logo.png", { w: 240, q: 90 })} alt="ROGETjames" className="w-28 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
             <span className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.22em] border border-white/20 rounded-full px-4 py-1.5">
               Screens
             </span>
@@ -3234,12 +3234,12 @@ function BespokePortal() {
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
-              : <img key={i} src={item.img} alt={item.label}
+              : <img key={i} src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={item.label}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.2s ease" }} />
           ))}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-black/90">
-            <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="w-36 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
+            <img src={netlifyImg("/images/roj-logo.png", { w: 320, q: 90 })} alt="ROGETjames" className="w-36 h-auto" style={{ opacity: 0.55, filter: "brightness(0.75)" }} />
             <span className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.22em] border border-white/20 rounded-full px-4 py-1.5">
               View
             </span>
@@ -3289,7 +3289,7 @@ function BespokePortal() {
                   className="group relative rounded-xl overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-300 text-left"
                   style={{ aspectRatio: "16/9" }}>
                   {item.img
-                    ? <img src={item.img} alt={item.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    ? <img src={cdnIfRaw(item.img, { w: 1200, q: 80 })} alt={item.label} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     : <video src={item.src} muted ref={el => { if (el) el.muted = true; }} playsInline preload="metadata" className="absolute inset-0 w-full h-full object-cover" />
                   }
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -3550,7 +3550,7 @@ export default function BespokeCommissions() {
               <div className="marquee-track flex gap-3 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
                 {leftDup.map((src, i) => (
                   <div key={i} className="flex-none h-full aspect-square rounded-2xl overflow-hidden">
-                    <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                    <img src={cdnIfRaw(src, { w: 1200, q: 80 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 ))}
               </div>
@@ -3584,7 +3584,7 @@ export default function BespokeCommissions() {
             <div className="marquee-track-right flex gap-2 h-full" style={{ width: "max-content", animationPlayState: "running" }}>
               {[...STRIP_IMAGES, ...STRIP_IMAGES].map((src, i) => (
                 <div key={i} className="flex-none h-full aspect-square rounded-xl overflow-hidden">
-                  <img src={src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+                  <img src={cdnIfRaw(src, { w: 1200, q: 80 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               ))}
             </div>

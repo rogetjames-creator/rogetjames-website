@@ -8,7 +8,7 @@ import { loadPostcode, savePostcode } from "../utils/postcode";
 import { PRICING_ON } from "../utils/pricingMode";
 import { altForSrc } from "../utils/imgAlt";
 import { checkWA, getState, STATE_NAMES, SIZE_TIERS, MATERIAL_OPTIONS, priceFor, PIECE_SIZES } from "../data/pricing";
-import { netlifyImg } from "../utils/img";
+import { netlifyImg, cdnIfRaw } from "../utils/img";
 
 // The Collection strip tiles are 208px square on a desktop and 112px on a
 // phone. These photographs were going out at full size — 400 to 580KB each,
@@ -1382,7 +1382,7 @@ function ScreensStrip() {
         {tiles.map((src, i) => (
           <img
             key={i}
-            src={src}
+            src={cdnIfRaw(src, { w: 1200, q: 80 })}
             alt={altForSrc(src)}
             className="h-full w-auto object-cover rounded"
             style={{ aspectRatio: "4/3", flexShrink: 0 }}
@@ -2716,7 +2716,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
 
               {/* Card image */}
               <div style={{ transition: "opacity 0.7s ease", opacity: animDir ? 0 : 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: isMobile ? "16px 20px" : "16px 64px", width: "100%" }}>
-                <img src={displayImg} alt={item.name}
+                <img src={cdnIfRaw(displayImg, { w: 1200, q: 80 })} alt={item.name}
                   style={{ maxHeight: "68vh", maxWidth: "100%", objectFit: "contain", borderRadius: 12, boxShadow: "0 20px 56px rgba(0,0,0,0.7)", transition: "opacity 0.7s ease" }} />
                 {/* Title + Details directly under image */}
                 <div className="flex items-center gap-4">
@@ -3011,7 +3011,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                         onClick={() => { setCardIdx(iIdx); setSlideIdx(sIdx); setShowDetails(false); }}
                         className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                         style={{ width: 52, height: 52, border: `1.5px solid ${isActive ? "#9e7134" : "transparent"}`, opacity: isActive ? 1 : iIdx === cardIdx ? 0.75 : 0.45, transition: "all 0.2s" }}>
-                        <img src={img} alt={it.name} className="w-full h-full object-cover" />
+                        <img src={cdnIfRaw(img, { w: 1200, q: 80 })} alt={it.name} className="w-full h-full object-cover" />
                       </div>
                     );
                   });
@@ -3034,7 +3034,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                           onClick={() => { setCardIdx(iIdx); setDetailZoom(img); }}
                           className="flex-shrink-0 rounded-lg overflow-hidden cursor-pointer"
                           style={{ width: 52, height: 52, border: "1.5px solid transparent", opacity: 0.6, transition: "all 0.2s" }}>
-                          <img src={img} alt={`${it.name} detail`} className="w-full h-full object-cover" />
+                          <img src={cdnIfRaw(img, { w: 1200, q: 80 })} alt={`${it.name} detail`} className="w-full h-full object-cover" />
                         </div>
                       );
                     });
@@ -3093,7 +3093,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
                 <div key={i} onClick={() => { openSeries(drilledSeries.id, thumb.designIdx, thumb.sIdx); setDrilledSeries(null); }}
                   className="group cursor-pointer relative aspect-square rounded-lg overflow-hidden border border-white/8 hover:border-clay/50 transition-all duration-200"
                   style={{ width: "calc(10% - 8px)", minWidth: 80, opacity: 0, animation: "fadeIn 0.5s ease forwards", animationDelay: `${i * 0.06}s` }}>
-                  <img src={thumb.img} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={cdnIfRaw(thumb.img, { w: 1200, q: 80 })} alt={thumb.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5 pointer-events-none">
                     <p className="font-detail text-[9px] font-semibold uppercase tracking-wide text-cream leading-tight">{thumb.name}</p>
                   </div>
@@ -3107,7 +3107,7 @@ function CardDeckOverlay({ onClose, categoryFilter = "wall-art", onOpenCatalogue
       {/* Detail image zoom overlay */}
       {detailZoom && (
         <div className="fixed inset-0 z-[10004] flex items-center justify-center bg-black/90" onClick={() => setDetailZoom(null)}>
-          <img src={detailZoom} alt="detail" className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain" />
+          <img src={cdnIfRaw(detailZoom, { w: 2400, q: 85 })} alt="detail" className="max-w-[88vw] max-h-[88vh] rounded-2xl object-contain" />
         </div>
       )}
 

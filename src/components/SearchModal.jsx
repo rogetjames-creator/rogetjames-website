@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Search, X } from "lucide-react";
+import { cdnIfRaw } from "../utils/img";
 import gsap from "gsap";
 import { useLenis } from "lenis/react";
 import { ownerPreviewUnlocked } from "../utils/ownerPreview";
@@ -283,7 +284,7 @@ export default function SearchModal({ open, onClose }) {
                     className="w-full flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors text-left group"
                   >
                     <img
-                      src={item.img}
+                      src={cdnIfRaw(item.img, { w: 1200, q: 80 })}
                       alt={item.name}
                       loading="lazy"
                       decoding="async"
