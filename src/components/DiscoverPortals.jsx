@@ -467,7 +467,10 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
   }, []);
   // The one going out, the one showing, the one coming next — nothing else.
   // The outgoing one has to keep its picture or the crossfade would cut.
-  const slideCount = portal.slides.length;
+  // Reels work the same way: only the reel showing, the one fading out and the
+  // next one are fetched. All eight used to download at once (~23 MB) for a
+  // circle a few centimetres wide.
+  const slideCount = videos ? videos.length : portal.slides.length;
   const loaded = useMemo(() => {
     const set = new Set([0]);
     if (near && slideCount) {
@@ -545,7 +548,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 // it a blocked reel leaves a black circle instead of a picture.
                 // Through the resizer like everything else — sent whole these are
                 // megabytes of thumbnail for a 170px circle.
-                <video key={v.src} src={near ? v.src : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near ? "auto" : "none"} autoPlay muted loop playsInline
+                <video key={v.src} src={near && loaded.has(i) ? v.src : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near && loaded.has(i) ? "auto" : "none"} autoPlay muted loop playsInline
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />

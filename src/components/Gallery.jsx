@@ -249,7 +249,7 @@ function ReelsPortal({ onOpen }) {
             opacity: editionsVisible ? 1 : 0,
             transition: "opacity 2s ease",
           }}>
-            <img src="/images/reels/editions.jpg" alt="ROGETjames Editions — original laser cut metal wall art" className="w-full h-full object-cover" />
+            <img src={netlifyImg("/images/reels/editions.jpg", { w: 640, q: 82 })} alt="ROGETjames Editions — original laser cut metal wall art" className="w-full h-full object-cover" />
           </div>
           <div className="absolute inset-0 pointer-events-none z-10" style={{
             background: "linear-gradient(180deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.18) 32%, transparent 55%)",
