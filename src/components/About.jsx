@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { netlifyImg } from "../utils/img";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -63,7 +64,7 @@ export default function About() {
             transformOrigin: "left center",
             transform: "scaleX(0)",
           }} />
-          <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035"
+          <img src={netlifyImg("/images/roj-logo.png", { w: 640, q: 90 })} alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035"
             style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
         </div>
 
