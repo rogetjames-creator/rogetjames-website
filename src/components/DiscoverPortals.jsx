@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
 import { useUploadsByKey } from "../utils/mediaUploads";
 import { MEDIA_KEYS } from "../mediaDestinations";
-import { netlifyImg } from "../utils/img";
+import { netlifyImg, cdnIfRaw } from "../utils/img";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -146,7 +146,7 @@ export function CommissionsGalleryPopup({ videos, onClose, title }) {
                 transformOrigin: "left center",
               }} />
               <div style={{ position: "absolute", width: "62px", height: "62px", top: "50%", left: "50%", transform: "translate(-54%, -50%)", borderRadius: "50%", background: "#111", border: "1px solid rgba(242,240,233,0.2)" }} />
-              <img src="/images/roj-logo.png?v=2" alt="ROGETjames" style={{ position: "relative", zIndex: 1, height: "62px", opacity: 0.45, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
+              <img src={netlifyImg("/images/roj-logo.png", { w: 320, q: 90 })} alt="ROGETjames" style={{ position: "relative", zIndex: 1, height: "62px", opacity: 0.45, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }} />
             </div>
           </div>
           <button onClick={onClose} className="w-8 h-8 flex-none rounded-full border border-white/15 flex items-center justify-center text-cream/50 hover:text-cream hover:border-white/35 transition-all">
@@ -364,7 +364,7 @@ function ArtPopup({ images, startIndex, onClose, heading = "Painting — by Jame
             className={`flex-none rounded-md overflow-hidden border-2 transition-all duration-200 ${i === cur ? "border-clay opacity-100" : "border-transparent opacity-50 hover:opacity-80"}`}
             style={{ width: "64px", height: "48px" }}
           >
-            <img src={p.src} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
+            <img src={cdnIfRaw(p.src, { w: 1200, q: 80 })} alt="" role="presentation" className="w-full h-full object-cover" loading="lazy" />
           </button>
         ))}
       </div>
@@ -393,7 +393,7 @@ function LinksPopup({ onClose }) {
 
               {/* Logo */}
               <div className="flex-none w-20 h-20 rounded-full overflow-hidden bg-white flex items-center justify-center">
-                <img src={a.logo} alt={a.name} className="w-full h-full object-cover" />
+                <img src={cdnIfRaw(a.logo, { w: 1200, q: 80 })} alt={a.name} className="w-full h-full object-cover" />
               </div>
 
               {/* Divider */}
@@ -467,7 +467,10 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
   }, []);
   // The one going out, the one showing, the one coming next — nothing else.
   // The outgoing one has to keep its picture or the crossfade would cut.
-  const slideCount = portal.slides.length;
+  // Reels work the same way: only the reel showing, the one fading out and the
+  // next one are fetched. All eight used to download at once (~23 MB) for a
+  // circle a few centimetres wide.
+  const slideCount = videos ? videos.length : portal.slides.length;
   const loaded = useMemo(() => {
     const set = new Set([0]);
     if (near && slideCount) {
@@ -545,7 +548,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 // it a blocked reel leaves a black circle instead of a picture.
                 // Through the resizer like everything else — sent whole these are
                 // megabytes of thumbnail for a 170px circle.
-                <video key={v.src} src={near ? v.src : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near ? "auto" : "none"} autoPlay muted loop playsInline
+                <video key={v.src} src={near && loaded.has(i) ? v.src : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near && loaded.has(i) ? "auto" : "none"} autoPlay muted loop playsInline
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />

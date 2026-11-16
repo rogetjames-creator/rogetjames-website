@@ -15,6 +15,8 @@ export default async function handler(req) {
       headers: {
         "Content-Type": res.metadata?.contentType || "image/jpeg",
         "Cache-Control": "public, max-age=300",
+        // Saved copy at Netlify's nearby servers; refreshed in the background hourly.
+        "Netlify-CDN-Cache-Control": "public, durable, s-maxage=3600, stale-while-revalidate=604800",
       },
     });
   } catch {

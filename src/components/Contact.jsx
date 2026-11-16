@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { netlifyImg } from "../utils/img";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Mail, Phone, MapPin, Instagram, Youtube, Upload, X } from "lucide-react";
 import PinterestIcon, { PINTEREST_URL } from "./PinterestIcon";
@@ -197,7 +198,7 @@ export default function Contact({ quoteItems = [], onRemoveQuoteItem, onQuoteSub
               <span className="bespoke-ring-1 absolute w-20 h-20 rounded-full border border-white/30" />
               <span className="bespoke-ring-2 absolute w-20 h-20 rounded-full border border-white/20" />
               <span className="bespoke-ring-3 absolute w-20 h-20 rounded-full border border-white/12" />
-              <img src="/images/roj-logo.png?v=2" alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035" style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
+              <img src={netlifyImg("/images/roj-logo.png", { w: 640, q: 90 })} alt="ROGETjames" className="relative z-10 w-full h-auto" width="3035" height="3035" style={{ opacity: 0.5, filter: "drop-shadow(0px 5px 0px rgba(0,0,0,0.55))" }} />
             </div>
             <span className="contact-reveal font-detail text-xs text-warm-gray uppercase tracking-[0.2em]">
               Get in Touch
