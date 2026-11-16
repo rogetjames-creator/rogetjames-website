@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, lazy, Suspense } from "react";
 import gsap from "gsap";
+import { circleReel } from "../utils/circleReels";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "lenis/react";
 import { X, ChevronLeft, ChevronRight, Pause, Play, Maximize2 } from "lucide-react";
@@ -238,7 +239,7 @@ function ReelsPortal({ onOpen }) {
           <video
             ref={(el) => { videoRef.current = el; if (el) el.muted = true; }}
             key={curReel}
-            src={reelNear ? (portalReels[curReel] || portalReels[0]).video : undefined}
+            src={reelNear ? circleReel((portalReels[curReel] || portalReels[0]).video) : undefined}
             poster={reelNear ? ((portalReels[curReel] || portalReels[0]).thumb || undefined) : undefined}
             autoPlay muted playsInline preload={reelNear ? "auto" : "none"}
             onEnded={handleVideoEnd}
