@@ -21,7 +21,7 @@ const NO_SAVE = { onContextMenu: (e) => e.preventDefault(), onDragStart: (e) => 
 const NO_SAVE_STYLE = { userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none" };
 
 // Placeholder spiel shown when a client has no custom message yet.
-const DEFAULT_SPIEL = "This is your private preview — a selection prepared exclusively for you. Take your time with each piece: study the detail, picture it in your space, and note anything that draws you in. Every design here can be tailored in size, finish and material to suit your setting. When you're ready, we'll refine the shortlist together and move toward your final commission.";
+const DEFAULT_SPIEL = "This is your private preview — a selection prepared exclusively for you.";
 
 // Render the spiel with light structure straight from the plain /media text box:
 // each line becomes its own paragraph, a blank line adds a gap, and consecutive
