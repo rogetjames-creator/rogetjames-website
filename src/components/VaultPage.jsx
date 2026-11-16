@@ -687,10 +687,23 @@ export default function VaultPage() {
 
   useEffect(() => {
     if (isAdmin) { setStep("admin"); return; }
+    // James: a device with the saved admin key opens any client's vault straight away.
+    let adminKey = null;
+    try { adminKey = localStorage.getItem("stats_key"); } catch { /* ignore */ }
+    if (adminKey && prefillEmail) {
+      fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: prefillEmail, adminSecret: adminKey }) })
+        .then((r) => r.json())
+        .then((d) => { if (d && !d.error) { setClientData(d); setStep("content"); } else { setStep("verify"); } })
+        .catch(() => setStep("verify"));
+      return;
+    }
     try {
       const cached = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       // Only auto-open a session we can refresh (has stored credentials).
-      if (cached?.data && cached?.verifiedEmail && cached?.password) {
+      // A saved session only opens its own client's vault. A link for another
+      // client (?e=…) skips it, so an old login on this device can't hijack it.
+      const sameClient = !prefillEmail || prefillEmail.trim().toLowerCase() === cached?.verifiedEmail;
+      if (cached?.data && cached?.verifiedEmail && cached?.password && sameClient) {
         setClientData(cached.data); setStep("content");
         fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: cached.verifiedEmail, password: cached.password }) })
           .then((r) => r.json())

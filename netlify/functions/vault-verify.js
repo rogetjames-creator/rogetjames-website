@@ -21,7 +21,9 @@ export default async function handler(req) {
 
   const email = emailKey(body.email);
   const password = String(body.password || "");
-  if (!email || !password) return json({ error: "Enter your email and password." }, 400);
+  // James (admin) opens any client's vault with his saved admin key — no client password.
+  const isAdmin = !!process.env.VAULT_ADMIN_SECRET && safeEqual(body.adminSecret, process.env.VAULT_ADMIN_SECRET);
+  if (!email || (!password && !isAdmin)) return json({ error: "Enter your email and password." }, 400);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Enter a valid email." }, 400);
 
   let record;
@@ -32,7 +34,7 @@ export default async function handler(req) {
     return json({ error: "Could not reach the vault. Try again shortly." }, 502);
   }
 
-  if (!record || !safeEqual(password, record.password)) {
+  if (!record || (!isAdmin && !safeEqual(password, record.password))) {
     return json({ error: "Email or password not recognised. Please check and try again." }, 401);
   }
 

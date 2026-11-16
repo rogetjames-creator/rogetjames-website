@@ -561,6 +561,18 @@ export default function MediaPage() {
   const [reelProgress, setReelProgress] = useState(0);
   const toggleReelTarget = (t) => setReelTargets(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
 
+  const [linkState, setLinkState] = useState("");
+  const [linkMsg, setLinkMsg] = useState("");
+  const sendLoginLink = async () => {
+    setLinkState("sending"); setLinkMsg("");
+    try {
+      const r = await fetch("/api/admin-link", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ page: "media" }) });
+      const d = await r.json().catch(() => ({}));
+      setLinkMsg(d.note || d.error || "Sent — check your email.");
+    } catch { setLinkMsg("Couldn't send — check your connection."); }
+    setLinkState("");
+  };
+
   const call = (payload) =>
     fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
 
@@ -849,6 +861,11 @@ export default function MediaPage() {
                 {loading ? "Loading…" : "Enter"}
               </button>
             </form>
+            <button type="button" disabled={linkState === "sending"} onClick={sendLoginLink}
+              className="w-full mt-4 py-3 rounded-2xl border border-cream/25 text-cream/85 font-heading text-sm tracking-wide hover:border-clay/65 disabled:opacity-40 transition-all">
+              {linkState === "sending" ? "Sending…" : "Email me a login link"}
+            </button>
+            {linkMsg && <p className="font-detail text-[11px] text-cream/70 text-center mt-3">{linkMsg}</p>}
             {error && <p className="font-detail text-[11px] text-red-300 text-center mt-4">{error}</p>}
           </div>
         </div>
