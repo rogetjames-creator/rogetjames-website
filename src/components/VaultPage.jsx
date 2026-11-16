@@ -395,7 +395,7 @@ function DocumentsSection({ pdfs }) {
 }
 
 // ── Assembled vault content page ─────────────────────────────
-function VaultContent({ clientData }) {
+function VaultContent({ clientData, onSignOut }) {
   const { clientName, email, greeting, projectDescription, images = [], links = [] } = clientData;
   const data = {
     clientName,
@@ -409,6 +409,12 @@ function VaultContent({ clientData }) {
     <div className="min-h-screen bg-jet text-cream flex flex-col">
       <div className="flex-1 flex items-start justify-center">
         <VaultGallery data={data} />
+      </div>
+      {/* Leave this vault on this device — the next visit asks for an email and password again. */}
+      <div className="py-10 text-center">
+        <button onClick={onSignOut} className="font-mono text-[11px] tracking-[0.18em] uppercase text-cream/40 hover:text-cream/80 transition-colors">
+          Sign out
+        </button>
       </div>
     </div>
   );
@@ -728,6 +734,13 @@ export default function VaultPage() {
   if (step === "loading") return <LoadingScreen />;
   if (step === "admin")   return <AdminPanel />;
   if (step === "verify")  return <VerifyStep prefillEmail={prefillEmail} onVerified={handleVerified} />;
-  if (step === "content") return <VaultContent clientData={clientData} />;
+  const handleSignOut = () => {
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* storage blocked */ }
+    setClientData(null);
+    setStep("verify");
+    window.scrollTo(0, 0);
+  };
+
+  if (step === "content") return <VaultContent clientData={clientData} onSignOut={handleSignOut} />;
   return null;
 }
