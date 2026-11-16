@@ -1010,6 +1010,8 @@ a.dpill{display:inline-block;text-decoration:none}
           .filter(m=>{ if(seen.has(m.src)||basePaths.has(m.src)) return false; seen.add(m.src); return true; })
           .sort(byUploadTime);
       };
+      // Placed 1st: the range opens on that photograph, not just lists it first.
+      const openOn=(h,dd,vv)=>{ if(h.sec._initStage) h.sec._initStage=()=>h.show(dd,vv); else h.show(dd,vv); };
       rangeHandles.forEach(h=>{
         const id=upClose.seriesId&&upClose.seriesId[h.r.label]; if(!id) return;
         const ups=uploadsForSeries(id); if(!ups.length) return;
@@ -1025,6 +1027,15 @@ a.dpill{display:inline-block;text-decoration:none}
           if(at>=0){
             const vi=h.r.designs[at].imgs.length;
             h.r.designs[at].imgs.push(gi);
+            // If James asked for a place in the note ("place 1st"), that wins.
+            const wantAt=askedPosition(u.note);
+            if(wantAt && wantAt-1 < h.r.flat.length){
+              h.r.flat.splice(wantAt-1,0,[at,vi]);
+              const el=h.addThumb(at,vi);
+              if(el && wantAt-1 < h.tw.children.length) h.tw.insertBefore(el,h.tw.children[wantAt-1]);
+              if(wantAt===1) openOn(h,at,vi);
+              continue;
+            }
             // Sit it beside that design's own photographs in the strip, not on
             // the end of the range.
             let last=-1; h.r.flat.forEach(([dd],k)=>{ if(dd===at) last=k; });
@@ -1050,6 +1061,7 @@ a.dpill{display:inline-block;text-decoration:none}
             const el=h.tw.lastElementChild;
             if(el) h.tw.insertBefore(el, h.tw.children[want-1]);
           }
+          if(want===1) openOn(h,di,0);
         }
         h.r.count=h.r.designs.length;
         // The heading's "N designs" was written before the uploads arrived.
