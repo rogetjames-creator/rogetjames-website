@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { X, ChevronLeft, ChevronRight, Play, Pause, ExternalLink, Phone, Mail, Instagram } from "lucide-react";
+import { circleReel } from "../utils/circleReels";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScreensGalleryModal, SculptureGalleryModal, ProjectsGalleryModal, ConceptsGalleryModal } from "./BespokeCommissions";
@@ -548,7 +549,7 @@ export function MiniPortal({ portal, size = 166, hideLabel = false, onOpen = nul
                 // it a blocked reel leaves a black circle instead of a picture.
                 // Through the resizer like everything else — sent whole these are
                 // megabytes of thumbnail for a 170px circle.
-                <video key={v.src} src={near && loaded.has(i) ? v.src : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near && loaded.has(i) ? "auto" : "none"} autoPlay muted loop playsInline
+                <video key={v.src} src={near && loaded.has(i) ? circleReel(v.src) : undefined} poster={v.poster ? portalImg(v.poster) : undefined} preload={near && loaded.has(i) ? "auto" : "none"} autoPlay muted loop playsInline
                   ref={el => { if (el) el.muted = true; }}
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{ opacity: i === cur ? 1 : 0, transition: "opacity 1.8s ease" }} />
