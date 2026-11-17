@@ -243,6 +243,8 @@ A personalised, locked page sent to each client by email. Entry point `/vault`.
 5. Client sees their exclusive page; a footer CTA draws them to the main site.
 6. LocalStorage caches the session so they can revisit without re-entering email.
 
+**Watermark — standard (James, 17 Nov 2026):** every client picture in the vault carries "© ROGETjames" (© first) across the middle at 18% strength, on the main picture and the full-screen view. It is the `Watermark` piece in `src/components/VaultGallery.jsx`, laid over the photo as it is shown — the photo files themselves are untouched, so every new upload gets it automatically. Vault only: never on the main site's galleries, thumbnails or catalogues.
+
 **Key files:** `vault.html`, `src/vault.jsx`, `src/components/VaultPage.jsx`, `netlify/functions/vault-verify.js`, `netlify/functions/vault-invite.js`.
 
 **Vault page sections** (each renders only if Airtable content exists): full-screen hero slideshow (GSAP crossfade) · sticky header on scroll · project overview (greeting pull-quote, description, status badge) · gallery slideshow with fullscreen lightbox · Key Points numbered grid · Links/resources cards · PDF downloads · footer CTA to the main site.
