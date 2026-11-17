@@ -71,7 +71,9 @@ const CSS = `
 .rjv-mark .ln.l{right:calc(100% + 10px)}
 .rjv-mark .ln.r{left:calc(100% + 10px)}
 .rjv-greet{font-family:var(--font-detail,system-ui,sans-serif);font-size:13.5px;letter-spacing:.01em;color:rgba(237,232,223,.62);max-width:640px;margin:8px auto 0;line-height:1.65;white-space:pre-line}
-.rjv-stage{height:58vh;display:flex;align-items:center;justify-content:center;margin:18px 0 8px}
+.rjv-stage{position:relative;height:58vh;display:flex;align-items:center;justify-content:center;margin:18px 0 8px}
+.rjv-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.10;color:#fff;font-family:"Plus Jakarta Sans","Outfit",sans-serif;font-weight:700;letter-spacing:-.01em;white-space:nowrap;text-shadow:0 0 3px rgba(0,0,0,.9);font-size:clamp(22px,4vw,44px);user-select:none;-webkit-user-select:none}
+.rjv-wm i{font-family:"Playfair Display","Cormorant Garamond",Georgia,serif;font-weight:400}
 .rjv-stage img{max-width:min(100%,720px);max-height:100%;object-fit:contain;border-radius:14px;box-shadow:0 26px 70px rgba(0,0,0,.55);cursor:zoom-in;transition:opacity .18s ease}
 .rjv-cap{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
 .rjv-cap .dn{font-family:var(--font-detail,system-ui,sans-serif);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(237,232,223,.34)}
@@ -116,6 +118,15 @@ const CSS = `
 @media(max-width:900px){.rjv-vtxt{font-size:26px}.rjv-vname{left:2px}}
 @media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}.rjv-vtxt{font-size:16px}.rjv-vname{left:0}}
 `;
+
+// "ROGETjames ©" across the middle of each vault picture, 10% strength (James, 17 Nov 2026).
+function Watermark({ big = false }) {
+  return (
+    <div className="rjv-wm" aria-hidden="true" style={big ? { fontSize: "clamp(28px,5vw,64px)" } : undefined}>
+      ROGET<i>james</i>&nbsp;©
+    </div>
+  );
+}
 
 export default function VaultGallery({ data, onClose }) {
   const rootRef = useRef(null);
@@ -210,6 +221,7 @@ export default function VaultGallery({ data, onClose }) {
               </div>
               <div className="rjv-stage">
                 <img key={idx} src={previewImg(item.src, 1400)} alt={item.title || ""} onClick={() => setZoom(true)} style={NO_SAVE_STYLE} {...NO_SAVE} />
+                <Watermark />
               </div>
             </div>
 
@@ -264,6 +276,7 @@ export default function VaultGallery({ data, onClose }) {
           <button onClick={() => setZoom(false)} className="absolute top-5 right-5 w-11 h-11 rounded-full bg-cream/15 flex items-center justify-center text-cream hover:bg-cream/30 z-10" aria-label="Close"><X size={20} /></button>
           {total > 1 && <button onClick={(e) => { e.stopPropagation(); prev(); }} className="absolute left-4 md:left-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Previous"><ChevronLeft size={22} /></button>}
           <img src={previewImg(item.src, 1600)} alt={item.title || ""} className="max-w-[92vw] max-h-[90vh] object-contain" style={NO_SAVE_STYLE} {...NO_SAVE} onClick={(e) => e.stopPropagation()} />
+          <Watermark big />
           {total > 1 && <button onClick={(e) => { e.stopPropagation(); next(); }} className="absolute right-4 md:right-8 w-11 h-11 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 z-10" aria-label="Next"><ChevronRight size={22} /></button>}
         </div>, document.body)}
 
