@@ -100,7 +100,7 @@ const CSS = `
 .rjv-reply textarea::placeholder{color:rgba(237,232,223,.75);opacity:1}
 .rjv-reply button{margin-top:12px;padding:10px 26px;border-radius:999px;border:1px solid #9E7134;background:#9E7134;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;cursor:pointer;transition:.2s}
 .rjv-reply button:hover{background:#b5854a;border-color:#b5854a}
-.rjv-reply button:disabled{opacity:.4;cursor:default}
+.rjv-reply button:disabled{opacity:.85;cursor:default}
 .rjv-reply .sent{font-family:var(--font-detail,system-ui,sans-serif);font-size:13px;color:#8fce9b}
 .rjv-reply .err{font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;color:#e0a35a;margin-top:8px}
 .rjv-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0}
