@@ -72,7 +72,7 @@ const CSS = `
 .rjv-mark .ln.r{left:calc(100% + 10px)}
 .rjv-greet{font-family:var(--font-detail,system-ui,sans-serif);font-size:13.5px;letter-spacing:.01em;color:rgba(237,232,223,.62);max-width:640px;margin:8px auto 0;line-height:1.65;white-space:pre-line}
 .rjv-stage{position:relative;height:58vh;display:flex;align-items:center;justify-content:center;margin:18px 0 8px}
-.rjv-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.10;color:#fff;font-family:"Plus Jakarta Sans","Outfit",sans-serif;font-weight:700;letter-spacing:-.01em;white-space:nowrap;text-shadow:0 0 3px rgba(0,0,0,.9);font-size:clamp(22px,4vw,44px);user-select:none;-webkit-user-select:none}
+.rjv-wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.18;color:#fff;font-family:"Plus Jakarta Sans","Outfit",sans-serif;font-weight:700;letter-spacing:-.01em;white-space:nowrap;text-shadow:0 0 3px rgba(0,0,0,.9);font-size:clamp(22px,4vw,44px);user-select:none;-webkit-user-select:none}
 .rjv-wm i{font-family:"Playfair Display","Cormorant Garamond",Georgia,serif;font-weight:400}
 .rjv-stage img{max-width:min(100%,720px);max-height:100%;object-fit:contain;border-radius:14px;box-shadow:0 26px 70px rgba(0,0,0,.55);cursor:zoom-in;transition:opacity .18s ease}
 .rjv-cap{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
@@ -119,7 +119,7 @@ const CSS = `
 @media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}.rjv-vtxt{font-size:16px}.rjv-vname{left:0}}
 `;
 
-// "ROGETjames ©" across the middle of each vault picture, 10% strength (James, 17 Nov 2026).
+// "ROGETjames ©" across the middle of each vault picture, 18% strength (James, 17 Nov 2026).
 function Watermark({ big = false }) {
   return (
     <div className="rjv-wm" aria-hidden="true" style={big ? { fontSize: "clamp(28px,5vw,64px)" } : undefined}>
