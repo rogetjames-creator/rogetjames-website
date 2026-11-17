@@ -119,11 +119,11 @@ const CSS = `
 @media(max-width:640px){.rjv-thumb{width:52px;height:52px}.rjv-stage{height:48vh}.rjv-mark .ln{width:56px}.rjv-vtxt{font-size:16px}.rjv-vname{left:0}}
 `;
 
-// "ROGETjames ©" across the middle of each vault picture, 18% strength (James, 17 Nov 2026).
+// "© ROGETjames" across the middle of each vault picture, 18% strength (James, 17 Nov 2026).
 function Watermark({ big = false }) {
   return (
     <div className="rjv-wm" aria-hidden="true" style={big ? { fontSize: "clamp(28px,5vw,64px)" } : undefined}>
-      ROGET<i>james</i>&nbsp;©
+      ©&nbsp;ROGET<i>james</i>
     </div>
   );
 }
