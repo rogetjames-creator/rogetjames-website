@@ -412,7 +412,7 @@ function VaultContent({ clientData, onSignOut }) {
       </div>
       {/* Leave this vault on this device — the next visit asks for an email and password again. */}
       <div className="py-10 text-center">
-        <button onClick={onSignOut} className="font-mono text-[11px] tracking-[0.18em] uppercase text-cream/40 hover:text-cream/80 transition-colors">
+        <button onClick={onSignOut} className="font-mono text-[13px] tracking-[0.18em] uppercase text-cream/80 hover:text-cream transition-colors">
           Sign out
         </button>
       </div>

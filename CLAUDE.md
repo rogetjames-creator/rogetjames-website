@@ -313,6 +313,7 @@ and structured data looking correct is not evidence that anything ranks.
 - **Never deploy experiments — mandatory rule:** Concepts, mock-ups, preview pages, experiments, or anything James did not explicitly ask to change must NEVER be committed to `main`/the deploy. Build them locally only and show James screenshots or a local render. Only push the specific fixes/changes he requested. Pushing any experiment live without his explicit say-so is a serious breach.
 - **Image upload placement — mandatory rule:** New image uploads for a category go in that category's **gallery, as pieces at the END** (newest last), until James says otherwise for a specific spot. Do NOT put uploads into the close-up ("Up Close") tiles unless James explicitly asks. Do NOT touch, remove, or reorder anything in the close-ups unless he explicitly asks.
 - **Hero slideshow images** — always `object-contain` on ALL screen sizes. Never change to `object-cover`. James wants the full image visible with letterboxing, not cropped to fill the screen.
+- **Text must be readable — mandatory (James, 17 Nov 2026):** never set wording dark and small. On the dark backgrounds, readable text is about 13px or larger and at least ~75% cream. Check it in a screenshot before showing James.
 - No TypeScript — plain `.jsx` and `.js` throughout.
 - ESLint: `no-unused-vars` is `error`. Uppercase constants (`/^[A-Z_]/`) are exempt. Prefix intentionally unused destructured vars with `_`.
 - Section anchor IDs: `#collection`, `#about`, `#bespoke`, `#process`, `#services`, `#contact`.

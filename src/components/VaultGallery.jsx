@@ -94,9 +94,10 @@ const CSS = `
 .rjv-spiel li{margin:3px 0}
 .rjv-reply{max-width:720px;margin:16px auto 0;padding:22px 28px;border:1px solid rgba(158,113,52,.28);border-radius:16px;background:rgba(158,113,52,.05);text-align:center}
 .rjv-reply h4{margin:0 0 4px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em;color:#ECE7DE}
-.rjv-reply p.hint{margin:0 0 12px;font-family:var(--font-detail,system-ui,sans-serif);font-size:12px;color:rgba(237,232,223,.5)}
+.rjv-reply p.hint{margin:0 0 12px;font-family:var(--font-detail,system-ui,sans-serif);font-size:14px;color:rgba(237,232,223,.85)}
 .rjv-reply textarea{width:100%;min-height:96px;resize:vertical;background:rgba(0,0,0,.25);border:1px solid rgba(237,232,223,.16);border-radius:12px;padding:12px 14px;font-family:var(--font-detail,system-ui,sans-serif);font-size:14px;color:#ECE7DE;outline:none}
 .rjv-reply textarea:focus{border-color:rgba(158,113,52,.7)}
+.rjv-reply textarea::placeholder{color:rgba(237,232,223,.75);opacity:1}
 .rjv-reply button{margin-top:12px;padding:10px 26px;border-radius:999px;border:1px solid #9E7134;background:#9E7134;color:#F2F0E9;font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;cursor:pointer;transition:.2s}
 .rjv-reply button:hover{background:#b5854a;border-color:#b5854a}
 .rjv-reply button:disabled{opacity:.4;cursor:default}
