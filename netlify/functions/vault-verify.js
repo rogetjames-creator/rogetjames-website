@@ -3,6 +3,7 @@
 // admin at /media. A matching email + password returns that client's gallery.
 import crypto from "node:crypto";
 import { getStore } from "@netlify/blobs";
+import { alertFrom, alertTo } from "../lib/alert-email.js";
 
 const STORE = "vault-clients";
 const emailKey = (e) => String(e || "").trim().toLowerCase();
@@ -38,6 +39,9 @@ export default async function handler(req) {
     return json({ error: "Email or password not recognised. Please check and try again." }, 401);
   }
 
+  // A client (not James's admin key) just opened their vault: note it and email James.
+  if (!isAdmin) await noteOpen(email, record.name).catch(() => {});
+
   return json({
     clientName: record.name || "",
     email,
@@ -51,6 +55,39 @@ export default async function handler(req) {
     keyPoints: [],
     links: (record.links || []).filter((l) => l && l.label && l.url).map((l) => ({ label: l.label, url: l.url, description: l.description || null })),
   }, 200);
+}
+
+// Visits live in their own "vault-opens" store, keyed by client email:
+// { first, last, count }. James gets one email per visit — reloads within
+// 30 minutes count as the same visit and don't send another.
+const OPENS = "vault-opens";
+const SAME_VISIT_MS = 30 * 60 * 1000;
+
+async function noteOpen(email, name) {
+  const store = getStore({ name: OPENS, consistency: "strong" });
+  const prev = (await store.get(email, { type: "json" }).catch(() => null)) || {};
+  const now = new Date();
+  const newVisit = !prev.last || now - new Date(prev.last) > SAME_VISIT_MS;
+  await store.setJSON(email, {
+    first: prev.first || now.toISOString(),
+    last: now.toISOString(),
+    count: (prev.count || 0) + (newVisit ? 1 : 0),
+  });
+  if (newVisit && process.env.RESEND_API_KEY) {
+    const when = now.toLocaleString("en-AU", { timeZone: "Australia/Perth", dateStyle: "medium", timeStyle: "short" });
+    const who = name || email;
+    const times = (prev.count || 0) + 1;
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: alertFrom(),
+        to: alertTo(),
+        subject: `Vault opened — ${who}`,
+        text: `${who} has just opened their vault.\n\nTime: ${when} (Perth)\nVisit: ${times === 1 ? "first time" : `${times} times so far`}`,
+      }),
+    });
+  }
 }
 
 function json(data, status) {

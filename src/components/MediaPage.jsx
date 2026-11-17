@@ -412,6 +412,11 @@ function VaultUpload({ secret }) {
                 <div className="p-2.5">
                   <p className="font-detail text-[13px] text-cream/90 leading-tight truncate">{c.name}</p>
                   <p className="font-detail text-[10px] text-cream/45 mt-0.5">{c.count} photo{c.count === 1 ? "" : "s"}</p>
+                  <p className="font-detail text-[13px] text-cream/80 mt-1 leading-snug">
+                    {c.lastOpened
+                      ? `Opened ${new Date(c.lastOpened).toLocaleString("en-AU", { timeZone: "Australia/Perth", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}${c.openCount > 1 ? ` · ${c.openCount} visits` : ""}`
+                      : "Not opened yet"}
+                  </p>
                 </div>
               </button>
             ))}
