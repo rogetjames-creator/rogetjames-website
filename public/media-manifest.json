@@ -287,10 +287,8 @@
   {
     "id": "1785830593393_896b06",
     "name": "GREN Free",
-    "destinations": [
-      "branches"
-    ],
-    "note": "replace https://rogetjames.com/.netlify/images?url=%2Fimages%2Fbranches%2Fgren-free-1.jpg&w=1200&fm=webp&q=74",
+    "destinations": [],
+    "note": "replace https://rogetjames.com/.netlify/images?url=%2Fimages%2Fbranches%2Fgren-free-1.jpg&w=1200&fm=webp&q=74 | Superseded — gren-free-1.jpg was already replaced on 19 Aug. Untagged so it does not show twice in Branches.",
     "createdTime": "2026-08-04T08:03:13.409Z",
     "path": "images/uploads/1785830593393_896b06.jpg"
   },

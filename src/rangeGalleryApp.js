@@ -632,7 +632,15 @@ a.dpill{display:inline-block;text-decoration:none}
     // every image so the row is just as full — same tiles, gaps and speed as Wall Art.
     const shuffle=(a)=>{ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
     const paths = RANGES.length>=8
-      ? RANGES.map(r=>{const [d,v]=r.flat[0];return data.imgs[r.designs[d].imgs[v]];})
+      ? (()=>{ // one cover per range; if a range starts on a photo already used, take its next one
+          const used=new Set();
+          return RANGES.map(r=>{
+            const paths=r.flat.map(([d,v])=>data.imgs[r.designs[d].imgs[v]]);
+            const p=paths.find(x=>!used.has(x));
+            if(p) used.add(p);
+            return p;
+          }).filter(Boolean);
+        })()
       : shuffle(data.imgs.slice()).slice(0,20);   // small collections: capped random mix (don't load the whole set on top of the page)
     const covers = paths.map(p=>netlifyImg(p,{w:640,q:82}));
     // Pad one "half" so it's wider than the screen — the -50% loop then runs seamlessly (circular),

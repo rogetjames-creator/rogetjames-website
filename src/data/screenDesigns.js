@@ -111,7 +111,6 @@ export const SCREEN_DESIGNS = [
     name: "HEXO",
     items: [
       { name: "HEXO", img: "/images/hex/lalarook-2.jpg", slides: [ "/images/hex/lalarook-2.jpg", "/images/hex/lalarook-copper.jpg"], description: "HEXO — Lalla Rookh Restaurant, Perth. Commercial installation." },
-      { name: "HEXO", img: "/images/hex/hex-restaurant.jpg" },
     ],
   },
   {

@@ -26,9 +26,10 @@ const arg = (k) => (process.argv.find((a) => a.startsWith(`--${k}=`)) || "").spl
 const BASE = (arg("base") || "https://rogetjames.com").replace(/\/$/, "");
 const QUICK = process.argv.includes("--quick");
 
-// Playwright from the project if installed, otherwise the copy on the machine.
+// Playwright: the copy on the machine, otherwise the project's.
 function loadPlaywright() {
-  for (const from of [join(ROOT, "package.json"), "/opt/node22/lib/node_modules/", "/usr/lib/node_modules/", "/usr/local/lib/node_modules/"]) {
+  // The machine's own copy first: it matches the browser installed with it.
+  for (const from of ["/opt/node22/lib/node_modules/", "/usr/local/lib/node_modules/", "/usr/lib/node_modules/", join(ROOT, "package.json")]) {
     try { return createRequire(from)("playwright"); } catch { /* try next */ }
   }
   throw new Error("Playwright not found");
