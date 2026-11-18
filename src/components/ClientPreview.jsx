@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { X } from "lucide-react";
 import VaultGallery from "./VaultGallery";
+import VaultClientList from "./VaultClientList";
 
 // ─────────────────────────────────────────────────────────────
 //  CLIENT PREVIEW — the vault door.
@@ -30,6 +31,9 @@ export default function ClientPreview({ onClose }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null); // { clientName, greeting, items:[{src,title}] }
+  // James's device (admin password saved): show every client to pick from,
+  // never whichever client last signed in here.
+  const [adminKey] = useState(() => { try { return localStorage.getItem("stats_key"); } catch { return null; } });
 
   useEffect(() => {
     gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" });
@@ -37,7 +41,7 @@ export default function ClientPreview({ onClose }) {
     document.body.style.overflow = "hidden";
     // Returning client — reuse the cached vault session so they skip re-entry,
     // then re-fetch fresh in the background so any new photos/captions/spiel show.
-    try {
+    if (!adminKey) try {
       const cached = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
       // Only auto-open a session we can refresh (has stored credentials); show the
       // cached copy instantly, then re-fetch fresh so new photos/captions/spiel appear.
@@ -76,6 +80,13 @@ export default function ClientPreview({ onClose }) {
     items: (d.images || []).map((im) => ({ src: im.url || im.src, title: im.name || "" })),
   });
 
+  const openAsAdmin = (c) => {
+    fetch("/api/vault-verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: c.email, adminSecret: adminKey }) })
+      .then((r) => r.json())
+      .then((d) => { if (d && !d.error) setData(toGallery(d)); })
+      .catch(() => {});
+  };
+
   const handleSubmit = async (e) => {
     e?.preventDefault();
     if (!email.trim() || !password) return;
@@ -112,6 +123,13 @@ export default function ClientPreview({ onClose }) {
       {data ? (
         <div ref={cardRef} className="relative w-full overflow-y-auto flex flex-col" style={{ maxHeight: "100vh" }} data-lenis-prevent>
           <ClientGallery data={data} onClose={close} />
+        </div>
+      ) : adminKey ? (
+        <div ref={cardRef} className="relative w-full overflow-y-auto" style={{ maxHeight: "100vh" }} data-lenis-prevent>
+          <button onClick={close} className="absolute top-6 right-6 z-10 w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center text-cream hover:bg-cream/25 transition-colors" aria-label="Close">
+            <X size={18} />
+          </button>
+          <VaultClientList adminKey={adminKey} onPick={openAsAdmin} />
         </div>
       ) : (
         <div ref={cardRef} className="relative w-full max-w-sm mx-4">
