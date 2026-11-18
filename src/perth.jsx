@@ -40,6 +40,17 @@ const PERTH = {
     "Metal Wall Art", "Sculpture", "Bespoke Commissions",
     "Architectural Screens", "Public Art", "Facade & Entry Statements",
   ],
+  // FAQ — shown on the page and mirrored as FAQPage schema in perth.html.
+  faq: [
+    { q: "What metals do you work in?",
+      a: "Powdercoated aluminium, Corten steel (weathering rusting steel) and stainless steel. Every piece is made to order." },
+    { q: "Can you design a one-off piece for a Perth project?",
+      a: "Yes. Alongside the curated catalogue, ROGETjames designs bespoke wall art, sculpture and architectural features — including screens and gates — to a project's brief." },
+    { q: "Do you work with architects, builders and developers?",
+      a: "Yes. ROGETjames works directly with architects, interior designers, builders and developers on private residences, display homes, hotels and public spaces." },
+    { q: "Which areas do you deliver to?",
+      a: "All of Perth — Cottesloe, Dalkeith, Nedlands, Peppermint Grove, City Beach, Applecross, Subiaco, Claremont, Fremantle and beyond — plus regional WA including Geraldton, Margaret River and Esperance. ROGETjames also ships Australia-wide." },
+  ],
   // The page talks to people who specify work, not to homeowners.
   ctaHeading: "Specifying a piece for a Perth project?",
   headingText: "Laser cut metal wall art and sculpture in Perth, Western Australia",
