@@ -175,7 +175,12 @@ async function checkImagesAndText(page, where, { pricesAllowed = false } = {}) {
     const overflow = document.documentElement.scrollWidth - window.innerWidth;
     return { broken, alts, caps, text, overflow };
   });
-  for (const b of r.broken) report("serious", where, "Picture not loading", short(realSrc(b)));
+  // Try each failed picture once more before calling it broken — the image
+  // service sometimes drops a single request.
+  for (const b of r.broken) {
+    const again = await page.evaluate((u) => new Promise((res) => { const im = new Image(); im.onload = () => res(im.naturalWidth > 0); im.onerror = () => res(false); im.src = u + (u.includes("?") ? "&" : "?") + "retry=1"; setTimeout(() => res(false), 20000); }), b).catch(() => false);
+    if (!again) report("serious", where, "Picture not loading", short(realSrc(b)));
+  }
   for (const n of new Set([...r.alts, ...r.caps])) if (PHONE_NAME.test(n.trim())) report("minor", where, "Caption is a phone file name", `“${n.trim().slice(0, 60)}”`);
   if (!pricesAllowed) {
     const m = r.text.match(PRICE);
