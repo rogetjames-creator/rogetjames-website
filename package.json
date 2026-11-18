@@ -9,7 +9,8 @@
     "build:quick": "vite build",
     "postinstall": "playwright install chromium",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "scan": "node scripts/daily-scan.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

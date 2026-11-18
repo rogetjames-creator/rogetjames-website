@@ -29,3 +29,6 @@ Thumbs.db
 
 # Claude local settings
 .claude/
+
+# Daily scan output (scripts/daily-scan.mjs)
+reports/
