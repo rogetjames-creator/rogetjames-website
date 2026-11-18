@@ -206,7 +206,7 @@ export default function VaultGallery({ data, onClose }) {
 
         {total === 0 ? (
           <div style={{ padding: "22vh 0", textAlign: "center" }}>
-            <p className="font-detail text-sm text-cream/45 uppercase tracking-wider">Your gallery is being prepared</p>
+            <p className="font-detail text-sm text-cream/85 uppercase tracking-wider">Your gallery is being prepared</p>
           </div>
         ) : (
           <>

@@ -93,12 +93,12 @@ function Lightbox({ items, startIndex, onClose }) {
           />
         </div>
         {items[idx].name && (
-          <p className="mt-5 font-detail text-xs text-cream/45 uppercase tracking-widest">
+          <p className="mt-5 font-detail text-[13px] text-cream/85 uppercase tracking-widest">
             {items[idx].name.replace(/\.[^.]+$/, "")}
           </p>
         )}
         {total > 1 && (
-          <p className="font-detail text-[10px] text-cream/30 uppercase tracking-widest mt-2">
+          <p className="font-detail text-[13px] text-cream/85 uppercase tracking-widest mt-2">
             {idx + 1} / {total}
           </p>
         )}
@@ -196,14 +196,14 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
 
       {/* Client identity overlay */}
       <div ref={titleRef} className="absolute bottom-0 left-0 px-8 md:px-16 pb-20 max-w-3xl">
-        <p className="font-detail text-[10px] text-clay uppercase tracking-[0.3em] mb-4 opacity-0">
+        <p className="font-detail text-[13px] text-clay uppercase tracking-[0.3em] mb-4 opacity-0">
           Private Client Vault{location ? ` · ${location}` : ""}
         </p>
         <h1 className="font-drama text-5xl md:text-6xl lg:text-7xl font-light text-cream leading-none mb-3 opacity-0">
           {clientName}
         </h1>
         {projectTitle && (
-          <p className="font-detail text-sm text-cream/45 uppercase tracking-[0.18em] opacity-0">
+          <p className="font-detail text-sm text-cream/85 uppercase tracking-[0.18em] opacity-0">
             {projectTitle}
           </p>
         )}
@@ -242,7 +242,7 @@ function HeroSlideshow({ images, clientName, projectTitle, location }) {
 
       {/* Scroll cue */}
       <div className="absolute bottom-9 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-50">
-        <p className="font-detail text-[8px] text-cream/50 uppercase tracking-[0.25em]">Scroll</p>
+        <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.25em]">Scroll</p>
         <div className="w-px h-8 bg-gradient-to-b from-cream/0 to-cream/40" />
       </div>
     </section>
@@ -299,17 +299,17 @@ function KeyPoints({ points }) {
 
   return (
     <section ref={sectionRef} className="max-w-6xl mx-auto px-6 py-14 border-b border-cream/[0.07]">
-      <p className="font-detail text-[10px] text-cream/30 uppercase tracking-[0.22em] mb-8">Key Points</p>
+      <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.22em] mb-8">Key Points</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {points.map((point, i) => (
           <div
             key={i}
             className="kp-item flex gap-4 p-5 bg-cream/[0.03] border border-cream/[0.07] rounded-2xl hover:border-clay/25 transition-colors duration-300"
           >
-            <div className="w-7 h-7 rounded-full bg-clay/12 border border-clay/25 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="font-mono text-[9px] text-clay font-semibold">{String(i + 1).padStart(2, "0")}</span>
+            <div className="w-9 h-9 rounded-full bg-clay/12 border border-clay/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="font-mono text-[13px] text-clay font-semibold">{String(i + 1).padStart(2, "0")}</span>
             </div>
-            <p className="font-detail text-sm text-cream/70 leading-relaxed">{point}</p>
+            <p className="font-detail text-sm text-cream/85 leading-relaxed">{point}</p>
           </div>
         ))}
       </div>
@@ -336,7 +336,7 @@ function LinksSection({ links }) {
 
   return (
     <section ref={sectionRef} className="max-w-6xl mx-auto px-6 py-14 border-b border-cream/[0.07]">
-      <p className="font-detail text-[10px] text-cream/30 uppercase tracking-[0.22em] mb-8">Links & Resources</p>
+      <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.22em] mb-8">Links & Resources</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {links.map((link, i) => {
           const isExternal = link.url.startsWith("http");
@@ -353,10 +353,10 @@ function LinksSection({ links }) {
                   {link.label}
                 </p>
                 {link.description && (
-                  <p className="font-detail text-xs text-cream/40 mt-1.5 leading-relaxed">{link.description}</p>
+                  <p className="font-detail text-[13px] text-cream/85 mt-1.5 leading-relaxed">{link.description}</p>
                 )}
               </div>
-              <ArrowUpRight size={15} className="text-cream/20 group-hover:text-clay transition-colors flex-shrink-0 mt-0.5" />
+              <ArrowUpRight size={15} className="text-cream/85 group-hover:text-clay transition-colors flex-shrink-0 mt-0.5" />
             </a>
           );
         })}
@@ -369,7 +369,7 @@ function LinksSection({ links }) {
 function DocumentsSection({ pdfs }) {
   return (
     <section className="max-w-6xl mx-auto px-6 py-14 border-b border-cream/[0.07]">
-      <p className="font-detail text-[10px] text-cream/30 uppercase tracking-[0.22em] mb-8">Documents</p>
+      <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.22em] mb-8">Documents</p>
       <div className="space-y-3 max-w-xl">
         {pdfs.map((pdf, i) => (
           <a
@@ -385,7 +385,7 @@ function DocumentsSection({ pdfs }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-detail text-sm text-cream/75 truncate">{pdf.name || "Document"}</p>
-              <p className="font-detail text-[10px] text-cream/30 uppercase tracking-wider mt-0.5">PDF</p>
+              <p className="font-detail text-[13px] text-cream/85 uppercase tracking-wider mt-0.5">PDF</p>
             </div>
           </a>
         ))}
@@ -431,10 +431,10 @@ function ErrorScreen() {
           ROGET<span className="font-normal italic font-drama">james</span>
         </a>
         <div className="w-8 h-px bg-clay/50 mx-auto my-5" />
-        <p className="font-detail text-sm text-cream/55 leading-relaxed">
+        <p className="font-detail text-sm text-cream/85 leading-relaxed">
           This link is invalid or has expired. Please contact us to request a new one.
         </p>
-        <a href="/" className="mt-8 inline-flex items-center gap-2 font-detail text-xs text-cream/40 uppercase tracking-[0.2em] hover:text-cream transition-colors">
+        <a href="/" className="mt-8 inline-flex items-center gap-2 font-detail text-[13px] text-cream/85 uppercase tracking-[0.2em] hover:text-cream transition-colors">
           <ChevronLeft size={12} /> Return to site
         </a>
       </div>
@@ -493,14 +493,14 @@ function VerifyStep({ prefillEmail = "", onVerified }) {
               ROGET<span className="font-normal italic font-drama">james</span>
             </a>
             <div className="w-8 h-px bg-clay/50 mx-auto mt-3 mb-4" />
-            <p className="font-detail text-[10px] text-cream/65 uppercase tracking-[0.25em]">Private Client Vault</p>
+            <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.25em]">Private Client Vault</p>
           </div>
           <div className="flex justify-center mb-6">
             <div className="w-11 h-11 rounded-full bg-clay/10 border border-clay/30 flex items-center justify-center">
               <Lock size={16} className="text-clay" />
             </div>
           </div>
-          <p className="font-detail text-sm text-cream/65 text-center leading-relaxed mb-8">
+          <p className="font-detail text-sm text-cream/85 text-center leading-relaxed mb-8">
             Enter your email and password to view your private gallery.
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -511,7 +511,7 @@ function VerifyStep({ prefillEmail = "", onVerified }) {
                 onChange={e => { setEmail(e.target.value); setError(""); }}
                 placeholder="Your email address"
                 autoComplete="email"
-                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/30 outline-none transition-colors duration-200"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/75 outline-none transition-colors duration-200"
                 style={{ caretColor: "#9E7134" }}
               />
               <input
@@ -520,24 +520,24 @@ function VerifyStep({ prefillEmail = "", onVerified }) {
                 onChange={e => { setPassword(e.target.value); setError(""); }}
                 placeholder="Your password"
                 autoComplete="current-password"
-                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/30 outline-none transition-colors duration-200"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/75 outline-none transition-colors duration-200"
                 style={{ caretColor: "#9E7134" }}
               />
               {error && (
-                <p className="font-detail text-[11px] text-clay text-center mt-2 leading-relaxed">{error}</p>
+                <p className="font-detail text-[13px] text-clay text-center mt-2 leading-relaxed">{error}</p>
               )}
             </div>
             <button
               type="submit"
               disabled={!email.trim() || !password || loading}
-              className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 disabled:cursor-default transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-100 disabled:bg-clay/80 disabled:cursor-default transition-all duration-200 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Verifying…</>
               ) : "Access My Vault"}
             </button>
           </form>
-          <p className="font-detail text-[10px] text-cream/35 text-center mt-6">
+          <p className="font-detail text-[13px] text-cream/85 text-center mt-6">
             This page was prepared exclusively for you.
           </p>
         </div>
@@ -590,7 +590,7 @@ function AdminPanel() {
                 ROGET<span className="font-normal italic font-drama">james</span>
               </a>
               <div className="w-8 h-px bg-clay/60 mx-auto mt-3 mb-4" />
-              <p className="font-detail text-[10px] text-cream/85 uppercase tracking-[0.25em]">Vault Admin</p>
+              <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.25em]">Vault Admin</p>
             </div>
             <form onSubmit={e => { e.preventDefault(); if (secret.trim()) setAuthed(true); }} className="space-y-4">
               <input
@@ -598,13 +598,13 @@ function AdminPanel() {
                 value={secret}
                 onChange={e => setSecret(e.target.value)}
                 placeholder="Admin password"
-                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-heading text-cream tracking-[0.15em] placeholder:text-cream/30 placeholder:font-detail placeholder:text-sm placeholder:tracking-widest outline-none transition-colors"
+                className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 text-center font-heading text-cream tracking-[0.15em] placeholder:text-cream/75 placeholder:font-detail placeholder:text-sm placeholder:tracking-widest outline-none transition-colors"
                 style={{ caretColor: "#9E7134" }}
               />
               <button
                 type="submit"
                 disabled={!secret.trim()}
-                className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 transition-all"
+                className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-100 disabled:bg-clay/80 transition-all"
               >
                 Enter
               </button>
@@ -623,7 +623,7 @@ function AdminPanel() {
             ROGET<span className="font-normal italic font-drama">james</span>
           </a>
           <div className="w-8 h-px bg-clay/50 mt-3 mb-5" />
-          <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.25em]">Vault Admin · Send Invite</p>
+          <p className="font-detail text-[13px] text-clay/90 uppercase tracking-[0.25em]">Vault Admin · Send Invite</p>
         </div>
         <div className="bg-white/8 border border-white/18 rounded-2xl p-8">
           <p className="font-detail text-sm text-cream/80 leading-relaxed mb-6">
@@ -635,13 +635,13 @@ function AdminPanel() {
               value={inviteEmail}
               onChange={e => { setInviteEmail(e.target.value); setResult(null); }}
               placeholder="client@email.com"
-              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 font-detail text-cream placeholder:text-cream/30 outline-none transition-colors"
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-2xl px-5 py-3.5 font-detail text-cream placeholder:text-cream/75 outline-none transition-colors"
               style={{ caretColor: "#9E7134" }}
             />
             <button
               type="submit"
               disabled={!inviteEmail.trim() || loading}
-              className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-30 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide hover:bg-clay-light disabled:opacity-100 disabled:bg-clay/80 transition-all flex items-center justify-center gap-2"
             >
               {loading ? (
                 <><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Sending…</>
@@ -657,13 +657,13 @@ function AdminPanel() {
           {result?.success && (
             <div className="mt-5 p-4 bg-green-500/10 border border-green-500/20 rounded-xl space-y-3">
               <p className="font-detail text-sm text-green-300">Invite sent.</p>
-              <p className="font-detail text-[10px] text-cream/35 uppercase tracking-wider">Vault URL</p>
-              <p className="font-mono text-xs text-cream/60 break-all bg-cream/5 rounded-lg px-3 py-2">
+              <p className="font-detail text-[13px] text-cream/85 uppercase tracking-wider">Vault URL</p>
+              <p className="font-mono text-[13px] text-cream/85 break-all bg-cream/5 rounded-lg px-3 py-2">
                 {result.vaultUrl}
               </p>
               <button
                 onClick={() => navigator.clipboard?.writeText(result.vaultUrl)}
-                className="font-detail text-[10px] text-clay uppercase tracking-wider hover:text-cream transition-colors"
+                className="font-detail text-[13px] text-clay uppercase tracking-wider hover:text-cream transition-colors"
               >
                 Copy link
               </button>

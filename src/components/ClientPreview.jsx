@@ -125,7 +125,7 @@ export default function ClientPreview({ onClose }) {
                 ROGET<span className="font-normal italic font-drama">james</span>
               </p>
               <div className="w-8 h-px bg-clay/50 mx-auto mt-3 mb-4" />
-              <p className="font-detail text-[10px] text-cream/75 uppercase tracking-[0.25em]">Client Preview Access</p>
+              <p className="font-detail text-[13px] text-cream/85 uppercase tracking-[0.25em]">Client Preview Access</p>
             </div>
 
             <p className="font-detail text-sm text-cream/80 text-center leading-relaxed mb-8">
@@ -140,7 +140,7 @@ export default function ClientPreview({ onClose }) {
                 onChange={(e) => { setEmail(e.target.value); setError(""); }}
                 placeholder="Your email address"
                 autoComplete="email"
-                className="w-full bg-cream/5 border border-cream/20 focus:border-clay/70 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/40 outline-none transition-colors duration-200"
+                className="w-full bg-cream/5 border border-cream/20 focus:border-clay/70 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/75 outline-none transition-colors duration-200"
                 style={{ caretColor: "#9E7134" }}
               />
               <input
@@ -149,20 +149,20 @@ export default function ClientPreview({ onClose }) {
                 onChange={(e) => { setPassword(e.target.value); setError(""); }}
                 placeholder="Your password"
                 autoComplete="current-password"
-                className="w-full bg-cream/5 border border-cream/20 focus:border-clay/70 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/40 outline-none transition-colors duration-200"
+                className="w-full bg-cream/5 border border-cream/20 focus:border-clay/70 rounded-2xl px-5 py-3.5 text-center font-detail text-cream placeholder:text-cream/75 outline-none transition-colors duration-200"
                 style={{ caretColor: "#9E7134" }}
               />
-              {error && <p className="font-detail text-[11px] text-clay text-center leading-relaxed">{error}</p>}
+              {error && <p className="font-detail text-[13px] text-clay text-center leading-relaxed">{error}</p>}
               <button
                 type="submit"
                 disabled={!email.trim() || !password || loading}
-                className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide transition-all duration-200 hover:bg-clay-light disabled:opacity-30 disabled:cursor-default flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-2xl bg-clay text-cream font-heading font-semibold text-sm tracking-wide transition-all duration-200 hover:bg-clay-light disabled:opacity-100 disabled:bg-clay/80 disabled:cursor-default flex items-center justify-center gap-2"
               >
                 {loading ? (<><div className="w-4 h-4 border-2 border-cream/30 border-t-cream rounded-full animate-spin" />Checking…</>) : "View My Gallery"}
               </button>
             </form>
 
-            <p className="font-detail text-[10px] text-cream/55 text-center mt-6 leading-relaxed">
+            <p className="font-detail text-[13px] text-cream/85 text-center mt-6 leading-relaxed">
               Your email and password are provided directly by ROGETjames.
             </p>
           </div>
