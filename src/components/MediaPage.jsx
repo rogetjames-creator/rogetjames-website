@@ -262,6 +262,7 @@ function VaultUpload({ secret }) {
   const [current, setCurrent] = useState(null); // selected client's full record
   const [loadingClient, setLoadingClient] = useState(false);
   // Per-client notes editor
+  const [nName, setNName] = useState("");
   const [nGreeting, setNGreeting] = useState("");
   const [nSpiel, setNSpiel] = useState("");
   const [nLinks, setNLinks] = useState("");
@@ -271,7 +272,7 @@ function VaultUpload({ secret }) {
   const [caps, setCaps] = useState({});          // per-image caption edits, keyed by src
   const [savingCaps, setSavingCaps] = useState(false);
   const [newCaption, setNewCaption] = useState(""); // shared caption applied to a new batch
-  const fillNotes = (d) => { setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); setNAddress(d.address || ""); setNContact(d.contact || ""); };
+  const fillNotes = (d) => { setNName(d.name || ""); setNGreeting(d.greeting || ""); setNSpiel(d.spiel || ""); setNLinks((d.links || []).map((l) => `${l.label} | ${l.url}`).join("\n")); setNAddress(d.address || ""); setNContact(d.contact || ""); };
   const fillCaps = (d) => { setCaps(Object.fromEntries((d.images || []).map((im) => [im.src, im.name || ""]))); };
 
   const post = (payload) => fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, ...payload }) }).then((r) => r.json());
@@ -318,20 +319,26 @@ function VaultUpload({ secret }) {
   const saveNotes = async () => {
     setSavingNotes(true); setMsg("");
     const links = parseLinks(nLinks);
-    const d = await post({ action: "update-client", clientId, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links, address: nAddress.trim(), contact: nContact.trim() });
+    const d = await post({ action: "update-client", clientId, name: nName.trim(), greeting: nGreeting.trim(), spiel: nSpiel.trim(), links, address: nAddress.trim(), contact: nContact.trim() });
     setSavingNotes(false);
     if (d.error) { setMsg(d.error); return; }
-    setCurrent((c) => c ? { ...c, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links, address: nAddress.trim(), contact: nContact.trim() } : c);
+    setCurrent((c) => c ? { ...c, name: nName.trim() || c.name, greeting: nGreeting.trim(), spiel: nSpiel.trim(), links, address: nAddress.trim(), contact: nContact.trim() } : c);
     setMsg("Saved the notes for this gallery.");
+    loadClients();
   };
 
   const onFiles = async (files) => {
+    // Shrink each photo to 2000px JPEG first (same as the media uploader) —
+    // full-size phone photos sent as-is went over the server's upload limit
+    // and came back as "Unexpected end of JSON input".
     const list = [];
+    const failed = [];
     for (const f of Array.from(files || [])) {
       if (!f.type.startsWith("image/")) continue;
-      const dataUrl = await new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f); });
-      list.push({ name: f.name, dataUrl });
+      const r = await compressToDataUrl(f);
+      if (r.failed) failed.push(f.name); else list.push(r);
     }
+    if (failed.length) setMsg(`Couldn't read ${failed.join(", ")} — save it as a JPEG and try again.`);
     setStaged((p) => [...p, ...list]);
   };
   const onDrop = (e) => { e.preventDefault(); setDragOver(false); onFiles(e.dataTransfer?.files); };
@@ -356,11 +363,32 @@ function VaultUpload({ secret }) {
     setPhase("sending"); setMsg("");
     // If a shared caption is set, apply it to every photo in this batch.
     const images = newCaption.trim() ? staged.map((s) => ({ ...s, name: newCaption.trim() })) : staged;
+    // Send in loads that stay under the server's per-request limit.
+    const BUDGET = 3.6 * 1024 * 1024;
+    const loads = [];
+    let load = [], size = 0;
+    for (const im of images) {
+      const bytes = (im.dataUrl || "").length;
+      if (load.length && size + bytes > BUDGET) { loads.push(load); load = []; size = 0; }
+      load.push(im); size += bytes;
+    }
+    if (load.length) loads.push(load);
     try {
-      const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images }) });
-      const d = await r.json();
-      if (!r.ok || d.error) { setMsg(d.error || "Upload failed."); setPhase("idle"); return; }
-      setMsg(`Added ${d.added} image(s) — the client now has ${d.total} in their vault. New photos show in the vault about a minute after the site rebuilds.`);
+      let added = 0, total = 0;
+      for (let i = 0; i < loads.length; i++) {
+        if (loads.length > 1) setMsg(`Sending ${i + 1} of ${loads.length}…`);
+        const r = await fetch("/api/vault-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminSecret: secret, action: "add-images", clientId, images: loads[i] }) });
+        let d;
+        try { d = await r.json(); } catch { d = { error: `Server error (status ${r.status}) — the upload may have been too large or timed out.` }; }
+        if (!r.ok || d.error) {
+          setMsg(added ? `${d.error || "Upload failed."} ${added} photo(s) did go up — send the rest again.` : (d.error || "Upload failed."));
+          setStaged(loads.slice(i).flat()); setPhase("idle");
+          if (added) loadClients();
+          return;
+        }
+        added += d.added || 0; total = d.total;
+      }
+      setMsg(`Added ${added} image(s) — the client now has ${total} in their vault. New photos show in the vault about a minute after the site rebuilds.`);
       setStaged([]); setNewCaption(""); setPhase("done");
       post({ action: "get-client", clientId }).then((c) => { if (!c.error) { setCurrent(c); fillCaps(c); } });
       loadClients();
@@ -474,6 +502,8 @@ function VaultUpload({ secret }) {
           {/* Notes / spiel / links shown to the client */}
           <div className="rounded-xl border border-white/12 bg-black/20 p-3 mb-5">
             <p className="font-detail text-[10px] text-clay/90 uppercase tracking-[0.15em] mb-2">Notes shown in their gallery</p>
+            <input type="text" value={nName} onChange={(e) => setNName(e.target.value)} placeholder="Client name"
+              className="w-full bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none mb-2" />
             <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input type="text" value={nAddress} onChange={(e) => setNAddress(e.target.value)} placeholder="Full address (private — for your records)"
                 className="flex-1 bg-cream/5 border border-cream/18 focus:border-clay/65 rounded-xl px-3 py-2 font-detail text-[13px] text-cream placeholder:text-cream/30 outline-none" />
