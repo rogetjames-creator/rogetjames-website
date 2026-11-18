@@ -76,6 +76,13 @@ export default async function handler(req) {
         if (c) clients.push({ id: b.key, email: c.email, name: c.name || c.email, count: (c.images || []).length, cover: (c.images || [])[0]?.src || null, vaultUrl: `https://rogetjames.com/vault?e=${encodeURIComponent(c.email)}` });
       }
       clients.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      // When each client last opened their vault (written by vault-verify).
+      const opens = getStore({ name: "vault-opens", consistency: "strong" });
+      for (const c of clients) {
+        const o = await opens.get(c.id, { type: "json" }).catch(() => null);
+        c.lastOpened = o?.last || null;
+        c.openCount = o?.count || 0;
+      }
       return json({ clients });
     }
 

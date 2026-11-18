@@ -52,7 +52,7 @@ function SectionTitle({ children }) {
 
 export default function CityPage({ city }) {
   const {
-    name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch,
+    name, region, displayLine, intro, hero, heroSlides, heroMark, heroTypeClass, heroStretch, faq = [],
     suburbs = [], services = [], ctaHeading = null, closingMark = false, craftedIn = null, headingText = null,
   } = city;
   // Slug used for this city's /media panel keys, so each city page keeps its
@@ -256,6 +256,29 @@ export default function CityPage({ city }) {
           <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12 flex flex-col items-center text-center">
             <Eyebrow>{name} & surrounds</Eyebrow>
             <p className="font-body text-cream/55 leading-relaxed text-sm md:text-base mt-5">{suburbs.join("  ·  ")}</p>
+          </div>
+        </section>
+      )}
+
+      {/* ── FAQ (cities that supply one) ─────────────────── */}
+      {faq.length > 0 && (
+        <section className="bg-studio-grey py-20 md:py-28">
+          <div className="city-reveal max-w-3xl mx-auto px-6 md:px-12">
+            <div className="flex flex-col items-center text-center">
+              <Eyebrow>{name} questions</Eyebrow>
+              <SectionTitle>Frequently asked</SectionTitle>
+            </div>
+            <div className="mt-10 divide-y divide-cream/[0.08] border-y border-cream/[0.08]">
+              {faq.map((f, i) => (
+                <details key={i} className="group py-5" open={i === 0}>
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-heading font-medium text-base md:text-lg text-cream/90">
+                    <h3 className="font-heading font-medium">{f.q}</h3>
+                    <span className="text-clay text-xl transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="font-body text-[15px] md:text-base text-cream/80 leading-relaxed mt-3">{f.a}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </section>
       )}
