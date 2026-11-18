@@ -49,7 +49,7 @@ const PERTH = {
     { q: "Do you work with architects, builders and developers?",
       a: "Yes. ROGETjames works directly with architects, interior designers, builders and developers on private residences, display homes, hotels and public spaces." },
     { q: "Which areas do you deliver to?",
-      a: "All of Perth — Cottesloe, Dalkeith, Nedlands, Peppermint Grove, City Beach, Applecross, Subiaco, Claremont, Fremantle and beyond — plus regional WA including Geraldton, Margaret River and Esperance. ROGETjames also ships Australia-wide." },
+      a: "All of Perth — Cottesloe, Dalkeith, Nedlands, Peppermint Grove, City Beach, Applecross, Subiaco, Claremont, Osborne Park, Fremantle and beyond — plus regional WA including Geraldton, Margaret River and Esperance. ROGETjames also ships Australia-wide." },
   ],
   // The page talks to people who specify work, not to homeowners.
   ctaHeading: "Specifying a piece for a Perth project?",
@@ -62,7 +62,7 @@ const PERTH = {
   suburbs: [
     "Cottesloe", "Dalkeith", "Nedlands", "Peppermint Grove", "City Beach", "Applecross",
     "Mount Lawley", "Subiaco", "Claremont", "Swanbourne", "Fremantle", "Mosman Park",
-    "North Beach", "Bicton", "Darlington",
+    "North Beach", "Bicton", "Darlington", "Osborne Park",
     "Geraldton", "Margaret River", "Esperance",
   ],
 };
