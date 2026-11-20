@@ -3,6 +3,7 @@
 Not shipped. Nothing here goes live without James's say-so.
 
 ## Ideas
+0. James, 20 Nov 2026: ALL Wall Art is Freeform. The Wall Art collection is the core Freeform body of work; its history is Freeform's history.
 1. Freeform as the umbrella story: Screens (pattern inside a rectangle) → Freeform (artwork sets its own outline) → Wall Art (standalone). Wall Art copy already calls the pieces "freeform designs" (Gallery.jsx:3123) — the language exists, it has no page.
 2. /freeform is a curated page that reuses existing photos (Wall Art + /screens/wall-decor + built screens). No new upload category, no prices.
 3. "From Q DESIGN to ROGETjames" timeline section on /freeform — only dated, evidenced pieces. No "first"/"pioneer" wording.

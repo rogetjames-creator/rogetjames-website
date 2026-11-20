@@ -88,6 +88,8 @@ mount function plus generated data. They are NOT React modals:
 | `/melbourne` `/perth` `/sydney` `/brisbane` | matching `src/*.jsx` | `MelbournePreview` / `CityPreview` |
 | `/hero` `/feature-screens` | matching `src/*.jsx` | `HeroPreview` `FeatureScreens` |
 
+**All Wall Art is Freeform** (James, 20 Nov 2026) — every `/wall-art` piece is a Freeform design: the artwork sets its own outline rather than sitting in a rectangle. Plan notes: `src/_drafts/freeform-screens-plan.md`.
+
 `/feature-wall` and `/feature-sculpture` are now 301 redirects to `/wall-art`
 and `/sculpture` — they are not separate pages any more.
 
