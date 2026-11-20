@@ -91,6 +91,38 @@ const WORDS = {
   ],
 };
 
+// What Google prints for each page: the title and the summary under it.
+// Kept apart from the words on the page so James's headings ("Privacy",
+// "The Quiet Side") stay as he wrote them, while the search result names the
+// thing people actually search for. Before this, four pages had one-word titles
+// and three summaries read as a broken sentence ("The Line Between 10 designs").
+const SEARCH = {
+  "wall-decor": [
+    "Laser Cut Metal Wall Panels & Feature Walls",
+    "Decorative laser cut metal panels for feature walls and facades, indoors and out.",
+  ],
+  gates: [
+    "Laser Cut Metal Gates, Corten & Aluminium",
+    "Entrance gates, pedestrian gates and automated security gates, cut from your chosen pattern.",
+  ],
+  fencing: [
+    "Laser Cut Metal Fencing & Fence Infill Panels",
+    "Decorative laser cut fence panels and infills in Corten steel or powder-coated aluminium.",
+  ],
+  dividers: [
+    "Laser Cut Room Dividers & Garden Screens",
+    "Freestanding and fixed laser cut metal dividers for interiors, courtyards and gardens.",
+  ],
+  privacy: [
+    "Laser Cut Metal Privacy Screens",
+    "Laser cut metal privacy screens for balconies, boundaries and outdoor showers — light and air kept, sightlines blocked.",
+  ],
+  pergolas: [
+    "Pergola Screens & Shade Panels",
+    "Laser cut pergola screens and shade panels that cast patterned shadows across the space below.",
+  ],
+};
+
 // uploads placed against an application through /media
 let uploads = [];
 try {
@@ -135,8 +167,9 @@ for (const app of SCREEN_APPLICATIONS) {
   const [heading, blurb, body] = WORDS[app.id] || [app.label, "", ""];
   const url = `${SITE}/screens/${app.id}`;
   const others = SCREEN_APPLICATIONS.filter((a) => a.id !== app.id && designsFor(a).length);
-  const title = `${heading} | ROGETjames`;
-  const desc = `${blurb} ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs, made to order in Australia by James Roget.`.trim();
+  const [searchTitle, searchSummary] = SEARCH[app.id] || [heading, blurb];
+  const title = `${searchTitle} | ROGETjames`;
+  const desc = `${searchSummary} ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs, made to order in Australia by James Roget.`.trim();
 
   const html = `<!doctype html>
 <html lang="en" style="background:#020202"><head>
