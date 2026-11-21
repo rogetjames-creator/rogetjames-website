@@ -118,22 +118,15 @@ function usesOf(d) {
   return SCREEN_APPLICATIONS.filter((a) => ids.has(a.id));
 }
 
-// The headline job for each design, taken only from James's approved photo
-// descriptions (or his own description in screenDesigns.js). It goes in the
-// title Google prints. Named projects first; where a design has none, an
-// interstate job, since the business serves Australia-wide.
-const HEADLINE = {
-  ERGO: "Cottesloe Hotel",
-  HEXO: "Lalla Rookh",
-  ZARATHSTRA: "Helvetica Bar",
-  AYYAD: "Ventura Homes",
-  DOTTI: "Country Builders",
-  LUCARIO: "Principal Landscapes",
-  WATTLE: "Frasers, Kings Park",
-  VUELTA: "Aquila Homes",
-  URO: "North Sydney",
-  SABU: "Noosa",
-};
+// The place a photograph was taken, read from its approved description:
+// "ERGO — powder-coated aluminium gates, Cottesloe Hotel, WA; architect MJA Studio."
+// → "Cottesloe Hotel, WA". Nothing is guessed: no description, no place.
+function placeOf(cap) {
+  if (!cap) return "";
+  const body = cap.replace(/\.?\s*by ROGETjames\s*$/, "").split(/\s+—\s+/).slice(1).join(" — ");
+  const parts = body.split(";")[0].split(",").map((x) => x.trim()).filter(Boolean);
+  return parts.length > 1 ? parts.slice(1).join(", ").replace(/\.$/, "") : "";
+}
 
 const list = [...designs.values()].filter((d) => d.photos.length);
 const built = [];
@@ -152,12 +145,10 @@ for (const d of list) {
   // and the sitemap until it has more.
   const thin = d.photos.length < 2 && !described.length;
   const indexable = !PREVIEW && !thin;
-  const job = HEADLINE[norm(d.name)] || "";
-  const pageTitle = `${d.name} ${kind}${job ? ` — ${job}` : ""} | ROGETjames`;
-  const lead = (job && described.find((t) => t.toLowerCase().includes(job.toLowerCase().split(/[ ,]+/)[0]))) || described[0];
-  const desc = described.length
-    ? `${lead.replace(/\.?\s*$/, ".")}${uses.length ? ` Used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}.` : ""} Made to order in Australia.`
-    : `${d.name} — ${kind.toLowerCase()} design by ROGETjames, from ${d.section}${uses.length ? `, used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}` : ""}. Made to order in Australia.`;
+  // A design is used on many jobs, so its title and summary name the design
+  // only. Each job and place belongs to its own photograph (James, 21 Nov 2026).
+  const pageTitle = `${d.name} ${kind} | ROGETjames`;
+  const desc = `${d.name} — ${kind.toLowerCase()} design by ROGETjames, from ${d.section}${uses.length ? `, used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}` : ""}. Made to order in Australia.`;
   const others = list.filter((o) => o !== d && o.section === d.section && slugOf(o.name) && !appIds.has(slugOf(o.name)));
 
   const html = `<!doctype html>
@@ -188,7 +179,19 @@ ${JSON.stringify({
     { "@type": "VisualArtwork", "@id": url, name: d.name, url, description: desc,
       artform: kind.replace(/^Laser Cut /, ""),
       creator: { "@type": "Organization", name: "ROGETjames", url: SITE },
-      image: d.photos.map((p) => `${SITE}${realPath(p.src)}`) },
+      // Every photograph is its own job: its own caption and its own place.
+      image: d.photos.map((p) => {
+        const cap = confirmedPhotoDescription(p.src);
+        const place = placeOf(cap);
+        return {
+          "@type": "ImageObject",
+          contentUrl: `${SITE}${realPath(p.src)}`,
+          name: cap ? cap.replace(/\.?\s*by ROGETjames\s*$/, "") : `${d.name} — ${kind.toLowerCase()}`,
+          ...(cap ? { caption: cap } : {}),
+          ...(place ? { contentLocation: { "@type": "Place", name: place } } : {}),
+          creator: { "@type": "Organization", name: "ROGETjames" },
+        };
+      }) },
   ],
 }, null, 2)}
 </script>
