@@ -1320,5 +1320,15 @@
     "note": "Make it the second image",
     "createdTime": "2026-11-11T08:29:53.032Z",
     "path": "images/uploads/1794385793031_5jc3rj.jpg"
+  },
+  {
+    "id": "1795223851466_h7qkdl",
+    "name": "WATTLE",
+    "destinations": [
+      "screens"
+    ],
+    "note": "Mention the city Sydney and fencing",
+    "createdTime": "2026-11-21T01:17:31.480Z",
+    "path": "images/uploads/1795223851466_h7qkdl.jpg"
   }
 ]
