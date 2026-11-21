@@ -102,8 +102,8 @@ const SEARCH = {
     "Decorative laser cut metal panels for feature walls and facades, indoors and out.",
   ],
   gates: [
-    "Laser Cut Metal Gates, Made in Australia",
-    "Entrance gates, pedestrian gates and automated security gates, cut from your chosen pattern.",
+    "Laser Cut Screens for Gates, Fences & Entries",
+    "Patterned metal screens for entrance and security gates, fences, courtyards and entries, cut from your chosen design.",
   ],
   fencing: [
     "Laser Cut Metal Fencing & Fence Infill Panels",
