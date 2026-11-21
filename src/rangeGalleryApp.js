@@ -22,7 +22,7 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null, bandTitle = null }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null, bandTitle = null, catPill = true }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   // A piece with no details to show: untitled (Displays), marked noBtn, or in
@@ -157,7 +157,7 @@ a.dpill{display:inline-block;text-decoration:none}
   <span class="now" id="now">${label} &middot; The ${rangeWord}</span>
   <div class="nav-r">
     <button class="qpill" id="qpill" aria-label="View your quote">Quote <span class="qnum" id="qnum">0</span></button>
-    <button class="pill-cat" id="catBtn" type="button">${label} Catalogue</button>
+    ${catPill ? `<button class="pill-cat" id="catBtn" type="button">${label} Catalogue</button>` : ""}
     <a class="x-esc" href="/" aria-label="Close — back to site">&#10005;</a>
   </div>
 </div>
@@ -862,7 +862,7 @@ a.dpill{display:inline-block;text-decoration:none}
   function closeCat(){ if(catReactRoot){ catReactRoot.unmount(); catReactRoot=null; } document.body.classList.remove('locked'); }
   // "View catalogue" pill opens this page's catalogue — the isolated one when supplied
   // (Screens has its own), otherwise this gallery's shared primary catalogue.
-  document.getElementById('catBtn').addEventListener('click',()=> catalogue ? openCatObj(catalogue) : openCat((section==='sculpture'||section==='bespoke-sculpture')?1:0));
+  if(catPill) document.getElementById('catBtn').addEventListener('click',()=> catalogue ? openCatObj(catalogue) : openCat((section==='sculpture'||section==='bespoke-sculpture')?1:0));
   // Screens: replace the shared catalogue list in the menu with just its own catalogue.
   if(catalogue){
     const menuEl=document.getElementById('menu');

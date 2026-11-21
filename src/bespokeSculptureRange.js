@@ -76,5 +76,7 @@ export function mountBespokeSculptureRange(rootId) {
     viewLabel: "View design",
     // Over the slideshow strip: "Bespoke Sculpture", not "The Range".
     bandTitle: `<span class="w2">Bespoke</span> Sculpture`,
+    // No catalogue pill: there is no Bespoke Sculpture catalogue.
+    catPill: false,
   });
 }
