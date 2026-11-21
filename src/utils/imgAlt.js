@@ -75,7 +75,12 @@ export function altForPiece(name, rangeLabel, kind = "wall", src = "") {
   if (confirmed) return confirmed;
   if (!name) return "ROGETjames";
   const material = RANGE_MATERIAL[rangeLabel] || materialFromFile(src);
-  const generic = kind === "sculpture" ? SCULPTURE : kind === "screen" ? SCREEN : WALL_ART;
+  // "Laser cut" is only for wall art and screens (James, 21 Nov 2026). Light
+  // features and mirrors shown on the Screens page are never called laser cut.
+  const SCREEN_GROUP = { "The Light Features": "metal light feature", "The Mirrors": "metal mirror" };
+  const generic = kind === "sculpture" ? SCULPTURE
+    : kind === "screen" ? (SCREEN_GROUP[tidyRange(rangeLabel || "")] || SCREEN)
+    : WALL_ART;
   // A known material replaces the generic "metal" — and no colour is added,
   // because the material is the truthful thing to say about the piece.
   const what = material ? generic.replace("metal", material) : generic;
