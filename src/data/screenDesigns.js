@@ -88,15 +88,6 @@ export const SCREEN_DESIGNS = [
     ],
   },
   {
-    name: "EQUISETTI",
-    tabs: ["architectural", "light-features"],
-    tags: ["light features"],
-    items: [
-      { name: "EQUISETTI", img: `${CDN}/453b1942-6be0-4365-b111-0affe46a048e_rw_1920.jpg` },
-      { name: "EQUISETTI", img: "/images/equisetti/equisetti-1.jpg" },
-    ],
-  },
-  {
     name: "GRAIL",
     tags: ["privacy screens", "dividers"],
     items: [
@@ -159,6 +150,15 @@ export const SCREEN_DESIGNS = [
     { name: "BLOOM", img: "/images/bloom/bloom-closeup.jpg", pos: "center top", tags: ["screens", "dividers", "residential"] },
     { name: "BLOOM — Light Feature", img: "/images/bloom/bloom-light-feature.jpg", tags: ["light features", "residential"] },
   ]},
+  {
+    name: "EQUISETTI",
+    tabs: ["organics", "light-features"],
+    tags: ["light features"],
+    items: [
+      { name: "EQUISETTI", img: `${CDN}/453b1942-6be0-4365-b111-0affe46a048e_rw_1920.jpg` },
+      { name: "EQUISETTI", img: "/images/equisetti/equisetti-1.jpg" },
+    ],
+  },
   {
     name: "FERLIE",
     tags: ["gates", "fencing"],
