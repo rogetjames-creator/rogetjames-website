@@ -102,7 +102,8 @@ for (const u of uploads) {
 // What the design is, for the title. "Laser cut" describes screens only —
 // never mirrors or light features (James, 21 Nov 2026).
 // A design whose only described job is not metal is not called metal.
-const KIND_OVERRIDE = { SABU: "Laser Cut Screen" }; // SABU, Noosa: laminated MDF
+// EQUISETTI is a light feature: "Light Feature", no "metal", no "laser cut" (James, 21 Nov 2026).
+const KIND_OVERRIDE = { SABU: "Laser Cut Screen", EQUISETTI: "Light Feature" }; // SABU, Noosa: laminated MDF
 function kindOf(d) {
   if (KIND_OVERRIDE[norm(d.name)]) return KIND_OVERRIDE[norm(d.name)];
   const anyLight = d.photos.some((p) => p.tags.some((t) => /light feature/.test(t)));
