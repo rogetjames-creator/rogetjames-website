@@ -32,7 +32,7 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
   const THUMBS = data.imgs.map((p) => netlifyImg(p, { w: 220, q: 62 }));
   const RANGES = data.ranges;
   // Photo descriptions for Google — see src/utils/imgAlt.js. Nothing visible.
-  const ALT_KIND = noun === "sculpture" ? "sculpture" : "wall";
+  const ALT_KIND = noun === "sculpture" ? "sculpture" : noun === "screen" ? "screen" : "wall";
   const altOf = (des, r, gi) => altForPiece(des.n, r && r.label, ALT_KIND, data.imgs[gi]);
   // Reserve one extra slot for the standalone "UP CLOSE" range (Wall Art only).
   // An "application" section (Gates, Fencing, …) is not a range of its own — it

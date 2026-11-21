@@ -18,6 +18,7 @@ import { SCULPTURE_DATA } from "../data/sculptureData";
 
 const WALL_ART = "laser cut metal wall art";
 const SCULPTURE = "laser cut metal garden sculpture";
+const SCREEN = "laser cut metal screen";
 
 // Ranges made in one material, confirmed by James. The material replaces the
 // generic "metal" and beats any colour word in the file name.
@@ -73,14 +74,14 @@ export function altForPiece(name, rangeLabel, kind = "wall", src = "") {
   if (confirmed) return confirmed;
   if (!name) return "ROGETjames";
   const material = RANGE_MATERIAL[rangeLabel] || materialFromFile(src);
-  const generic = kind === "sculpture" ? SCULPTURE : WALL_ART;
+  const generic = kind === "sculpture" ? SCULPTURE : kind === "screen" ? SCREEN : WALL_ART;
   // A known material replaces the generic "metal" — and no colour is added,
   // because the material is the truthful thing to say about the piece.
   const what = material ? generic.replace("metal", material) : generic;
   const finish = material ? "" : finishOf(src);
   const range = tidyRange(rangeLabel || "");
   const parts = [`${name} — ${what}${finish ? ` in ${finish}` : ""}`];
-  if (range) parts.push(`${range} range`);
+  if (range) parts.push(kind === "screen" ? range : `${range} range`);
   parts.push("by ROGETjames");
   return parts.join(", ");
 }
