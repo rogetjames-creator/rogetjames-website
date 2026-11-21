@@ -102,7 +102,7 @@ const SEARCH = {
     "Decorative laser cut metal panels for feature walls and facades, indoors and out.",
   ],
   gates: [
-    "Laser Cut Screens for Gates, Fences & Entries",
+    "Laser Cut Metal Gates & Entry Screens",
     "Patterned metal screens for entrance and security gates, fences, courtyards and entries, cut from your chosen design.",
   ],
   fencing: [
@@ -110,7 +110,7 @@ const SEARCH = {
     "Decorative laser cut fence panels and infills in Corten steel, stainless steel or powder-coated aluminium.",
   ],
   dividers: [
-    "Laser Cut Room Dividers & Garden Screens",
+    "Laser Cut Metal Room Dividers",
     "Freestanding and fixed laser cut metal dividers for interiors, courtyards and gardens.",
   ],
   privacy: [
