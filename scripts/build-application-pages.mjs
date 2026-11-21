@@ -102,7 +102,7 @@ const SEARCH = {
     "Decorative laser cut metal panels for feature walls and facades, indoors and out.",
   ],
   gates: [
-    "Laser Cut Metal Gates, Corten & Aluminium",
+    "Laser Cut Metal Gates, Made in Australia",
     "Entrance gates, pedestrian gates and automated security gates, cut from your chosen pattern.",
   ],
   fencing: [
