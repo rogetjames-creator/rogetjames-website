@@ -129,7 +129,7 @@ const HEADLINE = {
   AYYAD: "Ventura Homes",
   DOTTI: "Country Builders",
   LUCARIO: "Principal Landscapes",
-  WATTLE: "Tim Davies Landscaping",
+  WATTLE: "Frasers, Kings Park",
   VUELTA: "Aquila Homes",
   URO: "North Sydney",
   SABU: "Noosa",
@@ -154,7 +154,7 @@ for (const d of list) {
   const indexable = !PREVIEW && !thin;
   const job = HEADLINE[norm(d.name)] || "";
   const pageTitle = `${d.name} ${kind}${job ? ` — ${job}` : ""} | ROGETjames`;
-  const lead = (job && described.find((t) => t.toLowerCase().includes(job.toLowerCase().split(" ")[0]))) || described[0];
+  const lead = (job && described.find((t) => t.toLowerCase().includes(job.toLowerCase().split(/[ ,]+/)[0]))) || described[0];
   const desc = described.length
     ? `${lead.replace(/\.?\s*$/, ".")}${uses.length ? ` Used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}.` : ""} Made to order in Australia.`
     : `${d.name} — ${kind.toLowerCase()} design by ROGETjames, from ${d.section}${uses.length ? `, used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}` : ""}. Made to order in Australia.`;
