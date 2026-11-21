@@ -169,7 +169,7 @@ for (const app of SCREEN_APPLICATIONS) {
   const others = SCREEN_APPLICATIONS.filter((a) => a.id !== app.id && designsFor(a).length);
   const [searchTitle, searchSummary] = SEARCH[app.id] || [heading, blurb];
   const title = `${searchTitle} | ROGETjames`;
-  const desc = `${searchSummary} ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs, made to order in Australia by James Roget.`.trim();
+  const desc = `${searchSummary} ${new Set(designs.map((d) => d.name).filter(Boolean)).size} designs, made to order in Australia by ROGETjames.`.trim();
 
   const html = `<!doctype html>
 <html lang="en" style="background:#020202"><head>
