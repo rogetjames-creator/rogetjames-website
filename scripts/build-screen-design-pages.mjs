@@ -101,7 +101,10 @@ for (const u of uploads) {
 
 // What the design is, for the title. "Laser cut" describes screens only —
 // never mirrors or light features (James, 21 Nov 2026).
+// A design whose only described job is not metal is not called metal.
+const KIND_OVERRIDE = { SABU: "Laser Cut Screen" }; // SABU, Noosa: laminated MDF
 function kindOf(d) {
+  if (KIND_OVERRIDE[norm(d.name)]) return KIND_OVERRIDE[norm(d.name)];
   const anyLight = d.photos.some((p) => p.tags.some((t) => /light feature/.test(t)));
   if (d.section === "The Mirrors") return anyLight ? "Metal Light Feature" : "Metal Mirror";
   return "Laser Cut Metal Screen";
@@ -114,6 +117,23 @@ function usesOf(d) {
   }
   return SCREEN_APPLICATIONS.filter((a) => ids.has(a.id));
 }
+
+// The headline job for each design, taken only from James's approved photo
+// descriptions (or his own description in screenDesigns.js). It goes in the
+// title Google prints. Named projects first; where a design has none, an
+// interstate job, since the business serves Australia-wide.
+const HEADLINE = {
+  ERGO: "Cottesloe Hotel",
+  HEXO: "Lalla Rookh",
+  ZARATHSTRA: "Helvetica Bar",
+  AYYAD: "Ventura Homes",
+  DOTTI: "Country Builders",
+  LUCARIO: "Principal Landscapes",
+  WATTLE: "Tim Davies Landscaping",
+  VUELTA: "Aquila Homes",
+  URO: "North Sydney",
+  SABU: "Noosa",
+};
 
 const list = [...designs.values()].filter((d) => d.photos.length);
 const built = [];
@@ -132,9 +152,11 @@ for (const d of list) {
   // and the sitemap until it has more.
   const thin = d.photos.length < 2 && !described.length;
   const indexable = !PREVIEW && !thin;
-  const pageTitle = `${d.name} ${kind} | ROGETjames`;
+  const job = HEADLINE[norm(d.name)] || "";
+  const pageTitle = `${d.name} ${kind}${job ? ` — ${job}` : ""} | ROGETjames`;
+  const lead = (job && described.find((t) => t.toLowerCase().includes(job.toLowerCase().split(" ")[0]))) || described[0];
   const desc = described.length
-    ? `${described[0]}${uses.length ? ` Used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}.` : ""} Made to order in Australia.`
+    ? `${lead.replace(/\.?\s*$/, ".")}${uses.length ? ` Used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}.` : ""} Made to order in Australia.`
     : `${d.name} — ${kind.toLowerCase()} design by ROGETjames, from ${d.section}${uses.length ? `, used for ${uses.map((a) => a.label.toLowerCase()).join(", ")}` : ""}. Made to order in Australia.`;
   const others = list.filter((o) => o !== d && o.section === d.section && slugOf(o.name) && !appIds.has(slugOf(o.name)));
 
