@@ -89,12 +89,12 @@ const PAGES = [
     kicker: "Hotels, hospitality, retail & developments",
     heading: "Commercial & Hospitality Artwork",
     title: "Commercial & Hospitality Artwork, Australia | ROGETjames",
-    desc: "Artwork for hotels, hospitality, retail and property developments — laser cut Corten steel and powdercoated aluminium, made to the building. Australia-wide.",
+    desc: "Artwork for hotels, hospitality, retail and property developments — laser cut Corten steel, stainless steel and powdercoated aluminium, made to the building. Australia-wide.",
     lede: "Artwork that has to work as a room does — at the door, behind the bar, across a lobby, in front of a crowd.",
     body: [
       "Commercial work is judged twice: once by the people who commissioned it and every day afterwards by the people who use the room. It has to hold up to traffic, to cleaning and to being looked at a thousand times, and it has to still be doing its job in ten years.",
       "The studio has made work for the Cottesloe Hotel and the Duxton Hotel, for Lalla Rookh, for a Mirvac lobby in Melbourne, for Frasers in Kings Park, and across the Homebase Design Centre precinct in Subiaco — where the landscape, the entrance signage, the totems, the feature sculptures and the fire pit were all drawn and built as one commission.",
-      "Materials are Corten steel and powdercoated aluminium. Work is made to the opening, to the drawings and to the program, and installed by the studio that built it.",
+      "Materials are Corten steel, stainless steel and powdercoated aluminium. Work is made to the opening, to the drawings and to the program, and installed by the studio that built it.",
     ],
     sectors: ["Hotels", "Restaurants & bars", "Retail", "Property developments", "Corporate", "Display homes"],
     works: [

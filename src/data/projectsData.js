@@ -34,7 +34,7 @@ export const PROJECTS = [
     approach: [
       { title: "Site & landscape design", text: "The public spaces were designed first, so the artwork had somewhere to belong instead of being placed after the fact." },
       { title: "Motif development", text: "A single cut motif was drawn for the precinct and carried across totems, signage and screens at different scales." },
-      { title: "Fabrication", text: "Laser cut and finished in Corten steel and powdercoated aluminium, built for weather and public contact." },
+      { title: "Fabrication", text: "Laser cut and finished in Corten steel, stainless steel and powdercoated aluminium, built for weather and public contact." },
       { title: "Install & project management", text: "Engineering, footings, delivery and installation coordinated as one commission through to handover." },
     ],
     specs: [

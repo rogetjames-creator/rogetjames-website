@@ -65,9 +65,9 @@ const WORDS = {
     "A bare wall waits for something to give it a reason to be looked at.\n\nA panel answers with pattern. Set just off the wall, casting shadows that move with the sun and change through the day.\n\nIndoors, it gives a room a centre. Outdoors, it gives a facade a face.",
   ],
   gates: [
-    "Laser Cut Metal Gates, Corten & Aluminium",
+    "Laser Cut Metal Gates, Corten, Stainless & Aluminium",
     "Entrance gates, pedestrian gates and automated security gates, cut from your chosen pattern.",
-    "A gate is the first thing a visitor meets, and the one piece of a house that has to be beautiful and do a job. These are cut from solid Corten steel or powder-coated aluminium, sized to the opening and built to swing or slide, manually or on an automated track. Any pattern in the range can be cut into one, and the density can be opened up for airflow or closed down for privacy.",
+    "A gate is the first thing a visitor meets, and the one piece of a house that has to be beautiful and do a job. These are cut from solid Corten steel, stainless steel or powder-coated aluminium, sized to the opening and built to swing or slide, manually or on an automated track. Any pattern in the range can be cut into one, and the density can be opened up for airflow or closed down for privacy.",
   ],
   fencing: [
     "Fences & Infills",
@@ -107,7 +107,7 @@ const SEARCH = {
   ],
   fencing: [
     "Laser Cut Metal Fencing & Fence Infill Panels",
-    "Decorative laser cut fence panels and infills in Corten steel or powder-coated aluminium.",
+    "Decorative laser cut fence panels and infills in Corten steel, stainless steel or powder-coated aluminium.",
   ],
   dividers: [
     "Laser Cut Room Dividers & Garden Screens",
