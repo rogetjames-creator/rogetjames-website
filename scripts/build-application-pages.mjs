@@ -261,11 +261,12 @@ footer{padding:56px 0 70px;color:var(--faint);font-family:var(--jost);font-size:
   </div>
   <div class="grid">
     ${(() => { const seen = new Set(); return designs.map((d) => {
-      const slug = String(d.name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      // "URO — Privacy, Sydney" belongs to URO: link to URO's own design page.
+      const slug = String(d.name || "").split(/\s+[—–-]\s+/)[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       // The first photograph of each design carries its name as an anchor, so
       // /screens/pergolas#vuelta lands on Vuelta rather than the top of the page.
       const id = slug && !seen.has(slug) ? (seen.add(slug), ` id="${slug}"`) : "";
-      return `<a class="card"${id} href="${slug ? `/screens#${slug}` : "/screens"}">
+      return `<a class="card"${id} href="${slug ? `/screens/${slug}` : "/screens"}">
       <div class="im"><img src="${img(d.img, 700)}" alt="${esc(confirmedPhotoDescription(d.img) || `${d.name || app.label} — laser cut metal ${String(app.label).toLowerCase()} by ROGETjames`)}" loading="lazy" /></div>
       ${d.name ? `<b>${esc(d.name)}</b>` : ""}<span>${esc(app.label)}</span></a>`; }).join(""); })()}
   </div>
