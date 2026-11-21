@@ -1339,11 +1339,12 @@
   },
   {
     "id": "1795227975424_07y1bk",
-    "name": "URO",
+    "name": "URO — Privacy, Sydney",
     "destinations": [
-      "screens"
+      "screens",
+      "application-privacy"
     ],
-    "note": "",
+    "note": "Privacy and note Sydney",
     "createdTime": "2026-11-21T02:26:15.425Z",
     "path": "images/uploads/1795227975424_07y1bk.jpg"
   }

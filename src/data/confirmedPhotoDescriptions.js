@@ -1,5 +1,7 @@
 // Photo information confirmed by James in the numbered Screens review.
 export const CONFIRMED_PHOTO_DESCRIPTIONS = {
+  "/images/uploads/1795227975424_07y1bk.jpg": "URO — privacy screen, Sydney, NSW. by ROGETjames",
+  "/images/cdn-gallery/99fc46c3-e4c6-4d13-84d5-c0a8b6c33e77_rw_1920.jpg": "URO — divider, North Sydney, NSW. by ROGETjames",
   "/images/viasi/viasi-1.jpg": "VIASI — powder-coated aluminium gates and fencing, Mount Lawley, WA. by ROGETjames",
   "/images/cdn-gallery/ff393903-5912-40da-9b37-aca22ef599b4_rw_1920.jpg": "ERGO — powder-coated aluminium gates, Cottesloe Hotel, WA; architect MJA Studio. by ROGETjames",
   "/images/cdn-gallery/f940abcb-61e1-4097-8525-2be2df42c732_rw_1200.jpg": "WATTLE — Corten steel wall decor; TDL (Tim Davies Landscaping). by ROGETjames",

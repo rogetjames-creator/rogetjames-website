@@ -132,7 +132,7 @@ export const SCREEN_DESIGNS = [
     name: "URO",
     items: [
       { name: "URO", img: `${CDN}/b07ca875-b7c4-4cc6-b61c-91faadf1fa90_rw_1920.jpg`, tags: ["gates", "fencing", "residential"] },
-      { name: "URO", img: `${CDN}/99fc46c3-e4c6-4d13-84d5-c0a8b6c33e77_rw_1920.jpg` },
+      { name: "URO — Divider, North Sydney", img: `${CDN}/99fc46c3-e4c6-4d13-84d5-c0a8b6c33e77_rw_1920.jpg`, description: "URO — divider, North Sydney, NSW.", tags: ["dividers"] },
     ],
   },
   {
