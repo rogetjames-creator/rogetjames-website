@@ -728,12 +728,8 @@
   {
     "id": "1787350963228_3i2szy",
     "name": "WATTLE",
-    "destinations": [
-      "city-sydney-screens",
-      "screens",
-      "application-fencing"
-    ],
-    "note": "",
+    "destinations": [],
+    "note": "Removed at James's request 21 Nov 2026 (was in Screens, Fencing and the Sydney Screens panel); file kept.",
     "createdTime": "2026-08-21T22:22:43.228Z",
     "path": "images/uploads/1787350963228_3i2szy.jpg"
   },
