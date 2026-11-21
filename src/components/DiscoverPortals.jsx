@@ -242,7 +242,7 @@ function VideoPopup({ videos, startIdx, onClose }) {
   );
 }
 
-function ArtPopup({ images, startIndex, onClose, heading = "Painting — by James Roget", altLabel = "Painting" }) {
+function ArtPopup({ images, startIndex, onClose, heading = "Painting — by ROGETjames", altLabel = "Painting" }) {
   const [cur, setCur] = useState(startIndex);
   const [dir, setDir] = useState(1);
   const [animKey, setAnimKey] = useState(0);

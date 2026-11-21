@@ -19,7 +19,7 @@ export const RANGE_SEO = {
   "AUSTRALIAN NATIVES": {
     title: "Australian Native Metal Wall Art — Banksia, Wattle | ROGETjames",
     summary:
-      "Laser cut Australian native wall art in Corten steel and aluminium — banksia, wattle and wandoo designs by James Roget. Made to order, delivered Australia-wide.",
+      "Laser cut Australian native wall art in Corten steel and aluminium — banksia, wattle and wandoo designs by ROGETjames. Made to order, delivered Australia-wide.",
   },
   "CREEPING FIGS": {
     title: "Creeping Fig Metal Wall Art, Laser Cut | ROGETjames",
@@ -34,7 +34,7 @@ export const RANGE_SEO = {
   "FLOWERS & BLOOMS": {
     title: "Floral Metal Wall Art — Laser Cut Flowers | ROGETjames",
     summary:
-      "Laser cut floral wall art in Corten steel and powder-coated aluminium — botanical blooms, palms and dandelions by James Roget. Made to order in Australia.",
+      "Laser cut floral wall art in Corten steel and powder-coated aluminium — botanical blooms, palms and dandelions by ROGETjames. Made to order in Australia.",
   },
   PLUMES: {
     title: "Feather Metal Wall Art, Laser Cut | ROGETjames",

@@ -162,14 +162,14 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
 
   const title = `${subject} — ${name} | ROGETjames`;
   const summary =
-    `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by James Roget. ` +
+    `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by ROGETjames. ` +
     `Powder-coated aluminium in any colour, or natural Corten steel that weathers to rust. ` +
     (/^[\dØ]/.test(biggest) ? `To ${biggest}. ` : "") +
     `Made to order in Australia.`;
   // Bing and Google cut a description off at about 160 characters. Keep the
   // full wording when it fits; otherwise shorten it a step at a time using
   // the same words — the finish line first, then the closing line, then size.
-  const lead = `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by James Roget. `;
+  const lead = `${subject.replace(/^./, (c) => c.toUpperCase())} — ${name} by ROGETjames. `;
   const finishLong = `Powder-coated aluminium in any colour, or natural Corten steel that weathers to rust. `;
   const finishShort = `Powder-coated aluminium in any colour, or Corten steel. `;
   const sizeLine = /^[\dØ]/.test(biggest) ? `To ${biggest}. ` : "";
@@ -187,7 +187,7 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
   const pinHref = hero
     ? "https://www.pinterest.com/pin/create/button/?url=" + encodeURIComponent(url + "?utm_source=pinterest") +
       "&media=" + encodeURIComponent(`${SITE}${hero}`) +
-      "&description=" + encodeURIComponent(`${name} — ${summary.replace(/^.*? by James Roget\. /, `${subject} by James Roget, ROGETjames. `)}`)
+      "&description=" + encodeURIComponent(`${name} — ${summary.replace(/^.*? by ROGETjames\. /, `${subject} by ROGETjames. `)}`)
     : "";
 
   const mats = MATERIAL_OPTIONS.map((m) => FINISHES[m.id]).filter(Boolean);
@@ -422,7 +422,7 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
     <div class="shots">
       ${photos.length ? `<div class="gal" style="--shape:${ratio.toFixed(4)}">
         <div class="main">
-          ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}" data-pin-description="${esc(`${name} — ${subject} by ROGETjames, James Roget. rogetjames.com`)}" data-pin-url="${esc(url)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
+          ${photos.map((src, i) => `<img class="m m${i + 1}" src="${img(src, 1400)}" alt="${esc(i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`)}" data-pin-description="${esc(`${name} — ${subject} by ROGETjames. rogetjames.com`)}" data-pin-url="${esc(url)}"${i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'} />`).join("")}
         </div>
         ${photos.length > 1 ? `<div class="thumbs">${photos.map((src, i) =>
           `<button class="t t${i + 1}" type="button" aria-label="${esc(`${name}, view ${i + 1}`)}"><img src="${img(src, 400)}" alt="${esc(`${name}, view ${i + 1}`)}" loading="lazy" /></button>`).join("")}</div>` : ""}
