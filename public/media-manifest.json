@@ -1319,9 +1319,11 @@
   },
   {
     "id": "1795223851466_h7qkdl",
-    "name": "WATTLE",
+    "name": "WATTLE — Fencing, Sydney",
     "destinations": [
-      "screens"
+      "screens",
+      "application-fencing",
+      "city-sydney-screens"
     ],
     "note": "Mention the city Sydney and fencing",
     "createdTime": "2026-11-21T01:17:31.480Z",
