@@ -639,7 +639,10 @@ a.dpill{display:inline-block;text-decoration:none}
     // never showing an empty gap when there are only a few images.
     const minHalf=Math.max(covers.length, Math.ceil((window.innerWidth*1.4)/TILE)+1);
     let half=[]; while(half.length<minHalf) half=half.concat(covers);
-    half.concat(half).forEach(src=>{const el=document.createElement('div');el.className='tile';const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=altForSrc(src);el.appendChild(im);strip.appendChild(el);});
+    // Strip photos take this gallery's own descriptions (screen, sculpture or wall art),
+    // so a Screens photo is never described with the shared wall-art fallback.
+    const altByCover=new Map(); RANGES.forEach(r=>(r.designs||[]).forEach(d=>(d.imgs||[]).forEach(gi=>{const k=netlifyImg(data.imgs[gi],{w:640,q:82}); if(!altByCover.has(k)) altByCover.set(k, altOf(d,r,gi));})));
+    half.concat(half).forEach(src=>{const el=document.createElement('div');el.className='tile';const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=altByCover.get(src)||altForSrc(src);el.appendChild(im);strip.appendChild(el);});
     // Constant scroll speed (~80px/s) regardless of tile count — so it never crawls.
     strip.style.animationDuration=Math.max(24,Math.round((half.length*TILE)/80))+'s';
   }

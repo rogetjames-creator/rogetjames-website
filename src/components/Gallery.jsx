@@ -1279,10 +1279,10 @@ const ALT_DESCRIPTORS = {
   "PENDANTS": "laser cut metal pendant wall art",
   "RETRO": "retro laser cut metal wall art",
   // Sculpture collections
-  "Sculpture": "laser cut metal garden sculpture",
-  "The Classics": "laser cut metal garden sculpture",
-  "Leaf Sculptures": "leaf laser cut metal garden sculpture",
-  "Bon Bons & Genie Bottles": "laser cut metal garden sculpture",
+  "Sculpture": "metal garden sculpture",
+  "The Classics": "metal garden sculpture",
+  "Leaf Sculptures": "leaf metal garden sculpture",
+  "Bon Bons & Genie Bottles": "metal garden sculpture",
   // Screens
   "Screens": "laser cut metal privacy screen",
 };

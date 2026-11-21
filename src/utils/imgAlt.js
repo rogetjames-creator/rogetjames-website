@@ -17,7 +17,8 @@ import { RANGE_DATA } from "../data/rangeData";
 import { SCULPTURE_DATA } from "../data/sculptureData";
 
 const WALL_ART = "laser cut metal wall art";
-const SCULPTURE = "laser cut metal garden sculpture";
+// Sculpture is not tied to laser cut (James, 21 Nov 2026) — matches the Sculpture page title.
+const SCULPTURE = "metal garden sculpture";
 const SCREEN = "laser cut metal screen";
 
 // Ranges made in one material, confirmed by James. The material replaces the

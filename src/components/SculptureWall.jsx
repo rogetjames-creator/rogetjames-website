@@ -688,7 +688,7 @@ function Gallery() {
             {pieces.map((p, i) => (
               <div key={p.name + i} className={`fw-subcard ${i === pieceIdx ? "on" : ""} ${i === pieceFlash ? "flash" : ""}`}
                 onClick={() => { if (i !== pieceIdx) goPiece(i); }}>
-                <img src={p.img} alt={pieceAlt(p.name, c.label, "laser cut metal garden sculpture")} />
+                <img src={p.img} alt={pieceAlt(p.name, c.label, "metal garden sculpture")} />
               </div>
             ))}
           </div>
@@ -730,7 +730,7 @@ function Gallery() {
             </button>
           )}
           <div className="fw-expand-imgwrap" onClick={(e) => e.stopPropagation()}>
-            <img src={activePiece.img} alt={pieceAlt(activePiece.name, c.label, "laser cut metal garden sculpture")} className="fw-expand-img" />
+            <img src={activePiece.img} alt={pieceAlt(activePiece.name, c.label, "metal garden sculpture")} className="fw-expand-img" />
             {!activePiece._upclose && (
               <button
                 className="fw-expand-details"
