@@ -1,5 +1,6 @@
 // Photo information confirmed by James in the numbered Screens review.
 export const CONFIRMED_PHOTO_DESCRIPTIONS = {
+  "/images/uploads/1795223851466_h7qkdl.jpg": "WATTLE — fencing, Sydney, NSW. by ROGETjames",
   "/images/uploads/1795227975424_07y1bk.jpg": "URO — privacy screen, Sydney, NSW. by ROGETjames",
   "/images/cdn-gallery/99fc46c3-e4c6-4d13-84d5-c0a8b6c33e77_rw_1920.jpg": "URO — divider, North Sydney, NSW. by ROGETjames",
   "/images/viasi/viasi-1.jpg": "VIASI — powder-coated aluminium gates and fencing, Mount Lawley, WA. by ROGETjames",
