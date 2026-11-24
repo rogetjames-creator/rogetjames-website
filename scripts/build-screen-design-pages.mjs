@@ -157,7 +157,7 @@ for (const d of list) {
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${esc(pageTitle)}</title>
 <meta name="description" content="${esc(desc)}" />
-<meta name="robots" content="${indexable ? "index, follow" : "noindex, follow"}" />
+<meta name="robots" content="${indexable ? "index, follow, max-image-preview:large, max-snippet:-1" : "noindex, follow"}" />
 <link rel="canonical" href="${url}" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="ROGETjames" />
