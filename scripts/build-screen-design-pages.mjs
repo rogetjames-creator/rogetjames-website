@@ -107,7 +107,7 @@ const KIND_OVERRIDE = { SABU: "Laser Cut Screen", EQUISETTI: "Light Feature" }; 
 function kindOf(d) {
   if (KIND_OVERRIDE[norm(d.name)]) return KIND_OVERRIDE[norm(d.name)];
   const anyLight = d.photos.some((p) => p.tags.some((t) => /light feature/.test(t)));
-  if (d.section === "The Mirrors") return anyLight ? "Metal Light Feature" : "Metal Mirror";
+  if (d.section === "The Mirrors") return anyLight ? "Light Feature" : "Metal Mirror";
   return "Laser Cut Metal Screen";
 }
 function usesOf(d) {
