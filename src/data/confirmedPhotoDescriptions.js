@@ -105,7 +105,7 @@ export const CONFIRMED_PHOTO_DESCRIPTIONS = {
   "/images/dotti/dotti-applecross.jpg": "DOTTI — powder-coated aluminium public privacy screens, Mount Pleasant, WA. by ROGETjames",
   "/images/dotti/dotti-platinum.jpg": "DOTTI — powder-coated aluminium display home privacy screen, South Fremantle, WA; Platinum Homes. by ROGETjames",
   "/images/dotti/dotti-pool.jpg": "DOTTI — powder-coated aluminium residential privacy screens, Bicton, WA. by ROGETjames",
-  "/images/dotti/dotti-aquilla.jpg": "DOTTI — powder-coated aluminium residential privacy screen, Como, WA; Aquilla Homes. by ROGETjames",
+  "/images/dotti/dotti-aquilla.jpg": "DOTTI — powder-coated aluminium residential privacy screen, Como, WA; Aquila Homes. by ROGETjames",
   "/images/cdn-gallery/65df5eb8-8965-49e7-a31c-9fdd5db80da9_rw_1200.jpg": "LUMIER — powder-coated aluminium residential divider. by ROGETjames",
   "/images/cdn-gallery/b3bcabc9-b1a6-4362-8c1f-fb0cd111b697_rw_1200.jpg": "LUMIER — powder-coated aluminium display home wall decor, Nedlands, WA; Riverstone Homes. by ROGETjames",
   "/images/cdn-gallery/0cb8128a-5efd-4474-851e-636aa772a9b4_rw_1920.jpg": "LUMIER — powder-coated aluminium commercial divider, Melbourne CBD, VIC; Mirvac. by ROGETjames",

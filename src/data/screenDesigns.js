@@ -214,7 +214,7 @@ export const SCREEN_DESIGNS = [
       { name: "DOTTI — Applecross", img: "/images/dotti/dotti-applecross.jpg", tags: ["privacy screens", "residential"] },
       { name: "DOTTI — Platinum", img: "/images/dotti/dotti-platinum.jpg", tags: ["privacy screens", "residential", "display homes"] },
       { name: "DOTTI — Pool", img: "/images/dotti/dotti-pool.jpg", tags: ["privacy screens", "residential"] },
-      { name: "DOTTI — Aquilla", img: "/images/dotti/dotti-aquilla.jpg", tags: ["privacy screens", "residential"] },
+      { name: "DOTTI — Aquila", img: "/images/dotti/dotti-aquilla.jpg", tags: ["privacy screens", "residential"] },
     ],
   },
   {
