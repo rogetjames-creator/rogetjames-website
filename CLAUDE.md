@@ -301,6 +301,25 @@ art" earns impressions; "Wall Art" does not.
 once produced nineteen almost identical 606-word pages — worse than the short
 originals. Distinct, true copy per page or nothing.
 
+**Photos are the product — check image search every time (added 24 Nov 2026).**
+Until then nobody had audited how the photos themselves are found; pages were
+checked, pictures were not. James found out from ChatGPT. Before calling any
+SEO work done, all of these must hold:
+1. Pages the build writes show photos at clean addresses
+   (`/img/w<width>/…`, via `scripts/clean-img.mjs` and the rules in
+   `netlify.toml`), not `/.netlify/images?url=…`.
+2. Each photo's structured data (`ImageObject`) gives `contentUrl` = the exact
+   address the page shows, plus credit and copyright (`IMAGE_RIGHTS`).
+3. `scripts/finalize-sitemap.mjs` lists every photo once, under its own page,
+   at the shown address, with true `<lastmod>` dates. After a deploy with no
+   content change, its build log line should show almost nothing "changed today".
+4. `max-image-preview:large` on every indexable page.
+5. Galleries link (with real `href`s) to every range and piece page.
+6. Old addresses search engines still request are checked in the Netlify
+   request logs (bingbot / Googlebot 404s) and given a 301.
+Get an independent expert review of any image-SEO change before telling James
+it is done.
+
 **Check claims against Search Console before stating them.** Titles, sitemaps
 and structured data looking correct is not evidence that anything ranks.
 
