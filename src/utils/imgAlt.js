@@ -77,7 +77,7 @@ export function altForPiece(name, rangeLabel, kind = "wall", src = "") {
   const material = RANGE_MATERIAL[rangeLabel] || materialFromFile(src);
   // "Laser cut" is only for wall art and screens (James, 21 Nov 2026). Light
   // features and mirrors shown on the Screens page are never called laser cut.
-  const SCREEN_GROUP = { "The Light Features": "light feature", "The Mirrors": "metal mirror" };
+  const SCREEN_GROUP = { "The Light Features": "light feature", "The Mirrors": "mirror art feature" };
   const generic = kind === "sculpture" ? SCULPTURE
     : kind === "screen" ? (SCREEN_GROUP[tidyRange(rangeLabel || "")] || SCREEN)
     : WALL_ART;
