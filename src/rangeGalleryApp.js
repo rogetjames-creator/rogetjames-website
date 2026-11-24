@@ -348,6 +348,24 @@ a.dpill{display:inline-block;text-decoration:none}
     let curP={d:0,v:0};
     // Once the list of real pages has arrived, the button's wording is settled.
     relabelers.push(()=>show(curP.d,curP.v));
+    // Search engines follow links, not clicks: the gallery only ever linked to
+    // the ONE piece on show in each range, so most piece pages and every range
+    // page could not be reached from /wall-art or /sculpture. A list of real
+    // links to the range page and each of its piece pages, read by crawlers and
+    // screen readers, invisible on screen (nothing about the design changes).
+    if(basePath){
+      relabelers.push(()=>{
+        if(sec.querySelector('nav.crawl')) return;
+        const links=r.designs.filter(d=>d.n && hasPage(r.label,d.n))
+          .map(d=>`<a href="${pieceHref(r.label,d.n)}">${d.n} — ${r.label}</a>`);
+        const nav=document.createElement('nav');
+        nav.className='crawl'; nav.setAttribute('aria-label',`${r.label} pieces`);
+        nav.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
+        if(!links.length) return; // no pages written for this range (e.g. upload-only ranges)
+        nav.innerHTML=`<a href="${basePath}/${rangeSlug(r.label)}">${r.label}</a>${links.join('')}`;
+        sec.appendChild(nav);
+      });
+    }
     function show(dd,vv){
       curP={d:dd,v:vv};
       const des=r.designs[dd];
