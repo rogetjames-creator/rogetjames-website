@@ -33,6 +33,31 @@
   force = true
 
 # Legacy addresses reported by Search Console, with matching current destinations.
+# Old-site addresses Bing was still requesting (404s found 24 Nov 2026).
+[[redirects]]
+  from = "/whats-new"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/interiors-fitouts"
+  to = "/#bespoke"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/zarathstra"
+  to = "/screens/zarathstra"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/aslyiam"
+  to = "/screens/aslyiam"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/vuelta"
   to = "/screens/pergolas#vuelta"
