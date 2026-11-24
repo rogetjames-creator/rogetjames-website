@@ -21,6 +21,7 @@ import { confirmedPhotoDescription, isScreenPhotoAllowed } from "../src/data/con
 import { SCREEN_DESIGNS } from "../src/data/screenDesigns.js";
 import { SCREEN_APPLICATIONS, applicationKey } from "../src/mediaDestinations.js";
 import { MEDIA_SUPPRESS } from "../src/utils/mediaUploads.js";
+import { cleanImg, IMAGE_RIGHTS } from "./clean-img.mjs";
 
 const PREVIEW = false;
 
@@ -42,7 +43,7 @@ const img = (src, w) => {
   const p = realPath(src);
   if (!p || /^https?:|^data:/.test(p)) return p;
   // LOCAL_IMAGES=1 for a local look: there is no Netlify image service off the live site.
-  return PREVIEW || process.env.LOCAL_IMAGES ? p : `/.netlify/images?url=${encodeURIComponent(p)}&w=${w}&fm=webp&q=82`;
+  return PREVIEW || process.env.LOCAL_IMAGES ? p : cleanImg(p, w);
 };
 const norm = (s) => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 const slugOf = (s) => String(s || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -186,11 +187,12 @@ ${JSON.stringify({
         const place = placeOf(cap);
         return {
           "@type": "ImageObject",
-          contentUrl: `${SITE}${realPath(p.src)}`,
+          contentUrl: `${SITE}${img(p.src, 1000)}`,
           name: cap ? cap.replace(/\.?\s*by ROGETjames\s*$/, "") : `${d.name} — ${kind.toLowerCase()}`,
           ...(cap ? { caption: cap } : {}),
           ...(place ? { contentLocation: { "@type": "Place", name: place } } : {}),
           creator: { "@type": "Organization", name: "ROGETjames" },
+          ...IMAGE_RIGHTS,
         };
       }) },
   ],

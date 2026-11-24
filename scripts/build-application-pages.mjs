@@ -23,6 +23,7 @@ import { fileURLToPath } from "url";
 import { confirmedPhotoDescription, isScreenPhotoAllowed } from "../src/data/confirmedPhotoDescriptions.js";
 import { SCREEN_DESIGNS } from "../src/data/screenDesigns.js";
 import { SCREEN_APPLICATIONS, applicationKey } from "../src/mediaDestinations.js";
+import { cleanImg } from "./clean-img.mjs";
 
 const PREVIEW = false;
 
@@ -46,7 +47,7 @@ const realPath = (src) => {
 const img = (src, w) => {
   const p = realPath(src);
   if (!p || /^https?:|^data:/.test(p)) return p;
-  return PREVIEW ? p : `/.netlify/images?url=${encodeURIComponent(p)}&w=${w}&fm=webp&q=82`;
+  return PREVIEW ? p : cleanImg(p, w);
 };
 const norm = (t) => String(t || "").toLowerCase().trim();
 

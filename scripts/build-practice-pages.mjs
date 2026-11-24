@@ -21,6 +21,7 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { cleanImg } from "./clean-img.mjs";
 
 const PREVIEW = true;
 
@@ -33,7 +34,7 @@ const esc = (s) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const img = (src, w) =>
-  /^https?:|^data:/.test(src) ? src : `/.netlify/images?url=${encodeURIComponent(src)}&w=${w}&fm=webp&q=82`;
+  cleanImg(src, w);
 
 
 // ── The three pages ───────────────────────────────────────────────────────

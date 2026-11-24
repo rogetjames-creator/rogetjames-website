@@ -30,6 +30,7 @@ import { rangeSlug } from "../src/utils/rangeSlug.js";
 import { pieceSlug } from "../src/utils/pieceSlug.js";
 import { CATALOGUES } from "../src/catalogues.js";
 import { WORDMARKS } from "../src/data/wordmarks.js";
+import { cleanImg, IMAGE_RIGHTS } from "./clean-img.mjs";
 
 const PREVIEW = false;
 
@@ -48,7 +49,7 @@ const esc = (s) =>
 
 // Serve photos through the Netlify image service, same as the galleries.
 const img = (src, w) =>
-  /^https?:|^data:/.test(src) ? src : `/.netlify/images?url=${encodeURIComponent(src)}&w=${w}&fm=webp&q=82`;
+  cleanImg(src, w);
 
 
 // The real pixel size of a local photo, read straight out of the file, so a
@@ -213,7 +214,14 @@ function page({ base, parent, kind }, range, design, imgs, siblings) {
         name: `${name} — ${subject}`,
         description: spiel || summary,
         url,
-        image: photos.map((p) => `${SITE}${p}`),
+        // Each photo exactly as the page shows it, with credit and copyright.
+        image: photos.map((p, i) => ({
+          "@type": "ImageObject",
+          contentUrl: `${SITE}${img(p, 1400)}`,
+          name: i === 0 ? `${subject} — ${name} by ROGETjames` : `${name} — ${subject}, view ${i + 1}`,
+          creator: { "@type": "Person", name: "James Roget" },
+          ...IMAGE_RIGHTS,
+        })),
         creator: { "@type": "Person", name: "James Roget", url: `${SITE}/`, sameAs: "https://www.wikidata.org/wiki/Q142119243" },
         publisher: { "@type": "Organization", name: "ROGETjames", url: `${SITE}/`, sameAs: "https://www.wikidata.org/wiki/Q142119246" },
         artform: kind === "sculpture" ? "Sculpture" : "Wall art",
