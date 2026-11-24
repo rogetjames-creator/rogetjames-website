@@ -33,6 +33,53 @@
   force = true
 
 # Legacy addresses reported by Search Console, with matching current destinations.
+# Clean, readable photo addresses for search engines, e.g.
+# /img/w1400/banksia/banksia-card-1.jpg serves /images/banksia/banksia-card-1.jpg
+# resized to 1400px wide as WebP through the Netlify Image CDN. Same picture,
+# same speed as /.netlify/images?url=..., but one stable address per photo
+# with the file name in it (Google reads file names; query strings hide them).
+[[redirects]]
+  from = "/img/w400/*"
+  to = "/.netlify/images?url=/images/:splat&w=400&fm=webp&q=82"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/w600/*"
+  to = "/.netlify/images?url=/images/:splat&w=600&fm=webp&q=82"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/w700/*"
+  to = "/.netlify/images?url=/images/:splat&w=700&fm=webp&q=82"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/w800/*"
+  to = "/.netlify/images?url=/images/:splat&w=800&fm=webp&q=82"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/w1000/*"
+  to = "/.netlify/images?url=/images/:splat&w=1000&fm=webp&q=82"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/w1400/*"
+  to = "/.netlify/images?url=/images/:splat&w=1400&fm=webp&q=82"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/img/w1600/*"
+  to = "/.netlify/images?url=/images/:splat&w=1600&fm=webp&q=82"
+  status = 200
+  force = true
+
 # Old-site addresses Bing was still requesting (404s found 24 Nov 2026).
 [[redirects]]
   from = "/whats-new"
