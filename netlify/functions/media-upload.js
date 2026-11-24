@@ -255,6 +255,21 @@ async function commitBatch({ addFiles = [], removePaths = [], mutateManifest = (
   throw lastErr;
 }
 
+// A photo's name becomes its caption and alt text, so it must never carry the
+// file's extension, a "1200px" size, a "copy" tail or a phone's code-number
+// name (James, 24 Nov 2026: "1200px is resolution size, don't ever publish such").
+function tidyName(name) {
+  const n = String(name || "")
+    .replace(/\.(jpe?g|png|webp|heic|heif)$/i, "")
+    .replace(/\s*-?\s*c?\d{3,4}\s*px\b/gi, "")
+    .replace(/\s+copy\b/gi, "")
+    .replace(/\s+(1200|1920|2400|3840)$/, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  if (/^[0-9A-F]{8}-[0-9A-F]{4}-/i.test(n) || /^IMG_\d+/i.test(n) || /^Image \d/i.test(n) || /^\d+$/.test(n)) return "";
+  return n;
+}
+
 export default async function handler(req) {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -483,14 +498,14 @@ export default async function handler(req) {
         replacedPath = replaceTarget.replace(/^public\//, "");
         const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
         addFiles.push({ path: replaceTarget, base64 });
-        newEntries.push({ id, name: img.name || "", destinations: [], note: `Auto-replaced ${replacedPath} in place (upload instruction).`, createdTime: new Date().toISOString(), path: replacedPath });
+        newEntries.push({ id, name: tidyName(img.name), destinations: [], note: `Auto-replaced ${replacedPath} in place (upload instruction).`, createdTime: new Date().toISOString(), path: replacedPath });
         continue;
       }
       const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const ext = extFor(contentType);
       const relPath = `images/uploads/${id}.${ext}`;
       addFiles.push({ path: `public/${relPath}`, base64 });
-      newEntries.push({ id, name: img.name || "", destinations, note: noteRaw, createdTime: new Date().toISOString(), path: relPath });
+      newEntries.push({ id, name: tidyName(img.name), destinations, note: noteRaw, createdTime: new Date().toISOString(), path: relPath });
     }
     if (!addFiles.length) return json({ error: "No valid images to upload" }, 400);
 

@@ -195,7 +195,7 @@ export const SCREEN_DESIGNS = [
       { name: "WATTLE",                      img: "/images/wattle/wattle-2.jpg", tags: ["light features", "residential"] },
       { name: "WATTLE",                      img: "/images/wattle/wattle-3.jpg", tags: ["fencing", "residential"] },
       { name: "WATTLE",                      img: "/images/wattle/wattle-4.jpg", tags: ["wall decor", "display homes"] },
-      { name: "WATTLE Light Feature — Chew Residence", img: "/images/wattle/wattle-5.jpg", tags: ["light features", "residential"] },
+      { name: "WATTLE Light Feature", img: "/images/wattle/wattle-5.jpg", tags: ["light features", "residential"] },
       { name: "WATTLE",                      img: "/images/wattle/wattle-6.jpg", tags: ["fencing", "residential"] },
       { name: "WATTLE Architectural Canopy", img: "/images/wattle/wattle-7.jpg", tags: ["awning", "commercial"] },
       { name: "WATTLE Screen",               img: "/images/wattle/wattle-8.jpg", tags: ["fencing", "residential"] },

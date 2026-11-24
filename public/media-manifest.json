@@ -1,7 +1,7 @@
 [
   {
     "id": "1783235731775_p3ifim",
-    "name": "Creeping fig up close 2 1200px.jpg",
+    "name": "Creeping fig up close 2",
     "destinations": [
       "up-close",
       "creeping-fig"
@@ -12,7 +12,7 @@
   },
   {
     "id": "1783235731776_utffwn",
-    "name": "Creeping fig up close 3 1200px.jpg",
+    "name": "Creeping fig up close 3",
     "destinations": [
       "up-close",
       "creeping-fig"
@@ -33,7 +33,7 @@
   },
   {
     "id": "1784898045994_5s59zd",
-    "name": "Hue 2 1200px.jpg",
+    "name": "Hue 2",
     "destinations": [
       "bespoke-sculpture"
     ],
@@ -63,7 +63,7 @@
   },
   {
     "id": "1785324652154_n7r805",
-    "name": "Homebase Entrance motif .jpg",
+    "name": "Homebase Entrance motif",
     "destinations": [
       "hero"
     ],
@@ -73,7 +73,7 @@
   },
   {
     "id": "1785324868681_1ihvl8",
-    "name": "A61527F5-1808-42FB-BFDF-5C2C237E15A5.png",
+    "name": "",
     "destinations": [],
     "note": "Folded into HERO_SLIDES as hero-autumn-leafs.jpg (position 7). Untagged so it isn't also appended.",
     "createdTime": "2026-07-29T11:34:28.681Z",
@@ -91,7 +91,7 @@
   },
   {
     "id": "1785396157923_518rbp",
-    "name": "GREN EDGE - Balcony wide 1200px.jpg",
+    "name": "GREN EDGE - Balcony wide",
     "destinations": [
       "hero-replace-gren-wide"
     ],
@@ -101,7 +101,7 @@
   },
   {
     "id": "1785397037843_mipkpv",
-    "name": "Bambu - Garden 1200px.jpg",
+    "name": "Bambu - Garden",
     "destinations": [
       "hero-replace-bambu"
     ],
@@ -132,7 +132,7 @@
   },
   {
     "id": "1785551780857_30zh3m",
-    "name": "1B2C6A57-B381-43C3-89CA-6A61D1D3DA13_1_102_o.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Used in-place as banksia-round-2.jpg (BANKSIA Round, position 11). Untagged so it doesn't also appear in Up Close.",
     "createdTime": "2026-08-01T02:36:20.858Z",
@@ -140,7 +140,7 @@
   },
   {
     "id": "1785558768252_xmm9qa",
-    "name": "7C864BE6-6558-456C-9C84-F61BF2FBA028_1_102_o.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Used in-place as banksia-round.jpg (BANKSIA Round). Untagged so it doesn't also appear in Up Close.",
     "createdTime": "2026-08-01T04:32:48.253Z",
@@ -148,7 +148,7 @@
   },
   {
     "id": "1785558850433_h7vmf4",
-    "name": "7C864BE6-6558-456C-9C84-F61BF2FBA028_1_102_o.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Added to hero as hero-banksia-round.jpg (position 4). Untagged so it isn't also appended at the end.",
     "createdTime": "2026-08-01T04:34:10.433Z",
@@ -222,7 +222,7 @@
   },
   {
     "id": "1785764719223_dx45hi",
-    "name": "86013204-109A-4BDC-A729-B0C05B003E05_1_201_a.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-applied in place → images/creeping-fig/figaro-1.jpg. Untagged.",
     "createdTime": "2026-08-03T13:45:19.240Z",
@@ -230,7 +230,7 @@
   },
   {
     "id": "1785765047126_x3uza3",
-    "name": "78C68B67-26E5-4CD9-887A-0D4B73384014.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-applied in place → images/creeping-fig/ontio-2.jpg. Untagged.",
     "createdTime": "2026-08-03T13:50:47.126Z",
@@ -238,7 +238,7 @@
   },
   {
     "id": "1785765359922_80vz0h",
-    "name": "27895729-7927-4998-B1A3-A650F8093F78_1_201_a.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-applied in place → images/creeping-fig/butterfly-1.jpg. Untagged.",
     "createdTime": "2026-08-03T13:55:59.922Z",
@@ -246,7 +246,7 @@
   },
   {
     "id": "1785765561633_ld66id",
-    "name": "7541FA08-687F-4244-A795-D7E82A1001C6.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-applied in place → images/creeping-fig/nuvine-1.jpg. Untagged.",
     "createdTime": "2026-08-03T13:59:21.634Z",
@@ -254,7 +254,7 @@
   },
   {
     "id": "1785765766905_v01kdq",
-    "name": "79080B1D-2B09-411C-8CBC-745242C94203_1_201_a.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Used in place: replaced hero-creeping-fig-autumn-1.jpg (hero pos 3) + creeping-fig/autumn-2.jpg (AUTUMN). Untagged.",
     "createdTime": "2026-08-03T14:02:46.905Z",
@@ -262,7 +262,7 @@
   },
   {
     "id": "1785803215896_03ojds",
-    "name": "Gren edge - bali green copy.jpg",
+    "name": "Gren edge - bali green",
     "destinations": [],
     "note": "Auto-replaced images/branches/gren-edge-3.jpg in place (upload instruction).",
     "createdTime": "2026-08-04T00:26:55.897Z",
@@ -270,7 +270,7 @@
   },
   {
     "id": "1785806289738_nwn1m7",
-    "name": "Vasuki Snake  copy.jpg",
+    "name": "Vasuki Snake",
     "destinations": [],
     "note": "Auto-replaced images/ikona/vasuka.jpg in place (upload instruction).",
     "createdTime": "2026-08-04T01:18:09.738Z",
@@ -278,7 +278,7 @@
   },
   {
     "id": "1785820328643_5p1i04",
-    "name": "0F923409-BB21-41E6-9FBC-EAB628831328.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-replaced images/flowers/rue-the-3rd.jpg in place (upload instruction).",
     "createdTime": "2026-08-04T05:12:08.644Z",
@@ -296,7 +296,7 @@
   },
   {
     "id": "1785887049233_try1j3",
-    "name": "Equisetti red copy.jpg",
+    "name": "Equisetti red",
     "destinations": [],
     "note": "Auto-replaced images/equisetti/equisetti-1.jpg in place (upload instruction).",
     "createdTime": "2026-08-04T23:44:09.234Z",
@@ -464,7 +464,7 @@
   },
   {
     "id": "1787113004194_a80wkp",
-    "name": "GREN FREE - Official c1200px.jpg",
+    "name": "GREN FREE - Official",
     "destinations": [],
     "note": "Auto-replaced images/branches/gren-free-1.jpg in place (upload instruction).",
     "createdTime": "2026-08-19T04:16:44.210Z",
@@ -573,7 +573,7 @@
   },
   {
     "id": "1787118567612_51ouoi",
-    "name": "AB580296-89FA-4186-AABC-97EC4EF34A85_1_201_a.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Held out of Displays for now (owner request).",
     "createdTime": "2026-08-19T05:49:27.612Z",
@@ -581,7 +581,7 @@
   },
   {
     "id": "1787118567625_g53sbo",
-    "name": "82159A30-E24D-4789-A5FB-E5BB20DA21C9_1_201_a.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Held out of Displays for now (owner request).",
     "createdTime": "2026-08-19T05:49:27.625Z",
@@ -671,7 +671,7 @@
   },
   {
     "id": "1787204715528_qw7ilq",
-    "name": "40DAB0D9-8CF7-4B38-B2B7-F16B54857FC6.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-replaced images/autumn-leaf/leafs-wg-copper.jpg in place (upload instruction).",
     "createdTime": "2026-08-20T05:45:15.529Z",
@@ -679,7 +679,7 @@
   },
   {
     "id": "1787205902949_i5gauy",
-    "name": "40DAB0D9-8CF7-4B38-B2B7-F16B54857FC6.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-replaced images/autumn-leaf/leafs-wg-copper.jpg in place (upload instruction).",
     "createdTime": "2026-08-20T06:05:02.950Z",
@@ -775,7 +775,7 @@
   },
   {
     "id": "1787364646086_1h2lqp",
-    "name": "67BF2F5D-5101-40EB-AE1D-E84E2F7B2721_1_201_a.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-replaced images/halo/pavia-1.jpg in place (upload instruction).",
     "createdTime": "2026-08-22T02:10:46.101Z",
@@ -833,7 +833,7 @@
   },
   {
     "id": "1787899249284_ju6or5",
-    "name": "Cottesloe concept 1 1200.jpg",
+    "name": "Cottesloe concept 1",
     "destinations": [],
     "note": "Auto-replaced images/cdn-gallery/7c66f9e9-9682-4d93-8bb6-36aa19318e94_rw_1920.jpg in place (upload instruction).",
     "createdTime": "2026-08-28T06:40:49.284Z",
@@ -849,7 +849,7 @@
   },
   {
     "id": "1787972748405_01z3cv",
-    "name": "JEAGER  -2 1200px.jpg",
+    "name": "JEAGER -2",
     "destinations": [],
     "note": "Auto-replaced images/retro/jeager-2.jpg in place (upload instruction).",
     "createdTime": "2026-08-29T03:05:48.405Z",
@@ -881,7 +881,7 @@
   },
   {
     "id": "1789043019547_qr8sug",
-    "name": "WATTLE - Corten Rust.jpg",
+    "name": "WATTLE - Corten Rust",
     "destinations": [
       "hero"
     ],
@@ -948,7 +948,7 @@
   },
   {
     "id": "1789196502062_3k6cxy",
-    "name": "5D39429B-E670-4399-8079-B10AB962BFCE.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-replaced images/cdn-gallery/b3bcabc9-b1a6-4362-8c1f-fb0cd111b697_rw_1200.jpg in place (upload instruction).",
     "createdTime": "2026-09-12T07:01:42.062Z",
@@ -956,7 +956,7 @@
   },
   {
     "id": "1789196575508_33q3p5",
-    "name": "6FF32493-CAF7-44E4-95BE-53FC7CCDB66F.jpeg",
+    "name": "",
     "destinations": [],
     "note": "Auto-replaced images/cdn-gallery/0cb8128a-5efd-4474-851e-636aa772a9b4_rw_1920.jpg in place (upload instruction).",
     "createdTime": "2026-09-12T07:02:55.508Z",
@@ -975,7 +975,7 @@
   },
   {
     "id": "1789215535334_98wit9",
-    "name": "ERGO - divider doubleview 1200px.jpg",
+    "name": "ERGO",
     "destinations": [
       "screens",
       "application-dividers"
@@ -1006,7 +1006,7 @@
   },
   {
     "id": "1789445245989_88d2du",
-    "name": "HOMEBASE ENTRANCE  1200px.jpg",
+    "name": "HOMEBASE ENTRANCE",
     "destinations": [],
     "note": "Auto-replaced images/cdn-gallery/66a80833-aa96-4e7a-a62e-6ce882831573_rw_1200.jpg in place (upload instruction).",
     "createdTime": "2026-09-15T04:07:26.001Z",
@@ -1064,7 +1064,7 @@
   },
   {
     "id": "1789454032957_4h50fo",
-    "name": "FERLIE (shower).jpg",
+    "name": "FERLIE (shower)",
     "destinations": [],
     "note": "Auto-replaced images/cdn-gallery/87c759cb-528b-4f7e-b17a-6646de8aedca_rw_1200.jpg in place (upload instruction).",
     "createdTime": "2026-09-15T06:33:52.957Z",
@@ -1072,7 +1072,7 @@
   },
   {
     "id": "1789459721178_zhnuq7",
-    "name": "Fire pit & Illuminated fencing - 1200px.jpg",
+    "name": "Fire pit & Illuminated fencing",
     "destinations": [
       "project-homebase",
       "bespoke-strip"
@@ -1309,7 +1309,7 @@
   },
   {
     "id": "1794385793031_5jc3rj",
-    "name": "Image 11-11-2026 at 11.40 am.JPG",
+    "name": "",
     "destinations": [
       "hero"
     ],
