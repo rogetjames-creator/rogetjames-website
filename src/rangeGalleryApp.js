@@ -279,6 +279,7 @@ a.dpill{display:inline-block;text-decoration:none}
     .catch(() => {});
   const hasPage = (rangeLabel, name) => !!(basePath && name && PAGES && PAGES.has(pieceHref(rangeLabel, name)));
   const relabelers = [];
+  const crawlLinked = new Set();
   const relabel = () => relabelers.forEach(fn => fn());
   const setAddress = (slug) => {
     if(!basePath || landing) return;
@@ -356,8 +357,10 @@ a.dpill{display:inline-block;text-decoration:none}
     if(basePath){
       relabelers.push(()=>{
         if(sec.querySelector('nav.crawl')) return;
-        const links=r.designs.filter(d=>d.n && hasPage(r.label,d.n))
-          .map(d=>`<a href="${pieceHref(r.label,d.n)}">${d.n} — ${r.label}</a>`);
+        // A design shown in two ranges (e.g. VITAE GREN) is linked once, at its
+        // first range — the address its page names as the real one (canonical).
+        const links=r.designs.filter(d=>d.n && hasPage(r.label,d.n) && !crawlLinked.has(d.n))
+          .map(d=>{ crawlLinked.add(d.n); return `<a href="${pieceHref(r.label,d.n)}">${d.n} — ${r.label}</a>`; });
         const nav=document.createElement('nav');
         nav.className='crawl'; nav.setAttribute('aria-label',`${r.label} pieces`);
         nav.style.cssText='position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
