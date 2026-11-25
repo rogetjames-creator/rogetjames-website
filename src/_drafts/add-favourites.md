@@ -46,3 +46,6 @@ to them any time.
 4. Which galleries — also the Bespoke popups (sculpture, concepts, projects)?
 5. Wording — Favourites / Saved / Shortlist / Your selection?
 6. Icon — heart, bookmark, or plus?
+
+## Related
+Collection app concept (James's own private board app): `concepts/collection-app/NOTES.md`.
