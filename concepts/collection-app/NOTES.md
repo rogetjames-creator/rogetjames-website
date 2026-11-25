@@ -59,3 +59,9 @@ Proposed:
 - Search across all writing, notes and spoken ideas.
 
 Open: is writing the main use or one part? (Decides what the app opens to.)
+
+## Scope decided (James, 25 Nov 2026)
+The Collection app is James's full-scope personal app — studio references,
+places, websites, AND book/script writing, all in one. Writing is not a side
+feature; the app's home should give equal footing to boards and writing
+projects.
