@@ -42,3 +42,20 @@ re-render).
 
 ## Next step
 Settle the open questions → build a working prototype → screenshots to James.
+
+## Addition — writing a book and a script (James, 25 Nov 2026)
+James wants the same app to hold ideas for a book and a script: plant and save
+ideas, short written pieces, images and movie elements. Agreed it belongs in
+this app (private, phone + desktop), not the website.
+
+Proposed:
+- Projects ("Book", "Script") alongside boards, each with its own boards
+  (Characters, Scenes, Places, Themes, Lines & dialogue, Visual references).
+- Quick capture: one tap to jot, or speak it and have it written out.
+- Distraction-free writing page for longer pieces; saves automatically.
+- Movie elements: short clips, stills, screenshots, links to scenes.
+- Linking: tie notes/images to a character or scene.
+- Scene order: pin-board of scene cards, drag into sequence.
+- Search across all writing, notes and spoken ideas.
+
+Open: is writing the main use or one part? (Decides what the app opens to.)
