@@ -24,6 +24,7 @@ point to the detailed notes file if there is one.
 ## Log
 
 ### 26 Nov 2026
+- James: standing permission for log-only updates to go straight to `main`.
 - James: conversations must not lose track of each other. This log created;
   CLAUDE.md now requires every session to read it first and write to it.
 
