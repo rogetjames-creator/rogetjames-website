@@ -24,6 +24,10 @@ point to the detailed notes file if there is one.
 ## Log
 
 ### 26 Nov 2026 (late)
+- **Boards = build on each thing (James):** any photo now has "+ Add more
+  photos & notes to this" → it becomes a File (keeps its boards). Picking
+  several photos at once asks "Keep together as one File" or "separate".
+  The + in the gold circle is now exactly centred.
 - **Roj is live:** https://roj-board.netlify.app — separate Netlify project
   `roj-board` (roj.netlify.app was taken by a stranger). Data stored in Netlify's
   Sydney region. James chose his own password on a one-time setup page (code
