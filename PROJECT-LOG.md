@@ -24,6 +24,8 @@ point to the detailed notes file if there is one.
 ## Log
 
 ### 26 Nov 2026 (late)
+- **Roj:** tapping any photo now opens the build-on page directly (photo +
+  Add photos + Paste + Info & ideas box); it becomes a File on the first change.
 - **Boards = build on each thing (James):** any photo now has "+ Add more
   photos & notes to this" → it becomes a File (keeps its boards). Picking
   several photos at once asks "Keep together as one File" or "separate".
