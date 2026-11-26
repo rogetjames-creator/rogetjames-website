@@ -28,6 +28,8 @@ point to the detailed notes file if there is one.
   he asked for no black, so the black corners are filled with the stone rim's
   colour — artwork itself untouched. Original kept in the app folder
   (`scripts/roj-icon-original.webp`).
+- **Roj icon replaced** with James's new artwork (stone tile, inner ring,
+  no black) — only trimmed to square, nothing added.
 - **Roj look:** James — no brown filter under photos; backgrounds now neutral
   **charcoal** (page #151618, cards #232427). Gold accents and cream text kept.
 - Still to decide before going online: the address name ("____.netlify.app").
