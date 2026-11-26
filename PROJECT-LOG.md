@@ -16,12 +16,25 @@ point to the detailed notes file if there is one.
 
 | Thread | Status | Detail |
 |---|---|---|
-| Collection app (James's own private app, phone + desktop) | Concept — paused, nothing built | `concepts/collection-app/NOTES.md` |
+| Collection app (James's own private app, phone + desktop) | Prototype built, running on the Mac only — waiting for James's look + OK to put online | `~/Projects/collection-app` (own folder, NOT this repo) |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
 
 ---
 
 ## Log
+
+### 26 Nov 2026 (later)
+- **Collection app — decided:** James wants it "safe and private": neutral
+  address (no ROGETjames link), private only (no sharing), auto-tagging later
+  (photos not sent to any AI), icon name "Collection" for now.
+- **Collection app — built:** working prototype in `~/Projects/collection-app`
+  (outside iCloud). Boards, Book/Script projects with their own boards, photos,
+  clips, websites (preview saved privately), places (open in Maps), notes,
+  speak-to-text, writing page with autosave, drag-into-order, search, backup
+  download, password sign-in with lockout, hidden from Google. Runs at
+  localhost:4321 only. Nothing online until James says OK.
+- Remote Control is on for desktop sessions (open them from the phone app's
+  Code section).
 
 ### 26 Nov 2026
 - James: standing permission for log-only updates to go straight to `main`.
