@@ -23,6 +23,13 @@ point to the detailed notes file if there is one.
 
 ## Log
 
+### 26 Nov 2026 (evening)
+- **Collection app — James:** it is not just for book/script — it is for work
+  too: ideas, contacts, info. Must stay adaptable. Done on the Mac copy:
+  "Writing" renamed **Projects** (a project can be anything — Book, Script,
+  a client job); new **Contact** items (name, company, phone, email, website,
+  notes; tap Call / Email); **Ideas, Contacts, Info** boards added.
+
 ### 26 Nov 2026 (later)
 - **Collection app — decided:** James wants it "safe and private": neutral
   address (no ROGETjames link), private only (no sharing), auto-tagging later
