@@ -16,12 +16,25 @@ point to the detailed notes file if there is one.
 
 | Thread | Status | Detail |
 |---|---|---|
-| Roj — formerly "Collection app" (James's own private app, phone + desktop) | Prototype built, running on the Mac only — waiting for James's look + OK to put online | `~/Projects/collection-app` (own folder, NOT this repo) |
+| Roj — formerly "Collection app" (James's own private app, phone + desktop) | LIVE at roj-board.netlify.app (private, password + Touch/Face ID, data in Sydney) | `~/Projects/collection-app` (own folder, NOT this repo); Netlify project `roj-board` |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
 
 ---
 
 ## Log
+
+### 26 Nov 2026 (late)
+- **Roj is live:** https://roj-board.netlify.app — separate Netlify project
+  `roj-board` (roj.netlify.app was taken by a stranger). Data stored in Netlify's
+  Sydney region. James chose his own password on a one-time setup page (code
+  now used up); Touch ID / Face ID (passkeys) offered after sign-in. Hidden
+  from Google. No GitHub copy yet (gh tool not installed) — history in the
+  local git repo.
+- **Fixes/additions (James):** photo previews were "?" (lazy-loading bug) —
+  fixed; new **File** item = many photos + "Info & ideas" in one card (e.g.
+  screen concepts); **Paste** (+ menu and inside a File) and **Copy text**.
+- Upload cap ~4 MB per photo/clip (Netlify limit); photos are shrunk on the
+  phone first so normal photos are fine.
 
 ### 26 Nov 2026 (night)
 - **App named "Roj"** (James). Icon = James's own round stone "rj" mark;
