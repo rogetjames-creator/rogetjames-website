@@ -24,6 +24,11 @@ point to the detailed notes file if there is one.
 ## Log
 
 ### 26 Nov 2026 (late)
+- **Roj speed:** server moved to Sydney (next to storage); Netlify keeps ready
+  copies per signed-in session; boards show small preview copies (~7x smaller),
+  full photo on tap. Roj now self-updates (version check) — James's iPhone
+  needed one restart to leave the old copy. His Mac's connection measured slow
+  for every site, which is part of the delay.
 - **Roj:** tapping any photo now opens the build-on page directly (photo +
   Add photos + Paste + Info & ideas box); it becomes a File on the first change.
 - **Boards = build on each thing (James):** any photo now has "+ Add more
