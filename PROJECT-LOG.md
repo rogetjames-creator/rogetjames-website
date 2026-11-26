@@ -16,12 +16,19 @@ point to the detailed notes file if there is one.
 
 | Thread | Status | Detail |
 |---|---|---|
-| Collection app (James's own private app, phone + desktop) | Prototype built, running on the Mac only — waiting for James's look + OK to put online | `~/Projects/collection-app` (own folder, NOT this repo) |
+| Roj — formerly "Collection app" (James's own private app, phone + desktop) | Prototype built, running on the Mac only — waiting for James's look + OK to put online | `~/Projects/collection-app` (own folder, NOT this repo) |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
 
 ---
 
 ## Log
+
+### 26 Nov 2026 (night)
+- **App named "Roj"** (James). Icon = James's own round stone "rj" mark;
+  he asked for no black, so the black corners are filled with the stone rim's
+  colour — artwork itself untouched. Original kept in the app folder
+  (`scripts/roj-icon-original.webp`).
+- Still to decide before going online: the address name ("____.netlify.app").
 
 ### 26 Nov 2026 (evening)
 - **Collection app — James:** it is not just for book/script — it is for work
