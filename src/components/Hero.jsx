@@ -369,6 +369,9 @@ export default function Hero() {
 
   return (
     <section ref={sectionRef} className="relative h-dvh w-full overflow-hidden flex items-end">
+      {/* The homepage's main heading, for search engines and screen readers.
+          Out of sight, so the hero looks exactly as before (SEO brief, Phase 4). */}
+      <h1 className="sr-only">ROGETjames — Laser Cut Wall Art &amp; Sculpture</h1>
 
       {/* Slideshow — two crossfading layers */}
       <div className="absolute inset-0 bg-charcoal">

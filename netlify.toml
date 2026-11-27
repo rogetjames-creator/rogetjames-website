@@ -17,6 +17,14 @@
   status = 301
   force = true
 
+# The main branch's own Netlify address serves the live site too — send it home
+# so it is never indexed as a copy (SEO brief, Phase 4).
+[[redirects]]
+  from = "https://main--rogetjames-new.netlify.app/*"
+  to = "https://rogetjames.com/:splat"
+  status = 301
+  force = true
+
 # The old site's domain. Once rogetjames.co is pointed at this Netlify site
 # (added as a domain alias), every old .co address lands on the same path here,
 # where the legacy-path redirects below take over.

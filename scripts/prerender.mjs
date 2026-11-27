@@ -104,8 +104,15 @@ async function prerender() {
       // Let content/images settle in the DOM for crawlers.
       await page.waitForTimeout(2000);
       await page.evaluate(resetIntro);
-      const html = await page.content();
+      let html = await page.content();
       await page.close();
+      // The page now carries its real words, so the no-JavaScript summary in
+      // the body is a second copy of them — text readers saw the opening
+      // twice (SEO brief, Phase 4). Drop it from the prerendered page only;
+      // index.html keeps it as the fallback if prerender ever fails.
+      // (The <noscript> in <head> that loads fonts is left alone.)
+      const bodyAt = html.search(/<body[\s>]/i);
+      if (bodyAt > -1) html = html.slice(0, bodyAt) + html.slice(bodyAt).replace(/<noscript>(?:(?!<\/noscript>)[\s\S])*?(?:&lt;|<)h1[\s\S]*?<\/noscript>\s*/i, "");
       writeFileSync(join(DIST, file), html, "utf-8");
       console.log(`Prerendered dist/${file} (${url})`);
     } catch (err) {

@@ -447,11 +447,12 @@ footer .back:hover{color:var(--clay-lit);border-color:var(--clay-lit)}
             : "";
           return `<span class="face">${esc(override.word)}</span>${q}`;
         }
-        // Drawn artwork beats a typed name.
+        // Drawn artwork beats a typed name. The name is also written out,
+        // out of sight, so the heading has readable words (SEO check).
         if (wordmark) {
           const whole = !!WORDMARKS[name.toUpperCase()];
           const rest = whole ? "" : name.split(" ").slice(1).join(" ");
-          return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(whole ? name : firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
+          return `<span class="mark"><svg viewBox="${wordmark.viewBox}" role="img" aria-label="${esc(whole ? name : firstWord)}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${wordmark.inner}</svg><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">${esc(whole ? name : firstWord)}</span></span>${rest ? `<span class="qual">${esc(rest)}</span>` : ""}`;
         }
         // A piece, or a whole range, set in one face — the whole name as chosen.
         if (pieceFace || rangeFace) return `<span class="face">${esc(name)}</span>`;
