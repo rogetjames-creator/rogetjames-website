@@ -18,7 +18,7 @@ point to the detailed notes file if there is one.
 |---|---|---|
 | Roj — formerly "Collection app" (James's own private app, phone + desktop) | LIVE at roj-board.netlify.app (private, password + Touch/Face ID, data in Sydney) | `~/Projects/collection-app` (own folder, NOT this repo); Netlify project `roj-board` |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
-| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Phase 0 report done; Phase 1 built on the Mac, not live — waiting for James's OK | Mac session "Bespoke sculpture catalogue link" |
+| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Phase 1 + Phase 2 links built on the Mac, not live; Phase 2 headings/intros in `~/Desktop/CHAT GPT/seo-intros.csv` waiting for James's approval | Mac session "Bespoke sculpture catalogue link" |
 
 ---
 
@@ -41,6 +41,14 @@ point to the detailed notes file if there is one.
   — one linked @graph per page; Organization (no LocalBusiness), Person, WebSite
   on / only; screen designs = Product with no offers (James's call; no rich
   results by design). Melbourne has no FAQs on the page, so no FAQPage there.
+- **James — rule:** ROGETjames is a branded design label by James Roget, a
+  brand with product. Wall art, sculpture AND screens are all products; screen
+  designs can be bought as standard or applied to many bespoke projects. Never
+  mark screens as a service only. Areas served: keep every city, Australia first.
+- **Phase 2 (not live):** city-page Screens / Bespoke Sculpture panels now link
+  to /screens and /bespoke-sculpture. Headings + intros for 36 screen designs
+  exported to `~/Desktop/CHAT GPT/seo-intros.csv` for approval — 34 come out
+  under 40 words because the captions hold too few facts.
 
 ### 26 Nov 2026 (late)
 - **Roj speed:** server moved to Sydney (next to storage); Netlify keeps ready
