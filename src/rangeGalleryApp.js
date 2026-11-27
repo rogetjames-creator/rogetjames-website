@@ -22,7 +22,7 @@ import { CATALOGUES } from "./catalogues";
 
 let _stylesInjected = false;
 
-export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null, bandTitle = null, catPill = true }) {
+export function mountRangeGallery({ rootId, data, label, noun = "art", section, upClose = null, rangeWord = "Range", pricing = true, designPills = false, viewLabel = null, catalogue = null, aboutHtml = null, applications = null, designApplications = null, designText = null, descriptions = null, story = null, noPriceRanges = null, noButtonRanges = null, cortenOnly = false, basePath = null, bandTitle = null, catPill = true }) {
   // Ranges (by label) that show no prices/quote even in a priced gallery.
   const isNoPriceRange = (label) => !!(noPriceRanges && noPriceRanges.includes(label));
   // A piece with no details to show: untitled (Displays), marked noBtn, or in
@@ -57,7 +57,11 @@ export function mountRangeGallery({ rootId, data, label, noun = "art", section, 
       + ".sh-apps .sh-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}"
       + ".sh-apps a.sh-chip{text-decoration:none}"
       + ".sh-apps a.sh-chip.sel{color:#f0d9b6;border-color:rgba(212,167,92,.85);background:rgba(158,113,52,.16)}"
-      + ".sh-lab-alt{opacity:.55}";
+      + ".sh-lab-alt{opacity:.55}"
+      // A design's words, under its pills (Screens): readable, never dark or small.
+      + ".sh-text{margin-top:26px;max-width:46ch}"
+      + ".sh-text p{margin:0 0 14px;font-size:15px;line-height:1.65;color:rgba(242,240,233,.82)}"
+      + ".sh-text p.spiel{font-size:16px;color:rgba(242,240,233,.92)}";
     document.head.appendChild(sNoPrice);
     const s2 = document.createElement("style");
     s2.textContent = `
@@ -206,6 +210,7 @@ a.dpill{display:inline-block;text-decoration:none}
         <div class="sh-lab" id="ovAppsLab">Used for</div>
         <div class="sh-opts" id="ovAppPills"></div>
       </div>
+      <div class="sh-text" id="ovText" style="display:none"></div>
       <div class="sh-block">
         <div class="sh-lab">Sizes — made to order &middot; select one</div>
         <div class="sh-sizes" id="ovSizes"></div>
@@ -771,6 +776,12 @@ a.dpill{display:inline-block;text-decoration:none}
     curDes=des; curRange=RANGES[ri].label;
     // Screens: the ways THIS design is used — click one to see every design
     // used that way. Real links, so each application page is reachable.
+    // Screens: James's words for the design, then the facts from its captions.
+    { const box=document.getElementById('ovText');
+      if(box){ const t=designText?designText(des.n):null;
+        const esc=(x)=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+        box.innerHTML=t?((t.spiel?`<p class="spiel">${esc(t.spiel)}</p>`:'')+(t.intro?`<p>${esc(t.intro)}</p>`:'')):'';
+        box.style.display=box.innerHTML?'block':'none'; } }
     if(designApplications){
       const apps=designApplications(des.n)||[];
       const box=document.getElementById('ovApps'), row=document.getElementById('ovAppPills');

@@ -1,6 +1,7 @@
 // Shared config for the Screens "range" gallery — the single source of truth used
 // by both the live /screens page (src/screens.jsx) and the /screens-range preview
 // (src/screens-range.jsx). Call mountScreensRange(rootId) with the page's root id.
+import { SCREEN_DESIGN_TEXT } from "./data/screenDesignText.js";
 import { isScreenPhotoAllowed } from "./data/confirmedPhotoDescriptions";
 import { mountRangeGallery } from "./rangeGalleryApp";
 import { SCREEN_COVERS, SCREENS_CAT_PAGES } from "./components/BespokeCommissions";
@@ -262,6 +263,8 @@ function _mount(rootId, data, designApplications) {
     applications: SCREEN_APPLICATIONS.map((a) => ({ label: a.label, href: `/screens/${a.id}` })),
     // The ways THIS design is used, shown as pills inside its detail sheet.
     designApplications,
+    // Words on the right of the design popup — src/data/screenDesignText.js.
+    designText: (name) => { const k = String(name || "").trim().toUpperCase(); const hit = Object.keys(SCREEN_DESIGN_TEXT).find((n) => n.toUpperCase() === k); return hit ? SCREEN_DESIGN_TEXT[hit] : null; },
     // "The Art of Shadows & Light" popup.
     story: {
       label: "The Art of Shadows & Light",
