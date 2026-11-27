@@ -1,116 +1,117 @@
 // Words shown on the right of a design's popup in the Screens gallery.
 //   spiel — James's own words for the design, placed exactly (never written for him).
-//   intro — plain facts taken only from that design's photo captions
-//           (uses, materials, places, credited projects). Awaiting James's approval.
+//   intro — SEO lines (James, 27 Nov 2026: looser, only what helps search):
+//           design + kind + ROGETjames, Australia-wide, uses, all three
+//           materials, up to two credited projects from the captions.
 // Keyed by design name as it appears in the gallery.
 export const SCREEN_DESIGN_TEXT = {
   "ASLYIAM": {
-    "intro": "ASLYIAM is a ROGETjames laser cut metal screen design used for gates, light features, fencing, balustrades and dividers. Made in powder-coated aluminium. Installed in Cottesloe, Wembley Downs, North Perth and Perth CBD, WA."
+    "intro": "ASLYIAM laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor, light features and balustrades. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "AUDA": {
-    "intro": "AUDA is a ROGETjames laser cut metal screen design used for dividers. Made in powder-coated aluminium. Installed in Mandurah, WA."
+    "intro": "AUDA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "AYYAD": {
-    "intro": "AYYAD is a ROGETjames laser cut metal screen design used for pergola screens. Made in powder-coated aluminium. Installed in Aveley, WA."
+    "intro": "AYYAD laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor and pergola screens. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "BANKSIA": {
-    "intro": "BANKSIA is a ROGETjames laser cut metal screen design used for gates. Made in powder-coated aluminium. Installed in City Beach, WA."
+    "intro": "BANKSIA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "BLOOM": {
-    "intro": "BLOOM is a ROGETjames laser cut metal screen design used for light features. Made in powder-coated aluminium. Installed in Osborne Park and North Perth, WA."
+    "intro": "BLOOM laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor and light features. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "CHIOLA": {
-    "intro": "CHIOLA is a ROGETjames laser cut metal screen design used for gates and dividers. Made in powder-coated aluminium."
+    "intro": "CHIOLA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "CUSTOM": {
-    "intro": "CUSTOM is a ROGETjames laser cut metal screen design used for gates and fencing. Made in powder-coated aluminium. Installed in North Perth, WA."
+    "intro": "CUSTOM laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "DANDELIONS": {
-    "intro": "DANDELIONS is a ROGETjames laser cut metal screen design used for wall decor. Made in powder-coated aluminium. Installed in Osborne Park, WA."
+    "intro": "DANDELIONS laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "DOTTI": {
-    "intro": "DOTTI is a ROGETjames laser cut metal screen design used for privacy screens and dividers. Made in powder-coated aluminium. Installed in Country Builders display home, South Fremantle, Mount Pleasant, Bicton and Como, WA. Projects include South Fremantle — Platinum Homes."
+    "intro": "DOTTI laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ELLE": {
-    "intro": "ELLE is a ROGETjames laser cut metal screen design used for wall decor. Made in powder-coated aluminium. Installed in Trigg, WA."
+    "intro": "ELLE laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "EQUISETTI": {
-    "intro": "EQUISETTI is a ROGETjames light feature design. Made in powder-coated aluminium. Installed in Adelaide, SA."
+    "intro": "EQUISETTI light features by ROGETjames. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ERGO": {
-    "intro": "ERGO is a ROGETjames laser cut metal screen design used for dividers, gates, fencing and balustrades. Made in powder-coated aluminium. Installed in Cottesloe Hotel, Leederville and Floreat, WA. Projects include Cottesloe Hotel — MJA Studio."
+    "intro": "ERGO laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor and balustrades. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "EROS": {
-    "intro": "EROS is a ROGETjames laser cut metal screen design used for gates, fencing and pergola screens. Made in powder-coated aluminium. Installed in Williamstown, VIC; East Perth and Victoria Park, WA."
+    "intro": "EROS laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor and pergola screens. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "FERLIE": {
-    "intro": "FERLIE is a ROGETjames laser cut metal screen design used for dividers, wall decor and gates. Made in powder-coated aluminium and Corten steel. Installed in Ellenbrook, Mount Claremont, Coolbinia and Wembley Downs, WA."
+    "intro": "FERLIE laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "GRAIL": {
-    "intro": "GRAIL is a ROGETjames laser cut metal screen design used for wall decor, privacy screens, fencing and gates. Made in Corten steel and powder-coated aluminium. Installed in Bicton, Wembley, Floreat and Subiaco, WA."
+    "intro": "GRAIL laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "HEXO": {
-    "intro": "HEXO is a ROGETjames laser cut metal screen design used for dividers. Made in powder-coated aluminium. Installed in Perth CBD, WA. Projects include Perth CBD — Lalla Rookh."
+    "intro": "HEXO laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "LUCARIO": {
-    "intro": "LUCARIO is a ROGETjames laser cut metal screen design used for wall decor, dividers and gates. Made in stainless steel, Corten steel and powder-coated aluminium. Installed in Brisbane, QLD; Principal Landscapes, Mount Lawley, TDL, North Perth and Perth, WA."
+    "intro": "LUCARIO laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "LUMIER": {
-    "intro": "LUMIER is a ROGETjames laser cut metal screen design used for dividers and wall decor. Made in powder-coated aluminium. Installed in Melbourne CBD, VIC; Nedlands, WA. Projects include Melbourne CBD — Mirvac; Nedlands — Riverstone Homes."
+    "intro": "LUMIER laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ORIAN": {
-    "intro": "ORIAN is a ROGETjames laser cut metal screen design used for wall decor, privacy screens, gates and fencing. Made in Corten steel and powder-coated aluminium. Installed in Shenton Park, Dalkeith and Floreat, WA."
+    "intro": "ORIAN laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ORIEL": {
-    "intro": "ORIEL is a ROGETjames laser cut metal screen design used for dividers and fencing. Made in powder-coated aluminium. Installed in Leederville, WA."
+    "intro": "ORIEL laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "PANGEA": {
-    "intro": "PANGEA is a ROGETjames laser cut metal screen design used for dividers. Made in powder-coated aluminium. Installed in Wembley, WA."
+    "intro": "PANGEA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "REEDS of UNGARO": {
-    "intro": "REEDS of UNGARO is a ROGETjames light feature design. Made in powder-coated aluminium. Installed in Victoria Park, WA."
+    "intro": "REEDS of UNGARO light features by ROGETjames. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "RISHIKESH": {
-    "intro": "RISHIKESH is a ROGETjames laser cut metal screen design used for dividers and wall decor. Made in Corten steel and powder-coated aluminium. Installed in Dalkeith, WA."
+    "intro": "RISHIKESH laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ROANDER": {
-    "intro": "ROANDER is a ROGETjames laser cut metal screen design used for wall decor, gates and fencing. Made in powder-coated aluminium. Installed in Floreat, WA."
+    "intro": "ROANDER laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "SABAH": {
-    "intro": "SABAH is a ROGETjames mirror art feature design. Made in Corten steel."
+    "intro": "SABAH mirror art features by ROGETjames. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "SABU": {
-    "intro": "SABU is a ROGETjames laser cut screen design used for dividers. Installed in Noosa, QLD."
+    "intro": "SABU laser cut screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "SPANGLE": {
-    "intro": "SPANGLE is a ROGETjames laser cut metal screen design used for gates. Made in powder-coated aluminium. Installed in Hillarys, WA."
+    "intro": "SPANGLE laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "URO": {
-    "intro": "URO is a ROGETjames laser cut metal screen design used for gates, fencing, dividers and privacy screens. Made in powder-coated aluminium and Corten steel. Installed in North Sydney and Sydney, NSW; Churchlands, WA."
+    "intro": "URO laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "VAYA": {
-    "intro": "VAYA is a ROGETjames laser cut metal screen design used for dividers. Made in powder-coated aluminium."
+    "intro": "VAYA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "VIASI": {
-    "intro": "VIASI is a ROGETjames laser cut metal screen design used for light features, fencing and gates. Made in powder-coated aluminium. Installed in Melville and Mount Lawley, WA."
+    "intro": "VIASI laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor and light features. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "VUELTA": {
-    "intro": "VUELTA is a ROGETjames laser cut metal screen design used for fencing, gates, pergola screens and balustrades. Made in powder-coated aluminium and stainless steel. Installed in Bicton and Floreat, WA."
+    "intro": "VUELTA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor, pergola screens and balustrades. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "WATTLE": {
-    "intro": "WATTLE is a ROGETjames laser cut metal screen design used for wall decor, gates, dividers, light features, fencing and canopies. Made in Corten steel and powder-coated aluminium. Installed in Sydney, NSW; Adelaide, SA; Applecross, Mandurah, Como, Osborne Park, Kings Park, Bicton and Cottesloe, WA. Projects include Norwood, Adelaide — Maison Outdoor; Frasers Restaurant, Kings Park — MJA Studio.",
+    "intro": "WATTLE laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers, wall decor, light features and canopies. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia.",
     "spiel": "ROGETjames has beautifully interpreted the native Australian wattle adding an abstract bent, creating a uniquely original and intricate iconic design."
   },
   "XAVIER": {
-    "intro": "XAVIER is a ROGETjames laser cut metal screen design used for wall decor. Made in Corten steel, stainless steel and powder-coated aluminium. Installed in Sydney, NSW. Projects include HIA Show, Sydney — Rollingstone Landscapes."
+    "intro": "XAVIER laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ZANADA": {
-    "intro": "ZANADA is a ROGETjames laser cut metal screen design used for gates and wall decor. Made in powder-coated aluminium and stainless steel. Installed in Applecross, Maylands and Perth CBD, WA. Projects include Perth CBD — Duxton Hotel."
+    "intro": "ZANADA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ZARATHSTRA": {
-    "intro": "ZARATHSTRA is a ROGETjames laser cut metal screen design used for dividers, gates and wall decor. Made in Corten steel and powder-coated aluminium. Installed in Perth CBD and Margaret River, WA."
+    "intro": "ZARATHSTRA laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   },
   "ZED": {
-    "intro": "ZED is a ROGETjames laser cut metal screen design used for wall decor. Made in powder-coated aluminium."
+    "intro": "ZED laser cut metal screens by ROGETjames for gates, fencing, privacy screens, dividers and wall decor. Available as a standard design or adapted to bespoke projects, in Corten steel, powder-coated aluminium and stainless steel. Featured in iconic venues, commercial projects and residential homes throughout Australia."
   }
 };
