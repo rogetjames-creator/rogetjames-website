@@ -8,14 +8,15 @@
 //   - adds Organization + Person on every page, WebSite on / only,
 //   - points creator / publisher / brand at #org or #james-roget,
 //   - removes duplicate breadcrumb / collection nodes,
-//   - gives wall art and sculpture artworks width / height from their sizes,
-//   - marks screen design pages as Product (no offers — see seoData.js).
+//   - gives wall art and sculpture products width / height from their sizes,
+//   - wall art, sculpture AND screen designs = ROGETjames products
+//     (Product + VisualArtwork, brand ROGETjames, artist James Roget).
 // Pages carrying noindex (the hidden city pages) are left exactly as they are.
 
 import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SITE, ORG, PERSON, WEBSITE, ORG_ID, PERSON_ID, SCREEN_DESIGN_TYPE, MATERIALS } from "../src/data/seoData.js";
+import { SITE, ORG, PERSON, WEBSITE, ORG_ID, PERSON_ID, MATERIALS } from "../src/data/seoData.js";
 
 const DIST = fileURLToPath(new URL("../dist", import.meta.url));
 const LD_RE = /<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>\s*/gi;
@@ -79,6 +80,8 @@ function materialsIn(images) {
   return MATERIALS.filter((m) => text.includes(m.toLowerCase()));
 }
 
+const esc = (x) => String(x || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 function score(n) { return Object.keys(n).length + (n["@id"] ? 100 : 0); }
 
 let changed = 0, skipped = 0;
@@ -126,27 +129,40 @@ for (const file of htmlFiles(DIST)) {
   }
 
   const seg = route.split("/").filter(Boolean);
+  const pageTitle = (html.match(/<title>([^<]*)<\/title>/i) || [, ""])[1].replace(/&amp;/g, "&");
   for (const n of kept) {
     linkRefs(n);
     if (n["@type"] === "FAQPage") n["@id"] = n["@id"] || `${url}#faq`;
-    if (n["@type"] === "VisualArtwork") {
+    const t = [].concat(n["@type"]);
+    if (t.includes("VisualArtwork") || t.includes("Product") || t.includes("Service")) {
       const isScreenDesign = seg[0] === "screens" && seg.length === 2 && !SCREEN_USE_PAGES.has(seg[1]);
-      if (isScreenDesign && SCREEN_DESIGN_TYPE === "Product") {
-        // Product, no offers: prices are never shown openly, so no rich
-        // result — by design (James, 27 Nov 2026).
+      if (isScreenDesign) {
+        // A ROGETjames product: bought as a standard design, or applied to
+        // many bespoke projects (James, 27 Nov 2026). Its kind comes from the
+        // page title — "Laser Cut Metal Screen", "Light Feature", "Mirror Art
+        // Feature" — so light features and mirrors never read "laser cut".
+        const kind = pageTitle.split("|")[0].trim().replace(new RegExp("^" + esc(n.name) + "\\s*", "i"), "") || "Laser Cut Metal Screen";
         const mats = materialsIn(n.image);
-        n["@type"] = "Product";
+        for (const k of ["serviceType", "provider", "areaServed", "artMedium", "publisher", "size"]) delete n[k];
+        n["@type"] = ["Product", "VisualArtwork"];
+        n["@id"] = `${url}#product`;
+        n.category = kind;
+        n.artform = kind;
+        n.brand = { "@id": ORG_ID };
+        n.manufacturer = { "@id": ORG_ID };
+        n.creator = { "@id": PERSON_ID };
+        if (mats.length) n.material = mats.join(", ");
+        n.countryOfOrigin = n.countryOfOrigin || "AU";
+      } else if (seg[0] === "wall-art" || seg[0] === "sculpture") {
+        // Catalogued, fixed sizes, bought off the shelf: a ROGETjames product,
+        // and James Roget's artwork.
+        n["@type"] = ["Product", "VisualArtwork"];
         n["@id"] = `${url}#product`;
         n.brand = { "@id": ORG_ID };
         n.manufacturer = { "@id": ORG_ID };
-        if (mats.length) n.material = mats.join(", ");
-        delete n.creator; delete n.artform; delete n.artMedium; delete n.publisher;
-      } else {
-        n["@id"] = `${url}#artwork`;
         n.creator = { "@id": PERSON_ID };
-        n.publisher = { "@id": ORG_ID };
-        if (seg[0] === "wall-art") n.artform = "Wall art";
-        if (seg[0] === "sculpture") n.artform = "Sculpture";
+        delete n.publisher;
+        n.artform = seg[0] === "wall-art" ? "Wall art" : "Sculpture";
         Object.assign(n, dimensions(n.size));
       }
     }

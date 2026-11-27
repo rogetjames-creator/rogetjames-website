@@ -74,11 +74,13 @@ export const WEBSITE = {
   },
 };
 
-// Screen design pages (/screens/<design>) are marked up as Product, as James
-// asked (27 Nov 2026), with no offers block because prices are never shown
-// openly. By design this will NOT produce Product rich results: Google wants
-// offers, review or aggregateRating before it shows one.
-export const SCREEN_DESIGN_TYPE = "Product";
+// RULE (James, 27 Nov 2026): ROGETjames is a branded design label by James
+// Roget, and a brand with product. Wall art and sculpture are catalogued, fixed
+// sizes, bought off the shelf. Screen designs are products too — bought as a
+// standard design, or applied to many bespoke projects. All three are marked
+// Product (brand ROGETjames) and VisualArtwork (James Roget, the designer
+// behind the label). No offers block: prices stay behind the postcode gate,
+// so Google shows no price-based rich result — by design.
 
 // The three materials, as captions spell them.
 export const MATERIALS = ["Corten steel", "stainless steel", "powder-coated aluminium"];
