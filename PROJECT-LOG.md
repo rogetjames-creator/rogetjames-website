@@ -18,11 +18,21 @@ point to the detailed notes file if there is one.
 |---|---|---|
 | Roj — formerly "Collection app" (James's own private app, phone + desktop) | LIVE at roj-board.netlify.app (private, password + Touch/Face ID, data in Sydney) | `~/Projects/collection-app` (own folder, NOT this repo); Netlify project `roj-board` |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
-| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Phase 1 + Phase 2 links built on the Mac, not live; Phase 2 headings/intros in `~/Desktop/CHAT GPT/seo-intros.csv` waiting for James's approval | Mac session "Bespoke sculpture catalogue link" |
+| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Screens popup wording LIVE 27 Nov. Phases 1, 3, 4 built + checked on the Mac (0 FAIL), waiting for James's OK to publish | report: `~/Desktop/CHAT GPT/seo-check-report.txt` |
 
 ---
 
 ## Log
+
+### 27 Nov 2026 (later)
+- **Screens popup wording LIVE:** James's WATTLE line + an SEO paragraph per
+  design on the right of the popup (no "made to order"; stainless steel listed
+  last; ends "Featured in iconic venues, commercial projects and residential
+  homes throughout Australia"). WATTLE/URO Sydney photos renamed so no extra pills.
+- **James:** screens don't bring orders — stop making them the focus.
+- **Phase 3 + 4 built (not live):** `scripts/seo-check.mjs` stops any deploy
+  with a basic SEO fault. It found the homepage had no real main heading; fixed
+  with a hidden heading (looks the same). Preview copies noindex.
 
 ### 27 Nov 2026
 - **SEO brief from James** (4 phases, pasted): Phase 0 check, Phase 1
