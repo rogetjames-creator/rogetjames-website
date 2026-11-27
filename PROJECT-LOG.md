@@ -18,10 +18,29 @@ point to the detailed notes file if there is one.
 |---|---|---|
 | Roj — formerly "Collection app" (James's own private app, phone + desktop) | LIVE at roj-board.netlify.app (private, password + Touch/Face ID, data in Sydney) | `~/Projects/collection-app` (own folder, NOT this repo); Netlify project `roj-board` |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
+| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Phase 0 report done; Phase 1 built on the Mac, not live — waiting for James's OK | Mac session "Bespoke sculpture catalogue link" |
 
 ---
 
 ## Log
+
+### 27 Nov 2026
+- **SEO brief from James** (4 phases, pasted): Phase 0 check, Phase 1
+  structured data, Phase 2 headings/intros (⛔ CSV for approval first),
+  Phase 3 `seo-check.mjs` build guard, Phase 4 fixes. Nothing live without
+  his OK at each ⛔.
+- **Phase 0 found:** pages ship real wording (no empty shells); junk URLs
+  already 404; www/http/old Netlify host already 301; wall art design pages'
+  H1 is lettering only (no readable words); Perth H1 reads "…AustraliaPerth";
+  homepage's no-JavaScript summary repeats 4 of 10 opening sentences;
+  Netlify branch/preview copies have no noindex header.
+- **James on screen design headings:** light features (EQUISETTI, REEDS of
+  UNGARO) and mirror art (SABAH) never get "laser cut" — don't change them, or
+  put the kind at the end. Confirm exact wording at the Phase 2 CSV.
+- **Phase 1 built (not live):** `src/data/seoData.js` + `scripts/build-jsonld.mjs`
+  — one linked @graph per page; Organization (no LocalBusiness), Person, WebSite
+  on / only; screen designs = Product with no offers (James's call; no rich
+  results by design). Melbourne has no FAQs on the page, so no FAQPage there.
 
 ### 26 Nov 2026 (late)
 - **Roj speed:** server moved to Sydney (next to storage); Netlify keeps ready
