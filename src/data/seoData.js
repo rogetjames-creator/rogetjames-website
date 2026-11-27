@@ -27,12 +27,12 @@ export const ORG = {
   telephone: "+61488878073",
   foundingDate: "2008",
   founder: { "@id": PERSON_ID },
-  // Australia first — most work is interstate. Then the three fabrication cities.
+  // Australia first — most work is interstate. Every city the site already
+  // listed stays (James, 27 Nov 2026: never narrow it).
   areaServed: [
     { "@type": "Country", name: "Australia" },
-    { "@type": "City", name: "Perth" },
-    { "@type": "City", name: "Melbourne" },
-    { "@type": "City", name: "Brisbane" },
+    ...["Perth", "Melbourne", "Sydney", "Brisbane", "Adelaide", "Gold Coast", "Canberra", "Hobart", "Darwin"]
+      .map((name) => ({ "@type": "City", name })),
   ],
   sameAs: [
     "https://instagram.com/rogetjames/",
