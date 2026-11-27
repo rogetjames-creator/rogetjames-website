@@ -18,11 +18,19 @@ point to the detailed notes file if there is one.
 |---|---|---|
 | Roj — formerly "Collection app" (James's own private app, phone + desktop) | LIVE at roj-board.netlify.app (private, password + Touch/Face ID, data in Sydney) | `~/Projects/collection-app` (own folder, NOT this repo); Netlify project `roj-board` |
 | Add favourites (website visitors save photos) | Concept — paused, nothing built | `src/_drafts/add-favourites.md` |
-| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Screens popup wording LIVE 27 Nov. Phases 1, 3, 4 built + checked on the Mac (0 FAIL), waiting for James's OK to publish | report: `~/Desktop/CHAT GPT/seo-check-report.txt` |
+| SEO plan, 4 phases (James's brief, 27 Nov 2026) | Phases 1, 3, 4 + screens popup wording LIVE 27 Nov. Left: spiels for 35 designs (James's words), Phase 2 screen headings parked | report: `~/Desktop/CHAT GPT/seo-check-report.txt` |
 
 ---
 
 ## Log
+
+### 27 Nov 2026 (evening)
+- **SEO work LIVE (James's OK):** structured data (one linked graph per page;
+  wall art, sculpture, screens = ROGETjames products), seo-check build guard,
+  readable headings on wall art pages, preview copies noindex, old Netlify
+  address 301s home. Homepage main heading (hidden, looks the same):
+  "Laser Cut Metal Wall Art, Sculpture & Screens by ROGETjames" (James).
+  Page title unchanged. Checked live: 200 / 404 / 301 correct.
 
 ### 27 Nov 2026 (later)
 - **Screens popup wording LIVE:** James's WATTLE line + an SEO paragraph per
