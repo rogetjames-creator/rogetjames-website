@@ -371,7 +371,7 @@ export default function Hero() {
     <section ref={sectionRef} className="relative h-dvh w-full overflow-hidden flex items-end">
       {/* The homepage's main heading, for search engines and screen readers.
           Out of sight, so the hero looks exactly as before (SEO brief, Phase 4). */}
-      <h1 className="sr-only">Laser Cut Metal Wall Art &amp; Sculpture by ROGETjames</h1>
+      <h1 className="sr-only">Laser Cut Metal Wall Art, Sculpture &amp; Screens by ROGETjames</h1>
 
       {/* Slideshow — two crossfading layers */}
       <div className="absolute inset-0 bg-charcoal">
